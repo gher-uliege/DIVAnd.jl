@@ -25,15 +25,9 @@ if !cyclic
 end
 
 n2 = prod(sz2)
-
 n = length(sz1)
 
-vi = []
-
-for i=1:n
-    push!(vi,collect(1:sz2[i]))
-end
-
+vi = [collect(1:sz2[i]) for i = 1:n]
 IJ = [_[:] for _ in ndgrid(vi...)]
 
 L1 = 1:n2

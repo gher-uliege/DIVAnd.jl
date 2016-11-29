@@ -1,40 +1,46 @@
-# Sparse operator for trimming.
+# Sparse operator shifting a field in a given dimension.
 #
-# T = sparse_trim(sz1,m)
+# function S = sparse_shift(sz1,m,cyclic)
 #
-# Create a sparse operator which trim first and last row (or column) in 
-# The field is a "collapsed" matrix of the size sz1.
+# Sparse operator shifting a field in the dimension m. The field is a 
+# "collapsed" matrix of the size sz1.
 #
 # Input:
 #   sz1: size of rhs
-#   m: dimension to trim
+#   m: dimension to shift
+#   cyclic: true if domain is cyclic along dimension m. False is the
+#     default value
 
-function sparse_trim(sz1,m)
+function sparse_shift(sz1,m,cyclic = false)
 
 n1 = prod(sz1)
 sz2 = collect(sz1)
-sz2[m] = sz2[m]-2
+
+if !cyclic
+    sz2[m] = sz2[m]-1
+end
+
 n2 = prod(sz2)
 n = length(sz1)
-
-# L1
 
 vi = [collect(1:sz2[i]) for i = 1:n]
 IJ = [_[:] for _ in ndgrid(vi...)]
 
-L1 = sub2ind((sz2...),IJ...)
-
-IJ[m]=IJ[m]+1
-
-L2 = sub2ind(sz1,IJ...)
-
+L1 = 1:n2
 one = ones(size(L1))
 
-sparse(L1, L2, one, n2, n1)
+IJ[m] = IJ[m] + 1
+
+if cyclic    
+    IJ[m] = mod(IJ[m]-1,sz1[m])+1
+end
+
+L2 = sub2ind(sz1,IJ...)
+sparse(L1,L2,one,n2,n1)
 
 end
 
-# Copyright (C) 2009,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2012,2016 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

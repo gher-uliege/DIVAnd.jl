@@ -56,12 +56,12 @@ f2 = S*f[:];
 @test f1[:] ≈ f2
 
 
-# % shifting
+# shifting
 
-# S = sparse_shift(size(f),1);
-# f1 = f(2:end,:,:);
-# f2 = S*f[:];
-# d(end+1) = max(abs(f1[:] - f2[:]));
+S = sparse_shift(size(f),1);
+f1 = f[2:end,:,:];
+f2 = S*f[:];
+@test f1[:] ≈ f2
 
 # trimming
 
