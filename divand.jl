@@ -1,4 +1,5 @@
 module divand
+using Interpolations
 
 function ndgrid_fill(a, v, s, snext)
     for j = 1:length(a)
@@ -31,8 +32,9 @@ include("localize_separable_grid.jl");
 
 function test()
     include("test_sparse_diff.jl"); 
+    include("test_localize_separable_grid.jl");
 end
 
-export test
+export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid
 
 end
