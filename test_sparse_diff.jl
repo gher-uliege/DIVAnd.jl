@@ -63,14 +63,14 @@ f2 = S*f[:];
 # f2 = S*f[:];
 # d(end+1) = max(abs(f1[:] - f2[:]));
 
-# % trimming
+# trimming
 
-# S = sparse_trim(size(f),1);
-# f1 = f(2:end-1,:,:);
-# f2 = S*f[:];
-# d(end+1) = max(abs(f1[:] - f2[:]));
+S = sparse_trim(size(f),1);
+f1 = f[2:end-1,:,:];
+f2 = S*f[:];
+@test f1[:] ≈ f2
 
-# % sparse pack
+# sparse pack
 
 mask = rand(size(f)) .> 0;
 f1 = f[mask];
