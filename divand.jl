@@ -28,6 +28,7 @@ end
 
 include("sparse_stagger.jl"); 
 include("sparse_diff.jl"); 
+include("sparse_interp.jl"); 
 include("localize_separable_grid.jl");
 
 function sparse_pack(mask)
@@ -49,6 +50,6 @@ function test()
     
 end
 
-export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack
+export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp
 
 end

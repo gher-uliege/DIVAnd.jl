@@ -83,12 +83,13 @@ f2 = sparse_pack(mask) * f[:];
 
 # % sparse interp
 
-# mask = true(size(mask));
-# I = [2.5 2 2]';
-# [H,out,outbbox] = sparse_interp(mask,I);
-# f1 = (f(2,2,2) + f(3,2,2))/2;
-# f2 = H*f[:];
-# d(end+1) = max(abs(f1[:] - f2[:]));
+mask = trues(size(mask));
+I = [2.5 2 2]';
+H,out,outbbox = sparse_interp(mask,I);
+f1 = (f[2,2,2] + f[3,2,2])/2;
+f2 = H*f[:];
+@test [f1] ≈ f2
+
 
 
 
