@@ -1,5 +1,6 @@
 module divand
 using Interpolations
+using Base.Test
 
 function ndgrid_fill(a, v, s, snext)
     for j = 1:length(a)
@@ -29,12 +30,25 @@ include("sparse_stagger.jl");
 include("sparse_diff.jl"); 
 include("localize_separable_grid.jl");
 
+function sparse_pack(mask)
+
+j = find(mask)
+m = length(j)
+i = collect(1:m)
+s = ones(m)
+n = length(mask)
+H = sparse(i,j,s,m,n)
+
+end
+
 
 function test()
     include("test_sparse_diff.jl"); 
-    include("test_localize_separable_grid.jl");
+#    include("test_localize_separable_grid.jl");
+
+    
 end
 
-export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid
+export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack
 
 end
