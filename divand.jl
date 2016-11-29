@@ -25,13 +25,8 @@ function ndgrid{T}(vs::AbstractVector{T}...)
 end
 
 
+sparse_diag(d) = spdiagm(d)
 
-include("sparse_stagger.jl"); 
-include("sparse_diff.jl"); 
-include("sparse_interp.jl"); 
-include("sparse_trim.jl"); 
-include("sparse_shift.jl"); 
-include("localize_separable_grid.jl");
 
 function sparse_pack(mask)
 
@@ -44,14 +39,24 @@ H = sparse(i,j,s,m,n)
 
 end
 
+include("sparse_stagger.jl");
+include("sparse_diff.jl");
+include("sparse_interp.jl");
+include("sparse_trim.jl");
+include("sparse_shift.jl");
+include("sparse_gradient.jl");
+include("localize_separable_grid.jl");
+
+
+
 
 function test()
-    include("test_sparse_diff.jl"); 
-#    include("test_localize_separable_grid.jl");
+    include("test_sparse_diff.jl");
+    include("test_localize_separable_grid.jl");
 
-    
+
 end
 
-export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift
+export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient
 
 end

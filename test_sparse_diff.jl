@@ -87,6 +87,18 @@ f2 = H*f[:]
 @test [f1] ≈ f2
 
 
+# sparse gradient
+
+x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
+mask = trues(size(x1))
+pm = ones(size(x1))/2
+pn = ones(size(x1))/3
+Dx,Dy = sparse_gradient(mask,(pm,pn))
+f = 2*x1 + x2
+Df1 = 2 * ones(3,3)
+Df2 = Dx * f[:]
+@test Df1[:] ≈ Df2
+
 
 
 # Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
