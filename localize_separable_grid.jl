@@ -2,92 +2,57 @@
 #
 # I = localize_separable_grid(xi,mask,x)
 #
+# xi and x are a tuple
+# x1,x2 = ndgrid(2 * collect(1:5),collect(1:6))
+# x = (x1,x2)
+#
 # Derive fractional indices where xi are the points to localize in the
 # separable grid x (every dimension in independent on other dimension).
 # The output I is an n-by-m array where n number of dimensions and m number of
 # observations
 
 function localize_separable_grid(xi,mask,x)
-#using Interpolations
-
 
     # n dimension of the problem
-n = length(x)
+    n = length(x)
 
-#x = cat_cell_array(x);
-#xi = cat_cell_array(xi);
+    # m is the number of arbitrarily distributed observations
+    mi = prod(size(xi[1]))
 
-#x = reshape(x, (size(x,1),1))
-#xi = reshape(xi, (size(xi,1),1))
+    # sz is the size of the grid
+    sz = size(x[1])
 
-x = cat(n+1,x...)
-xi = cat(n+1,xi...)
-
-
-# m is the number of arbitrarily distributed observations
-tmp = size(xi);
-mi = prod(tmp[1:end-1]);
-
-# sz is the size of the grid
-tmp = size(x);
-sz = tmp[1:end-1];
-
-@show ndims(x)
-
-if n == 1
-    mi = length(xi);
-    I = zeros(1,mi);
-    #  I(1,:) = interp1(x,1:length(x),xi);
-    itp = interpolate((x[:,1],),collect(1:length(x)),Gridded(Linear()))
-    I[1,:] = itp[xi]
-else
-    m = prod(sz);
-
-    xi = reshape(xi,(mi,n));
-    x = reshape(x,(m,n));
-
-    IJ = []
     vi = []
     X = []
-    XI = []
-    I = zeros(n,mi);
+    I = zeros(n,mi)
     
     for i=1:n
-        X[i] = [x[i][(j-1)*stride(X[i],i) + 1] for j in 1:size(X[i],i)]
-
+        push!(X,[x[i][(j-1)*stride(x[i],i) + 1] for j in 1:sz[i]])
         push!(vi,collect(1:sz[i]))
-        push!(X,reshape(x[:,i],sz));
-        push!(XI, xi[:,i])
     end
 
-    IJ = ndgrid(vi...);
+    IJ = ndgrid(vi...)
 
     for i=1:n
         itp = interpolate((X...),IJ[i],Gridded(Linear()))
-        I[i,:] = itp[XI...];
-        #I(i,:) = interpn(X{:},IJ{i},XI{:});
+        I[i,:] = itp[xi...]
     end
-end
 
+    # handle rounding errors
+    # snap to domain bounding box if difference does not exceeds tol
+    tol = 50*eps(1.)
 
-# handle rounding errors
-# snap to domain bounding box if difference does not exceeds tol
-tol = 50*eps(1.);
+    for i=1:n
+        # upper bound
+        ind = sz[i] .< I[i,:] .<= sz[i] + tol
+        I[i,ind] = sz[i]
 
-for i=1:n
-    @show sz
-    @show n
+        # lower bound
+        ind = 1 .< I[i,:] .<= 1 + tol
+        I[i,ind] = 1
+    end
 
-  # upper bound
-  ind = sz[i] .< I[i,:] .<= sz[i] + tol;
-  I[i,ind] = sz[i];
-
-  # lower bound
-  ind = 1 .< I[i,:] .<= 1 + tol;
-  I[i,ind] = 1;
-end
-
-I
+    I
 end
 
 
