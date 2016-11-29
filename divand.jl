@@ -45,6 +45,7 @@ include("sparse_interp.jl");
 include("sparse_trim.jl");
 include("sparse_shift.jl");
 include("sparse_gradient.jl");
+include("divand_laplacian.jl");
 include("localize_separable_grid.jl");
 
 
@@ -57,6 +58,6 @@ function test()
 
 end
 
-export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient
+export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian
 
 end

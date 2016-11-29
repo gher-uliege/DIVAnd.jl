@@ -86,6 +86,21 @@ f1 = (f[2,2,2] + f[3,2,2])/2
 f2 = H*f[:]
 @test [f1] ≈ f2
 
+#  laplacian 1D
+
+x1 = 2 * collect(1:5);
+mask = trues(size(x1));
+pm = ones(size(x1))/2;
+
+DD = divand_laplacian(mask,(pm,),ones(size(x1)),[false]);
+f = 2*x1.^2;
+Df1 = 4;
+Df2 = reshape(DD * f[:], size(mask));
+Df2 = Df2[2:end-1]
+
+@show Df2
+@test Df1 ≈ Df2[1]
+
 
 # sparse gradient
 
@@ -99,6 +114,25 @@ Df1 = 2 * ones(3,3)
 Df2 = Dx * f[:]
 @test Df1[:] ≈ Df2
 
+# laplacian
+
+x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
+mask = trues(size(x1))
+pm = ones(size(x1))/2
+pn = ones(size(x1))/3
+
+
+x1,x2 = ndgrid(collect(1:4),collect(1:3))
+mask = trues(size(x1))
+pm = ones(size(x1))
+pn = ones(size(x1))
+DD = divand_laplacian(mask,(pm,pn),ones(size(mask)),[false,false])
+f = 2*x1.^2 + x2
+Df1 = 4.
+Df2 = reshape(DD * f[:], size(mask))
+Df2 = Df2[2:end-1,2:end-1]
+@show Df2
+@test Df1 ≈ Df2[1]
 
 
 # Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
