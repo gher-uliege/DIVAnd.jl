@@ -49,15 +49,21 @@ include("divand_laplacian.jl");
 include("localize_separable_grid.jl");
 
 
+include("statevector_init.jl");
+include("statevector_pack.jl");
+include("statevector_unpack.jl");
+
 
 
 function test()
     include("test_sparse_diff.jl");
     include("test_localize_separable_grid.jl");
+    include("test_statevector.jl");
 
 
 end
 
-export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian
+export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
+   statevector_init, statevector_pack, statevector_unpack
 
 end

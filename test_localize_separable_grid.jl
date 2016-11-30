@@ -2,7 +2,6 @@ using Base.Test
 
 
 I = localize_separable_grid(([4],),ones(10),(2*collect(1:10),))
-@show I
 @test I[1] ≈ 2.
 
 
