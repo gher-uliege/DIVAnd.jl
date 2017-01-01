@@ -106,6 +106,13 @@ include("statevector_unpack.jl");
 
 include("divand_operators.jl");
 
+# parses
+include("divand_background_components.jl")
+# not working yet
+#include("divand_background.jl");
+
+include("divandrun.jl");
+
 
 
 function test()
@@ -122,9 +129,10 @@ function test()
     mapindex = []
 
     s = divand_operators(mask,(pm,pn),nu,iscyclic,mapindex)
+
 end
 
 export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack
+   statevector_init, statevector_pack, statevector_unpack, divandrun
 
 end

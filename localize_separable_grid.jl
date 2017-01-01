@@ -1,3 +1,5 @@
+# consider to reverse order x,mask,xi
+"""
 # Derive fractional indices on a separable grid.
 #
 # I = localize_separable_grid(xi,mask,x)
@@ -10,7 +12,7 @@
 # separable grid x (every dimension in independent on other dimension).
 # The output I is an n-by-m array where n number of dimensions and m number of
 # observations
-
+"""
 function localize_separable_grid(xi,mask,x)
 
     # n dimension of the problem
@@ -35,7 +37,11 @@ function localize_separable_grid(xi,mask,x)
 
     for i=1:n
         itp = interpolate((X...),IJ[i],Gridded(Linear()))
-        I[i,:] = itp[xi...]
+
+        # loop over all point
+        for j = 1:mi
+            I[i,j] = itp[[_[j] for _ in xi]...]
+        end
     end
 
     # handle rounding errors

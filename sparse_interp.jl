@@ -13,8 +13,8 @@
 #   outbbox: 1 if outise bouding box
 #   onland: 1 if point touches land (where mask == 0)
 
+#function sparse_interp{n}(mask::Array{Bool,n},I::Array{Float64,2},iscyclic = falses(size(I,1)))
 function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
-
 if ndims(mask) != size(I,1)
    error("sparse_interp: inconsistent arguments")
 end
@@ -69,8 +69,9 @@ iind = find(inside)
 coeff2 = coeff[:,iind,:]
 ind2 = ind[:,iind]
 mip = length(iind) # number of obs. inside
+#si = repmat(collect(1:mip),2^n,1)
+si = [j for i in 1:2^n, j in 1:mip]
 
-si = repmat(collect(1:mip),2^n,1)
 sj = ones(Int64,2^n, mip)
 ss = ones(2^n, mip)
 
@@ -109,6 +110,14 @@ H,out,outbbox
 
 end
 
+"""
+sparse_interp(x,mask,xi)
+Interpolate from x onto xi
+"""
+function sparse_interp_g(x,mask,xi)
+    I = localize_separable_grid(xi,mask,x)
+    return sparse_interp(mask,I)
+end
 
 # LocalWords:  interp
 
