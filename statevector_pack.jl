@@ -31,7 +31,7 @@ function statevector_pack(s,vars)
         x[s.ind[i]+1:s.ind[i+1],:] = tmp[ind,:]
     end
     
-    x
+    return x
 end
   
 

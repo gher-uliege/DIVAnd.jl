@@ -36,6 +36,10 @@ function localize_separable_grid(xi,mask,x)
     IJ = ndgrid(vi...)
 
     for i=1:n
+        #@show typeof(X[1])
+        #@show (X...)
+        #@show size(IJ[i])
+
         itp = interpolate((X...),IJ[i],Gridded(Linear()))
 
         # loop over all point

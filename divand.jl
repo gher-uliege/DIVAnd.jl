@@ -4,6 +4,7 @@ using Base.Test
 
 type divand_struct
     n
+    coeff
     sv
     D
     mask
@@ -14,11 +15,13 @@ type divand_struct
     mapindex_packed
     mask_stag
     WEs
+    WEss
     Dx
     applybc
 
     function divand_struct(mask)
         n = ndims(mask)
+        coeff = 1.
         sv = statevector_init((mask,))
         sz = size(mask)
         sempty = sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([]),prod(sz),prod(sz))
@@ -26,17 +29,19 @@ type divand_struct
         D = copy(sempty)
         WE = copy(sempty)
         WE = copy(sempty)
-
+        
         isinterior = []
         isinterior_stag = [[] for i in 1:n]
         isinterior_unpacked = []
         mapindex_packed = []
         mask_stag = [Array{Bool,1}() for i in 1:n]
         WEs = [copy(sempty) for i in 1:n]
+        WEss = [sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]
         Dx = [copy(sempty) for i in 1:n]
         applybc = copy(sempty)
 
         new(n,
+            coeff,
             D,
             sv,
             mask,
@@ -47,6 +52,7 @@ type divand_struct
             mapindex_packed,
             mask_stag,
             WEs,
+            WEss,
             Dx,
             applybc
             )
@@ -108,14 +114,20 @@ include("divand_operators.jl");
 
 # parses
 include("divand_background_components.jl")
+include("divand_background.jl");
+
 # not working yet
-#include("divand_background.jl");
+include("divand_addc.jl");
+include("divand_kernel.jl");
 
 include("divandrun.jl");
 
 
 
 function test()
+    # not working yet
+    include("test_2dvar_check.jl");
+
     include("test_sparse_diff.jl");
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
@@ -129,6 +141,7 @@ function test()
     mapindex = []
 
     s = divand_operators(mask,(pm,pn),nu,iscyclic,mapindex)
+
 
 end
 

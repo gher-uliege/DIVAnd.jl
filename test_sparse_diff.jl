@@ -93,9 +93,6 @@ H,out,outbbox = sparse_interp(mask,I)
 f1 = [ (f[2,2,2] + f[3,2,2])/2 ;  f[3,3,3] ]
 f2 = H*f[:]
 
-@show f1
-@show f2
-
 @test f1 ≈ f2
 
 #  laplacian 1D

@@ -43,7 +43,7 @@ for i=1:s.nvar
 end
 
 
-out
+return (out...)
 end
 
 # Copyright (C) 2009 Alexander Barth <a.barth@ulg.ac.be>
