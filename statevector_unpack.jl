@@ -26,20 +26,36 @@
 
 function statevector_unpack(s,x,fillvalue = 0)
 
-
-k = size(x,2)
-
 out = []
 
-for i=1:s.nvar
-  v = zeros(s.numels_all[i],k)
-  v[:] = fillvalue
-  
-  ind = find(s.mask[i])
+if ndims(x) == 1
 
-  v[ind,:] = x[s.ind[i]+1:s.ind[i+1],:]
+    for i=1:s.nvar
+        v = zeros(s.numels_all[i])
+        v[:] = fillvalue
   
-  push!(out,reshape(v,([s.size[i]... k]...)))
+        ind = find(s.mask[i])
+
+        v[ind] = x[s.ind[i]+1:s.ind[i+1]]
+  
+        #push!(out,reshape(v,([s.size[i]...]...)))
+        push!(out,reshape(v,s.size[i]))
+    end
+else
+    k = size(x,2)
+    
+    out = []
+    
+    for i=1:s.nvar
+        v = zeros(s.numels_all[i],k)
+        v[:] = fillvalue
+  
+        ind = find(s.mask[i])
+        
+        v[ind,:] = x[s.ind[i]+1:s.ind[i+1],:]
+        
+        push!(out,reshape(v,([s.size[i]... k]...)))
+    end
 end
 
 

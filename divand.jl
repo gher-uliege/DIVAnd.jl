@@ -2,8 +2,15 @@ module divand
 using Interpolations
 using Base.Test
 
+type divand_constrain
+    yo
+    R
+    H
+end
+
 type divand_struct
     n
+    neff
     coeff
     sv
     D
@@ -17,11 +24,37 @@ type divand_struct
     WEs
     WEss
     Dx
+    alpha
+    iB
+    iB_
+    moddim
+    iscyclic
     applybc
+    betap
+    EOF_lambda
+    primal
+    factorize
+    tol
+    maxit
+    minit
+    inversion
+    keepLanczosVectors
+    yo
+    R
+    H
+    P
 
     function divand_struct(mask)
         n = ndims(mask)
+        neff = 0
         coeff = 1.
+        moddim = []
+        iscyclic = []
+        alpha = []
+        yo = []
+        R = []
+        H = []
+
         sv = statevector_init((mask,))
         sz = size(mask)
         sempty = sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([]),prod(sz),prod(sz))
@@ -29,7 +62,10 @@ type divand_struct
         D = copy(sempty)
         WE = copy(sempty)
         WE = copy(sempty)
-        
+        iB = copy(sempty)
+        iB_ = Array{SparseMatrixCSC{Float64,Int64}}(3);
+        P = []
+
         isinterior = []
         isinterior_stag = [[] for i in 1:n]
         isinterior_unpacked = []
@@ -40,7 +76,19 @@ type divand_struct
         Dx = [copy(sempty) for i in 1:n]
         applybc = copy(sempty)
 
+        betap = 0
+        EOF_lambda = 0
+        primal = true
+        factorize = true
+        tol = 1e-6
+        maxit = 100
+        minit = 10
+        inversion = :chol
+        keepLanczosVectors = false
+
+
         new(n,
+            neff,
             coeff,
             D,
             sv,
@@ -54,7 +102,25 @@ type divand_struct
             WEs,
             WEss,
             Dx,
-            applybc
+            alpha,
+            iB,
+            iB_,
+            moddim,
+            iscyclic,
+            applybc,
+            betap,
+            EOF_lambda,
+            primal,
+            factorize,
+            tol,
+            maxit,
+            minit,
+            inversion,
+            keepLanczosVectors,
+            yo,
+            R,
+            H,
+            P
             )
     end
 end
@@ -119,18 +185,26 @@ include("divand_background.jl");
 # not working yet
 include("divand_addc.jl");
 include("divand_kernel.jl");
+include("divand_obs.jl");
+include("divand_factorize.jl");
+include("divand_solve.jl");
+
 
 include("divandrun.jl");
 
-
+include("operators.jl");
 
 function test()
+
     # not working yet
     include("test_2dvar_check.jl");
+
+    include("test_covaris.jl");
 
     include("test_sparse_diff.jl");
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
+
 
     x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
     mask = trues(size(x1))

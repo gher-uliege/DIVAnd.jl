@@ -14,10 +14,15 @@
 #   s: structure to be used by divand_factorize
 
 function divand_addc(s,constrain)
-    s.H = cat(1,s.H,constrain.H);
-    s.R = blkdiag(s.R,constrain.R);
-    s.yo = cat(1,s.yo,constrain.yo);
-
+    if isempty(s.H)
+        s.H = constrain.H;
+        s.R = constrain.R;
+        s.yo = constrain.yo;
+    else
+        s.H = cat(1,s.H,constrain.H);
+        s.R = blkdiag(s.R,constrain.R);
+        s.yo = cat(1,s.yo,constrain.yo);
+    end
     return s
 end
 

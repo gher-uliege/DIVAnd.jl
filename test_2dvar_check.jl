@@ -1,5 +1,6 @@
 # Testing divand in 2 dimensions with independent verification.
 
+using Base.Test
 using divand
 
 # grid of background field
@@ -23,8 +24,10 @@ leny = .15;
 
 lambda = 20;
 
-va,err,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
+#,err,s
+va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
 
+err = diag(s.P)
 iR = inv(full(s.R));
 iB = full(s.iB);
 H = full(s.H);
@@ -34,10 +37,10 @@ iP = iB + H'*iR*H;
 
 P = inv(iP);
 
-xa2 = P* (H'*iR*v(:));
+xa2 = P* (H'*iR*v[:]);
 
-[fi2] = statevector_unpack(sv,xa2);
-fi2(~s.mask) = NaN;
+fi2, = statevector_unpack(sv,xa2);
+fi2[~s.mask] = NaN;
 
 @test va ≈ fi2
 @test diag(P) ≈ err[:]

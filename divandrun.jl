@@ -112,7 +112,7 @@ function divandrun(mask,pmn,xi,x,f,len,lambda;
                 diagnostics = 0,
                 EOF_lambda = 0,
                 primal = 1,
-                factorize = 1,
+                factorize = true,
                 tol = 1e-6,
                 maxit = 100,
                 minit = 10,
@@ -145,51 +145,50 @@ s.inversion = inversion;
 s.keepLanczosVectors = keepLanczosVectors;
 #s.compPC = compPC;
 
-# remove non-finite elements from observations
-f = f(:);
-valid = isfinite(f);
-x = cat_cell_array(x);
+# # remove non-finite elements from observations
+# f = f[:];
+# valid = isfinite(f);
+# x = cat_cell_array(x);
 
-if !all(valid)  
-  fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
-  x = reshape(x,[length(f) s.n]);
-  f = f[valid];
-  x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
+# if !all(valid)  
+#   fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
+#   x = reshape(x,[length(f) s.n]);
+#   f = f[valid];
+#   x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
   
-  if !isempty(fracindex)
-    fracindex = fracindex[:,valid];
-  end
+#   if !isempty(fracindex)
+#     fracindex = fracindex[:,valid];
+#   end
 
-  if isscalar(lambda)
-    # do nothing
-  elseif isvector(lambda)
-    lambda = lambda[valid];
-  elseif ismatrix(lambda)
-    lambda = lambda[valid,valid];
-  end
-end
+#   if isscalar(lambda)
+#     # do nothing
+#   elseif isvector(lambda)
+#     lambda = lambda[valid];
+#   elseif ismatrix(lambda)
+#     lambda = lambda[valid,valid];
+#   end
+# end
 
-apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
+# apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
 
-s.mode = 1;
+# s.mode = 1;
 
-if !apply_EOF_contraint
-    s.betap = 0;
-else
-    if s.mode==0
-        s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
-    elseif s.mode==1
-        s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
-    end
-end
+# if !apply_EOF_contraint
+#     s.betap = 0;
+# else
+#     if s.mode==0
+#         s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
+#     elseif s.mode==1
+#         s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
+#     end
+# end
 
-#assert(s.betap,0,1e-8)
 # increase contraint on total enegery to ensure system is still positive defined
 #s.betap
-s.iB = s.iB + s.betap * s.WE'*s.WE;
+#s.iB = s.iB + s.betap * s.WE'*s.WE;
 
 # add observation constrain to cost function
-s = divand_addc(s,divand_obs(s,xi,x,f,lambda,fracindex));
+s = divand_addc(s,divand_obs(s,xi,x,f,lambda,I = fracindex));
 
 # add advection constraint to cost function
 for i=1:length(velocity)
@@ -197,28 +196,26 @@ for i=1:length(velocity)
     s = divand_addc(s,divand_constr_advec(s,velocity[i]));
 end
 
-
 # add all additional constrains
 for i=1:length(constraints)
     s = divand_addc(s,constraints[i]);
 end
 
-
-if apply_EOF_contraint
-    s = divand_eof_contraint(s,EOF_lambda,EOF);
-end
+#if apply_EOF_contraint
+#    s = divand_eof_contraint(s,EOF_lambda,EOF);
+#end
 
 # factorize a posteori error covariance matrix
 # or compute preconditioner
-s = divand_factorize(s);
+divand_factorize!(s);
 
-if !apply_EOF_contraint
-    fi,s = divand_solve(s,f);
-else
-    fi,s = divand_solve_eof(s,f);
-end
+#if !apply_EOF_contraint
+    fi = divand_solve!(s);
+#else
+#    fi,s = divand_solve_eof(s,f);
+#end
 
-return fi
+return fi,s
 # varargout{1} = fi;
 
 # if nargout-diagnostics >= 2

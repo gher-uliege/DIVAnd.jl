@@ -201,8 +201,8 @@ s.iB = iB
 # individual terms of background covariance matrix (corresponding alpha)
 s.iB_ = iB_
 
-s.L = L
-s.Ln = Ln
+#s.L = L
+#s.Ln = Ln
 
 s.moddim = moddim
 s.iscyclic = iscyclic
@@ -211,7 +211,7 @@ s.alpha = alpha
 s.neff = neff
 s.WE = WE # units length^(n/2)
 
-
+return s
 end
 
 # Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
