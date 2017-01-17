@@ -170,40 +170,30 @@ include("sparse_interp.jl");
 include("sparse_trim.jl");
 include("sparse_shift.jl");
 include("sparse_gradient.jl");
-include("divand_laplacian.jl");
 include("localize_separable_grid.jl");
 
+include("special_matrices.jl");
 
 include("statevector_init.jl");
 include("statevector_pack.jl");
 include("statevector_unpack.jl");
 
+include("divand_laplacian.jl");
 include("divand_operators.jl");
-
-# parses
 include("divand_background_components.jl")
 include("divand_background.jl");
-
-# not working yet
 include("divand_addc.jl");
 include("divand_kernel.jl");
 include("divand_obs.jl");
 include("divand_factorize.jl");
 include("divand_solve.jl");
 include("divand_metric.jl");
-
-
 include("divandrun.jl");
-
-
-include("operators.jl");
 
 
 function test()
     @testset "divand" begin
         include("test_covaris.jl");
-
-        
         include("test_2dvar_check.jl");
         
         
