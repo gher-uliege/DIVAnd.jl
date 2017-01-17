@@ -1,8 +1,6 @@
 module divand
 using Interpolations
 using Base.Test
-#using PyCall
-#using PyPlot
 
 type divand_constrain
     yo
@@ -195,12 +193,12 @@ function test()
     @testset "divand" begin
         include("test_covaris.jl");
         include("test_2dvar_check.jl");
-        
-        
+
+
         include("test_sparse_diff.jl");
         include("test_localize_separable_grid.jl");
         include("test_statevector.jl");
-        
+
 
         x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
         mask = trues(size(x1))
@@ -209,37 +207,14 @@ function test()
         nu = ones(size(mask))
         iscyclic = [false,false]
         mapindex = []
-        
+
         s = divand_operators(mask,(pm,pn),nu,iscyclic,mapindex)
 
     end
     return nothing
 end
 
-
-# function view(lon,lat,S)
-#     @pyimport numpy.ma as ma
-#     pyma(S) =  pycall(ma.array, Any, S, mask=isnan(S))
-#     pcolor(lon,lat,pycall(ma.array, Any, S, mask=isnan(S)))
-#     ax = gca()
-#     ax[:set_aspect](1.)
-#     ax[:set_xlim](minimum(lon[:]),maximum(lon[:]))
-#     ax[:set_ylim](minimum(lat[:]),maximum(lat[:]))
-#     colorbar(orientation="horizontal")
-# end
-
-function loaddata(filename)
-    f = open(filename)
-    A = readlines(f)
-    close(f)
-    B = [parse(split(A[j])[i]) for i = 1:3, j = 1:length(A)]
-    xobs = B[1,:]
-    yobs = B[2,:]
-    vobs = B[3,:]
-    return xobs,yobs,vobs
-end
-
 export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, divandrun, view, loaddata, divand_metric, distance, CovarIS, factorize!
+   statevector_init, statevector_pack, statevector_unpack, divandrun, divand_metric, distance, CovarIS, factorize!
 
 end
