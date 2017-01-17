@@ -195,11 +195,11 @@ include("divandrun.jl");
 include("operators.jl");
 
 function test()
+    include("test_covaris.jl");
 
     # not working yet
     include("test_2dvar_check.jl");
 
-    include("test_covaris.jl");
 
     include("test_sparse_diff.jl");
     include("test_localize_separable_grid.jl");

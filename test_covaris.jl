@@ -49,12 +49,16 @@ end
 Base.:\{T}(C::CovarIS{T}, M::AbstractArray{Float64,2}) = C.IS * M
 
 function factorize!{T}(C::CovarIS{T})
-    C.factors = cholfact(Symmetric(C.IS), Val{true})
+    C.factors = cholfact(Symmetric(C.IS))
+#    C.factors = cholfact(Symmetric(C.IS), Val{true})
+#    C.factors = cholfact(Hermitian(C.IS), Val{true})
+#    C.factors = cholfact(Hermitian(C.IS))
 end
 
 #function test()
 
-IS = [2. 1.; 1. 2.]
+IS = sparse([2. 0.1; 0.1 2.])
+#IS = [2. 0; 0. 2.]
 
 n = 2;
 
@@ -63,7 +67,7 @@ n = 2;
 det(IS)
 
 C = CovarIS(IS);
-C2 = inv(IS);
+C2 = inv(full(IS));
 
 iC = inv(C);
 @test iC ≈ IS

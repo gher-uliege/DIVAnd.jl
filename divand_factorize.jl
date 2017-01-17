@@ -22,7 +22,7 @@ H = s.H;
 #    if strcmp(s.inversion,'chol')
         iP = iB + H'*(R\H);
         P = CovarIS(iP);
-
+    
         # Cholesky factor of the inverse of a posteriori
         # error covariance iP
     @show s.factorize
