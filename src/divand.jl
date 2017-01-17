@@ -188,33 +188,7 @@ include("divand_solve.jl");
 include("divand_metric.jl");
 include("divandrun.jl");
 
-
-function test()
-    @testset "divand" begin
-        include("test_covaris.jl");
-        include("test_2dvar_check.jl");
-
-
-        include("test_sparse_diff.jl");
-        include("test_localize_separable_grid.jl");
-        include("test_statevector.jl");
-
-
-        x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
-        mask = trues(size(x1))
-        pm = ones(size(x1))/2
-        pn = ones(size(x1))/3
-        nu = ones(size(mask))
-        iscyclic = [false,false]
-        mapindex = []
-
-        s = divand_operators(mask,(pm,pn),nu,iscyclic,mapindex)
-
-    end
-    return nothing
-end
-
-export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
+export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
    statevector_init, statevector_pack, statevector_unpack, divandrun, divand_metric, distance, CovarIS, factorize!
 
 end
