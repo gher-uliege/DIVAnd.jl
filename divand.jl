@@ -190,6 +190,7 @@ include("divand_kernel.jl");
 include("divand_obs.jl");
 include("divand_factorize.jl");
 include("divand_solve.jl");
+include("divand_metric.jl");
 
 
 include("divandrun.jl");
@@ -226,7 +227,11 @@ function view(lon,lat,S)
     @pyimport numpy.ma as ma
     pyma(S) =  pycall(ma.array, Any, S, mask=isnan(S))
     pcolor(lon,lat,pycall(ma.array, Any, S, mask=isnan(S)))
-    colorbar()
+    ax = gca()
+    ax[:set_aspect](1.)
+    ax[:set_xlim](minimum(lon[:]),maximum(lon[:]))
+    ax[:set_ylim](minimum(lat[:]),maximum(lat[:]))
+    colorbar(orientation="horizontal")
 end
 
 function loaddata(filename)
@@ -241,6 +246,6 @@ function loaddata(filename)
 end
 
 export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, divandrun, view, loaddata
+   statevector_init, statevector_pack, statevector_unpack, divandrun, view, loaddata, divand_metric, distance
 
 end
