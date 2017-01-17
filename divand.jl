@@ -1,6 +1,8 @@
 module divand
 using Interpolations
 using Base.Test
+using PyCall
+using PyPlot
 
 type divand_constrain
     yo
@@ -219,7 +221,26 @@ function test()
 
 end
 
+
+function view(lon,lat,S)
+    @pyimport numpy.ma as ma
+    pyma(S) =  pycall(ma.array, Any, S, mask=isnan(S))
+    pcolor(lon,lat,pycall(ma.array, Any, S, mask=isnan(S)))
+    colorbar()
+end
+
+function loaddata(filename)
+    f = open(filename)
+    A = readlines(f)
+    close(f)
+    B = [parse(split(A[j])[i]) for i = 1:3, j = 1:length(A)]
+    xobs = B[1,:]
+    yobs = B[2,:]
+    vobs = B[3,:]
+    return xobs,yobs,vobs
+end
+
 export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, divandrun
+   statevector_init, statevector_pack, statevector_unpack, divandrun, view, loaddata
 
 end

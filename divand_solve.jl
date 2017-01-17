@@ -67,12 +67,7 @@ yo = s.yo;
 # end
 
 
-@show size(fpi)
-
 fi, = statevector_unpack(sv,fpi);
-
-@show size(fi)
-@show size(s.mask)
 
 fi[!s.mask] = NaN;
 

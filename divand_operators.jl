@@ -55,9 +55,6 @@ D = divand_laplacian(mask,pmn,nu,iscyclic)
 
 # XXX remove this WE
 
-@show 1./( .*(pmn...))
-@show size(1./( .*(pmn...)))
-
 d = statevector_pack(sv,(1./( .*(pmn...)),))
 d = d[:,1]
 WE = sparse_diag(sqrt(d))
@@ -67,7 +64,6 @@ for i=1:n
   
   # mask on staggered grid
   ma = (S * mask[:]) .== 1
-  @show typeof(ma)
   s.mask_stag[i] = ma
   
   #d = sparse_pack(ma) * prod(S * reshape(pmn,length(mask),n),2)

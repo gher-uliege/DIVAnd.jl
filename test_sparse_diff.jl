@@ -107,7 +107,6 @@ Df1 = 4;
 Df2 = reshape(DD * f[:], size(mask));
 Df2 = Df2[2:end-1]
 
-@show Df2
 @test Df1 ≈ Df2[1]
 
 
@@ -140,7 +139,7 @@ f = 2*x1.^2 + x2
 Df1 = 4.
 Df2 = reshape(DD * f[:], size(mask))
 Df2 = Df2[2:end-1,2:end-1]
-@show Df2
+
 @test Df1 ≈ Df2[1]
 
 

@@ -28,7 +28,7 @@ for i=1:n
   S = sparse_stagger(sz,i,iscyclic[i])
 
   # mask for staggered variable
-  m = (S * mask[:] .== 1)
+  m = (S * mask[:]) .== 1
   
   d = m .* (S * pmn[i][:])
 

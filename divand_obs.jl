@@ -54,7 +54,9 @@ H = H * sparse_pack(mask)';
 # boundary
 
 #if isscalar(lambda)
-  R = 1/lambda * speye(size(H,1));
+#  R = 1/lambda * speye(size(H,1));
+  R = Diagonal([1/lambda for i in 1:size(H,1)]);
+
 #elseif isvector(lambda)
 #  R = sparse_diag(lambda);
 #else

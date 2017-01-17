@@ -20,12 +20,13 @@ H = s.H;
 
 #if s.primal
 #    if strcmp(s.inversion,'chol')
-        iP = iB + H'*(R\H);
+        iR = Diagonal(1./diag(R))
+        iP = iB + H'*(iR * H);
+        #P = CovarIS(iP);
         P = CovarIS(iP);
     
         # Cholesky factor of the inverse of a posteriori
         # error covariance iP
-    @show s.factorize
         if s.factorize
             factorize!(P);
         end

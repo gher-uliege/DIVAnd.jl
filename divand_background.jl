@@ -101,15 +101,7 @@ L = geomean(Ld[Ld .> 0])
 # WE: units length^(neff/2)
 #d = prod(pmnp(find(Ld > 0),:),1)'
 
-@show typeof(pmn)
-@show typeof(pmn[Ld .> 0])
-
 d = .*(pmn[Ld .> 0]...)
-
-@show typeof(d)
-
-@show typeof(1./sqrt(d))
-@show typeof((1./sqrt(d),))
 
 WE = sparse_diag(statevector_pack(sv,(1./sqrt(d),))[:,1])
 
@@ -147,10 +139,11 @@ pmnv[:,find(Ld == 0)] = 1
 # staggered version of norm
 
 for i=1:n
-  S = sparse_stagger(sz,i,iscyclic[i])
-  ma = (S * mask[:] .== 1)
-  d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
-  d = 1./d
+    S = sparse_stagger(sz,i,iscyclic[i])
+    
+    ma = (S * mask[:]) .== 1
+    d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
+    d = 1./d
   s.WEs[i] = sparse_diag(sqrt(d))
 end
 
@@ -158,20 +151,16 @@ end
 
 #s.Dxs = []
 for i=1:n
-  Li2 = Labs[i][:].^2
-
-  S = sparse_stagger(sz,i,iscyclic[i])
-  # mask for staggered variable
-  m = (S * (mask[:] .== 1))
-
-  tmp = sparse_pack(m) * sqrt(S*Li2[:])
-
-    @show i
-    @show size(s.WEs[i])
-    @show size(sparse_diag(tmp))
-
-  s.WEss[i] = sparse_diag(tmp) * s.WEs[i]
-#  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
+    Li2 = Labs[i][:].^2
+    
+    S = sparse_stagger(sz,i,iscyclic[i])
+    
+    # mask for staggered variable
+    m = (S * mask[:]) .== 1
+    
+    tmp = sparse_pack(m) * sqrt(S*Li2[:])
+    s.WEss[i] = sparse_diag(tmp) * s.WEs[i]
+    #  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
 end
 
 # adjust weight of halo points

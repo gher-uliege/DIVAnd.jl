@@ -38,7 +38,7 @@ for i=1:n
   S = sparse_stagger(sz,i,iscyclic[i])
 
   # d = 1 for interfaces surounded by water, zero otherwise
-  d = S * (mask[:] .== 1)
+  d = (S * mask[:]) .== 1
   
   # metric
   for j = 1:n
