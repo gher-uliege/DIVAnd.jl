@@ -1,7 +1,7 @@
 # Testing divand in 2 dimensions with independent verification.
 
 using Base.Test
-using divand
+#using divand
 
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,10),linspace(0,1,10))

@@ -1,8 +1,8 @@
 module divand
 using Interpolations
 using Base.Test
-using PyCall
-using PyPlot
+#using PyCall
+#using PyPlot
 
 type divand_constrain
     yo
@@ -155,12 +155,12 @@ sparse_diag(d) = spdiagm(d)
 
 function sparse_pack(mask)
 
-j = find(mask)
-m = length(j)
-i = collect(1:m)
-s = ones(m)
-n = length(mask)
-H = sparse(i,j,s,m,n)
+    j = find(mask)
+    m = length(j)
+    i = collect(1:m)
+    s = ones(m)
+    n = length(mask)
+    H = sparse(i,j,s,m,n)
 
 end
 
@@ -195,44 +195,48 @@ include("divand_metric.jl");
 
 include("divandrun.jl");
 
+
 include("operators.jl");
 
+
 function test()
-    include("test_covaris.jl");
+    @testset "divand" begin
+        include("test_covaris.jl");
 
-    # not working yet
-    include("test_2dvar_check.jl");
+        
+        include("test_2dvar_check.jl");
+        
+        
+        include("test_sparse_diff.jl");
+        include("test_localize_separable_grid.jl");
+        include("test_statevector.jl");
+        
 
+        x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
+        mask = trues(size(x1))
+        pm = ones(size(x1))/2
+        pn = ones(size(x1))/3
+        nu = ones(size(mask))
+        iscyclic = [false,false]
+        mapindex = []
+        
+        s = divand_operators(mask,(pm,pn),nu,iscyclic,mapindex)
 
-    include("test_sparse_diff.jl");
-    include("test_localize_separable_grid.jl");
-    include("test_statevector.jl");
-
-
-    x1,x2 = ndgrid(2*collect(1:4),3*collect(1:3))
-    mask = trues(size(x1))
-    pm = ones(size(x1))/2
-    pn = ones(size(x1))/3
-    nu = ones(size(mask))
-    iscyclic = [false,false]
-    mapindex = []
-
-    s = divand_operators(mask,(pm,pn),nu,iscyclic,mapindex)
-
-
+    end
+    return nothing
 end
 
 
-function view(lon,lat,S)
-    @pyimport numpy.ma as ma
-    pyma(S) =  pycall(ma.array, Any, S, mask=isnan(S))
-    pcolor(lon,lat,pycall(ma.array, Any, S, mask=isnan(S)))
-    ax = gca()
-    ax[:set_aspect](1.)
-    ax[:set_xlim](minimum(lon[:]),maximum(lon[:]))
-    ax[:set_ylim](minimum(lat[:]),maximum(lat[:]))
-    colorbar(orientation="horizontal")
-end
+# function view(lon,lat,S)
+#     @pyimport numpy.ma as ma
+#     pyma(S) =  pycall(ma.array, Any, S, mask=isnan(S))
+#     pcolor(lon,lat,pycall(ma.array, Any, S, mask=isnan(S)))
+#     ax = gca()
+#     ax[:set_aspect](1.)
+#     ax[:set_xlim](minimum(lon[:]),maximum(lon[:]))
+#     ax[:set_ylim](minimum(lat[:]),maximum(lat[:]))
+#     colorbar(orientation="horizontal")
+# end
 
 function loaddata(filename)
     f = open(filename)
@@ -246,6 +250,6 @@ function loaddata(filename)
 end
 
 export test, sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, divandrun, view, loaddata, divand_metric, distance
+   statevector_init, statevector_pack, statevector_unpack, divandrun, view, loaddata, divand_metric, distance, CovarIS, factorize!
 
 end

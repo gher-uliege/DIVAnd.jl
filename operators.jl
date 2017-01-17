@@ -1,3 +1,4 @@
+
 type CovarIS{T} <: AbstractMatrix{T}
     IS:: AbstractMatrix{T}
     factors
@@ -11,7 +12,7 @@ end
 
 Base.inv{T}(C::CovarIS{T}) = C.IS
 
-Base.size{T}(C::CovarIS{T}) = size(IS)
+Base.size{T}(C::CovarIS{T}) = size(C.IS)
 
 function Base.:*{T}(C::CovarIS{T}, M::AbstractMatrix{Float64}) 
     if C.factors != nothing
@@ -31,8 +32,8 @@ end
 
 
 function Base.getindex{T}(C::CovarIS{T}, i::Int,j::Int)
-    ei = zeros(eltype(C.IS),size(C,1)); ei[i] = 1
-    ej = zeros(eltype(C.IS),size(C,1)); ej[j] = 1
+    ei = zeros(eltype(C),size(C,1)); ei[i] = 1
+    ej = zeros(eltype(C),size(C,1)); ej[j] = 1
 
     return (ej'*(C*ei))[1]
 end
@@ -45,3 +46,4 @@ function factorize!{T}(C::CovarIS{T})
     C.factors = cholfact(Symmetric(C.IS))
 #    C.factors = cholfact(C.IS, Val{true})
 end
+
