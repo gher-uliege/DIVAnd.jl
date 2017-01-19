@@ -1,8 +1,8 @@
 # Solve the variational problem.
-# 
+#
 # fi = divand_solve(s,yo)
 #
-# Derive the analysis based on all contraints included in s and using the 
+# Derive the analysis based on all contraints included in s and using the
 # observations yo
 #
 # Input:
@@ -22,22 +22,22 @@ yo = s.yo;
 
 
 #if s.primal
-#    if strcmp(s.inversion,'chol')    
+#    if strcmp(s.inversion,'chol')
       P = s.P;
       fpi =  P * (H'* (R \ yo[:]));
-#     else        
+#     else
 #       #H = double(H);
 #       HiRyo = H'* (R \ yo(:));
-      
+
 #       fun = @(x) s.iB*x + H'*(R\ (H * x));
-      
-#       if ~s.keepLanczosVectors          
+
+#       if ~s.keepLanczosVectors
 #           [fpi,s.flag,s.relres,s.iter] = pcg(fun,HiRyo,s.tol,s.maxit,s.M1,s.M2);
-          
+
 #           if s.flag ~= 0
 #               warning('divand-noconvergence','pcg did not converge');
 #           end
-          
+
 #       else
 #           #pc = @(x) s.M2 \ (s.M1 \ x);
 #           pc = [];
@@ -50,19 +50,19 @@ yo = s.yo;
 #           s.relres = diag.relres;
 #           s.P = CovarLanczos(Q,T);
 #       end
-#     end        
+#     end
 # else # dual
-#     B = s.B;        
+#     B = s.B;
 #     # fun(x) computes (H B H' + R)*x
-#     fun = @(x) H * (B * (H'*x)) + R*x;    
-    
+#     fun = @(x) H * (B * (H'*x)) + R*x;
+
 #     [tmp,flag,relres,iter] = pcg(fun, yo,s.tol,s.maxit,s.funPC);
-    
+
 #     if (flag ~= 0)
 #         error('divand:pcg', ['Preconditioned conjugate gradients method'...
 #             ' did not converge %d %g %g'],flag,relres,iter);
 #     end
-    
+
 #     fpi = B * (H'*tmp);
 # end
 

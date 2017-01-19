@@ -11,7 +11,7 @@
 #   xi: coordinates of observations*
 #   x: coordinates of grid*
 #   lambda: signal-to-noise ratio of observations
-#   I (optional): fractional indexes of location of observation 
+#   I (optional): fractional indexes of location of observation
 #     within the grid
 #
 # Output:
@@ -28,7 +28,7 @@ function divand_obs(s,xi,x,yo,lambda; I = [])
 
 #xi = cat_cell_array(xi);
 #x = cat_cell_array(x);
-  
+
 mask = s.mask;
 iscyclic = s.iscyclic;
 moddim = s.moddim;
@@ -60,7 +60,7 @@ H = H * sparse_pack(mask)';
 #elseif isvector(lambda)
 #  R = sparse_diag(lambda);
 #else
-#  R = lambda;    
+#  R = lambda;
 #end
 
 #s.out = out;

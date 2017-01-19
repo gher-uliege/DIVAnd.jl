@@ -14,7 +14,7 @@ Base.inv{T}(C::CovarIS{T}) = C.IS
 
 Base.size{T}(C::CovarIS{T}) = size(C.IS)
 
-function Base.:*{T}(C::CovarIS{T}, M::AbstractMatrix{Float64}) 
+function Base.:*{T}(C::CovarIS{T}, M::AbstractMatrix{Float64})
     if C.factors != nothing
         return C.factors \ M
     else
@@ -22,7 +22,7 @@ function Base.:*{T}(C::CovarIS{T}, M::AbstractMatrix{Float64})
     end
 end
 
-function Base.:*{T}(C::CovarIS{T}, M::AbstractVector{Float64}) 
+function Base.:*{T}(C::CovarIS{T}, M::AbstractVector{Float64})
     if C.factors != nothing
         return C.factors \ M
     else

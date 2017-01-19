@@ -140,7 +140,7 @@ pmnv[:,find(Ld == 0)] = 1
 
 for i=1:n
     S = sparse_stagger(sz,i,iscyclic[i])
-    
+
     ma = (S * mask[:]) .== 1
     d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
     d = 1./d
@@ -152,12 +152,12 @@ end
 #s.Dxs = []
 for i=1:n
     Li2 = Labs[i][:].^2
-    
+
     S = sparse_stagger(sz,i,iscyclic[i])
-    
+
     # mask for staggered variable
     m = (S * mask[:]) .== 1
-    
+
     tmp = sparse_pack(m) * sqrt(S*Li2[:])
     s.WEss[i] = sparse_diag(tmp) * s.WEs[i]
     #  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]

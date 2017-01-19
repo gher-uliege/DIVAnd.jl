@@ -17,7 +17,7 @@
 #   var1, var2,...: unpacked variables.
 #
 # Notes:
-# If x is a matrix, then the second dimension is assumed 
+# If x is a matrix, then the second dimension is assumed
 # to represent the different ensemble members. In this case,
 # var1, var2, ... have also an additional trailing dimension.
 
@@ -33,27 +33,27 @@ if ndims(x) == 1
     for i=1:s.nvar
         v = zeros(s.numels_all[i])
         v[:] = fillvalue
-  
+
         ind = find(s.mask[i])
 
         v[ind] = x[s.ind[i]+1:s.ind[i+1]]
-  
+
         #push!(out,reshape(v,([s.size[i]...]...)))
         push!(out,reshape(v,s.size[i]))
     end
 else
     k = size(x,2)
-    
+
     out = []
-    
+
     for i=1:s.nvar
         v = zeros(s.numels_all[i],k)
         v[:] = fillvalue
-  
+
         ind = find(s.mask[i])
-        
+
         v[ind,:] = x[s.ind[i]+1:s.ind[i+1],:]
-        
+
         push!(out,reshape(v,([s.size[i]... k]...)))
     end
 end

@@ -3,7 +3,7 @@
 # [mu,K] = divand_kernel(n,alpha)
 # [mu,K] = divand_kernel(n,alpha,r)
 #
-# Analytical (normalized) kernels for infinite domain in dimension n and for 
+# Analytical (normalized) kernels for infinite domain in dimension n and for
 # coefficients alpha
 # Input
 #   n: number of dimensions
@@ -25,10 +25,10 @@ m = length(alpha)-1;
 K = [];
 if [binomial(m,k) for k = 0:m] == alpha
   # alpha are binomial coefficients
-  
+
   mu,K = divand_kernel_binom(n,m);
 else
-  error("divand:divand_kernel:unsupported_alpha" * "unsupported sequence of alpha")  
+  error("divand:divand_kernel:unsupported_alpha" * "unsupported sequence of alpha")
 end
 
 # if nargin == 3

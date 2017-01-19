@@ -13,7 +13,7 @@
 #   x: vector of the packed elements. The size of this vector is the number of elements of all masks equal to 1.
 #
 # Notes:
-# If var1, var2, ... have an additional trailing dimension, then this dimension is assumed 
+# If var1, var2, ... have an additional trailing dimension, then this dimension is assumed
 # to represent the different ensemble members. In this case x is a matrix and its last dimension
 # is the number of ensemble members.
 
@@ -26,16 +26,16 @@ function statevector_pack(s,vars)
     x = zeros(s.n,k)
 
     for i=1:s.nvar
-        tmp = reshape(vars[i],s.numels_all[i],k)  
-        ind = find(s.mask[i])        
+        tmp = reshape(vars[i],s.numels_all[i],k)
+        ind = find(s.mask[i])
         x[s.ind[i]+1:s.ind[i+1],:] = tmp[ind,:]
     end
-    
+
     return x
 end
-  
 
-  
+
+
 
 
 

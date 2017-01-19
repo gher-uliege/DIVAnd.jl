@@ -1,5 +1,5 @@
 # Create the laplacian operator.
-# 
+#
 # Lap = divand_laplacian(mask,pmn,nu,iscyclic)
 #
 # Form a Laplacian using finite differences
@@ -8,14 +8,14 @@
 # Input:
 #   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
 #         For oceanographic application, this is the land-sea mask.
-#   pmn: scale factor of the grid. 
+#   pmn: scale factor of the grid.
 #   nu: diffusion coefficient of the Laplacian
 #      field of the size mask or cell arrays of fields
 #
 # Output:
-#   Lap: sparce matrix represeting a Laplaciant 
+#   Lap: sparce matrix represeting a Laplaciant
 #
-# 
+#
 function divand_laplacian(mask,pmn,nu,iscyclic)
 
 # number of dimensions
@@ -39,42 +39,42 @@ for i=1:n
 
   # d = 1 for interfaces surounded by water, zero otherwise
   d = (S * mask[:]) .== 1
-  
+
   # metric
   for j = 1:n
     tmp = S * pmn[j][:]
-    
+
     if j==i
       d = d .* tmp
     else
       d = d ./ tmp
-    end  
+    end
   end
-  
-  # nu[i] "diffusion coefficient"  along dimension i  
+
+  # nu[i] "diffusion coefficient"  along dimension i
 
   d = d .* (S * nu[i][:])
 
   # Flux operators D
   # zero at "coastline"
-  
+
   D = sparse_diag(d) * sparse_diff(sz,i,iscyclic[i])
   szt = collect(sz)
-  
+
   if !iscyclic[i]
     # extx: extension operator
     szt[i] = szt[i]+1
     szt = (szt...)
 
     extx = sparse_trim(szt,i)'
-    D = extx * D 
+    D = extx * D
  else
     # shift back one grid cell along dimension i
     D = sparse_shift(sz,i,iscyclic[i])' * D
   end
 
-  # add laplacian along dimension i  
-  DD = DD + sparse_diff(szt,i,iscyclic[i]) * D  
+  # add laplacian along dimension i
+  DD = DD + sparse_diff(szt,i,iscyclic[i]) * D
 end
 
 ivol = .*(pmn...)

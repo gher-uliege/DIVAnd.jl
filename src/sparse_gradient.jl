@@ -7,12 +7,12 @@
 # Input:
 #   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
 #         For oceanographic application, this is the land-sea mask.
-# 
-#   pmn: scale factor of the grid. 
+#
+#   pmn: scale factor of the grid.
 #
 # Output:
-#   Dx1,Dx2,...,Dxn: sparce matrix represeting a gradient along 
-#     different dimensions 
+#   Dx1,Dx2,...,Dxn: sparce matrix represeting a gradient along
+#     different dimensions
 
 function sparse_gradient(mask,pmn,iscyclic = falses(ndims(mask)))
 
@@ -29,7 +29,7 @@ for i=1:n
 
   # mask for staggered variable
   m = (S * mask[:]) .== 1
-  
+
   d = m .* (S * pmn[i][:])
 
   push!(out,sparse_pack(m) * sparse_diag(d) * sparse_diff(sz,i,iscyclic[i]) * H')

@@ -8,7 +8,7 @@
 #   mask: 0 invalid and 1 valid points (n-dimensional array)
 #   I: fractional indexes (2-dim array n by mi, where mi is the number of points to interpolate)
 # Ouput:
-#   H: sparse matrix with interpolation coefficients 
+#   H: sparse matrix with interpolation coefficients
 #   out: true if value outside of grid
 #   outbbox: 1 if outise bouding box
 #   onland: 1 if point touches land (where mask == 0)
@@ -34,8 +34,8 @@ for i = 1:n
   if iscyclic[i]
     # bring I(i,:) inside the interval [1 sz(i)+1[
     # since the i-th dimension is cyclic
-    
-    I[i,:] = mod(I[i,:]-1,sz[i])+1        
+
+    I[i,:] = mod(I[i,:]-1,sz[i])+1
   end
 end
 
@@ -48,13 +48,13 @@ inside = trues(mi)
 for i = 1:n
   if !iscyclic[i]
     # make a range check only for non-cyclic dimension
-  
+
     # handle border cases
     p = find(I[i,:] == sz[i])
     ind[i,p] = sz[i]-1
 
     inside = inside & 1 .<= ind[i,:] .< sz[i]
-  end  
+  end
 end
 
 outbbox = !inside
@@ -77,16 +77,16 @@ ss = ones(2^n, mip)
 
 # loop over all corner of hypercube
 for i=1:2^n
-  
+
   # loop over all dimensions
   for j=1:n
     #bit = bitget(i,j)
     bit = (i >> (j-1)) & 1
 
     # the j-index of the i-th corner has the index ip
-    # this index ip is zero-based    
+    # this index ip is zero-based
     ip = (ind2[j,:] + bit - 1)
-    
+
     # ip must be [0 and sz[j]-1] (zero-based)
     # we know aleady that the point is inside the domain
     # so, if it is outside this range then it is because of periodicity
@@ -95,7 +95,7 @@ for i=1:2^n
     sj[i,:] = sj[i,:] + scale[j] * ip
     ss[i,:] = ss[i,:] .* coeff2[j,:,bit + 1]
   end
-end 
+end
 
 # sj must refer to a valid point or its interpolation coefficient
 # must be zero

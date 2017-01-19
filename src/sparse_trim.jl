@@ -2,7 +2,7 @@
 #
 # T = sparse_trim(sz1,m)
 #
-# Create a sparse operator which trim first and last row (or column) in 
+# Create a sparse operator which trim first and last row (or column) in
 # The field is a "collapsed" matrix of the size sz1.
 #
 # Input:

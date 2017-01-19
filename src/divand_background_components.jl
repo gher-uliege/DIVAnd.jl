@@ -2,8 +2,8 @@
 #
 # [iB_,iB] = divand_background_components(s,alpha)
 #
-# Compute the components of the background error covariance matrix iB_ and 
-# their sum based on alpha (the a-dimensional coefficients for norm, gradient, 
+# Compute the components of the background error covariance matrix iB_ and
+# their sum based on alpha (the a-dimensional coefficients for norm, gradient,
 # laplacian,...).
 
 function divand_background_components(s,alpha)
@@ -22,35 +22,35 @@ iB_[1] =  (1/coeff) * (WE'*WE);
 
 # loop over all derivatives
 
-for j=2:length(alpha)    
+for j=2:length(alpha)
     # exponent of laplacian
     k = Int(floor((j-2)/2))
-        
+
     if mod(j,2) == 0
         # constrain of derivative with uneven order (j-1)
         # (gradient, gradient*laplacian,...)
         # normalized by surface
-                
+
         iB_[j] = spzeros(size(D,1),size(D,1));
-        
+
         for i=1:n
-            Dx = s.WEss[i] * s.Dx[i] * D^k;            
-            #Dx = s.WEs[i] * s.Dxs[i] * D^k;            
+            Dx = s.WEss[i] * s.Dx[i] * D^k;
+            #Dx = s.WEs[i] * s.Dxs[i] * D^k;
             iB_[j] = iB_[j] + Dx'*Dx;
-        end                
+        end
     else
         # constrain of derivative with even order (j-1)
         # (laplacian, biharmonic,...)
-        
+
         # normalize by surface of each cell
         # such that inner produces (i.e. WE'*WE)
         # become integrals
         # WD: units length^(n/2)
-        
+
         WD = WE * D^(k+1);
         iB_[j] = WD'*WD;
     end
-    
+
     iB_[j] = iB_[j]/coeff;
 end
 
@@ -58,7 +58,7 @@ end
 # sum all terms of iB
 # iB is adimentional
 iB = alpha[1] * iB_[1]
-for j=2:length(alpha)    
+for j=2:length(alpha)
   iB = iB + alpha[j] * iB_[j]
 end
 

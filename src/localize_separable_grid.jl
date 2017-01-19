@@ -27,7 +27,7 @@ function localize_separable_grid(xi,mask,x)
     vi = []
     X = []
     I = zeros(n,mi)
-    
+
     for i=1:n
         push!(X,[x[i][(j-1)*stride(x[i],i) + 1] for j in 1:sz[i]])
         push!(vi,collect(1:sz[i]))

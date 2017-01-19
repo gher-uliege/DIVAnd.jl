@@ -5,7 +5,7 @@ mask_u = rand(9,10) .> .5;
 mask_v = rand(10,9) .> .5;
 
 sv = statevector_init((mask,mask_u,mask_v));
-var = rand(10,10); 
+var = rand(10,10);
 var[mask.==0] = 0;
 
 var_u = rand(9,10);

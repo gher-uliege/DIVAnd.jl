@@ -2,7 +2,7 @@
 #
 # function S = sparse_shift(sz1,m,cyclic)
 #
-# Sparse operator shifting a field in the dimension m. The field is a 
+# Sparse operator shifting a field in the dimension m. The field is a
 # "collapsed" matrix of the size sz1.
 #
 # Input:
@@ -31,7 +31,7 @@ one = ones(size(L1))
 
 IJ[m] = IJ[m] + 1
 
-if cyclic    
+if cyclic
     IJ[m] = mod(IJ[m]-1,sz1[m])+1
 end
 

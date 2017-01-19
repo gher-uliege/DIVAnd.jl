@@ -8,7 +8,7 @@
 # Input:
 #   mask1, mask2,...: land-sea mask for variable 1,2,... Sea grid points correspond to one and land grid points to zero.
 #     Every mask can have a different shape.
-# 
+#
 # Output:
 #   s: structure to be used with statevector_pack and statevector_unpack.
 #
@@ -38,12 +38,12 @@ s = statevector(
      length(masks),
      numels,
      [length(_) for _ in masks],
-     [size(_) for _ in masks],  
+     [size(_) for _ in masks],
      ind,
      ind[end]
      )
-                
-                
+
+
 
 # s.nvar = nargin;
 

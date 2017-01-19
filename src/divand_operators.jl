@@ -8,7 +8,7 @@
 # Input:
 #   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
 #         For oceanographic application, this is the land-sea mask.
-#   pmn: scale factor of the grid. 
+#   pmn: scale factor of the grid.
 #   nu: diffusion coefficient of the Laplacian
 #
 # Output:
@@ -32,13 +32,13 @@ sz = size(mask)
 sv = statevector_init((mask,))
 
 if !isempty(mapindex)
-  # mapindex is unpacked and referers to unpacked indices  
-    
+  # mapindex is unpacked and referers to unpacked indices
+
   # range of packed indices
   # land point map to 1, but those points are remove by statevector_pack
   i2 = statevector_unpack(sv,collect(1:sv.n),1)
   mapindex_packed = statevector_pack(sv,(i2[mapindex],))
-  
+
   # applybc*x applies the boundary conditions to x
   i = 1:sv.n
   applybc = sparse(collect(i),mapindex_packed[i],ones(sv.n),sv.n,sv.n)
@@ -47,7 +47,7 @@ if !isempty(mapindex)
   # a interior point maps to itself
   s.isinterior = i .== mapindex_packed[i]
   s.isinterior_unpacked = statevector_unpack(sv,s.isinterior)
-  
+
   s.mapindex_packed = mapindex_packed
 end
 
@@ -61,11 +61,11 @@ WE = sparse_diag(sqrt(d))
 
 for i=1:n
   S = sparse_stagger(sz,i,iscyclic[i])
-  
+
   # mask on staggered grid
   ma = (S * mask[:]) .== 1
   s.mask_stag[i] = ma
-  
+
   #d = sparse_pack(ma) * prod(S * reshape(pmn,length(mask),n),2)
   d = sparse_pack(ma) *  (.*([S*_[:]  for _ in pmn]...))
   d = 1./d
@@ -79,14 +79,14 @@ if !isempty(mapindex)
   WE = sparse_diag(s.isinterior) * WE
 
   for i=1:n
-    S = sparse_stagger(sz,i,iscyclic[i])  
-    s.isinterior_stag[i] =  sparse_pack(s.mask_stag[i]) * S * s.isinterior_unpacked(:)  
-    
+    S = sparse_stagger(sz,i,iscyclic[i])
+    s.isinterior_stag[i] =  sparse_pack(s.mask_stag[i]) * S * s.isinterior_unpacked(:)
+
     # the results of 's.Dx[i] * field' satisfies the bc is field does
     # there is need to reapply the bc on the result
     s.Dx[i] = s.Dx[i] * applybc
   end
-  
+
   s.applybc = applybc
 end
 

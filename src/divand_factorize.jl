@@ -24,13 +24,13 @@ H = s.H;
         iP = iB + H'*(iR * H);
         #P = CovarIS(iP);
         P = CovarIS(iP);
-    
+
         # Cholesky factor of the inverse of a posteriori
         # error covariance iP
         if s.factorize
             factorize!(P);
         end
-        
+
         s.P = P;
 #    else
 #      tic
@@ -42,26 +42,26 @@ H = s.H;
     # s.B = CovarIS(iB);
     # # pre-conditioning function for conjugate gradient
     # s.funPC = [];
-    
+
     # if s.factorize
     #     s.B = factorize(s.B);
-        
+
     #     # iM = inv(H * B * H' + sparse_diag(diag(R)))
     #     # iM * (H * B * H' + R) is identify matrix if R is diagonal
-        
+
     #     M = H * (s.B * H') + sparse_diag(diag(R));
     #     #M = H * (s.B * H') + sparse_diag(sum(R,1));
     #     iM = CovarIS(M);
     #     iM = factorize(iM);
-        
+
     #     # pre-conditioning function for conjugate gradient
     #     s.funPC = @(x) iM*x;
-        
+
     #     if 0
     #         C = H * (s.B * H') + sparse_diag(diag(R));
     #         [RC, q, QC] = chol (C);
     #         s.funPC = @(x) RC' \ (QC*x);
-            
+
     #     end
     # end
 
