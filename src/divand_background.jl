@@ -1,30 +1,29 @@
-# Form the inverse of the background error covariance matrix.
-#
-# s = divand_background(mask,pmn,Labs,alpha,moddim)
-#
-# Form the inverse of the background error covariance matrix with
-# finite-difference operators on a curvilinear grid
-#
-# Input:
-#   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
-#         For oceanographic application, this is the land-sea mask.
-#
-#   pmn: scale factor of the grid.
-#
-#   Labs: correlation length
-#
-#   alpha: a dimensional coefficients for norm, gradient, laplacian,...
-#      alpha is usually [1 2 1].
-#
-#
-# Output:
-#   s: stucture containing
-#   s.iB: inverse of the background error covariance
-#   s.L: spatial average correlation length
-#   s.n: number of dimenions
-#   s.coeff: scaling coefficient such that the background variance
-#     diag(inv(iB)) is one far away from the boundary.
+"""
+Form the inverse of the background error covariance matrix.
 
+s = divand_background(mask,pmn,Labs,alpha,moddim)
+
+Form the inverse of the background error covariance matrix with
+finite-difference operators on a curvilinear grid
+
+# Input:
+* mask: binary mask delimiting the domain. 1 is inside and 0 outside.
+        For oceanographic application, this is the land-sea mask.
+
+* pmn: scale factor of the grid.
+
+* Labs: correlation length
+
+* alpha: a dimensional coefficients for norm, gradient, laplacian,...
+     alpha is usually [1 2 1] in 2 dimensions.
+
+# Output:
+*  s: stucture containing
+    * s.iB: inverse of the background error covariance
+    * s.L: spatial average correlation length
+    * s.n: number of dimenions
+    * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
+"""
 function divand_background(mask,pmn,Labs,alpha,moddim,mapindex = [])
 
 # number of dimensions

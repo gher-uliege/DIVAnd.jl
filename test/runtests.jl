@@ -13,7 +13,7 @@ using Base.Test
     include("test_2dvar_check.jl");
     include("test_3dvar.jl");
 
-
+    # test divand_metric
     lon,lat = ndgrid([0:10;],[0:5;])
     pm,pn = divand_metric(lon,lat)
     @test 111e3 < mean(1./pm) < 112e3
