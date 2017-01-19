@@ -58,7 +58,7 @@ mu = (4*pi)^(n/2) * gamma(m) / gamma(nu);
 K(x) = divand_rbesselk(nu,x);
 
 if nu <= 0
-  warning("divand:nonorm","No normalization possible. Extend parameter alpha.");
+  warn("divand:nonorm","No normalization possible. Extend parameter alpha.");
   mu = 1;
 end
 
