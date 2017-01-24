@@ -20,6 +20,7 @@ H = s.H;
 
 #if s.primal
 #    if strcmp(s.inversion,'chol')
+#TODO: non-diagonal R
         iR = Diagonal(1./diag(R))
         iP = iB + H'*(iR * H);
         #P = CovarIS(iP);

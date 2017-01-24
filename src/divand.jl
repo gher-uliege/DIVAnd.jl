@@ -186,6 +186,7 @@ include("divand_obs.jl");
 include("divand_factorize.jl");
 include("divand_solve.jl");
 include("divand_metric.jl");
+include("divand_constr_advec.jl");
 include("divandrun.jl");
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,

@@ -83,8 +83,6 @@ defined by the coordinates `xi` and the scales factors `pmn`.
     Per default a modified incomplete Cholesky factorization will be used a
     preconditioner.
 
- Note: `velocity` and `constraint` may appear multiple times
-
 # Output:
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
@@ -183,9 +181,8 @@ s.keepLanczosVectors = keepLanczosVectors;
 s = divand_addc(s,divand_obs(s,xi,x,f,lambda,I = fracindex));
 
 # add advection constraint to cost function
-for i=1:length(velocity)
-    #s = divand_advection(s,velocity);
-    s = divand_addc(s,divand_constr_advec(s,velocity[i]));
+if !isempty(velocity)
+    s = divand_addc(s,divand_constr_advec(s,velocity));
 end
 
 # add all additional constrains
@@ -208,19 +205,6 @@ divand_factorize!(s);
 #end
 
 return fi,s
-# varargout{1} = fi;
-
-# if nargout-diagnostics >= 2
-#     err = divand_error(s);
-#     varargout{2} = err;
-# end
-
-# if diagnostics
-#     s.B = CovarIS(s.iB);
-#     [s.Jb,s.Jo,s.Jeof,s.J] = divand_diagnose(s,fi,f);
-#     s.valid = valid;
-#     varargout{nargout} = s;
-# end
 
 end
 
@@ -240,5 +224,3 @@ end
 # this program; if not, see <http://www.gnu.org/licenses/>.
 
 # LocalWords:  fi divand pmn len diag CovarParam vel ceil moddim fracdim
-
-

@@ -11,6 +11,8 @@ using Base.Test
     include("test_statevector.jl");
 
     include("test_2dvar_check.jl");
+    include("test_2dvar_adv.jl");
+
     include("test_3dvar.jl");
 
     # test divand_metric
