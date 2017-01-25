@@ -57,5 +57,16 @@ a2 = C2\b;
 
 
 
+# MatFun
 
+M = randn(10,10)
+MF = MatFun(size(M),x -> M*x,x -> M'*x)
+
+x = randn(size(M,2))
+A = randn(size(M,2),3)
+
+@test size(M) == size(MF)
+@test M*x ≈ MF*x
+@test M'*x ≈ MF'*x
+@test M*A ≈ MF*A
 

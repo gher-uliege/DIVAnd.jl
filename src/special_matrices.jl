@@ -47,3 +47,16 @@ function factorize!{T}(C::CovarIS{T})
 #    C.factors = cholfact(C.IS, Val{true})
 end
 
+# MatFun: a matrix defined by a function representing the matrix product
+
+type MatFun{T}  <: AbstractMatrix{Float64}
+    sz::Tuple{T,T}
+    fun:: Function
+    funt:: Function
+end
+
+Base.size{T}(MF::MatFun{T}) = MF.sz
+Base.:*{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.fun(x)
+Base.:*{T,S}(MF:: MatFun{T}, M::AbstractMatrix{S}) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
+Base.:transpose{T}(MF:: MatFun{T}) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
+Base.Ac_mul_B{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.funt(x)
