@@ -175,6 +175,8 @@ include("special_matrices.jl");
 include("statevector_init.jl");
 include("statevector_pack.jl");
 include("statevector_unpack.jl");
+include("statevector_sub2ind.jl");
+include("statevector_ind2sub.jl");
 
 include("divand_laplacian.jl");
 include("divand_operators.jl");
@@ -188,8 +190,10 @@ include("divand_solve.jl");
 include("divand_metric.jl");
 include("divand_constr_advec.jl");
 include("divandrun.jl");
+include("divand_cpme.jl");
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, divandrun, divand_metric, distance, CovarIS, MatFun, factorize!, divand_kernel
+   statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, 
+   divandrun, divand_metric, distance, CovarIS, MatFun, factorize!, divand_kernel, divand_cpme
 
 end
