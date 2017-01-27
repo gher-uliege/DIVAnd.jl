@@ -4,7 +4,7 @@ Compute a variational analysis of arbitrarily located observations to calculate 
 cpme = divand_cpme(mask,pmn,xi,x,f,len,lambda,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
-the coordinates `x`. The array `fi` represent the interpolated field at the grid
+the coordinates `x`. The array `cpme` represent the error field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Input:
