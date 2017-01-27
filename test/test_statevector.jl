@@ -4,6 +4,12 @@ mask = rand(10,10) .> .5;
 mask_u = rand(9,10) .> .5;
 mask_v = rand(10,9) .> .5;
 
+# a couple of point should always be unmasked
+mask[3,5] = true
+mask_u[4,6] = true
+mask_v[5,7] = true
+
+
 sv = statevector_init((mask,mask_u,mask_v));
 var = rand(10,10);
 var[mask.==0] = 0;
@@ -24,6 +30,19 @@ Ezeta2,Eu2,Ev2 = statevector_unpack(sv,E);
 @test Ezeta2 ≈ var
 @test Eu2 ≈ var_u
 @test Ev2 ≈ var_v
+
+ind = statevector_sub2ind(sv,(1,3,5))
+@test var[3,5] ≈ E[ind]
+@test statevector_ind2sub(sv,ind) == (1,3,5)
+
+
+ind = statevector_sub2ind(sv,(2,4,6))
+@test var_u[4,6] ≈ E[ind]
+@test statevector_ind2sub(sv,ind) == (2,4,6)
+
+ind = statevector_sub2ind(sv,(3,5,7))
+@test var_v[5,7] ≈ E[ind]
+@test statevector_ind2sub(sv,ind) == (3,5,7)
 
 
 
