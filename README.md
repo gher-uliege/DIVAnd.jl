@@ -6,7 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/gher-ulg/divand.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/gher-ulg/divand.jl?branch=master) [![codecov.io](http://codecov.io/github/gher-ulg/divand.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/divand.jl?branch=master)
 
 
-`divand` performs an n-dimensional variational analysis of arbitrarily located observations. Observation will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
+`divand` performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
 
 Please cite this paper as follows if you use `divand` in a publication:
 
@@ -42,7 +42,7 @@ INFO: divand tests passed
 
 # Documentation
 
-The main routine of this toolbox is called `divand` which performs an n-dimensional variational analysis of arbitrarily located observations. Type to following in Julia to view a list of parameters:
+The main routine of this toolbox is called `divand` which performs an n-dimensional variational analysis of arbitrarily located observations. Type the following in Julia to view a list of parameters:
 
 ```julia
 using divand
@@ -58,12 +58,12 @@ If zero is not a valid first guess for your variable (as it is the case for e.g.
 
 ### Additional constraint
 
-An arbitrary number of additional constraint can be included to the cost function which should have the following form:
+An arbitrary number of additional constraints can be included to the cost function which should have the following form:
 
 
 *J*(**x**) = ∑<sub>*i*</sub> (**C**<sub>*i*</sub> **x**  - **z**<sub>*i*</sub>)ᵀ **Q**<sub>*i*</sub><sup>-1</sup> (**C**<sub>*i*</sub> **x** - **z**<sub>*i*</sub>)
 
-For every constrain a structure with the following fields is passed to `divand`:
+For every constrain, a structure with the following fields is passed to `divand`:
 
 * `yo`: the vector **z**<sub>*i*</sub>
 * `H`: the matrix **C**<sub>*i*</sub>
@@ -78,7 +78,7 @@ See the file [divand_simple_example.jl](https://github.com/gher-ulg/divand.jl/bl
 
 ## Determining the parameters
 
-The parameter `lambda` and parameter `len` are crucial for the analysis. `lambda` corresponds to the signal-to-noise ratio (variance of background error over variance of observation error). Therefore, its value depends on how accurate and how representative the observations are. The value of `len` can sometimes be determined by physical arguments.
+The parameter `lambda` and parameter `len` are crucial for the analysis. `lambda` corresponds to the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio) (variance of background error over variance of observation error). Therefore, its value depends on how accurate and how representative the observations are. `len` corresponds to the correlation length and its value of `len` can sometimes be determined by physical arguments.
 One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
 
 1. choose, at random, a relatively small subset of observations (about 5%). This is the validation data set.
@@ -86,8 +86,8 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 3. compare the analysis to your validation data set and compute the RMS difference
 4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
 
-You can repeat all steps with a different validation data set to ensure that the optimal parameters values are robust.
+You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
 
 # Fun
 
-A [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by divand based on these observation is as close as possible to the original field.
+A [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by divand based on these observations is as close as possible to the original field.
