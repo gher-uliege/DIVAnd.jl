@@ -22,6 +22,9 @@ function Base.:*{T}(C::CovarIS{T}, v::AbstractVector{Float64})
     end
 end
 
+Base.:*{T}(C::CovarIS{T}, v::SparseVector{Float64,Int64}) = C*full(v)
+
+
 function A_mul_B{T}(C::CovarIS{T}, M::AbstractMatrix{Float64})
     if C.factors != nothing
         return C.factors \ M
