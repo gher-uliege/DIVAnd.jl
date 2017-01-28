@@ -15,29 +15,39 @@ C2 = inv(full(IS));
 iC = inv(C);
 @test iC ≈ IS
 
-
+# C times a matrix
 b = randn(n,2);
-
 a = C*b;
 a2 = C2*b;
-
 @test a ≈ a2
 
-v = randn(n);
+# C times a matrix tranposed
+b = randn(n,2);
+a = C*b.';
+a2 = C2*b.';
+@test a ≈ a2
 
+# C times a matrix conjugate tranposed
+b = randn(n,2);
+a = C*b';
+a2 = C2*b';
+@test a ≈ a2
+
+# C times a vector
+v = randn(n);
 a = C*v;
 a2 = C2*v;
-
 @test a ≈ a2
 
-
+# inverse of C times a matrix
+b = randn(n,2);
 a = C\b;
 a2 = C2\b;
 
 @test a ≈ a2
 
 
-#factorize!(C);
+factorize!(C);
 
 a = C*b;
 a2 = C2*b;
