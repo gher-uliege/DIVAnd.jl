@@ -27,15 +27,18 @@ lambda = 20;
 #,err,s
 va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
 
-Z = randn(size(s.H,1),3);
+Z = randn(size(s.H,1),size(s.H,1));
 
-WW=s.P * (s.H'* (s.R \ Z)); ZtHKZ2 =  Z'*s.H*WW;
 ZtHKZ = Z' * (s.H*(s.P * (s.H'* (s.R \ Z))));
-
-
-@time WW=s.P * (s.H'* (s.R \ Z)); ZtHKZ2 =  Z'*s.H*WW;
+WW=s.P * (s.H'* (s.R \ Z)); ZtHKZ2 =  Z'*s.H*WW;
 
 @time ZtHKZ = Z'*s.H*(s.P * (s.H'* (s.R \ Z)));
+
+@time begin
+    WW=s.P * (s.H'* (s.R \ Z));
+    ZtHKZ2 =  Z'*s.H*WW;
+end
+
 
 
 
