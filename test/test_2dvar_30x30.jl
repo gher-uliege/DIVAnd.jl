@@ -27,7 +27,8 @@ lambda = 20;
 #,err,s
 va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
 
-Z = randn(size(s.H,1),size(s.H,1));
+#Z = randn(size(s.H,1),size(s.H,1));
+Z = eye(size(s.H,1));
 
 ZtHKZ = Z' * (s.H*(s.P * (s.H'* (s.R \ Z))));
 WW=s.P * (s.H'* (s.R \ Z)); ZtHKZ2 =  Z'*s.H*WW;

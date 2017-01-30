@@ -23,9 +23,13 @@ Z=eye(size(R)[1],size(R)[1]);
 # to be replaced later exploiting the factors of P ?
 # 
    P = s.P;
-   WW=P * (H'* (R \ Z));
-   ZtHKZ=  Z'*H*WW;
-   diagHK=diag(ZtHKZ);
+#   WW=P * (H'* (R \ Z));
+#   ZtHKZ =  Z'*H*WW;
+
+# parenthesis to force the order of operations
+
+ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
+    diagHK = diag(ZtHKZ);
 return diagHK
 
 end
