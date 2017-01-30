@@ -25,7 +25,6 @@ Z=eye(size(R)[1],size(R)[1]);
    P = s.P;
    WW=P * (H'* (R \ Z));
    ZtHKZ=  Z'*H*WW;
-# Now take average of the nr different estimates
    diagHK=diag(ZtHKZ);
 return diagHK
 
