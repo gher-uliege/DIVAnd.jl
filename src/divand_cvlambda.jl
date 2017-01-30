@@ -47,13 +47,16 @@ if !any(mask[:])
 end
 # For the moment, hardwired values
 switchvalue=100;
-factors=[0.2 0.5 1 2 5]; 
+worder=1.5;
+nsamp=2;
+logfactors=linspace(-worder,worder,2*nsamp+1);
+factors=10.^logfactors;
 
 cvvalues=0.*factors;
 
-for i=1:size(factors)[2]
+for i=1:size(factors)[1]
 
-fi,s =  divandrun(mask,pmn,xi,x,f,len,lambda.*factors[1,i]; otherargs...);
+fi,s =  divandrun(mask,pmn,xi,x,f,len,lambda.*factors[i]; otherargs...);
 residual=divand_residual(s,fi);
 
 if size(f)[1]<switchvalue
@@ -62,10 +65,34 @@ if size(f)[1]<switchvalue
    cvval=divand_cvestimator(s,residual./(1-divand_GCVKii(s)));	 
 end
 
-cvvalues[1,i]=cvval;
+cvvalues[i]=cvval;
 
 end
-return cvvalues, factors
+# Now interpolate and find minimum using 1D divand
+
+laminter=linspace(-worder,worder,101)
+
+maskcv = trues(size(laminter))
+
+# this problem has a simple cartesian metric
+# pm is the inverse of the resolution along the 1st dimension
+# pn is the inverse of the resolution along the 2nd dimension
+
+pmcv = ones(size(laminter)) / (laminter[2]-laminter[1])
+
+
+# correlation length
+lenin = 0.1;
+
+# signal-to-noise ratio
+lambdain = 10;
+
+# fi is the interpolated field
+cvinter,scv = divandrun(maskcv,(pmcv),(laminter),(logfactors),cvvalues,lenin,lambdain)
+
+posbestfactor=findmin(cvinter)[2]
+bestfactor=10^laminter(posbestfactor)
+return bestfactor, cvvalues, factors
 
 end
 
