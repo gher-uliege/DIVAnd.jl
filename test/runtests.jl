@@ -10,6 +10,8 @@ using Base.Test
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
 
+    include("test_1dvar.jl");
+
     include("test_2dvar_check.jl");
     include("test_2dvar_adv.jl");
 
