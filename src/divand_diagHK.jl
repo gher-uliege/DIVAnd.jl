@@ -1,5 +1,5 @@
 """
-Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysisand it structure s. Warning: might take some time
+Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time
 
 diagonalterms = divand_diagHK(s);
 
@@ -8,7 +8,7 @@ diagonalterms = divand_diagHK(s);
 
 function divand_diagHK(s)
 
-#the second, optional argument is the number of random vectors nr used for the estimate
+#
 
 
 H = s.H;
