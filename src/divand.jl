@@ -131,6 +131,12 @@ function ndgrid_fill(a, v, s, snext)
     end
 end
 
+# type stable
+function ndgrid{T}(v1::AbstractVector{T},v2::AbstractVector{T})
+    return ([x1 for x1 in v1, x2 in v2],
+            [x2 for x1 in v1, x2 in v2])
+end
+
 
 function ndgrid{T}(vs::AbstractVector{T}...)
     n = length(vs)
@@ -148,7 +154,7 @@ function ndgrid{T}(vs::AbstractVector{T}...)
 end
 
 
-sparse_diag(d) = spdiagm(d)
+sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
 
 
 function sparse_pack(mask)

@@ -11,7 +11,7 @@
 #   cyclic: true if domain is cyclic along dimension m. False is the
 #   default value
 
-function sparse_stagger(sz1,m,cyclic = false)
+function sparse_stagger(sz1,m,cyclic = false)::SparseMatrixCSC{Float64,Int64}
 
 n1 = prod(sz1)
 

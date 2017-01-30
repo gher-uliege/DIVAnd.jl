@@ -18,29 +18,52 @@ n1 = prod(sz1)
 # make a copy and convert tuple to array
 sz2 = collect(sz1)
 
-tmp = sz2[m]-1
-
 if !cyclic
     sz2[m] = sz2[m]-1
 end
 
 n2 = prod(sz2)
+n2i = Int(n2)
 n = length(sz1)
 
-vi = [collect(1:sz2[i]) for i = 1:n]
-IJ = [_[:] for _ in ndgrid(vi...)]
 
-L1 = 1:n2
-L2 = sub2ind(sz1,IJ...)
+strides1 = [1,cumprod(collect(sz1))[1:end-1]...]
+
+L2 = Array{Int64,1}(n2)
+
+
+# L2 = [i for i = 1:n1 if ind2sub(sz1,i)[m] != sz1[m] ]
+# L2o = L2 + strides1[m]
+
+
+vi = [collect(1:sz2[i]) for i = 1:n]
+#IJ = [_[:] for _ in ndgrid(vi...)]
+
+#IJ = [Array{Int64,1}(n2) for i = 1:n]
+IJ = [zeros(Int64,Int(n2)) for i = 1:n]
+
+    s = 1
+    for i=1:n
+        v = vi[i]
+        snext = s*sz2[i]
+        ndgrid_fill(IJ[i], v, s, snext)
+        s = snext
+    end
+
+
+
+#L1 = [1:Int(n2);]
+L1 = [1:n2i;]
+L2 = sub2ind(sz1,IJ...)::Array{Int64,1}
 one = ones(size(L1))
 
 IJ[m] = IJ[m] + 1
 
 if cyclic
-    IJ[m] = mod(IJ[m]-1,sz1[m])+1
+     IJ[m] = mod(IJ[m]-1,sz1[m])+1
 end
 
-L2o = sub2ind(sz1,IJ...)
+L2o = sub2ind(sz1,IJ...)::Array{Int64,1}
 
 sparse(
     [L1;     L1;  ],

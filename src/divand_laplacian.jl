@@ -16,29 +16,40 @@
 #   Lap: sparce matrix represeting a Laplaciant
 #
 #
-function divand_laplacian(mask,pmn,nu,iscyclic)
 
-# number of dimensions
-n = ndims(mask)
+function divand_laplacian(mask,pmn,nu::Float64,iscyclic)
+
+    n = ndims(mask)
+    nu_ = ([nu*ones(mask) for i = 1:n]...)
+
+    return divand_laplacian(mask,pmn,nu_,iscyclic)
+
+end
+function divand_laplacian{n}(mask,pmn,nu::Array{Float64,n},iscyclic)
+    nu_ = ([nu for i = 1:n]...)
+
+    return divand_laplacian(mask,pmn,nu_,iscyclic)
+end
+
+function divand_laplacian{n}(mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic)
+
 sz = size(mask)
 
-if !isa(nu,Tuple)
-  # assume diffusion is the same along all dimensions
-  nu = ([nu for i = 1:n]...)
-end
+# default float type
 
 # extraction operator of sea points
 H = sparse_pack(mask)
 sz = size(mask)
 
-DD = sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([]),prod(sz),prod(sz))
+DD = spzeros(prod(sz),prod(sz))
 
 for i=1:n
   # operator for staggering in dimension i
   S = sparse_stagger(sz,i,iscyclic[i])
 
   # d = 1 for interfaces surounded by water, zero otherwise
-  d = (S * mask[:]) .== 1
+  d = zeros(Float64,size(S,1))
+  d[(S * mask[:]) .== 1] = 1.
 
   # metric
   for j = 1:n
@@ -59,22 +70,25 @@ for i=1:n
   # zero at "coastline"
 
   D = sparse_diag(d) * sparse_diff(sz,i,iscyclic[i])
-  szt = collect(sz)
 
   if !iscyclic[i]
     # extx: extension operator
-    szt[i] = szt[i]+1
-    szt = (szt...)
+    szt = sz
+    tmp_szt = collect(szt)
+    tmp_szt[i] = tmp_szt[i]+1
+    szt = (tmp_szt...)
+    #szt = ntuple(i -> ifelse(i == 1, sz[i]+1, sz[i]),n)
 
     extx = sparse_trim(szt,i)'
     D = extx * D
+    DD = DD + sparse_diff(szt,i,iscyclic[i]) * D
  else
     # shift back one grid cell along dimension i
     D = sparse_shift(sz,i,iscyclic[i])' * D
+    DD = DD + sparse_diff(sz,i,iscyclic[i]) * D
   end
 
   # add laplacian along dimension i
-  DD = DD + sparse_diff(szt,i,iscyclic[i]) * D
 end
 
 ivol = .*(pmn...)
