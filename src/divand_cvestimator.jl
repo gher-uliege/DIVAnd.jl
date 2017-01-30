@@ -1,16 +1,17 @@
 """
-Computes the residual yo- H xa at the data locations using the analysis on the grid fi and the solution structure s
+Computes the cross validation estimator (d-hat(d))' inv(R) (d-hat(d)) / ( 1' inv(R) 1)
+where the hat value is the analysis not using a data point
 
-dataresidual = divand_residual(s,fi);
+theta = divand_cvestimator(s,residual);
 
 """
 
 
-function divand_residual(s,fi)
+function divand_cvestimator(s,residual)
 
 
 
-return squeeze(s.yo-s.H*statevector_pack(s.sv,(fi,)),2)
+return (residual'*(s.R\ residual))/ (ones(size(residual))'*(s.R\ ones(size(residual))))
 
 end
 
