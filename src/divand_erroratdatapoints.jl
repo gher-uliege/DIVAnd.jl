@@ -1,17 +1,16 @@
 """
-Computes the cross validation estimator (d-hat(d))' inv(R) (d-hat(d)) / ( 1' inv(R) 1)
-where the hat value is the analysis not using a data point
+Computes the residual yo- H xa at the data locations using the analysis on the grid fi and the solution structure s
 
-theta = divand_cvestimator(s,residual);
+errorvariance = divand_erroratdatapoints(s);
 
 """
 
 
-function divand_cvestimator(s,residual)
+function divand_erroratdatapoints(s)
 
 
 
-return reshape( (residual'*(s.R\ residual))/ (ones(size(residual))'*(s.R\ ones(size(residual)))),1)[1]
+return diagMtCM(s.P,s.H')
 
 end
 

@@ -194,10 +194,11 @@ include("divand_GCVKii.jl");
 include("divand_diagHK.jl");
 include("divand_residual.jl");
 include("divand_cvestimator.jl");
-
+include("divand_erroratdatapoints.jl");
+include("divand_cvlambda.jl");
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
    statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_GCVKii, divand_diagHK, diagMtCM, diagLtCM, divand_residual,
-   divand_cvestimator
+   divand_cvestimator, divand_erroratdatapoints, divand_cvlambda
 
 end
