@@ -28,7 +28,8 @@ Z=eye(size(R)[1],size(R)[1]);
 
 # parenthesis to force the order of operations
 
-ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
+#ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
+ZtHKZ =   (H * (P * (H' * (R \ Z))));
     diagHK = diag(ZtHKZ);
 return diagHK
 

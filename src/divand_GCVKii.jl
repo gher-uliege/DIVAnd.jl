@@ -23,7 +23,7 @@ Z=randn(size(R)[1],nr);
 
    P = s.P;
    WW=P * (H'* (R \ Z));
-   ZtHKZ=  Z'*H*WW;
+   ZtHKZ=  Z'*(H*WW);
    ZtZ  =  Z'*Z;
 # Now take average of the nr different estimates
    Kii=mean(diag(ZtHKZ)./diag(ZtZ));
