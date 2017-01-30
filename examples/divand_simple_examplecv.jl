@@ -33,9 +33,9 @@ len = 0.1;
 lambda = 1;
 
 # fi is the interpolated field
-bestfact,a,b = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda)
+bestfact,a,b,finecv,fineloglam = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda)
 
-plot(b,a,".")
+plot(log10(b),a,".",fineloglam,finecv,"-",log10(bestfact),0,"o")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

@@ -49,7 +49,7 @@ end
 switchvalue=100;
 worder=1.5;
 nsamp=2;
-logfactors=linspace(-worder,worder,2*nsamp+1);
+logfactors=collect(linspace(-worder,worder,2*nsamp+1));
 factors=10.^logfactors;
 
 cvvalues=0.*factors;
@@ -70,7 +70,7 @@ cvvalues[i]=cvval;
 end
 # Now interpolate and find minimum using 1D divand
 
-laminter=linspace(-worder,worder,101)
+laminter=collect(linspace(-worder*1.1,1.1*worder,101))
 
 maskcv = trues(size(laminter))
 
@@ -82,17 +82,17 @@ pmcv = ones(size(laminter)) / (laminter[2]-laminter[1])
 
 
 # correlation length
-lenin = 0.1;
+lenin = 1;
 
 # signal-to-noise ratio
 lambdain = 10;
 
 # fi is the interpolated field
-cvinter,scv = divandrun(maskcv,(pmcv),(laminter),(logfactors),cvvalues,lenin,lambdain)
+cvinter,scv = divandrun(maskcv,(pmcv,),(laminter,),(logfactors,),cvvalues,lenin,lambdain)
 
 posbestfactor=findmin(cvinter)[2]
-bestfactor=10^laminter(posbestfactor)
-return bestfactor, cvvalues, factors
+bestfactor=10^laminter[posbestfactor]
+return bestfactor, cvvalues, factors,cvinter,laminter
 
 end
 

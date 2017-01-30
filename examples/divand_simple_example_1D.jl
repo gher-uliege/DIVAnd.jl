@@ -22,7 +22,7 @@ mask = trues(size(xi));
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(1,size(xi)[1]) / (xi[2]-xi[1]);
+pm = ones(size(xi)) / (xi[2]-xi[1]);
 
 
 # correlation length
@@ -32,9 +32,9 @@ len = 0.1;
 lambda = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,pm,xi,x,f,len,lambda);
+fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,lambda);
 
-plot(x,fi,'.')
+plot(xi,fi,".")
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
