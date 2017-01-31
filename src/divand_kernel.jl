@@ -28,7 +28,8 @@ if [binomial(m,k) for k = 0:m] == alpha
 
   mu,K = divand_kernel_binom(n,m);
 else
-  error("divand:divand_kernel:unsupported_alpha" * "unsupported sequence of alpha")
+  # unsupported sequence of alpha
+  throw(DomainError())
 end
 
 # if nargin == 3
