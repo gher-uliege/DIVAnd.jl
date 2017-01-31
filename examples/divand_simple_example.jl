@@ -5,8 +5,8 @@ using divand
 using PyPlot
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
+x = rand(75);
+y = rand(75);
 f = sin(x*6) .* cos(y*6);
 
 # final grid
@@ -16,14 +16,14 @@ xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
 fref = sin(xi*6) .* cos(yi*6);
 
 # all points are valid points
-mask = trues(size(xi));
+mask = trues(xi);
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+pm = ones(xi) / (xi[2,1]-xi[1,1]);
+pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 0.1;
