@@ -1,21 +1,23 @@
-# Create the laplacian operator.
-#
-# Lap = divand_laplacian(mask,pmn,nu,iscyclic)
-#
-# Form a Laplacian using finite differences
-# assumes that gradient is zero at "coastline"
-#
-# Input:
-#   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
-#         For oceanographic application, this is the land-sea mask.
-#   pmn: scale factor of the grid.
-#   nu: diffusion coefficient of the Laplacian
-#      field of the size mask or cell arrays of fields
-#
-# Output:
-#   Lap: sparce matrix represeting a Laplaciant
-#
-#
+
+"""
+ Create the laplacian operator.
+
+ Lap = divand_laplacian(mask,pmn,nu,iscyclic)
+
+ Form a Laplacian using finite differences
+ assumes that gradient is zero at "coastline"
+
+ Input:
+   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
+         For oceanographic application, this is the land-sea mask.
+   pmn: scale factor of the grid.
+   nu: diffusion coefficient of the Laplacian
+      field of the size mask or cell arrays of fields
+
+ Output:
+   Lap: sparce matrix represeting a Laplacian
+
+"""
 
 function divand_laplacian(mask,pmn,nu::Float64,iscyclic)
 
@@ -31,7 +33,7 @@ function divand_laplacian{n}(mask,pmn,nu::Array{Float64,n},iscyclic)
     return divand_laplacian(mask,pmn,nu_,iscyclic)
 end
 
-function divand_laplacian{n}(mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic)
+function divand_laplacian{n}(mask,pmn,nu::NTuple{n,Array{Float64,n}},iscyclic)
 
 sz = size(mask)
 
@@ -76,8 +78,8 @@ for i=1:n
     szt = sz
     tmp_szt = collect(szt)
     tmp_szt[i] = tmp_szt[i]+1
-    szt = (tmp_szt...)
-    #szt = ntuple(i -> ifelse(i == 1, sz[i]+1, sz[i]),n)
+    szt = (tmp_szt...)::NTuple{n,Int}
+    #szt = ntuple(j -> ifelse(j == tmpi, sz[j]+1, sz[j]),n)::NTuple{n,Int64}
 
     extx = sparse_trim(szt,i)'
     D = extx * D
@@ -103,7 +105,7 @@ Lap = H * DD * H'
 
 end
 
-# Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

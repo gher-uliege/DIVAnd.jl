@@ -1,5 +1,5 @@
 
-type statevector
+immutable statevector
     mask
     nvar
     numels
