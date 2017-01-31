@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations to calculate an estimate of the optimal value of lambda
 
-cvvalues,factors = divand_cvlambda(mask,pmn,xi,x,f,len,lambda,...);
+bestfactor,cvvalues,factors, cvinter,laminter = divand_cvlambda(mask,pmn,xi,x,f,len,lambda,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The output `factors` represent multipliction factors applied to lambda which have been tested and the cvvalues the corresponding cross validation values.
@@ -35,6 +35,20 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 
 # Optional input arguments specified as keyword arguments also as for divand
+
+
+# Output:
+
+* `bestfactor`: best estimate of the multipliocation factor to apply to lambda
+
+* `cvvales` : the cross validation values calculated 
+
+* `factors` : the tested multiplication factors
+
+* `cvinter` : interpolated cv values for final optimisation 
+
+* `laminter` : values of the factors at which the interpolation was done (in log scale)
+
 """
 
 

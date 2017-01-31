@@ -1,6 +1,9 @@
 """
 Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysisand it structure s
 
+Only using real data locations
+
+
 Kii = divand_GCVKiiobs(s);
 
 """

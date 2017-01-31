@@ -31,6 +31,11 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 
 # Optional input arguments specified as keyword arguments also as for divand
+
+
+# Output:
+
+* `cpme`: the clever poor mans error
 """
 
 
@@ -52,6 +57,7 @@ return cpme
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

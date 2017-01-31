@@ -1,5 +1,5 @@
 """
-Computes the residual yo- H xa at the data locations using the analysis on the grid fi and the solution structure s
+Computes the error at the real data locations using the analysis structure s
 
 errorvariance = divand_erroratdatapoints(s);
 
@@ -10,11 +10,12 @@ function divand_erroratdatapoints(s)
 
 
 
-return diagMtCM(s.P,s.H')
+return diagMtCM(s.P,s.obsconstrain.H')
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
