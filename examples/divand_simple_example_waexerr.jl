@@ -6,8 +6,8 @@ using PyPlot
 # using ndgrid
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
+x = rand(75);
+y = rand(75);
 
 #x = rand(10,1);
 #y = rand(10,1);
@@ -40,9 +40,11 @@ lambda = 1;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
 #errorscale=1 
 # fi is the interpolated field
-a,b,myerr,bjmb=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+@time a,b,myerr,bjmb,xn,xin,randindexes=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
-exerr=reshape(diag(s.P),jmsize,jmsize);
+
+@time exerr=reshape(diag(s.P),jmsize,jmsize);
 
 # plotting of results
 subplot(1,2,1);

@@ -101,8 +101,10 @@ end
 
 
 # add npongrind fake points onto the grid with zero value and very high R value
-
-
+xfake=x;
+#for i=1:n
+#xfake[i]=append!(x[i], xi[i][randindexes[i,:]])
+#end
 
 # Make an analysis with those fake points and very low snr to get B at those locations 
 
@@ -125,7 +127,7 @@ m = Int(ceil(1+n/2))
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
 
-Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,10; alpha=alpha )#), otherargs...)
+Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,10)#; alpha=alpha )#), otherargs...)
 
 # Now do the same with normal snr to get real error at the "data" points
 lambdafake=lambda
@@ -148,7 +150,7 @@ aexerr=Bjmb-f1;
 
 # Provide the error field, the background field for additional scaling and the analysis itself
 
-return x,randindexes,aexerr,Bjmb
+return npongrid,randindexes,aexerr,Bjmb,x,xi,randindexes
 
 #return aexerr,berr,fi,s
 

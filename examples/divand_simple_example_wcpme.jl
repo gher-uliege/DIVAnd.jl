@@ -6,11 +6,11 @@ using PyPlot
 # using ndgrid
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
+x = rand(75);
+y = rand(75);
 
-x = rand(10,1);
-y = rand(10,1);
+x = rand(10);
+y = rand(10);
 
 jmsize=120
 
