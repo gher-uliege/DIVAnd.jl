@@ -43,6 +43,8 @@ type divand_struct
     R
     H
     P
+    obsout
+    obsconstrain
 
     function divand_struct(mask)
         n = ndims(mask)
@@ -86,6 +88,8 @@ type divand_struct
         inversion = :chol
         keepLanczosVectors = false
 
+        obsout = Array{Bool,1}()
+        obsconstrain = divand_constrain([],[],[])
 
         new(n,
             neff,
@@ -120,7 +124,9 @@ type divand_struct
             yo,
             R,
             H,
-            P
+            P,
+            obsout,
+            obsconstrain
             )
     end
 end
