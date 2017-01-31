@@ -42,6 +42,7 @@ end
 scale = strides(mask)
 
 # integer index
+#ind = floor.(Int64,I) for julia 0.6
 ind = floor(Int64,I)
 inside = trues(mi)
 
@@ -90,7 +91,7 @@ for i=1:2^n
     # ip must be [0 and sz[j]-1] (zero-based)
     # we know aleady that the point is inside the domain
     # so, if it is outside this range then it is because of periodicity
-    ip = mod(ip,sz[j])
+    ip = mod.(ip,sz[j])
 
     sj[i,:] = sj[i,:] + scale[j] * ip
     ss[i,:] = ss[i,:] .* coeff2[j,:,bit + 1]

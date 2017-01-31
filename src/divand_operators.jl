@@ -57,7 +57,7 @@ D = divand_laplacian(mask,pmn,nu,iscyclic)
 
 d = statevector_pack(sv,(1./( .*(pmn...)),))
 d = d[:,1]
-WE = sparse_diag(sqrt(d))
+WE = sparse_diag(sqrt.(d))
 
 for i=1:n
   S = sparse_stagger(sz,i,iscyclic[i])
@@ -69,7 +69,7 @@ for i=1:n
   #d = sparse_pack(ma) * prod(S * reshape(pmn,length(mask),n),2)
   d = sparse_pack(ma) *  (.*([S*_[:]  for _ in pmn]...))
   d = 1./d
-  s.WEs[i] = sparse_diag(sqrt(d))
+  s.WEs[i] = sparse_diag(sqrt.(d))
 end
 
 s.Dx = sparse_gradient(mask,pmn,iscyclic)
