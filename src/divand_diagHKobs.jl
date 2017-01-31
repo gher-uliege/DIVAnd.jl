@@ -1,24 +1,44 @@
 """
-Computes the cross validation estimator (d-hat(d))' inv(R) (d-hat(d)) / ( 1' inv(R) 1)
-where the hat value is the analysis not using a data point
+Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time
 
-theta = divand_cvestimator(s,residual);
+This version only uses the real data (not those related to additional constraints)
+
+diagonalterms = divand_diagHKobs(s);
 
 """
 
 
-function divand_cvestimator(s,residual)
+function divand_diagHKobs(s)
 
-#Corrected to take into account only points in domain
+#
 
 
-v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
-v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
-return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
+H = s.obsconstrain.H;
+R = s.obsconstrain.R;
+
+
+
+Z=eye(size(R)[1],size(R)[1]);
+
+
+
+# to be replaced later exploiting the factors of P ?
+# 
+   P = s.P;
+#   WW=P * (H'* (R \ Z));
+#   ZtHKZ =  Z'*H*WW;
+
+# parenthesis to force the order of operations
+
+#ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
+ZtHKZ =   (H * (P * (H' * (R \ Z))));
+    diagHK = diag(ZtHKZ);
+return diagHK
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

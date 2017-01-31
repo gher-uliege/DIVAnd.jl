@@ -4,8 +4,8 @@
 using divand
 using PyPlot
 
-# observations
-x = rand(5);
+# observations with points outside
+x = -1+3*rand(10);
 f = sin(x*6) ;
 
 # final grid

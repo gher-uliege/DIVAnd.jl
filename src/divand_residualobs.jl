@@ -1,24 +1,21 @@
 """
-Computes the cross validation estimator (d-hat(d))' inv(R) (d-hat(d)) / ( 1' inv(R) 1)
-where the hat value is the analysis not using a data point
+Computes the residual yo- H xa  only at real data points using the analysis on the grid fi and the solution structure s
 
-theta = divand_cvestimator(s,residual);
+dataresidual = divand_residualobs(s,fi);
 
 """
 
 
-function divand_cvestimator(s,residual)
-
-#Corrected to take into account only points in domain
+function divand_residualobs(s,fi)
 
 
-v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
-v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
-return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
+
+return squeeze(s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,)),2)
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

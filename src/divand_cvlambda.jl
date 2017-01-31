@@ -49,20 +49,26 @@ end
 switchvalue=100;
 worder=1.5;
 nsamp=2;
+
+# sample multiplication factor to optimise in log space
 logfactors=collect(linspace(-worder,worder,2*nsamp+1));
 factors=10.^logfactors;
-
 cvvalues=0.*factors;
+
+
+
 
 for i=1:size(factors)[1]
 
 fi,s =  divandrun(mask,pmn,xi,x,f,len,lambda.*factors[i]; otherargs...);
-residual=divand_residual(s,fi);
+residual=divand_residualobs(s,fi);
+nrealdata=sum(1-s.obsout);
 
-if size(f)[1]<switchvalue
-   cvval=divand_cvestimator(s,residual./(1-divand_diagHK(s)));
+
+if nrealdata<switchvalue
+   cvval=divand_cvestimator(s,residual./(1-divand_diagHKobs(s)));
          else
-   cvval=divand_cvestimator(s,residual./(1-divand_GCVKii(s)));	 
+   cvval=divand_cvestimator(s,residual./(1-divand_GCVKiiobs(s)));	 
 end
 
 cvvalues[i]=cvval;
@@ -82,7 +88,7 @@ pmcv = ones(size(laminter)) / (laminter[2]-laminter[1])
 
 
 # correlation length
-lenin = 1;
+lenin = worder;
 
 # signal-to-noise ratio
 lambdain = 10;
@@ -97,6 +103,7 @@ return bestfactor, cvvalues, factors,cvinter,laminter
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

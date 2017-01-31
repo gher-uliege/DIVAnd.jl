@@ -1,24 +1,47 @@
 """
-Computes the cross validation estimator (d-hat(d))' inv(R) (d-hat(d)) / ( 1' inv(R) 1)
-where the hat value is the analysis not using a data point
+Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysisand it structure s
 
-theta = divand_cvestimator(s,residual);
+Kii = divand_GCVKiiobs(s);
 
 """
 
 
-function divand_cvestimator(s,residual)
+function divand_GCVKiiobs(s,nr=5)
 
-#Corrected to take into account only points in domain
+#the second, optional argument is the number of random vectors nr used for the estimate
 
 
-v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
-v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
-return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
+H = s.obsconstrain.H;
+R = s.obsconstrain.R;
+
+
+
+Z=randn(size(R)[1],nr);
+
+
+
+
+   P = s.P;
+   WW=P * (H'* (R \ Z));
+   ZtHKZ=  Z'*(H*WW);
+   ZtZ  =  Z'*Z;
+
+# correction for points out of the domain:
+   nrealdata=sum(1-s.obsout);
+   ndata=size(s.obsout)[1];
+   if nrealdata==0
+     Kii=0.0;
+	          else
+     factorc=ndata/nrealdata;
+# Now take average of the nr different estimates, 
+     Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
+   end
+return Kii
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
