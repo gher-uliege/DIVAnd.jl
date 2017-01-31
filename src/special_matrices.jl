@@ -61,6 +61,25 @@ function factorize!{T}(C::CovarIS{T})
 #    C.factors = cholfact(C.IS, Val{true})
 end
 
+
+function diagMtCM{T}(C::CovarIS{T}, M::AbstractMatrix{Float64})
+    if C.factors != nothing
+        return squeeze(sum((abs(C.factors[:PtL]\M)).^2,1),1)
+    else
+        return diag(M'*(C.IS \ M))
+    end
+end
+
+function diagLtCM{T}(L::AbstractMatrix{Float64}, C::CovarIS{T}, M::AbstractMatrix{Float64})
+    if C.factors != nothing
+        return squeeze(sum((C.factors[:PtL]\M).*(C.factors[:PtL]\L),1),1)
+    else
+        return diag(L'*(C.IS \ M))
+    end
+end
+
+
+
 # MatFun: a matrix defined by a function representing the matrix product
 
 type MatFun{T}  <: AbstractMatrix{Float64}

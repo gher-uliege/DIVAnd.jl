@@ -64,8 +64,10 @@ H = H * sparse_pack(mask)';
 #end
 
 #s.out = out;
+s.obsout = out;
+s.obsconstrain = divand_constrain(yo,R,H)
 
-return divand_constrain(yo,R,H)
+return s.obsconstrain
 end
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

@@ -5,9 +5,10 @@ using divand
 using PyPlot
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
+x = rand(175,1);
+y = rand(175,1);
 f = sin(x*6) .* cos(y*6);
+f=f+randn(175,1);
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
@@ -32,22 +33,9 @@ len = 0.1;
 lambda = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+bestfact,a,b,finecv,fineloglam = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda)
 
-# plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,fref);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
-
-subplot(1,2,2);
-pcolor(xi,yi,fi);
-colorbar()
-clim(-1,1)
-title("Interpolated field");
-
-savefig("divand_simple_example.png")
+plot(log10(b),a,".",fineloglam,finecv,"-",log10(bestfact),0,"o")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

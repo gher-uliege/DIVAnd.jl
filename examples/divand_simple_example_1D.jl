@@ -1,19 +1,19 @@
-# A simple example of divand in 2 dimensions
+# A simple example of divand in 1 dimensions
 # with observations from an analytical function.
 
 using divand
 using PyPlot
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
-f = sin(x*6) .* cos(y*6);
+x = rand(5);
+f = sin(x*6) ;
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
+
+xi=collect(linspace(0,1,30));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = sin(xi*6) ;
 
 # all points are valid points
 mask = trues(size(xi));
@@ -22,8 +22,8 @@ mask = trues(size(xi));
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2]-xi[1]);
+
 
 # correlation length
 len = 0.1;
@@ -32,23 +32,9 @@ len = 0.1;
 lambda = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,lambda);
 
-# plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,fref);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
-
-subplot(1,2,2);
-pcolor(xi,yi,fi);
-colorbar()
-clim(-1,1)
-title("Interpolated field");
-
-savefig("divand_simple_example.png")
-
+plot(xi,fi,".")
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
