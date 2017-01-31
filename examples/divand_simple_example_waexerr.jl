@@ -9,8 +9,8 @@ using PyPlot
 x = rand(75,1);
 y = rand(75,1);
 
-x = rand(10,1);
-y = rand(10,1);
+#x = rand(10,1);
+#y = rand(10,1);
 
 jmsize=120
 
@@ -36,21 +36,17 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 len = 0.1;
 
 # signal-to-noise ratio
-lambda = 5;
+lambda = 1;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
 #errorscale=1 
 # fi is the interpolated field
-cpme=  divand_cpme(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
-#cpme=errorscale.*(-cpme.+1);
-
+a,b,myerr,bjmb=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
 exerr=reshape(diag(s.P),jmsize,jmsize);
-# plotting of results
-
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi,yi,cpme);
+pcolor(xi,yi,bjmb);
 colorbar()
 clim(-0.5,1.5)
 plot(x,y,"k.");
@@ -62,7 +58,6 @@ clim(-0.5,1.5)
 title("Exact error");
 
 savefig("divand_simple_example-wcpme.png")
-
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
