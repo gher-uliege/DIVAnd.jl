@@ -77,7 +77,6 @@ for i=1:n
     tmp_szt = collect(szt)
     tmp_szt[i] = tmp_szt[i]+1
     szt = (tmp_szt...)
-    #szt = ntuple(i -> ifelse(i == 1, sz[i]+1, sz[i]),n)
 
     extx = sparse_trim(szt,i)'
     D = extx * D
