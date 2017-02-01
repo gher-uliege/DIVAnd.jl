@@ -33,10 +33,18 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 # Output:
 
 * `aexerr`: the almost exact error
+
+* `Bjmb`: the background error
+
+* `fa`: the analysis (with low impact fake data)
+
+* `sa`: the associated structure
 """
 
 
 function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
+
+
 
 # Hardwired value:
 
@@ -50,6 +58,15 @@ upperlimit=0.4
 if !any(mask[:])
   error("no sea points in mask");
 end
+
+
+oriR=divand_obscovar(epsilon2,size(f)[1]);
+
+epsilonref=mean(diag(oriR));
+
+epsilonslarge=maximum([1E6,epsilonref*1E6]);
+
+
 
 # Decide how many additional fake points are needed with almost zero weight
 
@@ -98,14 +115,17 @@ nsa=Int(ceil(npgrid/npongrid));
 #randindexes=rand(1:npgrid,npongrid);
 randindexes=collect(1:nsa:npgrid);
 
+ncv=size(randindexes)[1];
+
 # add npongrind fake points onto the grid with zero value and very high R value
 #xfake=x;
 #for i=1:n
 # xfake[i]=append!(x[i], xi[i][randindexes])
 #end
 ffake=deepcopy(f);
-ffake=append!(ffake, 0.*xi[1][randindexes])
+ffake=append!(ffake, 0.*xi[1][randindexes]);
 
+Rfake=blkdiag(oriR,divand_obscovar(epsilonslarge,ncv));
 
 #xcc=deepcopy(x);
 xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
@@ -131,12 +151,14 @@ m = Int(ceil(1+n/2))
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
 
-Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/10; alpha=alpha, otherargs...)
+Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/20; alpha=alpha, otherargs...)
+
+
 
 # Now do the same with normal snr to get real error at the "data" points
-epsilon2fake=epsilon2
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
-Errdatapoints=divand_erroratdatapoints(s1);
+# incidentally fa and sa are almost the real analysis
+fa,sa=divandrun(mask,pmn,xi,xfake,ffake,len,Rfake; otherargs...);
+Errdatapoints=divand_erroratdatapoints(sa);
 
 
 # Now get error reduction terms
@@ -154,7 +176,7 @@ aexerr=Bjmb-f1;
 
 # Provide the error field, the background field for additional scaling and the analysis itself
 
-return aexerr,Bjmb
+return aexerr,Bjmb,fa,sa
 
 #return aexerr,berr,fi,s
 
