@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error
 
-cpme = divand_cpme(mask,pmn,xi,x,f,len,lambda,...);
+cpme = divand_aexerr(mask,pmn,xi,x,f,len,lambda,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `cpme` represent the error field at the grid
@@ -35,11 +35,18 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Output:
 
-* `cpme`: the clever poor mans error
+* `aexerr`: the almost exact error
 """
 
 
-function divand_cpme(mask,pmn,xi,x,f,len,lambda; otherargs...)
+function divand_aexerr(mask,pmn,xi,x,f,len,lambda; otherargs...)
+
+# Hardwired value:
+
+finesse=2
+
+# No need to make an approximation if it is close to cost of direct calculation
+upperlimit=0.4
 
 # check inputs
 
@@ -47,12 +54,105 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
-errorscale=1;
+# Decide how many additional fake points are needed with almost zero weight
 
-cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len./1.70766,lambda; otherargs...);
-cpme=errorscale.*(-cpme.+1);
 
-return cpme
+# Assuming uniform grid
+n = ndims(mask)
+nsamp=ones(n);
+npgrid=1;
+npneeded=1;
+
+for i=1:n
+	if isa(len,Number)
+		Labs = len;
+	elseif isa(len,Tuple)
+
+		if isa(len[1],Number)
+			Labs = len[i]
+			else
+			Labs=len[i][1]
+		end
+
+	end
+	npgrid=npgrid*size(mask)[i];
+	nsamp[i]=Labs*pmn[i][1]/finesse;
+	npneeded=npneeded*size(mask)[i]/nsamp[i];
+end
+
+
+ndata=size(f)[1];
+
+
+if npneeded>upperlimit*npgrid
+# 
+   return 0,0,0,0
+
+end
+
+
+npongrid=Int(ceil(maximum([npgrid/10^n,npneeded-ndata])));
+
+randindexes=ones(Int,n,npongrid);
+
+for i=1:n
+randindexes[i,:]=rand(1:size(mask)[i],npongrid);
+end
+
+
+# add npongrind fake points onto the grid with zero value and very high R value
+xfake=x;
+#for i=1:n
+#xfake[i]=append!(x[i], xi[i][randindexes[i,:]])
+#end
+
+# Make an analysis with those fake points and very low snr to get B at those locations 
+
+xfake=x;
+ffake=f;
+lambdafake=0.0001;
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,lambdafake; otherargs...);
+
+# Interpolate B on the final grid with high snr
+Batdatapoints=divand_erroratdatapoints(s1);
+
+# Would be nice to use semi norm here ...
+m = Int(ceil(1+n/2))
+  # alpha is the (m+1)th row of the Pascal triangle:
+  # m=0         1
+  # m=1       1   1
+  # m=1     1   2   1
+  # m=2   1   3   3   1
+  # ...
+alpha = [binomial(m,k) for k = 0:m];
+alpha[1]=0;
+
+Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,10)#; alpha=alpha )#), otherargs...)
+
+# Now do the same with normal snr to get real error at the "data" points
+lambdafake=lambda
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,lambdafake; otherargs...);
+Errdatapoints=divand_erroratdatapoints(s1);
+
+
+# Now get error reduction terms
+ffake=Batdatapoints-Errdatapoints;
+
+# Interpolate error reduction term 
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,100; otherargs...);
+
+# Calculate final error
+aexerr=Bjmb-f1;
+
+
+
+
+
+# Provide the error field, the background field for additional scaling and the analysis itself
+
+return npongrid,randindexes,aexerr,Bjmb,x,xi,randindexes
+
+#return aexerr,berr,fi,s
 
 end
 

@@ -1,16 +1,45 @@
 """
-Computes the error at the real data locations using the analysis structure s
+Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysisand it structure s
 
-errorvariance = divand_erroratdatapoints(s);
+Only using real data locations
+
+
+Kii = divand_GCVKiiobs(s);
 
 """
 
 
-function divand_erroratdatapoints(s)
+function divand_GCVKiiobs(s,nr=5)
+
+#the second, optional argument is the number of random vectors nr used for the estimate
+
+
+H = s.obsconstrain.H;
+R = s.obsconstrain.R;
 
 
 
-return diagMtCM(s.P,s.obsconstrain.H')
+Z=randn(size(R)[1],nr);
+
+
+
+
+   P = s.P;
+   WW=P * (H'* (R \ Z));
+   ZtHKZ=  Z'*(H*WW);
+   ZtZ  =  Z'*Z;
+
+# correction for points out of the domain:
+   nrealdata=sum(1-s.obsout);
+   ndata=size(s.obsout)[1];
+   if nrealdata==0
+     Kii=0.0;
+	          else
+     factorc=ndata/nrealdata;
+# Now take average of the nr different estimates, 
+     Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
+   end
+return Kii
 
 end
 

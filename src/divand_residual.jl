@@ -1,5 +1,5 @@
 """
-Computes the residual yo- H xa at the data locations using the analysis on the grid fi and the solution structure s
+Computes the generalized residual yo- H xa  using the analysis on the grid fi and the solution structure s
 
 dataresidual = divand_residual(s,fi);
 
@@ -10,11 +10,12 @@ function divand_residual(s,fi)
 
 
 
-return squeeze(s.yo-s.H*statevector_pack(s.sv,(fi,)),2)
+return squeeze(s.yo-(s.H)*statevector_pack(s.sv,(fi,)),2)
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

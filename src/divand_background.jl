@@ -118,18 +118,17 @@ Ln = prod(Ld[Ld .> 0])
 #end
 
 
-#try
+coeff = 1
+try
     coeff,K = divand_kernel(neff,alpha)
     coeff = coeff * Ln # units length^n
-
-# catch ME
-#   if strcmp(ME.identifier, 'divand:divand_kernel:unsupported_alpha')
-#       warning('divand:divand_background:noscaling','no scaling')
-#       coeff = 1
-#   else
-#       rethrow(ME)
-#   end
-# end
+catch err
+    if isa(err, DomainError)
+        warn("no scaling for alpha=$(alpha)")
+    else
+       rethrow(err)
+    end
+end
 
 # reshape(pmn,numel(mask),n)
 pmnv = cat(2,[_[:] for _ in pmn]...)

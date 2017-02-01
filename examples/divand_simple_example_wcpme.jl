@@ -6,11 +6,11 @@ using PyPlot
 # using ndgrid
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
+x = rand(75);
+y = rand(75);
 
-x = rand(10,1);
-y = rand(10,1);
+x = rand(10);
+y = rand(10);
 
 jmsize=120
 
@@ -61,7 +61,7 @@ colorbar()
 clim(-0.5,1.5)
 title("Exact error");
 
-savefig("divand_simple_example-wpmefb.png")
+savefig("divand_simple_example-wcpme.png")
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

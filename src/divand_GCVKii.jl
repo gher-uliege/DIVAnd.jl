@@ -25,13 +25,23 @@ Z=randn(size(R)[1],nr);
    WW=P * (H'* (R \ Z));
    ZtHKZ=  Z'*(H*WW);
    ZtZ  =  Z'*Z;
-# Now take average of the nr different estimates
-   Kii=mean(diag(ZtHKZ)./diag(ZtZ));
+
+# correction for points out of the domain:
+   nrealdata=sum(1-s.obsout);
+   ndata=size(s.obsout)[1];
+   if nrealdata==0
+     Kii=0.0;
+	          else
+     factorc=ndata/nrealdata;
+# Now take average of the nr different estimates, 
+     Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
+   end
 return Kii
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

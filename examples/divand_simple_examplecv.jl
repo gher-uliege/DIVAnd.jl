@@ -5,10 +5,10 @@ using divand
 using PyPlot
 
 # observations
-x = rand(175,1);
-y = rand(175,1);
+x = -1.+3*rand(300);
+y = rand(300);
 f = sin(x*6) .* cos(y*6);
-f=f+randn(175,1);
+f=f+randn(300);
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));

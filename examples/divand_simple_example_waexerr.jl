@@ -3,51 +3,63 @@
 
 using divand
 using PyPlot
+# using ndgrid
 
 # observations
 x = rand(75);
 y = rand(75);
+
+#x = rand(10,1);
+#y = rand(10,1);
+
+jmsize=120
+
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
+xi,yi = ndgrid(linspace(0,1,jmsize),linspace(0,1,jmsize));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 0.1;
 
 # signal-to-noise ratio
 lambda = 1;
-
+# Error scale to made comparable to the one used by divandrun in case it is not normalized
+#errorscale=1 
 # fi is the interpolated field
+@time a,b,myerr,bjmb,xn,xin,randindexes=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+
+@time exerr=reshape(diag(s.P),jmsize,jmsize);
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi,yi,fref);
+pcolor(xi,yi,bjmb);
 colorbar()
-clim(-1,1)
+clim(-0.5,1.5)
 plot(x,y,"k.");
 
 subplot(1,2,2);
-pcolor(xi,yi,fi);
+pcolor(xi,yi,exerr);
 colorbar()
-clim(-1,1)
-title("Interpolated field");
+clim(-0.5,1.5)
+title("Exact error");
 
-savefig("divand_simple_example.png")
+savefig("divand_simple_example-wcpme.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

@@ -20,10 +20,16 @@ H = s.H;
 
 #if s.primal
 #    if strcmp(s.inversion,'chol')
-#TODO: non-diagonal R
-        iR = Diagonal(1./diag(R))
-        iP = iB + H'*(iR * H);
-        #P = CovarIS(iP);
+        if isa(R,Diagonal)
+            # this is only necessary for julia 0.5.0
+            # https://github.com/JuliaLang/julia/issues/20367
+            iR = Diagonal(1./diag(R))
+            iP = iB + H'*(iR * H);
+        else
+            # warning: R \ H will be a full matrix (unless R is a Diagonal matrix)
+            iP = iB + H'*(R \ H);
+        end
+
         P = CovarIS(iP);
 
         # Cholesky factor of the inverse of a posteriori
