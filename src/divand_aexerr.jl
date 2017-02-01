@@ -48,7 +48,7 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 # Hardwired value:
 
-finesse=2
+finesse=1.7
 
 # No need to make an approximation if it is close to cost of direct calculation
 upperlimit=0.4

@@ -123,9 +123,12 @@ alpha[1]=0;
 # TODO adapt for seminorm
 cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactors,),cvvalues,lenin,epsilon2in;alpha=alpha)
 
-posbestfactor=findmin(cvinter)[2]
+
+bestvalue=findmin(cvinter)
+posbestfactor=bestvalue[2]
+cvval=bestvalue[1]
 bestfactor=10^epsilon2inter[posbestfactor]
-return bestfactor, cvvalues, factors,cvinter,epsilon2inter
+return bestfactor, cvval,cvvalues, factors,cvinter,epsilon2inter
 
 end
 
