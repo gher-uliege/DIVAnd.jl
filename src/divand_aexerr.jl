@@ -75,6 +75,7 @@ for i=1:n
 	npgrid=npgrid*size(mask)[i];
 	nsamp[i]=Labs*pmn[i][1]/finesse;
 	npneeded=npneeded*size(mask)[i]/nsamp[i];
+	
 end
 
 
@@ -90,23 +91,29 @@ end
 
 npongrid=Int(ceil(maximum([npgrid/10^n,npneeded-ndata])));
 
-randindexes=ones(Int,n,npongrid);
+randindexes=ones(Int,npongrid);
 
-for i=1:n
-randindexes[i,:]=rand(1:size(mask)[i],npongrid);
-end
+nsa=Int(ceil(npgrid/npongrid));
 
+#randindexes=rand(1:npgrid,npongrid);
+randindexes=collect(1:nsa:npgrid);
 
 # add npongrind fake points onto the grid with zero value and very high R value
-xfake=x;
+#xfake=x;
 #for i=1:n
-#xfake[i]=append!(x[i], xi[i][randindexes[i,:]])
+# xfake[i]=append!(x[i], xi[i][randindexes])
 #end
+ffake=deepcopy(f);
+ffake=append!(ffake, 0.*xi[1][randindexes])
+
+
+#xcc=deepcopy(x);
+xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
 
 # Make an analysis with those fake points and very low snr to get B at those locations 
+#xfake=x;
+#ffake=f;
 
-xfake=x;
-ffake=f;
 epsilon2fake=10_000;
 f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
 
@@ -124,7 +131,7 @@ m = Int(ceil(1+n/2))
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
 
-Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/10)#; alpha=alpha )#), otherargs...)
+Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/10; alpha=alpha, otherargs...)
 
 # Now do the same with normal snr to get real error at the "data" points
 epsilon2fake=epsilon2
@@ -147,7 +154,7 @@ aexerr=Bjmb-f1;
 
 # Provide the error field, the background field for additional scaling and the analysis itself
 
-return npongrid,randindexes,aexerr,Bjmb,x,xi,randindexes
+return aexerr,Bjmb
 
 #return aexerr,berr,fi,s
 

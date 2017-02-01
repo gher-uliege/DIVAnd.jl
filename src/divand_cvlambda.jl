@@ -105,11 +105,23 @@ pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
 lenin = worder;
 
 # normalized obs. error variance
-epsilon2in = 1/50;
+epsilon2in = 1/500;
 
 # fi is the interpolated field
 # TODO adapt for seminorm
-cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactors,),cvvalues,lenin,epsilon2in)
+m = Int(ceil(1+1/2))
+  # alpha is the (m+1)th row of the Pascal triangle:
+  # m=0         1
+  # m=1       1   1
+  # m=1     1   2   1
+  # m=2   1   3   3   1
+  # ...
+alpha = [binomial(m,k) for k = 0:m];
+alpha[1]=0;
+
+# fi is the interpolated field
+# TODO adapt for seminorm
+cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactors,),cvvalues,lenin,epsilon2in;alpha=alpha)
 
 posbestfactor=findmin(cvinter)[2]
 bestfactor=10^epsilon2inter[posbestfactor]

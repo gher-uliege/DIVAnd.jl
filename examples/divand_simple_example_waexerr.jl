@@ -40,26 +40,41 @@ epsilon2 = 1;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
 #errorscale=1 
 # fi is the interpolated field
-@time a,b,myerr,bjmb,xn,xin,randindexes=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+@time myerr,bjmb=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 @time exerr=reshape(diag(s.P),jmsize,jmsize);
 
 # plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,bjmb);
+subplot(2,2,1);
+pcolor(xi,yi,myerr);
 colorbar()
 clim(-0.5,1.5)
 plot(x,y,"k.");
+title("Almost Exact error");
 
-subplot(1,2,2);
+subplot(2,2,2);
 pcolor(xi,yi,exerr);
 colorbar()
 clim(-0.5,1.5)
 title("Exact error");
 
-savefig("divand_simple_example-wcpme.png")
+subplot(2,2,3);
+pcolor(xi,yi,bjmb);
+colorbar()
+clim(-0.5,1.5)
+title("Background error");
+
+subplot(2,2,4);
+pcolor(xi,yi,myerr./bjmb);
+colorbar()
+clim(-0.5,1.5)
+title("Bscaled error");
+
+
+
+savefig("divand_simple_example-waexerr.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
