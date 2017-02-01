@@ -78,7 +78,7 @@ See the file [divand_simple_example.jl](https://github.com/gher-ulg/divand.jl/bl
 
 ## Determining the parameters
 
-The parameter `lambda` and parameter `len` are crucial for the analysis. `lambda` corresponds to the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio) (variance of background error over variance of observation error). Therefore, its value depends on how accurate and how representative the observations are. `len` corresponds to the correlation length and its value of `len` can sometimes be determined by physical arguments.
+The parameter `epsilon2` and parameter `len` are crucial for the analysis. `epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalizd variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are. `len` corresponds to the correlation length and its value of `len` can sometimes be determined by physical arguments.
 One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
 
 1. choose, at random, a relatively small subset of observations (about 5%). This is the validation data set.

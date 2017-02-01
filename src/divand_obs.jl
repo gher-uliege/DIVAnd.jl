@@ -1,28 +1,29 @@
-# Include the constrain from the observations.
-#
-# s = divand_obs(s,xi,x,lambda,I)
-#
-# Set observations of variational problem.
-# It is assumed that the each coordinate depends only on one
-# index. If this is not the case, then matrix I must be provided.
-#
-# Input:
-#   s: structure created by divand_background
-#   xi: coordinates of observations*
-#   x: coordinates of grid*
-#   lambda: signal-to-noise ratio of observations
-#   I (optional): fractional indexes of location of observation
-#     within the grid
-#
-# Output:
-#   s: structure to be used by divand_factorize
-#
-# Note:
-#   *these parameters can either be specified as a cell
-#   array of all dimenions:
-#   xi = {Xi,Yi,Zi}
-#   or as n+1 dimensional array
+"""
+Include the constrain from the observations.
 
+s = divand_obs(s,xi,x,R,I)
+
+Set observations of variational problem.
+It is assumed that the each coordinate depends only on one
+index. If this is not the case, then matrix I must be provided.
+
+Input:
+  s: structure created by divand_background
+  xi: coordinates of observations*
+  x: coordinates of grid*
+  R: obs. error covariance matrix (normalized)
+  I (optional): fractional indexes of location of observation
+    within the grid
+
+Output:
+  s: structure to be used by divand_factorize
+
+Note:
+  *these parameters can either be specified as a cell
+  array of all dimenions:
+  xi = {Xi,Yi,Zi}
+  or as n+1 dimensional array
+"""
 function divand_obs(s,xi,x,yo,R; I = [])
 
 

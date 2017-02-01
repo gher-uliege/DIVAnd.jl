@@ -14,17 +14,17 @@ f=f+randn(300);
 xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = sin(6xi) .* cos(6yi);
 
 # all points are valid points
-mask = trues(size(xi));
+mask = trues(xi);
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+pm = ones(xi) / (xi[2,1]-xi[1,1]);
+pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 0.1;
@@ -33,9 +33,9 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-bestfact,a,b,finecv,fineloglam = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
+bestfact,a,b,finecv,finelog_epsilon2 = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
 
-plot(log10(b),a,".",fineloglam,finecv,"-",log10(bestfact),0,"o")
+plot(log10(b),a,".",finelog_epsilon2,finecv,"-",log10(bestfact),0,"o")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
