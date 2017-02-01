@@ -105,11 +105,20 @@ pmcv = ones(size(laminter)) / (laminter[2]-laminter[1])
 lenin = worder;
 
 # signal-to-noise ratio
-lambdain = 50;
+lambdain = 500;
 
 # fi is the interpolated field
 # TODO adapt for seminorm
-cvinter,scv = divandrun(maskcv,(pmcv,),(laminter,),(logfactors,),cvvalues,lenin,lambdain)
+m = Int(ceil(1+1/2))
+  # alpha is the (m+1)th row of the Pascal triangle:
+  # m=0         1
+  # m=1       1   1
+  # m=1     1   2   1
+  # m=2   1   3   3   1
+  # ...
+alpha = [binomial(m,k) for k = 0:m];
+alpha[1]=0;
+cvinter,scv = divandrun(maskcv,(pmcv,),(laminter,),(logfactors,),cvvalues,lenin,lambdain;alpha=alpha)
 
 posbestfactor=findmin(cvinter)[2]
 bestfactor=10^laminter[posbestfactor]
