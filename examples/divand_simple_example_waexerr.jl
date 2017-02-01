@@ -35,14 +35,14 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 # correlation length
 len = 0.1;
 
-# signal-to-noise ratio
-lambda = 1;
+# obs. error variance normalized by the background error variance
+epsilon2 = 1;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
 #errorscale=1 
 # fi is the interpolated field
-@time a,b,myerr,bjmb,xn,xin,randindexes=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+@time a,b,myerr,bjmb,xn,xin,randindexes=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 @time exerr=reshape(diag(s.P),jmsize,jmsize);
 

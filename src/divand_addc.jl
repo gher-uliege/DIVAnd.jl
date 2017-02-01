@@ -13,11 +13,6 @@
 # Output:
 #   s: structure to be used by divand_factorize
 
-"""concatenate diagonal matrices"""
-function blkdiag(X::Diagonal...)
-    Diagonal(cat(1,[diag(x) for x in X]...))
-end
-
 
 function divand_addc(s,constrain)
     if isempty(s.H)

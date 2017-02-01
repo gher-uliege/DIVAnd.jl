@@ -1,12 +1,12 @@
 """
-Compute a variational analysis of arbitrarily located observations to calculate an estimate of the optimal value of lambda
+Compute a variational analysis of arbitrarily located observations to calculate an estimate of the optimal value of epsilon2
 
-bestfactor,cvvalues,factors, cvinter,laminter = divand_cvlambda(mask,pmn,xi,x,f,len,lambda,...);
+bestfactor,cvvalues,factors, cvinter,epsilon2inter = divand_cvlambda(mask,pmn,xi,x,f,len,epsilon2,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
-the coordinates `x`. The output `factors` represent multipliction factors applied to lambda which have been tested and the cvvalues the corresponding cross validation values.
+the coordinates `x`. The output `factors` represent multipliction factors applied to epsilon2 which have been tested and the cvvalues the corresponding cross validation values.
 
-The lambda provided should be close the real one as the tests will be performed around
+The epsilon2 provided should be close the real one as the tests will be performed around
 
 
 The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
@@ -29,9 +29,9 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `lambda`: signal-to-noise ratio of observations (if lambda is a scalar).
+* `epsilon2`: signal-to-noise ratio of observations (if epsilon2 is a scalar).
     The larger this value is, the closer is the field `fi` to the
-    observation. If lambda is a scalar, then R is 1/lambda I, where R is the observation error covariance matrix). If lambda is a vector, then R is diag(lambda) or if lambda is a matrix (a matrix-like project), then R is equal to lambda.
+    observation. If epsilon2 is a scalar, then R is 1/epsilon2 I, where R is the observation error covariance matrix). If epsilon2 is a vector, then R is diag(epsilon2) or if epsilon2 is a matrix (a matrix-like project), then R is equal to epsilon2.
 
 
 # Optional input arguments specified as keyword arguments also as for divand
@@ -39,7 +39,7 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Output:
 
-* `bestfactor`: best estimate of the multipliocation factor to apply to lambda
+* `bestfactor`: best estimate of the multipliocation factor to apply to epsilon2
 
 * `cvvales` : the cross validation values calculated 
 
@@ -47,12 +47,12 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `cvinter` : interpolated cv values for final optimisation 
 
-* `laminter` : values of the factors at which the interpolation was done (in log scale)
+* `epsilon2inter` : values of the factors at which the interpolation was done (in log scale)
 
 """
 
 
-function divand_cvlambda(mask,pmn,xi,x,f,len,lambda; otherargs...)
+function divand_cvlambda(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 # check inputs
 
@@ -74,7 +74,7 @@ cvvalues=0.*factors;
 
 for i=1:size(factors)[1]
 
-fi,s =  divandrun(mask,pmn,xi,x,f,len,lambda.*factors[i]; otherargs...);
+fi,s =  divandrun(mask,pmn,xi,x,f,len,epsilon2.*factors[i]; otherargs...);
 residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
 
@@ -90,30 +90,30 @@ cvvalues[i]=cvval;
 end
 # Now interpolate and find minimum using 1D divand
 
-laminter=collect(linspace(-worder*1.1,1.1*worder,101))
+epsilon2inter=collect(linspace(-worder*1.1,1.1*worder,101))
 
-maskcv = trues(size(laminter))
+maskcv = trues(size(epsilon2inter))
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pmcv = ones(size(laminter)) / (laminter[2]-laminter[1])
+pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
 
 
 # correlation length
 lenin = worder;
 
-# signal-to-noise ratio
-lambdain = 50;
+# normalized obs. error variance
+epsilon2in = 1/50;
 
 # fi is the interpolated field
 # TODO adapt for seminorm
-cvinter,scv = divandrun(maskcv,(pmcv,),(laminter,),(logfactors,),cvvalues,lenin,lambdain)
+cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactors,),cvvalues,lenin,epsilon2in)
 
 posbestfactor=findmin(cvinter)[2]
-bestfactor=10^laminter[posbestfactor]
-return bestfactor, cvvalues, factors,cvinter,laminter
+bestfactor=10^epsilon2inter[posbestfactor]
+return bestfactor, cvvalues, factors,cvinter,epsilon2inter
 
 end
 

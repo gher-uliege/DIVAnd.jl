@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error
 
-cpme = divand_aexerr(mask,pmn,xi,x,f,len,lambda,...);
+cpme = divand_aexerr(mask,pmn,xi,x,f,len,epsilon2,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `cpme` represent the error field at the grid
@@ -25,10 +25,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `lambda`: signal-to-noise ratio of observations (if lambda is a scalar).
-    The larger this value is, the closer is the field `fi` to the
-    observation. If lambda is a scalar, then R is 1/lambda I, where R is the observation error covariance matrix). If lambda is a vector, then R is diag(lambda) or if lambda is a matrix (a matrix-like project), then R is equal to lambda.
-
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
 # Optional input arguments specified as keyword arguments also as for divand
 
@@ -39,7 +36,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 """
 
 
-function divand_aexerr(mask,pmn,xi,x,f,len,lambda; otherargs...)
+function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 # Hardwired value:
 
@@ -110,8 +107,8 @@ xfake=x;
 
 xfake=x;
 ffake=f;
-lambdafake=0.0001;
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,lambdafake; otherargs...);
+epsilon2fake=10_000;
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
 
 # Interpolate B on the final grid with high snr
 Batdatapoints=divand_erroratdatapoints(s1);
@@ -127,11 +124,11 @@ m = Int(ceil(1+n/2))
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
 
-Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,10)#; alpha=alpha )#), otherargs...)
+Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/10)#; alpha=alpha )#), otherargs...)
 
 # Now do the same with normal snr to get real error at the "data" points
-lambdafake=lambda
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,lambdafake; otherargs...);
+epsilon2fake=epsilon2
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
 Errdatapoints=divand_erroratdatapoints(s1);
 
 
@@ -139,7 +136,7 @@ Errdatapoints=divand_erroratdatapoints(s1);
 ffake=Batdatapoints-Errdatapoints;
 
 # Interpolate error reduction term 
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,100; otherargs...);
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1/100; otherargs...);
 
 # Calculate final error
 aexerr=Bjmb-f1;

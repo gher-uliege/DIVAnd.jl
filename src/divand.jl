@@ -160,6 +160,13 @@ function ndgrid{T}(vs::AbstractVector{T}...)
 end
 
 
+"""concatenate diagonal matrices"""
+function blkdiag(X::Diagonal...)
+    Diagonal(cat(1,[diag(x) for x in X]...))
+end
+
+
+
 sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
 
 
@@ -196,6 +203,7 @@ include("divand_background_components.jl")
 include("divand_background.jl");
 include("divand_addc.jl");
 include("divand_kernel.jl");
+include("divand_obscovar.jl");
 include("divand_obs.jl");
 include("divand_factorize.jl");
 include("divand_solve.jl");
@@ -214,7 +222,7 @@ include("divand_cvestimator.jl");
 include("divand_erroratdatapoints.jl");
 include("divand_cvlambda.jl");
 
-export MatFun
+export MatFun,divand_obscovar
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
    statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,

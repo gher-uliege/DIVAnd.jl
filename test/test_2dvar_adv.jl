@@ -14,8 +14,10 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 a = 5;
 u = a*yi;
 v = -a*xi;
+epsilon2 = 1/200
+len = 0.2
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,.2,200,velocity = (u,v));
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,velocity = (u,v));
 
 @test abs(fi[18,24] - 0.89935) < 1e-3
 

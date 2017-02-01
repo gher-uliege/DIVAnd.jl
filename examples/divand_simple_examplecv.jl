@@ -29,11 +29,11 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 # correlation length
 len = 0.1;
 
-# signal-to-noise ratio
-lambda = 1;
+# obs. error variance normalized by the background error variance
+epsilon2 = 1;
 
 # fi is the interpolated field
-bestfact,a,b,finecv,fineloglam = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda)
+bestfact,a,b,finecv,fineloglam = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
 
 plot(log10(b),a,".",fineloglam,finecv,"-",log10(bestfact),0,"o")
 

@@ -31,11 +31,11 @@ po = ones(size(xi)) / (zi[1,1,2]-zi[1,1,1]);
 # correlation length
 len = 0.1;
 
-# signal-to-noise ratio
-lambda = 100;
+# obs. error variance normalized by the background error variance
+epsilon2 = 0.01;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,lambda);
+fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
 
 # compute RMS to background field
 rms = sqrt(mean((fi_ref[:] - fi[:]).^2));

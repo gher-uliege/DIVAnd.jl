@@ -28,11 +28,11 @@ pm = ones(size(xi)) / (xi[2]-xi[1]);
 # correlation length
 len = 0.1;
 
-# signal-to-noise ratio
-lambda = 1;
+# obs. error variance normalized by the background error variance
+epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,lambda);
+fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
 
 plot(xi,fi,".")
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

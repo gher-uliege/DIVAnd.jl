@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations.
 
-fi,s = divandrun(mask,pmn,xi,x,f,len,lambda,...);
+fi,s = divandrun(mask,pmn,xi,x,f,len,epsilon2,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -25,10 +25,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `lambda`: signal-to-noise ratio of observations (if lambda is a scalar).
-    The larger this value is, the closer is the field `fi` to the
-    observation. If lambda is a scalar, then R is 1/lambda I, where R is the observation error covariance matrix). If lambda is a vector, then R is diag(lambda) or if lambda is a matrix (a matrix-like project), then R is equal to lambda.
-
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
 # Optional input arguments specified as keyword arguments
 
@@ -96,7 +93,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
   see divand_simple_example.jl
 """
 
-function divandrun(mask,pmn,xi,x,f,len,lambda;
+function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 velocity = (),
                 EOF = [],
                 diagnostics = 0,
@@ -150,12 +147,12 @@ s.keepLanczosVectors = keepLanczosVectors;
 #     fracindex = fracindex[:,valid];
 #   end
 
-#   if isscalar(lambda)
+#   if isscalar(epsilon2)
 #     # do nothing
-#   elseif isvector(lambda)
-#     lambda = lambda[valid];
-#   elseif ismatrix(lambda)
-#     lambda = lambda[valid,valid];
+#   elseif isvector(epsilon2)
+#     epsilon2 = epsilon2[valid];
+#   elseif ismatrix(epsilon2)
+#     epsilon2 = epsilon2[valid,valid];
 #   end
 # end
 
@@ -177,8 +174,14 @@ s.keepLanczosVectors = keepLanczosVectors;
 #s.betap
 #s.iB = s.iB + s.betap * s.WE'*s.WE;
 
+# observation error covariance (scaled)
+# Note: iB is scaled such that diag(inv(iB)) is 1 far from the
+# boundary
+
+R = divand_obscovar(epsilon2,length(f));
+
 # add observation constrain to cost function
-s = divand_addc(s,divand_obs(s,xi,x,f,lambda,I = fracindex));
+s = divand_addc(s,divand_obs(s,xi,x,f,R,I = fracindex));
 
 # add advection constraint to cost function
 if !isempty(velocity)

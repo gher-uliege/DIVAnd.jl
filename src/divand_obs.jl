@@ -23,7 +23,7 @@
 #   xi = {Xi,Yi,Zi}
 #   or as n+1 dimensional array
 
-function divand_obs(s,xi,x,yo,lambda; I = [])
+function divand_obs(s,xi,x,yo,R; I = [])
 
 
 #xi = cat_cell_array(xi);
@@ -50,17 +50,6 @@ end
 
 H = H * sparse_pack(mask)';
 
-# iB is scaled such that diag(inv(iB)) is 1 far from the
-# boundary
-
-if ndims(lambda) == 0
-#  R = 1/lambda * speye(size(H,1));
-  R = Diagonal([1/lambda for i in 1:size(H,1)]);
-elseif ndims(lambda) == 1
-  R = Diagonal(1./lambda)
-else
-  R = lambda
-end
 
 s.obsout = out;
 s.obsconstrain = divand_constrain(yo,R,H)

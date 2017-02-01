@@ -22,10 +22,10 @@ v = sin(x*6) .* cos(y*6)
 lenx = .15;
 leny = .15;
 
-lambda = 20;
+epsilon2 = 0.05;
 
 #,err,s
-va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
+va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,diagnostics=true,primal=true)
 
 #Z = randn(size(s.H,1),size(s.H,1));
 Z = eye(size(s.H,1));

@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error
 
-cpme = divand_cpme(mask,pmn,xi,x,f,len,lambda,...);
+cpme = divand_cpme(mask,pmn,xi,x,f,len,epsilon2,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `cpme` represent the error field at the grid
@@ -25,10 +25,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `lambda`: signal-to-noise ratio of observations (if lambda is a scalar).
-    The larger this value is, the closer is the field `fi` to the
-    observation. If lambda is a scalar, then R is 1/lambda I, where R is the observation error covariance matrix). If lambda is a vector, then R is diag(lambda) or if lambda is a matrix (a matrix-like project), then R is equal to lambda.
-
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
 # Optional input arguments specified as keyword arguments also as for divand
 
@@ -39,7 +36,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 """
 
 
-function divand_cpme(mask,pmn,xi,x,f,len,lambda; otherargs...)
+function divand_cpme(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 # check inputs
 
@@ -49,7 +46,7 @@ end
 
 errorscale=1;
 
-cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len./1.70766,lambda; otherargs...);
+cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len./1.70766,epsilon2; otherargs...);
 cpme=errorscale.*(-cpme.+1);
 
 return cpme

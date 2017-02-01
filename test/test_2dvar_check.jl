@@ -34,8 +34,8 @@ end
 
 # diagonal R with constant diagonal elements
 
-lambda = 20;
-xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
+epsilon2 = 0.05;
+xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,diagnostics=true,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
 @test xa ≈ xa_check
