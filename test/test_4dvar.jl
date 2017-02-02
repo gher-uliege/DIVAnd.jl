@@ -10,8 +10,8 @@ fun(x,y,z,t) = sin(k*x) * sin(k*y) * sin(k*z) * sin(k*t)
 xi,yi,zi,ti = ndgrid(linspace(0,1.,7),linspace(0,1.,7),linspace(0,1.,7),linspace(0,1.,7));
 fi_ref = fun.(xi,yi,zi,ti)
 
-ϵ = eps()
 # grid of observations
+ϵ = eps()
 x,y,z,t = ndgrid(linspace(ϵ,1-ϵ,5),linspace(ϵ,1-ϵ,5),linspace(ϵ,1-ϵ,5),linspace(ϵ,1-ϵ,5));
 x = x[:];
 y = y[:];
@@ -25,9 +25,7 @@ f = fun.(x,y,z,t)
 mask = trues(xi);
 
 # this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-# po is the inverse of the resolution along the 3rd dimension
+# pm (pn,po,pp) is the inverse of the resolution along the 1st (2nd, 3rd, 4th) dimension
 pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
 pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
 po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
