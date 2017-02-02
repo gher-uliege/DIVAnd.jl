@@ -33,9 +33,9 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-bestfact,a,b,finecv,finelog_epsilon2 = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
+bestfact,cvval,a,b,finecv,finelog_epsilon2 = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
 
-plot(log10(b),a,".",finelog_epsilon2,finecv,"-",log10(bestfact),0,"o")
+plot(log10(b),a,".",finelog_epsilon2,finecv,"-",log10(bestfact),cvval,"o")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

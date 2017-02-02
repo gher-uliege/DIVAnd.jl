@@ -40,7 +40,7 @@ epsilon2 = 1;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
 #errorscale=1 
 # fi is the interpolated field
-@time myerr,bjmb=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+@time myerr,bjmb,fa,sa=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
@@ -74,7 +74,26 @@ title("Bscaled error");
 
 
 
+
 savefig("divand_simple_example-waexerr.png")
+
+jmfig=figure("next one")
+
+# plotting of results
+subplot(1,2,1);
+pcolor(xi,yi,fa);
+colorbar()
+clim(-0.5,1.5)
+plot(x,y,"k.");
+title("Analysis from aexerr");
+
+subplot(1,2,2);
+pcolor(xi,yi,fi);
+colorbar()
+clim(-0.5,1.5)
+title("Analysis");
+
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
