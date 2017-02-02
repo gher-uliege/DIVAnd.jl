@@ -10,7 +10,7 @@ x = rand(nobs);
 y = rand(nobs);
 z = rand(nobs);
 t = rand(nobs);
-f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6)*sin(t*2*pi) ;
+f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
 
 # final grid
 #
@@ -20,7 +20,7 @@ testsizet=12
 xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6)*sin(ti*2*pi);
+fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6) .* sin(ti*2*pi);
 
 # all points are valid points
 mask = trues(xi);
@@ -56,7 +56,7 @@ colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-savefig("divand_simple_example_$D.png")
+savefig("divand_simple_example_4D.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
