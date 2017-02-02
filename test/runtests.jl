@@ -17,6 +17,9 @@ using Base.Test
 
     include("test_3dvar.jl");
 
+    include("test_4dvar.jl");
+
+
     # test divand_metric
     lon,lat = ndgrid([0:10;],[0:5;])
     pm,pn = divand_metric(lon,lat)
@@ -29,4 +32,3 @@ using Base.Test
     @test K(0) ≈ 1
     @test K(1) ≈ besselk(1,1)
 end
-
