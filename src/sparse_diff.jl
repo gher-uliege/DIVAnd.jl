@@ -1,17 +1,19 @@
-# Sparse operator for differentiation.
-#
-# diffx = sparse_diff(sz1,m,cyclic)
-#
-# Sparse operator for differentiation along dimension m for "collapsed" matrix
-# of the size sz1.
-#
-# Input:
-#   sz1: size of rhs
-#   m: dimension to differentiate
-#   cyclic: true if domain is cyclic along dimension m. False is the
-#   default value
+"""
+Sparse operator for differentiation.
 
-function sparse_diff(sz1,m::Int,cyclic = false)
+diffx = sparse_diff(sz1,m,cyclic)
+
+Sparse operator for differentiation along dimension m for "collapsed" matrix
+of the size sz1.
+
+Input:
+  sz1: size of rhs
+  m: dimension to differentiate
+  cyclic: true if domain is cyclic along dimension m. False is the
+  default value
+"""
+
+function sparse_diff(sz1,m,cyclic = false)
 
 n1 = prod(sz1)
 
@@ -72,7 +74,7 @@ sparse(
 
 end
 
-# Copyright (C) 2009,2012 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2009,2012,2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
