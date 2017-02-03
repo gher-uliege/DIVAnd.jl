@@ -6,7 +6,7 @@ Kii = divand_GCVKii(s);
 """
 
 
-function divand_GCVKii(s,nr=5)
+function divand_GCVKii(s,nr=10)
 
 #the second, optional argument is the number of random vectors nr used for the estimate
 

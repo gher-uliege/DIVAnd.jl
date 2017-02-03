@@ -62,7 +62,7 @@ end
 # For the moment, hardwired values
 switchvalue=100;
 worder=1.5;
-nsamp=2;
+nsamp=5;
 
 # sample multiplication factor to optimise in log space
 logfactors=collect(linspace(-worder,worder,2*nsamp+1));
@@ -70,7 +70,7 @@ factors=10.^logfactors;
 cvvalues=0.*factors;
 
 
-
+epsilon2in=zeros(2*nsamp+1);
 
 for i=1:size(factors)[1]
 
@@ -78,11 +78,16 @@ fi,s =  divandrun(mask,pmn,xi,x,f,len,epsilon2.*factors[i]; otherargs...);
 residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
 
+# TO DO : THINK ABOUT A VERSION WITH 30 REAL ESTIMATES OF KII AND THE RESIDUAL ONLY THERE
+#
 
 if nrealdata<switchvalue
    cvval=divand_cvestimator(s,residual./(1-divand_diagHKobs(s)));
+   epsilon2in[i] = 1/5000;
          else
-   cvval=divand_cvestimator(s,residual./(1-divand_GCVKiiobs(s)));	 
+   work=(1-divand_GCVKiiobs(s));
+   cvval=divand_cvestimator(s,residual./work);	
+   epsilon2in[i] = 1/200/work^2;   
 end
 
 cvvalues[i]=cvval;
@@ -105,7 +110,7 @@ pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
 lenin = worder;
 
 # normalized obs. error variance
-epsilon2in = 1/500;
+
 
 # fi is the interpolated field
 # TODO adapt for seminorm
