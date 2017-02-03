@@ -61,6 +61,7 @@ if !any(mask[:])
 end
 # For the moment, hardwired values
 switchvalue=100;
+samplesforHK=70;
 worder=1.5;
 nsamp=5;
 
@@ -79,7 +80,8 @@ residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
 
 # TO DO : THINK ABOUT A VERSION WITH 30 REAL ESTIMATES OF KII AND THE RESIDUAL ONLY THERE
-#
+# c
+# unique(collect(rand(1:1000,200)))[1:30]
 
 if nrealdata<switchvalue
    cvval=divand_cvestimator(s,residual./(1-divand_diagHKobs(s)));
@@ -88,6 +90,19 @@ if nrealdata<switchvalue
    work=(1-divand_GCVKiiobs(s));
    cvval=divand_cvestimator(s,residual./work);	
    epsilon2in[i] = 1/200/work^2;   
+# alternate version to test: sampling  
+# find(x -> x == 3,z) 
+#   onsea=find(x->x == 0,s.obsout);
+   onsea=find(s.obsout.==0);
+   lonsea=length(onsea)
+   warn("So",lonsea)
+   indexlist1=unique(collect(rand(1:lonsea,5*samplesforHK)))[1:samplesforHK]
+   indexlist=onsea[indexlist1]
+   residualc=zeros(length(residual));
+   residualc[indexlist]=residual[indexlist]./(1-divand_diagHKobssampled(s,indexlist))
+   scalefac=float(nrealdata)/float(samplesforHK)
+   cvval=scalefac*divand_cvestimator(s,residualc)
+   epsilon2in[i] = 1/5000;
 end
 
 cvvalues[i]=cvval;

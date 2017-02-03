@@ -4,8 +4,9 @@
 using divand
 using PyPlot
 
+srand(1234)
 # observations
-nobs=99+2
+nobs=99+2*1
 x = -1.+3*rand(nobs);
 y = rand(nobs);
 f = sin(x*6) .* cos(y*6);

@@ -1,24 +1,29 @@
 """
-Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time
+Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Calculates them
+at the indexes provided in indexlist
 
-diagonalterms = divand_diagHK(s);
+This version only uses the real data (not those related to additional constraints)
+
+diagonalterms = divand_diagHKobssampled(s,indexlist);
 
 """
 
 
-function divand_diagHK(s)
+function divand_diagHKobssampled(s,indexlist)
 
 #
 
 
-H = s.H;
-R = s.R;
+H = s.obsconstrain.H;
+R = s.obsconstrain.R;
 
 
 
-Z=eye(size(R)[1],size(R)[1]);
+Z=zeros(size(R)[1],length(indexlist));
 
-
+for i = 1:length(indexlist)
+          Z[indexlist[i],i] = 1;
+end 
 
 # to be replaced later exploiting the factors of P ?
 # 
@@ -27,22 +32,18 @@ Z=eye(size(R)[1],size(R)[1]);
 #   ZtHKZ =  Z'*H*WW;
 
 # parenthesis to force the order of operations
-
+# Maybe more offecient to LtPM
 #ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
-    ZtHKZ =   (H * (P * (H' * (R \ Z))));
-    diagHKb = diag(ZtHKZ);
-	
-    diagHK=diagLtCM(H',P,(H' * (R \ Z)))	
-    if (norm(diahHKb-diagHK)> norm(diagHK)*1E-7) 
-     warn("WTF")
-    end	
-	
-	
+#ZtHKZ =   Z' * (H * (P * (H' * (R \ Z))));
+#diagHK = diag(ZtHKZ);
+
+diagHK=diagLtCM((H'*Z),P,(H' * (R \ Z)))
 return diagHK
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
