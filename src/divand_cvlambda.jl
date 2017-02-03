@@ -61,7 +61,7 @@ if !any(mask[:])
 end
 # For the moment, hardwired values
 switchvalue=100;
-samplesforHK=70;
+samplesforHK=100;
 worder=1.5;
 nsamp=5;
 
@@ -95,9 +95,10 @@ if nrealdata<switchvalue
 #   onsea=find(x->x == 0,s.obsout);
    onsea=find(s.obsout.==0);
    lonsea=length(onsea)
-   warn("So",lonsea)
-   indexlist1=unique(collect(rand(1:lonsea,5*samplesforHK)))[1:samplesforHK]
-   indexlist=onsea[indexlist1]
+#   warn("So",lonsea)
+   indexlist1=unique(collect(rand(1:lonsea,50*samplesforHK)))[1:samplesforHK]
+   indexlist=onsea[indexlist1];
+#   indexlist=collect(1:lonsea);
    residualc=zeros(length(residual));
    residualc[indexlist]=residual[indexlist]./(1-divand_diagHKobssampled(s,indexlist))
    scalefac=float(nrealdata)/float(samplesforHK)

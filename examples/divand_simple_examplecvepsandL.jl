@@ -36,18 +36,22 @@ epsilon2 = 1;
 
 # fi is the interpolated field
 
-ltest=101
+ltest=99
 cvval2=zeros(101,ltest);
 finelog_epsilon2=0;
+lscales=zeros(ltest)
 for j=1:ltest
 logl=-1.7+0.02*j;
 len=10^logl;
+lscales[j]=len;
 bestfact,cvval,a,b,finecv,finelog_epsilon2 = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 cvval2[:,j]=finecv;
 end
 jm=finelog_epsilon2;
 
-pcolor(cvval2)
+pcolor(log(lscales),finelog_epsilon2,cvval2)
+colorbar()
+clim(1,2)
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
