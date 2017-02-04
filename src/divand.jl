@@ -190,6 +190,7 @@ include("sparse_gradient.jl");
 include("localize_separable_grid.jl");
 
 include("special_matrices.jl");
+include("conjugategradient.jl");
 
 include("statevector_init.jl");
 include("statevector_pack.jl");

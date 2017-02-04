@@ -19,7 +19,7 @@ iB = s.iB;
 H = s.H;
 
 #if s.primal
-#    if strcmp(s.inversion,'chol')
+    if s.inversion == :chol
         if isa(R,Diagonal)
             # this is only necessary for julia 0.5.0
             # https://github.com/JuliaLang/julia/issues/20367
@@ -39,11 +39,11 @@ H = s.H;
         end
 
         s.P = P;
-#    else
+    else
 #      tic
 #        [s.M1,s.M2] = s.compPC(iB,H,R);
 #      s.pc_time = toc();
-#    end
+    end
 #else # dual
     # #C = H * (iB \ H') + R;
     # s.B = CovarIS(iB);

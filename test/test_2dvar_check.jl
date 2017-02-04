@@ -70,6 +70,8 @@ xa_check, diagP_check = naive_analysis(s,v)
 @test diagP ≈ diagP_check
 
 
+
+
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -22,14 +22,14 @@ yo = s.yo;
 
 
 #if s.primal
-#    if strcmp(s.inversion,'chol')
+    if s.inversion == :chol
       P = s.P;
       fpi =  P * (H'* (R \ yo[:]));
-#     else
+     else
 #       #H = double(H);
-#       HiRyo = H'* (R \ yo(:));
+       HiRyo = H'* (R \ yo[:]);
 
-#       fun = @(x) s.iB*x + H'*(R\ (H * x));
+       fun(x) = s.iB*x + H'*(R \ (H * x));
 
 #       if ~s.keepLanczosVectors
 #           [fpi,s.flag,s.relres,s.iter] = pcg(fun,HiRyo,s.tol,s.maxit,s.M1,s.M2);
@@ -41,16 +41,25 @@ yo = s.yo;
 #       else
 #           #pc = @(x) s.M2 \ (s.M1 \ x);
 #           pc = [];
-#           x0 = zeros(size(s.iB,1),1);
+           x0 = zeros(size(s.iB,1));
 #           [fpi,Q,T,diag] = conjugategradient(fun,HiRyo,'tol',s.tol,...
 #                                              'maxit',s.maxit,...
 #                                              'minit',s.minit,...
 #                                              'x0',x0,'renorm',1,'pc',pc);
-#           s.iter = diag.iter;
+
+            fpi,niter = conjugategradient(fun,HiRyo,tol=s.tol,
+                                              maxit=s.maxit,
+                                              minit=s.minit,
+                                              x0=x0); #,'renorm',1,'pc',pc);
+
+            @show size(fpi)
+
+            #s.iter = niter;
+
 #           s.relres = diag.relres;
 #           s.P = CovarLanczos(Q,T);
 #       end
-#     end
+     end
 # else # dual
 #     B = s.B;
 #     # fun(x) computes (H B H' + R)*x
