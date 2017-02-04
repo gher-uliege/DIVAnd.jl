@@ -4,14 +4,16 @@
 using divand
 using PyPlot
 
+srand(1234)
 # observations
-x = -1.+3*rand(300);
-y = rand(300);
+nobs=1099+2*1
+x = -1.+3*rand(nobs);
+y = rand(nobs);
 f = sin(x*6) .* cos(y*6);
-f=f+randn(300);
+f=f+randn(nobs);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
+xi,yi = ndgrid(linspace(0,1,200),linspace(0,1,200));
 
 # reference field
 fref = sin(6xi) .* cos(6yi);
@@ -30,13 +32,23 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 2;
 
 # fi is the interpolated field
-bestfact,cvval,a,b,finecv,finelog_epsilon2 = divand_cvlambda(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
 
-plot(log10(b),a,".",finelog_epsilon2,finecv,"-",log10(bestfact),cvval,"o")
+for imeth=0:3
 
+
+bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,0,imeth);
+
+subplot(2,2,imeth+1)
+plot(xi2D,cvinter,"-")
+xlabel("Log10 scale factor e2")
+plot(x2Ddata,cvvalues,".")
+plot(log10(bestfactore), cvval,"o")
+title("Method $imeth")
+
+end
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

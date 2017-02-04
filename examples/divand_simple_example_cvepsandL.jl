@@ -6,7 +6,7 @@ using PyPlot
 
 srand(1234)
 # observations
-nobs=99+2*1
+nobs=1099+2*1
 x = -1.+3*rand(nobs);
 y = rand(nobs);
 f = sin(x*6) .* cos(y*6);
@@ -36,18 +36,21 @@ epsilon2 = 2;
 
 # fi is the interpolated field
 
+for imeth=0:3
 
 
+bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth);
 
-bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3);
-
+subplot(2,2,imeth+1)
 pcolor(xi2D,yi2D,cvinter)
 colorbar()
 xlabel("Log10 scale factor L")
 ylabel("Log10 scale factor e2")
 plot(x2Ddata,y2Ddata,".")
 plot(log10(bestfactorl), log10(bestfactore),"o")
+title("Method $imeth")
 
+end
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

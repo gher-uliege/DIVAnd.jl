@@ -59,7 +59,7 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 """
 
 
-function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne; otherargs...)
+function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 # check inputs
 
@@ -71,9 +71,13 @@ end
 
 
 # For the moment, hardwired values
-switchvalue=100;
+switchvalue1=130;
+switchvalue2=1000;
 samplesforHK=100;
+# with of window so sample in log scale, so order of magnitudes worder
+# For length scales, one order of magnitude; make sure the grid is fine enough
 worderl=1.;
+# For noise, almost two order of magnitutes
 wordere=1.5;
 
 
@@ -102,6 +106,15 @@ epsilon2in=zeros((2*nl+1)*(2*ne+1));
 x2Ddata=zeros((2*nl+1)*(2*ne+1));
 y2Ddata=zeros((2*nl+1)*(2*ne+1));
 
+# Define method used
+# 1: full CV
+# 2: sampled CV
+# 3: GCV
+# 0: automatic choice, default value
+# For automatic choice this will be done later once the exact number of useful data is known
+
+
+
 
 ip=0
 for i=1:size(factorsl)[1]
@@ -116,17 +129,39 @@ fi,s =  divandrun(mask,pmn,xi,x,f,len.*factorse[i],epsilon2.*factorse[j]; othera
 residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
 
+# Determine which method to use
+
+if method==0
+
+    mymethod=2
+	if nrealdata < switchvalue1
+	mymethod=1
+	end
+    if nrealdata > switchvalue2
+	mymethod=3
+	end
+
+	
+          else
+    mymethod=method
+end
+
+
+
+
+
 # TO DO : THINK ABOUT A VERSION WITH 30 REAL ESTIMATES OF KII AND THE RESIDUAL ONLY THERE
 # c
 # unique(collect(rand(1:1000,200)))[1:30]
 
-if nrealdata<switchvalue
+if mymethod==1
    cvval=divand_cvestimator(s,residual./(1-divand_diagHKobs(s)));
    epsilon2in[ip] = 1/5000;
-         else
-   work=(1-divand_GCVKiiobs(s));
-   cvval1=divand_cvestimator(s,residual./work);	
-   epsilon2in[ip] = 1/200/work^2;   
+end
+
+
+
+if mymethod==2
 # alternate version to test: sampling  
 # find(x -> x == 3,z) 
 #   onsea=find(x->x == 0,s.obsout);
@@ -144,65 +179,65 @@ if nrealdata<switchvalue
    residualc[indexlist]=residual[indexlist]./(1-divand_diagHKobs(s,indexlist))
    scalefac=float(nrealdata)/float(samplesforHK)
    cvval=scalefac*divand_cvestimator(s,residualc)
-   cvval=cvval1
    epsilon2in[ip] = 1/5000;
+end
+
+if mymethod==3
+   work=(1-divand_GCVKiiobs(s));
+   cvval=divand_cvestimator(s,residual./work);	
+   epsilon2in[ip] = 1/200/work^2;   
 end
 
 cvvalues[ip]=cvval;
 
 end
 end
+
 # Now interpolate and find minimum using 1D divand or 2D divand depending on the situation
 
 if nl==0
 
 # interpolate only on epsilon
-
 	epsilon2inter=collect(linspace(-wordere*1.1,1.1*wordere,101))
-
-
 	maskcv = trues(size(epsilon2inter))
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
 	pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
+	lenin = wordere;
 
-
-# correlation length
-	lenin = worder;
-
-# normalized obs. error variance
-
-
-# fi is the interpolated field
-# TODO adapt for seminorm
 	m = Int(ceil(1+1/2))
-  # alpha is the (m+1)th row of the Pascal triangle:
-  # m=0         1
-  # m=1       1   1
-  # m=1     1   2   1
-  # m=2   1   3   3   1
-  # ...
 	alpha = [binomial(m,k) for k = 0:m];
 	alpha[1]=0;
 
-# fi is the interpolated field
-# TODO adapt for seminorm
-	cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactors,),cvvalues,lenin,diagm(epsilon2in);alpha=alpha)
+	cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactorse,),cvvalues,lenin,epsilon2in;alpha=alpha)
 
 
 	bestvalue=findmin(cvinter)
 	posbestfactor=bestvalue[2]
 	cvval=bestvalue[1]
 	bestfactor=10^epsilon2inter[posbestfactor]
-	return bestfactor, cvval,cvvalues, factors,cvinter,epsilon2inter
+	return bestfactor, cvval,cvvalues, logfactorse,cvinter,epsilon2inter
 
 end
 
 if ne==0
 
+# interpolate only on L
+	linter=collect(linspace(-worderl*1.1,1.1*worderl,101))
+	maskcv = trues(size(linter))
+	pmcv = ones(size(linter)) / (linter[2]-linter[1])
+	lenin = worderl;
+
+	m = Int(ceil(1+1/2))
+	alpha = [binomial(m,k) for k = 0:m];
+	alpha[1]=0;
+
+	cvinter,scv = divandrun(maskcv,(pmcv,),(linter,),(logfactorsl,),cvvalues,lenin,epsilon2in;alpha=alpha)
+
+
+	bestvalue=findmin(cvinter)
+	posbestfactor=bestvalue[2]
+	cvval=bestvalue[1]
+	bestfactor=10^epsilon2inter[posbestfactor]
+	return bestfactor, cvval,cvvalues, logfactorsl,cvinter,linter
 
 
 end
@@ -226,25 +261,11 @@ end
 # correlation length
 	lenin = (worderl,wordere);
 
-# normalized obs. error variance
-
-
-# fi is the interpolated field
-# TODO adapt for seminorm
 	m = Int(ceil(1+2/2))
-  # alpha is the (m+1)th row of the Pascal triangle:
-  # m=0         1
-  # m=1       1   1
-  # m=1     1   2   1
-  # m=2   1   3   3   1
-  # ...
 	alpha = [binomial(m,k) for k = 0:m];
 	alpha[1]=0;
 
-# fi is the interpolated field
-# TODO adapt for seminorm
 	cvinter,scv = divandrun(maskcv,(pm2D,pn2D),(xi2D,yi2D),(x2Ddata,y2Ddata),cvvalues,lenin,epsilon2in;alpha=alpha)
-#cvinter,scv = divandrun(maskcv,(pm2D,pn2D),(xi2D,yi2D),(x2Ddata,y2Ddata),cvvalues,1,1;alpha=alpha)
 
 	bestvalue=findmin(cvinter)
 	posbestfactor=bestvalue[2]
