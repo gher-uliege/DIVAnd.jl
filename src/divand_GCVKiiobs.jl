@@ -17,11 +17,12 @@ function divand_GCVKiiobs(s,nr=30)
 H = s.obsconstrain.H;
 R = s.obsconstrain.R;
 
-
+#if optimisation is to be used, make sure to use the same reference random points
+   srand(nr)
 
 Z=randn(size(R)[1],nr);
 
-
+   srand()
 
 
    P = s.P;

@@ -88,7 +88,7 @@ if nrealdata<switchvalue
    epsilon2in[i] = 1/5000;
          else
    work=(1-divand_GCVKiiobs(s));
-   cvval=divand_cvestimator(s,residual./work);	
+   cvval1=divand_cvestimator(s,residual./work);	
    epsilon2in[i] = 1/200/work^2;   
 # alternate version to test: sampling  
 # find(x -> x == 3,z) 
@@ -96,13 +96,18 @@ if nrealdata<switchvalue
    onsea=find(s.obsout.==0);
    lonsea=length(onsea)
 #   warn("So",lonsea)
+# if optimisation is to be used, make sure to use the same reference random points
+   srand(nrealdata)
+# otherwise you add noise to the cv field
    indexlist1=unique(collect(rand(1:lonsea,50*samplesforHK)))[1:samplesforHK]
+   srand()
    indexlist=onsea[indexlist1];
 #   indexlist=collect(1:lonsea);
    residualc=zeros(length(residual));
-   residualc[indexlist]=residual[indexlist]./(1-divand_diagHKobssampled(s,indexlist))
+   residualc[indexlist]=residual[indexlist]./(1-divand_diagHKobs(s,indexlist))
    scalefac=float(nrealdata)/float(samplesforHK)
    cvval=scalefac*divand_cvestimator(s,residualc)
+   cvval=cvval1
    epsilon2in[i] = 1/5000;
 end
 

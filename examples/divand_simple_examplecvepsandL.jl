@@ -51,7 +51,7 @@ jm=finelog_epsilon2;
 
 pcolor(log(lscales),finelog_epsilon2,cvval2)
 colorbar()
-clim(1,2)
+clim(0.9,1.2)
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
