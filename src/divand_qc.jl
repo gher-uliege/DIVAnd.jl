@@ -53,7 +53,8 @@ if nrealdata<switchvalue
 end
 
 
-
+#sortperm(qcval,rev=true)
+# provides indexes of most suspect values
 return qcval,meaneps2,c1,invlam
 
 end

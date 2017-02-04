@@ -6,7 +6,7 @@ using PyPlot
 
 srand(1234)
 # observations
-nobs=1099+2*1
+nobs=99
 x = -1.+3*rand(nobs);
 y = rand(nobs);
 f = sin(x*6) .* cos(y*6);

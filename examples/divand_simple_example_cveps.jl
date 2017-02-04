@@ -6,14 +6,14 @@ using PyPlot
 
 srand(1234)
 # observations
-nobs=1099+2*1
-x = -1.+3*rand(nobs);
+nobs=90
+x = rand(nobs);
 y = rand(nobs);
 f = sin(x*6) .* cos(y*6);
 f=f+randn(nobs);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,200),linspace(0,1,200));
+xi,yi = ndgrid(linspace(0,1,70),linspace(0,1,70));
 
 # reference field
 fref = sin(6xi) .* cos(6yi);
@@ -29,17 +29,17 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.3;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 2;
+epsilon2 = 0.1;
 
 # fi is the interpolated field
 
 for imeth=0:3
 
 
-bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,0,imeth);
+bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,4,imeth);
 
 subplot(2,2,imeth+1)
 plot(xi2D,cvinter,"-")

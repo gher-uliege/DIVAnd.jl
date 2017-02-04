@@ -63,8 +63,8 @@ function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 # check inputs
 
-if ne==0 & nl==0
-  warn("There is no parameter optimisation done")
+if (ne==0 && nl==0)
+  warn("There is no parameter optimisation done ", nl, ne)
   return 1,1,0,0,0,0,0
 end
 
@@ -73,7 +73,7 @@ end
 # For the moment, hardwired values
 switchvalue1=130;
 switchvalue2=1000;
-samplesforHK=100;
+samplesforHK=75;
 # with of window so sample in log scale, so order of magnitudes worder
 # For length scales, one order of magnitude; make sure the grid is fine enough
 worderl=1.;
@@ -125,7 +125,7 @@ x2Ddata[ip]=logfactorsl[i];
 y2Ddata[ip]=logfactorse[j];
 
 
-fi,s =  divandrun(mask,pmn,xi,x,f,len.*factorse[i],epsilon2.*factorse[j]; otherargs...);
+fi,s =  divandrun(mask,pmn,xi,x,f,len.*factorsl[i],epsilon2.*factorse[j]; otherargs...);
 residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
 
@@ -146,6 +146,13 @@ if method==0
     mymethod=method
 end
 
+# Check if more samples than data are asked switch to direct method
+
+if mymethod==2
+if nrealdata < samplesforHK
+  mymethod=1
+end
+end
 
 
 
@@ -185,7 +192,7 @@ end
 if mymethod==3
    work=(1-divand_GCVKiiobs(s));
    cvval=divand_cvestimator(s,residual./work);	
-   epsilon2in[ip] = 1/200/work^2;   
+   epsilon2in[ip] = 1/2000/work^2;   
 end
 
 cvvalues[ip]=cvval;
@@ -236,7 +243,7 @@ if ne==0
 	bestvalue=findmin(cvinter)
 	posbestfactor=bestvalue[2]
 	cvval=bestvalue[1]
-	bestfactor=10^epsilon2inter[posbestfactor]
+	bestfactor=10^linter[posbestfactor]
 	return bestfactor, cvval,cvvalues, logfactorsl,cvinter,linter
 
 
@@ -245,7 +252,7 @@ end
 
 # Otherwise 2D
 
-	xi2D,yi2D	= ndgrid(linspace(-worderl*1.1,1.1*worderl,101),linspace(-wordere*1.1,1.1*wordere,101))
+	xi2D,yi2D	= ndgrid(linspace(-worderl*1.1,1.1*worderl,71),linspace(-wordere*1.1,1.1*wordere,71))
 	
 
 	maskcv = trues(xi2D)
