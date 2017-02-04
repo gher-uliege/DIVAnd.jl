@@ -38,6 +38,7 @@ type divand_struct
     maxit
     minit
     inversion
+    niter
     keepLanczosVectors
     yo
     R
@@ -86,6 +87,7 @@ type divand_struct
         maxit = 100
         minit = 10
         inversion = :chol
+        niter = 0
         keepLanczosVectors = false
 
         obsout = Array{Bool,1}()
@@ -120,6 +122,7 @@ type divand_struct
             maxit,
             minit,
             inversion,
+            niter,
             keepLanczosVectors,
             yo,
             R,

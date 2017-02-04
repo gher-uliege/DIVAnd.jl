@@ -52,9 +52,7 @@ yo = s.yo;
                                               minit=s.minit,
                                               x0=x0); #,'renorm',1,'pc',pc);
 
-            @show size(fpi)
-
-            #s.iter = niter;
+            s.niter = niter;
 
 #           s.relres = diag.relres;
 #           s.P = CovarLanczos(Q,T);

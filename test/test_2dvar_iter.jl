@@ -25,9 +25,9 @@ leny = .15;
 epsilon2 = 0.05;
 
 #,err,s
-va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:chol)
+@time va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:chol)
 
-va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter)
+@time va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter)
 
 @test va_chol ≈ va_iter
 
