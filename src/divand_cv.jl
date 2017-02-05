@@ -63,10 +63,7 @@ function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 # check inputs
 
-if (ne==0 && nl==0)
-  warn("There is no parameter optimisation done ", nl, ne)
-  return 1,1,0,0,0,0,0
-end
+
 
 
 
@@ -85,7 +82,7 @@ wordere=1.5;
 if nl>0
 logfactorsl=collect(linspace(-worderl,worderl,2*nl+1));
   else
-logfactorsl=[1]
+logfactorsl=[0]
 end
 factorsl=10.^logfactorsl;
 
@@ -93,7 +90,7 @@ factorsl=10.^logfactorsl;
 if ne>0
 logfactorse=collect(linspace(-wordere,wordere,2*ne+1));
   else
-logfactorse=[1]
+logfactorse=[0]
 end
 factorse=10.^logfactorse;
 
@@ -114,8 +111,8 @@ y2Ddata=zeros((2*nl+1)*(2*ne+1));
 # For automatic choice this will be done later once the exact number of useful data is known
 
 
-
-
+d0d=0
+d0dmd1d=0
 ip=0
 for i=1:size(factorsl)[1]
 for j=1:size(factorse)[1]
@@ -128,6 +125,8 @@ y2Ddata[ip]=logfactorse[j];
 fi,s =  divandrun(mask,pmn,xi,x,f,len.*factorsl[i],epsilon2.*factorse[j]; otherargs...);
 residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
+d0d=dot((1-s.obsout).*(s.yo),(s.yo));
+d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
 
 # Determine which method to use
 
@@ -200,7 +199,39 @@ cvvalues[ip]=cvval;
 end
 end
 
+
+
+
+
+#####################
+
+
+# When no sampling is requested, just return CV value (for divand_qc) and a 
+# multiplication factor for epsilon2 based on the Derozier adaptation idea
+# ll1= d0d/(d0d-d1d)-1
+# 
+if (ne==0 && nl==0)
+  warn("There is no parameter optimisation done ", nl, ne)
+  ll1= d0d/(d0dmd1d)-1;
+  eps1=1/ll1;
+if ndims(epsilon2) == 0
+  eps2=epsilon2;
+elseif ndims(epsilon2) == 1
+  eps2 = mean(epsilon2);
+else
+  eps2 = mean(diag(epsilon2));
+end
+  return cvvalues[1],eps1/eps2
+end
+
+
+
+
+
 # Now interpolate and find minimum using 1D divand or 2D divand depending on the situation
+
+
+
 
 if nl==0
 

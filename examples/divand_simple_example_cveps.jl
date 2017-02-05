@@ -29,13 +29,14 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.3;
+len = 0.2;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 0.1;
+epsilon2 = 1;
 
 # fi is the interpolated field
-
+bestfactore=1
+cvval=99999
 for imeth=0:3
 
 
@@ -49,6 +50,33 @@ plot(log10(bestfactore), cvval,"o")
 title("Method $imeth")
 
 end
+
+# De Rosier type of approach
+
+figure("another one")
+
+epsbest1=epsilon2*bestfactore
+cvbest1=cvval
+
+
+cvbest2=zeros(20);
+eps2=zeros(20)
+for i=1:20
+
+cvval,factor=divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,3);
+eps2[i]=epsilon2;
+cvbest2[i]=cvval;
+epsilon2=epsilon2*factor
+
+end
+
+epsilon2
+epsbest1
+cvbest1
+cvbest2
+eps2
+
+plot(log10(eps2),cvbest2,".",log10(epsbest1),cvbest1,"o",log10(eps2[end]),cvbest2[end],"+")
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

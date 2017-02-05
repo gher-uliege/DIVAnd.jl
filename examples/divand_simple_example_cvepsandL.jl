@@ -7,13 +7,13 @@ using PyPlot
 srand(1234)
 # observations
 nobs=99
-x = -1.+3*rand(nobs);
+x = rand(nobs);
 y = rand(nobs);
 f = sin(x*6) .* cos(y*6);
 f=f+randn(nobs);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,200),linspace(0,1,200));
+xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100));
 
 # reference field
 fref = sin(6xi) .* cos(6yi);
