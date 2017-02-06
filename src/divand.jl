@@ -210,6 +210,7 @@ include("divand_solve.jl");
 include("divand_metric.jl");
 include("divand_constr_advec.jl");
 include("divandrun.jl");
+include("divandgo.jl");
 include("divand_cpme.jl");
 include("divand_aexerr.jl");
 include("divand_GCVKii.jl");
@@ -229,6 +230,6 @@ export MatFun,divand_obscovar
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
    statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
-   divand_cvestimator, divand_erroratdatapoints, divand_cvlambda, divand_cv, divand_qc, divand_adaptedeps2
+   divand_cvestimator, divand_erroratdatapoints, divand_cvlambda, divand_cv, divand_qc, divand_adaptedeps2, divandgo
 
 end
