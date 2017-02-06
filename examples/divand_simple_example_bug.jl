@@ -5,13 +5,12 @@ using divand
 using PyPlot
 
 # observations
-nobs=1
-x = rand(nobs);
-y = rand(nobs);
+x = [0.2];
+y = [0.5];
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,150),linspace(0,1,130));
+xi,yi = ndgrid(linspace(0.5,1,50),linspace(0,1,30));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
@@ -33,14 +32,22 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-@time fi,pww,xww,mww,ndl = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
+# plotting of results
+subplot(1,2,1);
+pcolor(xi,yi,fref);
+colorbar()
+clim(-1,1)
+plot(x,y,"k.");
 
-subplot(1,2,1)
-pcolor(xi,yi,fi)
-subplot(1,2,2)
-pcolor(xi,yi,fiex)
+subplot(1,2,2);
+pcolor(xi,yi,fi);
+colorbar()
+clim(-1,1)
+title("Interpolated field");
+
+savefig("divand_simple_example.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

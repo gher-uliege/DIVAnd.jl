@@ -104,6 +104,10 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 n=ndims(mask)
 
 pmnw=[];
+maskw=[];
+xw=[];
+fw=[];
+ndlast=0;
 
 fi=zeros(size(mask));
 # check inputs
@@ -126,7 +130,7 @@ elseif isa(Labs,Tuple)
 
 end
 
-
+problemsize=1;
 for i=1:n
 # For each dimension try to define windows
 # Assuming uniform metrics
@@ -140,15 +144,14 @@ overlapping[i]=0;
 if Lscales[i]<   0.07*size(mask)[i]/pmn[i][1]
 
 overlapping[i]=ceil( 3*Lscales[i]*pmn[i][1]   )
-stepsize[i]=ceil( 0.5*Lscales[i]*pmn[i][1]   )
+stepsize[i]=ceil( 1*Lscales[i]*pmn[i][1]   )
+problemsize=problemsize*(2*overlapping[i]+stepsize[i]);
 end
 
 # 
-
-
-
 end
 
+# Depending on problemlisze increase or decrease stepsize for the windowed part
 
 
 # Now test hardcoded 2D
@@ -215,8 +218,9 @@ warn("Test window $iw1 $iw2 $isol1 $isol2 $ij $istore1 $istore2 ")
 #windowpoints: indexes in ND grid to retain for the windowing
 windowpoints=(iw1[1]:iw2[1],iw1[2]:iw2[2])
 
-#pmnw=([ x[windowpoints...] for x in pmn ]...)
-
+pmnw=([ x[windowpoints...] for x in pmn ]...);
+maskw=mask[windowpoints...];
+xw=([ x[windowpoints...] for x in xi ]...);
 
 fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
 
@@ -224,14 +228,14 @@ fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([
 
 
 
-fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= deepcopy(fw[isol1[1]:isol2[1],isol1[2]:isol2[2]]);
+fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
 
-
+ndlast=sum(1-s.obsout)
 
 end
 end
 
-return fi
+return fi,pmnw,xw,maskw,ndlast
 
 
 
