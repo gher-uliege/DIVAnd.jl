@@ -223,7 +223,7 @@ include("divand_erroratdatapoints.jl");
 include("divand_cvlambda.jl");
 include("divand_cv.jl");
 include("divand_qc.jl");
-include("divand_adaptedeps2");
+include("divand_adaptedeps2.jl");
 
 export MatFun,divand_obscovar
 

@@ -35,9 +35,9 @@ epsilon2 = 1;
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
 
-qcval,a,b,inlam=divand_qc(fi,s,1)
+qcval=divand_qc(fi,s,1)
 
-
+suspecindexes=sortperm(qcval,rev=true)
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

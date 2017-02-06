@@ -4,17 +4,23 @@ Compute a variational analysis of arbitrarily located observations to calculate 
 qcvalues,indexes = divand_qc(fi,s);
 
 
-If the optional argument cvval is used, it should be the optimal value provided by cross validation
+If the optional argument it describes the method to be used:
+
+method=1 as for standard cross validation
+method=3 as for GCV
+method=4 with CV estimator to be used outside the routine
+
+use sortperm to find most suspect values
 
 """
 
 
-function divand_qc(fi, s, cvval=0)
+function divand_qc(fi, s, method=0)
 
 
 # For the moment, hardwired values
 # Make sure to work only with real observations
-switchvalue=500;
+switchvalue1=130;;
 
 H = s.obsconstrain.H;
 R = s.obsconstrain.R;
@@ -22,40 +28,50 @@ yo=s.yo;
 
 nd=size(s.obsout)[1];
 invlam=mean(diag(R));
+d0d=dot((1-s.obsout).*(s.yo),(s.yo));
+nrealdata=sum(1-s.obsout);
 
-meaneps2=(dot(yo[1:nd]',yo[1:nd])/nd) *invlam/(1+invlam);
+meaneps2=(d0d/nrealdata) *invlam/(1+invlam);
 
 qcval=zeros(nd);
 
 residual=(1-s.obsout).*divand_residualobs(s,fi);
-nrealdata=sum(1-s.obsout);
+
+
+if method==0
+
+    mymethod=3
+	if nrealdata < switchvalue1
+	mymethod=1
+	end
+         else
+    mymethod=method
+end
+
 
 # Third method
-if cvval>0
+if mymethod==4
 
-   c1=3
+   cvval=1
    qcval=residual.^2./(cvval*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)).^2);
-   return qcval,meaneps2,c1,invlam
+   return qcval
 end
 
 
-if nrealdata<switchvalue
-
-    c1=1
-#   cvval=divand_cvestimator(s,residual./(1-divand_diagHKobs(s)));
+if mymethod==1
 
    qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_diagHKobs(s)));
-   else
-
-    c1=2
-#   cvval=divand_cvestimator(s,residual./(1-divand_GCVKiiobs(s)));	 
-   qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)));
+   return qcval
 end
 
+if mymethod==3
+    
+   qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)));
+   return qcval
+end
+warn("divand_qc not defined for methode  $method")
 
-#sortperm(qcval,rev=true)
-# provides indexes of most suspect values
-return qcval,meaneps2,c1,invlam
+return 0
 
 end
 
