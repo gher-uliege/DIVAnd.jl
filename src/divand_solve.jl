@@ -8,13 +8,14 @@ observations yo
 
 Input:
   s: structure created by divand_factorize
-  yo: value of the observations
+  fi0: starting point for iterative primal methods
+  f0: starting point for the iterative dual method
 
 Output:
   fi: analyzed field
 """
 
-function divand_solve!(s)
+function divand_solve!(s,fi0,f0)
 
 H = s.H;
 sv = s.sv;
@@ -28,15 +29,12 @@ if s.primal
         fpi =  P * (H'* (R \ yo[:]));
      else
         HiRyo = H'* (R \ yo[:]);
-
         fun(x) = s.iB*x + H'*(R \ (H * x));
 
-        x0 = zeros(size(s.iB,1));
-
-        fpi,success,s.niter = conjugategradient(fun,HiRyo,tol=s.tol,
-                                      maxit=s.maxit,
-                                      minit=s.minit,
-                                      x0=x0,
+        fpi,success,s.niter = conjugategradient(fun,HiRyo,tol = s.tol,
+                                      maxit = s.maxit,
+                                      minit = s.minit,
+                                      x0 = fi0,
                                       pc = s.preconditioner)
 
         if !success
@@ -51,12 +49,10 @@ else # dual
     # fun(x) computes (H B H' + R)*x
     fundual(x) = H * (B * (H'*x)) + R*x;
 
-    x0 = zeros(yo)
-
     tmp,success,s.niter = conjugategradient(fundual,yo,tol = s.tol,
                                             maxit = s.maxit,
                                             minit = s.minit,
-                                            x0 = x0,
+                                            x0 = f0,
                                             pc = s.preconditioner)
     if !success
         warn("Preconditioned conjugate gradients method did not converge")

@@ -18,7 +18,7 @@ R = s.R;
 iB = s.iB;
 H = s.H;
 
-#if s.primal
+if s.primal
     if s.inversion == :chol
         if isa(R,Diagonal)
             # this is only necessary for julia 0.5.0
@@ -44,7 +44,9 @@ H = s.H;
         s.preconditioner = s.compPC(iB,H,R);
       toc()
     end
-#else # dual
+else # dual
+    s.preconditioner = s.compPC(iB,H,R);
+
     # #C = H * (iB \ H') + R;
     # s.B = CovarIS(iB);
     # # pre-conditioning function for conjugate gradient
@@ -70,9 +72,9 @@ H = s.H;
     #         s.funPC = @(x) RC' \ (QC*x);
 
     #     end
-    # end
+end
 
-    return s
+return s
 end
 
 # LocalWords:  divand

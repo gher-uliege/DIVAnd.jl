@@ -81,6 +81,10 @@ defined by the coordinates `xi` and the scales factors `pmn`.
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
 
+* `fi0`: starting field for iterative primal algorithm (same size as `mask`)
+
+* `f0`: starting field for iterative dual algorithm (same size as the observations `f`)
+
 
 # Output:
 *  `fi`: the analysed field
@@ -112,10 +116,9 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 fracindex = [],
                 alpha = [],
                 keepLanczosVectors = 0,
-                compPC = divand_pc_none
-
-#,
-#                compPC = divand_pc_sqrtiB
+                compPC = divand_pc_none,
+                fi0 = zeros(size(mask)),
+                f0 = zeros(size(f))
                 )
 
 
@@ -207,7 +210,7 @@ end
 divand_factorize!(s);
 
 #if !apply_EOF_contraint
-    fi = divand_solve!(s);
+    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0);
 #else
 #    fi,s = divand_solve_eof(s,f);
 #end
