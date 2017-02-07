@@ -109,6 +109,9 @@ Df2 = Df2[2:end-1]
 
 @test Df1 ≈ Df2[1]
 
+# value outside of grid
+H,out,outbbox = sparse_interp(trues(2,2),[-10; 1])
+@test out == [true]
 
 # sparse gradient
 

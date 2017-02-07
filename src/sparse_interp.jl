@@ -54,7 +54,7 @@ for i = 1:n
     p = find(I[i,:] == sz[i])
     ind[i,p] = sz[i]-1
 
-    inside = inside & 1 .<= ind[i,:] .< sz[i]
+    inside = inside & (1 .<= ind[i,:] .< sz[i])
   end
 end
 
