@@ -164,7 +164,11 @@ end
 if nwd>0
   epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
 end
+if epsilon<0
 warn("SO what $epsilon $problemsize $nwd $overlapping")
+epsilon=1E-6
+end
+
 for i=1:n
 # if length scale is small compared to domain size
 if Lscales[i]<   lfactor*size(mask)[i]/pmn[i][1]
