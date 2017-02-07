@@ -1,7 +1,6 @@
 # Testing divand in 2 dimensions
 
 using Base.Test
-#using divand
 
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30))
@@ -18,7 +17,7 @@ x = x[:]
 y = y[:]
 v = sin(x*6) .* cos(y*6)
 
-
+# correlation length
 lenx = .15;
 leny = .15;
 
@@ -36,16 +35,16 @@ kwargs = [(:tol, tol),(:maxit,1000)]
 # * verify that preconditioners reduce the number of iterations
 
 # direct inversion
-@time va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                             kwargs..., inversion=:chol)
 
 # iterative (without preconditioner)
-@time va_iter,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_iter,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                             kwargs..., inversion=:pcg)
 @test norm(va_chol[mask] - va_iter[mask]) < tolres
 
 # iterative (without preconditioner but a good starting point :-)
-@time va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                             kwargs..., inversion=:pcg, fi0 = va_chol)
 @test va_iter ≈ va_chol
 @test s.niter == 0
@@ -53,7 +52,7 @@ kwargs = [(:tol, tol),(:maxit,1000)]
 
 # iterative (with preconditioner)
 
-@time va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                       kwargs..., inversion=:pcg,compPC = divand_pc_sqrtiB)
 @test norm(va_chol[mask] - va_iter[mask]) < tolres
 @test s_wp.niter < s_np.niter
@@ -63,13 +62,13 @@ kwargs = [(:tol, tol),(:maxit,1000)]
 function compPC(iB,H,R)
     return x -> iB \ x;
 end
-@time va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                       kwargs..., inversion=:pcg,compPC = compPC);
 @test norm(va_chol[mask] - va_iter[mask]) < tolres
 
 # iterative dual (without precondiditioner)
 
-@time va_dual,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_dual,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                       kwargs..., primal=false);
 @test norm(va_chol[mask] - va_dual[mask]) < tolres
 
@@ -81,7 +80,7 @@ function compPCdual(iB,H,R)
     factorize!(iM);
     return x -> iM * x;
 end
-@time va_dual,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+va_dual,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                       kwargs..., primal=false,compPC = compPCdual);
 @test norm(va_chol[mask] - va_dual[mask]) < tolres
 @test s_wp.niter < s_np.niter

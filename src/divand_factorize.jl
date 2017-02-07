@@ -40,9 +40,7 @@ if s.primal
 
         s.P = P;
     else
-      tic()
-        s.preconditioner = s.compPC(iB,H,R);
-      toc()
+        s.preconditioner = s.compPC(iB,H,R);        
     end
 else # dual
     s.preconditioner = s.compPC(iB,H,R);
