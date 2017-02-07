@@ -10,7 +10,7 @@ y = [0.5];
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0.5,1,50),linspace(0,1,30));
+xi,yi = ndgrid(linspace(0.5,1,50),linspace(0.,1,30));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
@@ -29,7 +29,7 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 0.01;
 
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);

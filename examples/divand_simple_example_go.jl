@@ -11,7 +11,7 @@ y = rand(nobs);
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,150),linspace(0,1,130));
+xi,yi = ndgrid(linspace(0,1,650),linspace(0,1,830));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
@@ -27,7 +27,7 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.03;
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;

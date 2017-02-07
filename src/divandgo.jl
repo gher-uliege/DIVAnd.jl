@@ -103,6 +103,17 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 
 n=ndims(mask)
 
+# Hardwired
+
+# How wide is the overlap in terms of number of length scales
+factoroverlap=3
+
+# If possible use windows as large as possible but small enought to not reach the following problem size
+biggestproblem=250*350 
+
+# Fraction of domain size at which windowing is attempted if len is smaller
+lfactor=0.07
+
 pmnw=[];
 maskw=[];
 xw=[];
@@ -131,6 +142,7 @@ elseif isa(Labs,Tuple)
 end
 
 problemsize=1;
+nwd=0
 for i=1:n
 # For each dimension try to define windows
 # Assuming uniform metrics
@@ -138,20 +150,35 @@ for i=1:n
 stepsize[i]=size(mask)[i];
 overlapping[i]=0;
 
-
-
 # if length scale is small compared to domain size
-if Lscales[i]<   0.07*size(mask)[i]/pmn[i][1]
+if Lscales[i]<   lfactor*size(mask)[i]/pmn[i][1]
+overlapping[i]=ceil( factoroverlap*Lscales[i]*pmn[i][1]   )
+ problemsize=problemsize*overlapping[i]
+  nwd=nwd+1
+                              else
+ problemsize=problemsize*size(mask)[i]							  
+end
 
-overlapping[i]=ceil( 3*Lscales[i]*pmn[i][1]   )
-stepsize[i]=ceil( 1*Lscales[i]*pmn[i][1]   )
-problemsize=problemsize*(2*overlapping[i]+stepsize[i]);
+# 
+end
+if nwd>0
+  epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
+end
+warn("SO what $epsilon $problemsize $nwd $overlapping")
+for i=1:n
+# if length scale is small compared to domain size
+if Lscales[i]<   lfactor*size(mask)[i]/pmn[i][1]
+stepsize[i]=ceil( epsilon*factoroverlap*Lscales[i]*pmn[i][1]   )
 end
 
 # 
 end
 
+
+
 # Depending on problemlisze increase or decrease stepsize for the windowed part
+
+
 
 
 # Now test hardcoded 2D
