@@ -109,7 +109,18 @@ n=ndims(mask)
 factoroverlap=3
 
 # If possible use windows as large as possible but small enought to not reach the following problem size
-biggestproblem=250*350 
+# This needs adaptions to the dimensionality of the problem; the more dimensions the more expensive
+# the problem is because of the bandwidth of the matrix. So typically
+
+if n<3
+biggestproblem=300*300 
+end
+if n==3
+biggestproblem=50*50*50
+end
+if n==4
+biggestproblem=40*40*5*12
+end
 
 # Fraction of domain size at which windowing is attempted if len is smaller
 lfactor=0.07
@@ -272,7 +283,7 @@ windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 #maskw=mask[windowpoints...];
 #xw=([ x[windowpoints...] for x in xi ]...);
 
-
+# Need to check how to work with constraints...
 
 fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
 
