@@ -185,7 +185,7 @@ end
 
 
 
-# Now test hardcoded 2D
+
 
 # Keep pointers to place where solution is found in output grid
 # window corners in main problem
@@ -201,16 +201,30 @@ ij=ones(Int,n)
 istore1=zeros(Int,n)
 istore2=zeros(Int,n)
 
-for j=1:stepsize[2]:size(mask)[2]
-for i=1:stepsize[1]:size(mask)[1]
 
-ij[1]=i;
-ij[2]=j;
+# Now test hardcoded for maximum 4 dimensions
+ij=zeros(Int,4);
+ssize=ones(Int,4);
+lastp=ones(Int,4);
 
+ssize[1:n]=stepsize[1:n];
+lastp[1:n]=collect(size(mask));
+
+for il4=1:ssize[4]:lastp[4]
+for il3=1:ssize[3]:lastp[3]
+for il2=1:ssize[2]:lastp[2]
+for il1=1:ssize[1]:lastp[1]
+
+ij[1]=il1;
+ij[2]=il2;
+ij[3]=il3;
+ij[4]=il4;
+
+
+
+
+# Generic code again
 for nd=1:n
-
-
-
 iw1[nd]=ij[nd]-overlapping[nd]
 isol1[nd]=overlapping[nd]+1
 
@@ -240,33 +254,71 @@ istore2[nd]=istore1[nd]+isol2[nd]-isol1[nd];
 
 end
 
+
+
 warn("Test window $iw1 $iw2 $isol1 $isol2 $ij $istore1 $istore2 ")
+
 
 
 
 
 #Test for windowing; to prepare newtuples
 #windowpoints: indexes in ND grid to retain for the windowing
-windowpoints=(iw1[1]:iw2[1],iw1[2]:iw2[2])
+#windowpoints=(iw1[1]:iw2[1],iw1[2]:iw2[2])
 
-pmnw=([ x[windowpoints...] for x in pmn ]...);
-maskw=mask[windowpoints...];
-xw=([ x[windowpoints...] for x in xi ]...);
+windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
+
+#pmnw=([ x[windowpoints...] for x in pmn ]...);
+#maskw=mask[windowpoints...];
+#xw=([ x[windowpoints...] for x in xi ]...);
+
+
 
 fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
+
+
+# Now error fields
+# Cpme: just run and take out same window
+
+# AEXERR: just run and take out same window
+
+
+# EXERR: P only to points on the inner grid, not the overlapping one !
+
+
+# End error fields
+
+
+
+# Do similar things with other properties if asked for
+
+# or better, replace the divandrun call by a divandrunsmart call with these parameters ? Would allow exploitation of optimised versions of the solver ?
+
+
+
+
+
 
 # copy, deepcopy or just = ???
 
 
 
-fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
+windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
+windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
-ndlast=sum(1-s.obsout)
+#fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
+
+fi[windowpointsstore...]= fw[windowpointssol...];
+
+# ndlast=sum(1-s.obsout)
 
 end
 end
+end
+end
 
-return fi,pmnw,xw,maskw,ndlast
+
+return fi #,pmnw,xw,maskw,ndlast
 
 
 
@@ -276,7 +328,8 @@ return fi,pmnw,xw,maskw,ndlast
 return pmnw,n,Lscales,overlapping,stepsize
 end
 
-# Copyright (C) 2008-2016 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

@@ -121,9 +121,6 @@ if !any(mask[:])
 end
 
 
-bebe=size(mask);
-warn("WTF $bebe")
-
 s = divand_background(mask,pmn,len,alpha,moddim);
 s.betap = 0;
 s.EOF_lambda = EOF_lambda;

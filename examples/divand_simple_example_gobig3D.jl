@@ -1,26 +1,22 @@
-# A simple example of divand in 4 dimensions
+# A simple example of divand in 3 dimensions
 # with observations from an analytical function.
 
 using divand
 using PyPlot
 
 # observations
-nobs=200;
-x = rand(nobs);
-y = rand(nobs);
-z = rand(nobs);
-t = rand(nobs);
-f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
+x = rand(75);
+y = rand(75);
+z = rand(75);
+f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) ;
 
 # final grid
 #
-testsizexy=40
-testsizez=5
-testsizet=12
-xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
+testsize=50
+xi,yi,zi = ndgrid(linspace(0,1,testsize),linspace(0,1,testsize),linspace(0,1,testsize));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6) .* sin(ti*2*pi);
+fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6);
 
 # all points are valid points
 mask = trues(xi);
@@ -29,37 +25,37 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
-pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
-po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
-pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
+pm = ones(xi) / (xi[2,1,1]-xi[1,1,1]);
+pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
+po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.05;
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
+@ time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
+
+@ time fiw= divandgo(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fref[:,:,3,6]);
+pcolor(xi[:,:,15],yi[:,:,15],fi[:,:,15]);
 colorbar()
 clim(-1,1)
 plot(x,y,"k.");
 
 subplot(1,2,2);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fi[:,:,3,6]);
+pcolor(xi[:,:,15],yi[:,:,15],fiw[:,:,15]);
 colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-savefig("divand_simple_example_4D.png")
+savefig("divand_simple_example_go3D.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

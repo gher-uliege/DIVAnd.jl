@@ -5,13 +5,13 @@ using divand
 using PyPlot
 
 # observations
-nobs=1
+nobs=500
 x = rand(nobs);
 y = rand(nobs);
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,650),linspace(0,1,830));
+xi,yi = ndgrid(linspace(0,1,950),linspace(0,1,830));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
@@ -35,14 +35,23 @@ epsilon2 = 1;
 # fi is the interpolated field
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
-@time fi,pww,xww,mww,ndl = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
+@time fi = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
-subplot(1,2,1)
+subplot(1,3,1)
 pcolor(xi,yi,fi)
-subplot(1,2,2)
+clim(-1,1)
+subplot(1,3,2)
 pcolor(xi,yi,fiex)
+colorbar()
+clim(-1,1)
+subplot(1,3,3)
+pcolor(xi,yi,fiex-fi)
+colorbar()
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+
+
+# Copyright (C) 2014, 2017 Alexander Barth         <a.barth@ulg.ac.be>
+#                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
