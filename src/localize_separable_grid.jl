@@ -1,17 +1,18 @@
 # consider to reverse order x,mask,xi
 """
-# Derive fractional indices on a separable grid.
-#
-# I = localize_separable_grid(xi,mask,x)
-#
-# xi and x are a tuple
-# x1,x2 = ndgrid(2 * collect(1:5),collect(1:6))
-# x = (x1,x2)
-#
-# Derive fractional indices where xi are the points to localize in the
-# separable grid x (every dimension in independent on other dimension).
-# The output I is an n-by-m array where n number of dimensions and m number of
-# observations
+Derive fractional indices on a separable grid.
+
+I = localize_separable_grid(xi,mask,x)
+
+xi and x are a tuples, e.g.
+x1,x2 = ndgrid(2 * collect(1:5),collect(1:6))
+x = (x1,x2)
+
+Derive fractional indices where xi are the points to localize in the
+separable grid `x` (every dimension in independent on other dimension).
+The output `I` is an n-by-m array where n number of dimensions and m number of
+observations. The correspond element of I is negative if `xi` is outside of
+the grid defined by `x`.
 """
 function localize_separable_grid(xi,mask,x)
 
@@ -62,13 +63,13 @@ function localize_separable_grid(xi,mask,x)
         I[i,ind] = 1
     end
 
-    I
+    return I
 end
 
 
 # LocalWords:  indices sz tol
 
-# Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2016, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
