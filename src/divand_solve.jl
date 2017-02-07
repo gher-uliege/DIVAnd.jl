@@ -48,9 +48,10 @@ yo = s.yo;
 #                                              'x0',x0,'renorm',1,'pc',pc);
 
             fpi,niter = conjugategradient(fun,HiRyo,tol=s.tol,
-                                              maxit=s.maxit,
-                                              minit=s.minit,
-                                              x0=x0); #,'renorm',1,'pc',pc);
+                                          maxit=s.maxit,
+                                          minit=s.minit,
+                                          x0=x0, 
+                                          pc = s.preconditioner); #,'renorm',1,
 
             s.niter = niter;
 

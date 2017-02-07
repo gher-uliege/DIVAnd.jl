@@ -40,9 +40,9 @@ H = s.H;
 
         s.P = P;
     else
-#      tic
-#        [s.M1,s.M2] = s.compPC(iB,H,R);
-#      s.pc_time = toc();
+      tic()
+        s.preconditioner = s.compPC(iB,H,R);
+      toc()
     end
 #else # dual
     # #C = H * (iB \ H') + R;

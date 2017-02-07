@@ -72,7 +72,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `compPC`: function that returns a preconditioner for the primal formulation
      if inversion is set to 'pcg'. The function has the following arguments:
 
-           [M1,M2] = compPC(iB,H,R)
+           M1,M2 = compPC(iB,H,R)
 
     where iB is the inverse background error covariance, H the observation
     operator and R the error covariance of the observation. The used
@@ -108,7 +108,9 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 moddim = [],
                 fracindex = [],
                 alpha = [],
-                keepLanczosVectors = 0
+                keepLanczosVectors = 0,
+                compPC = divand_pc_none
+
 #,
 #                compPC = divand_pc_sqrtiB
                 )
@@ -130,7 +132,7 @@ s.maxit = maxit;
 s.minit = minit;
 s.inversion = inversion;
 s.keepLanczosVectors = keepLanczosVectors;
-#s.compPC = compPC;
+s.compPC = compPC;
 
 # # remove non-finite elements from observations
 # f = f[:];
@@ -208,6 +210,7 @@ divand_factorize!(s);
 #end
 
 return fi,s
+
 
 end
 

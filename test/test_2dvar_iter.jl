@@ -1,4 +1,4 @@
-# Testing divand in 2 dimensions with independent verification.
+# Testing divand in 2 dimensions
 
 using Base.Test
 #using divand
@@ -22,15 +22,30 @@ v = sin(x*6) .* cos(y*6)
 lenx = .15;
 leny = .15;
 
-epsilon2 = 0.05;
+epsilon2 = 1;
 
-#,err,s
+# direct inversion
 @time va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:chol)
 
+# iterative (without preconditioner)
 @time va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter)
+#@test va_chol ≈ va_iter
+@show s.niter
 
-@test va_chol ≈ va_iter
+# iterative (with preconditioner)
+function compPC(iB,H,R) 
+    @show "hi"
+    return x -> x;
+end
 
+va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter,compPC = compPC);
+#@test va_chol ≈ va_iter
+@show s.niter
+
+
+va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter,compPC = divand_pc_sqrtiB);
+#@test va_chol ≈ va_iter
+@show s.niter
 
 
 
