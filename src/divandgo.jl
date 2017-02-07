@@ -101,7 +101,13 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
                 
                 )
 
+				
+				
+				
 n=ndims(mask)
+
+# DOES NOT YET WORK WITH PERIODIC DOMAINS
+
 
 # Hardwired
 
@@ -221,15 +227,24 @@ lastp=ones(Int,4);
 ssize[1:n]=stepsize[1:n];
 lastp[1:n]=collect(size(mask));
 
-for il4=1:ssize[4]:lastp[4]
-for il3=1:ssize[3]:lastp[3]
-for il2=1:ssize[2]:lastp[2]
-for il1=1:ssize[1]:lastp[1]
 
-ij[1]=il1;
-ij[2]=il2;
-ij[3]=il3;
-ij[4]=il4;
+
+sz = size(mask)
+subsz = ([ceil(Int,sz[i] / stepsize[i]) for i = 1:ndims(mask)]...)
+for cr in CartesianRange(subsz)
+    ij = [[(cr[i]-1)*stepsize[i]+1  for i = 1:ndims(mask)]...]
+        @show ij
+# end 
+
+# for il4=1:ssize[4]:lastp[4]
+# for il3=1:ssize[3]:lastp[3]
+# for il2=1:ssize[2]:lastp[2]
+# for il1=1:ssize[1]:lastp[1]
+
+# ij[1]=il1;
+# ij[2]=il2;
+# ij[3]=il3;
+# ij[4]=il4;
 
 
 
@@ -283,7 +298,9 @@ windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 #maskw=mask[windowpoints...];
 #xw=([ x[windowpoints...] for x in xi ]...);
 
+#################################################
 # Need to check how to work with constraints...
+#################################################
 
 fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
 
@@ -323,9 +340,9 @@ fi[windowpointsstore...]= fw[windowpointssol...];
 
 # ndlast=sum(1-s.obsout)
 
-end
-end
-end
+# end
+# end
+# end
 end
 
 
