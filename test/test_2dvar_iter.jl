@@ -13,7 +13,7 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(linspace(epsilon,1-epsilon,20),linspace(epsilon,1-epsilon,20))
+x,y = ndgrid(linspace(epsilon,1-epsilon,10),linspace(epsilon,1-epsilon,10))
 x = x[:]
 y = y[:]
 v = sin(x*6) .* cos(y*6)
@@ -24,27 +24,46 @@ leny = .15;
 
 epsilon2 = 1;
 
+# tolerance on the gradient A x - b
+tol = 1e-4
+# tolerance on the result x
+tolres = 1e-3
+
+kwargs = [(:tol, tol),(:maxit,1000)]
+
 # direct inversion
-@time va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:chol)
+@time va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                            inversion=:chol,kwargs...)
 
 # iterative (without preconditioner)
-@time va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter)
-#@test va_chol ≈ va_iter
+@time va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                            kwargs..., inversion=:pcg,)
+@test norm(va_chol[mask] - va_iter[mask]) < tolres
 @show s.niter
 
 # iterative (with preconditioner)
-function compPC(iB,H,R) 
-    @show "hi"
-    return x -> x;
-end
 
-va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter,compPC = compPC);
-#@test va_chol ≈ va_iter
+va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                      kwargs..., inversion=:pcg,compPC = divand_pc_sqrtiB)
+@test norm(va_chol[mask] - va_iter[mask]) < tolres
 @show s.niter
 
 
-va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,inversion=:iter,compPC = divand_pc_sqrtiB);
-#@test va_chol ≈ va_iter
+# iterative (with custom preconditioner)
+
+function compPC(iB,H,R)
+    return x -> iB \ x;
+end
+va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                      kwargs..., inversion=:pcg,compPC = compPC);
+@test norm(va_chol[mask] - va_iter[mask]) < tolres
+@show s.niter
+
+# iterative dual (without precondiditioner)
+
+va_dual,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                      kwargs..., primal=false);
+@test norm(va_chol[mask] - va_dual[mask]) < tolres
 @show s.niter
 
 

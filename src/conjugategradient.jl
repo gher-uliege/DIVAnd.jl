@@ -2,8 +2,7 @@
 """
 Solve a linear system with the preconditioned conjugated-gradient method.
 
-x = conjugategradient(fun,b,tol,maxit,pc,pc2,x0);
-#[x,Q,T] = conjugategradient(fun,b,tol,maxit,pc,pc2,x0);
+x,success,niter = conjugategradient(fun,b,tol,maxit,pc,x0);
 
 solves for x
 A x = b
@@ -22,6 +21,7 @@ the columns of Q are the Lanczos vectors
 
 function conjugategradient(fun,b; pc = x -> x, tol = 1e-6, maxit = min(size(b,1),20), minit = 0, renorm = false, x0 = zeros(size(b)))
 
+success = false
 n = length(b);
 
 tol2 = tol^2;
@@ -42,7 +42,7 @@ r = b - fun(x);
 
 # quick exit
 if r⋅r < tol2
-    return
+    return x,true,0
 end
 
 # apply preconditioner
@@ -98,6 +98,7 @@ for k=1:maxit
     zr_new = r ⋅ z;
         
     if r ⋅ r < tol2 && k >= minit
+        success = true
         break
     end
     
@@ -116,7 +117,7 @@ for k=1:maxit
     r_old = r;
 end
 
-return x,k
+return x,success,k
 
 #disp('alpha and beta')
 #figure,plot(beta(2:end))

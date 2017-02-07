@@ -1,78 +1,69 @@
-# Solve the variational problem.
-#
-# fi = divand_solve(s,yo)
-#
-# Derive the analysis based on all contraints included in s and using the
-# observations yo
-#
-# Input:
-#   s: structure created by divand_factorize
-#   yo: value of the observations
-#
-# Output:
-#   fi: analyzed field
+"""
+Solve the variational problem.
+
+fi = divand_solve(s)
+
+Derive the analysis based on all contraints included in s and using the
+observations yo
+
+Input:
+  s: structure created by divand_factorize
+  yo: value of the observations
+
+Output:
+  fi: analyzed field
+"""
 
 function divand_solve!(s)
 
 H = s.H;
 sv = s.sv;
 R = s.R;
-# fix me: ignore argument
 yo = s.yo;
 
 
-#if s.primal
+if s.primal
     if s.inversion == :chol
-      P = s.P;
-      fpi =  P * (H'* (R \ yo[:]));
+        P = s.P;
+        fpi =  P * (H'* (R \ yo[:]));
      else
-#       #H = double(H);
-       HiRyo = H'* (R \ yo[:]);
+        HiRyo = H'* (R \ yo[:]);
 
-       fun(x) = s.iB*x + H'*(R \ (H * x));
+        fun(x) = s.iB*x + H'*(R \ (H * x));
 
-#       if ~s.keepLanczosVectors
-#           [fpi,s.flag,s.relres,s.iter] = pcg(fun,HiRyo,s.tol,s.maxit,s.M1,s.M2);
+        x0 = zeros(size(s.iB,1));
 
-#           if s.flag ~= 0
-#               warning('divand-noconvergence','pcg did not converge');
-#           end
+        fpi,success,s.niter = conjugategradient(fun,HiRyo,tol=s.tol,
+                                      maxit=s.maxit,
+                                      minit=s.minit,
+                                      x0=x0,
+                                      pc = s.preconditioner)
 
-#       else
-#           #pc = @(x) s.M2 \ (s.M1 \ x);
-#           pc = [];
-           x0 = zeros(size(s.iB,1));
-#           [fpi,Q,T,diag] = conjugategradient(fun,HiRyo,'tol',s.tol,...
-#                                              'maxit',s.maxit,...
-#                                              'minit',s.minit,...
-#                                              'x0',x0,'renorm',1,'pc',pc);
+        if !success
+            warn("Preconditioned conjugate gradients method did not converge")
+        end
 
-            fpi,niter = conjugategradient(fun,HiRyo,tol=s.tol,
-                                          maxit=s.maxit,
-                                          minit=s.minit,
-                                          x0=x0, 
-                                          pc = s.preconditioner); #,'renorm',1,
-
-            s.niter = niter;
-
-#           s.relres = diag.relres;
-#           s.P = CovarLanczos(Q,T);
-#       end
+        #s.P = CovarLanczos(Q,T);
      end
-# else # dual
-#     B = s.B;
-#     # fun(x) computes (H B H' + R)*x
-#     fun = @(x) H * (B * (H'*x)) + R*x;
+else # dual
+    B = CovarIS(s.iB);
 
-#     [tmp,flag,relres,iter] = pcg(fun, yo,s.tol,s.maxit,s.funPC);
+    # fun(x) computes (H B H' + R)*x
+    fundual(x) = H * (B * (H'*x)) + R*x;
 
-#     if (flag ~= 0)
-#         error('divand:pcg', ['Preconditioned conjugate gradients method'...
-#             ' did not converge %d %g %g'],flag,relres,iter);
-#     end
+    x0 = zeros(yo)
 
-#     fpi = B * (H'*tmp);
-# end
+    tmp,success,s.niter = conjugategradient(fundual,yo,tol = s.tol,
+                                            maxit = s.maxit,
+                                            minit = s.minit,
+                                            x0 = x0,
+                                            pc = s.preconditioner)
+    if !success
+        warn("Preconditioned conjugate gradients method did not converge")
+    end
+
+    fpi = B * (H'*tmp);
+end
 
 
 fi, = statevector_unpack(sv,fpi);

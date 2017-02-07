@@ -65,20 +65,22 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `fracdim`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
 
-* `inversion`: direct solver ('chol' for Cholesky factorization) or a
-     interative solver ('pcg' for preconditioned conjugate gradient) can be
+* `inversion`: direct solver (:chol for Cholesky factorization) or a
+     interative solver (:pcg for preconditioned conjugate gradient) can be
      used.
 
 * `compPC`: function that returns a preconditioner for the primal formulation
      if inversion is set to 'pcg'. The function has the following arguments:
 
-           M1,M2 = compPC(iB,H,R)
+           fun = compPC(iB,H,R)
 
     where iB is the inverse background error covariance, H the observation
-    operator and R the error covariance of the observation. The used
-    preconditioner M will be M = M1 * M2 (or just M = M1 if M2 is empty).
-    Per default a modified incomplete Cholesky factorization will be used a
-    preconditioner.
+    operator and R the error covariance of the observation. The function `compPC` returns the
+    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x) 
+    where `M` is a positive defined symmetric matrix. 
+    Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
+    Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
+
 
 # Output:
 *  `fi`: the analysed field
@@ -91,6 +93,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Example:
   see divand_simple_example.jl
+  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 
 function divandrun(mask,pmn,xi,x,f,len,epsilon2;
@@ -98,7 +101,7 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 EOF = [],
                 diagnostics = 0,
                 EOF_lambda = 0,
-                primal = 1,
+                primal = true,
                 factorize = true,
                 tol = 1e-6,
                 maxit = 100,
