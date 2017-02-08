@@ -9,7 +9,7 @@ Kii = divand_GCVKiiobs(s);
 """
 
 
-function divand_GCVKiiobs(s,nr=5)
+function divand_GCVKiiobs(s,nr=30)
 
 #the second, optional argument is the number of random vectors nr used for the estimate
 
@@ -17,11 +17,12 @@ function divand_GCVKiiobs(s,nr=5)
 H = s.obsconstrain.H;
 R = s.obsconstrain.R;
 
-
+#if optimisation is to be used, make sure to use the same reference random points
+   srand(nr)
 
 Z=randn(size(R)[1],nr);
 
-
+   srand()
 
 
    P = s.P;

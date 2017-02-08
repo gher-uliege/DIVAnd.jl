@@ -8,18 +8,32 @@ diagonalterms = divand_diagHKobs(s);
 """
 
 
-function divand_diagHKobs(s)
+function divand_diagHKobs(s,indexlist=[])
 
 #
 
 
 H = s.obsconstrain.H;
 R = s.obsconstrain.R;
+P=s.P;
 
 
+if indexlist==[]
 
-Z=eye(size(R)[1],size(R)[1]);
+   
+   diagHK=diagLtCM(H',P,(H' * (R \ eye(size(R)[1]))) ) 
+   
 
+  else
+
+   Z=zeros(size(R)[1],length(indexlist));
+
+   for i = 1:length(indexlist)
+          Z[indexlist[i],i] = 1;
+   end 
+   diagHK=diagLtCM((H'*Z),P,(H' * (R \ Z)))
+
+end
 
 
 # to be replaced later exploiting the factors of P ?
@@ -31,8 +45,11 @@ Z=eye(size(R)[1],size(R)[1]);
 # parenthesis to force the order of operations
 
 #ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
-ZtHKZ =   (H * (P * (H' * (R \ Z))));
-    diagHK = diag(ZtHKZ);
+#ZtHKZ =   (H * (P * (H' * (R \ Z))));
+#    diagHK = diag(ZtHKZ);
+
+
+
 return diagHK
 
 end

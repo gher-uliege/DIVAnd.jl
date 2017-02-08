@@ -1,43 +1,23 @@
 """
-Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysisand it structure s
+Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
+estimate of the R matrix
 
-Kii = divand_GCVKii(s);
+ factor = divand_adaptedeps2(s,fi);
 
 """
 
 
-function divand_GCVKii(s,nr=5)
+function divand_adaptedeps2(s,fi);
 
-#the second, optional argument is the number of random vectors nr used for the estimate
+residual=divand_residualobs(s,fi);
+d0d=dot((1-s.obsout).*(s.yo),(s.yo));
+d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
+ll1= d0d/(d0dmd1d)-1;
+eps1=1/ll1;
+eps2 = mean(diag(s.obsconstrain.R));
+factor=eps1/eps2;
+return factor
 
-
-H = s.H;
-R = s.R;
-
-
-#if optimisation is to be used, make sure to use the same reference random points
-   srand(nr)
-Z=randn(size(R)[1],nr);
-   srand()
-
-
-
-   P = s.P;
-   WW=P * (H'* (R \ Z));
-   ZtHKZ=  Z'*(H*WW);
-   ZtZ  =  Z'*Z;
-
-# correction for points out of the domain:
-   nrealdata=sum(1-s.obsout);
-   ndata=size(s.obsout)[1];
-   if nrealdata==0
-     Kii=0.0;
-	          else
-     factorc=ndata/nrealdata;
-# Now take average of the nr different estimates, 
-     Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
-   end
-return Kii
 
 end
 

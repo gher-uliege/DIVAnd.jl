@@ -1,26 +1,19 @@
-# A simple example of divand in 4 dimensions
+# A simple example of divand in 2 dimensions
 # with observations from an analytical function.
 
 using divand
 using PyPlot
 
 # observations
-nobs=200;
-x = rand(nobs);
-y = rand(nobs);
-z = rand(nobs);
-t = rand(nobs);
-f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
+x = [0.2];
+y = [0.5];
+f = sin(x*6) .* cos(y*6);
 
 # final grid
-#
-testsizexy=40
-testsizez=5
-testsizet=12
-xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
+xi,yi = ndgrid(linspace(0.5,1,50),linspace(0.,1,30));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6) .* sin(ti*2*pi);
+fref = sin(xi*6) .* cos(yi*6);
 
 # all points are valid points
 mask = trues(xi);
@@ -29,37 +22,34 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
-pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
-po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
-pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
+pm = ones(xi) / (xi[2,1]-xi[1,1]);
+pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 0.01;
 
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fref[:,:,3,6]);
+pcolor(xi,yi,fref);
 colorbar()
 clim(-1,1)
 plot(x,y,"k.");
 
 subplot(1,2,2);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fi[:,:,3,6]);
+pcolor(xi,yi,fi);
 colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-savefig("divand_simple_example_4D.png")
+savefig("divand_simple_example.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

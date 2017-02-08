@@ -123,6 +123,7 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
+
 s = divand_background(mask,pmn,len,alpha,moddim);
 s.betap = 0;
 s.EOF_lambda = EOF_lambda;

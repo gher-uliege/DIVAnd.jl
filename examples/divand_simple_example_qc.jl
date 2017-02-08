@@ -35,12 +35,13 @@ epsilon2 = 1;
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
 
-qcval,a,b,inlam=divand_qc(fi,s,1)
+qcval=divand_qc(fi,s,1)
 
-
+suspectindexes=sortperm(qcval,rev=true)
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

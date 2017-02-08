@@ -61,8 +61,9 @@ if !any(mask[:])
 end
 # For the moment, hardwired values
 switchvalue=100;
+samplesforHK=100;
 worder=1.5;
-nsamp=2;
+nsamp=5;
 
 # sample multiplication factor to optimise in log space
 logfactors=collect(linspace(-worder,worder,2*nsamp+1));
@@ -70,7 +71,7 @@ factors=10.^logfactors;
 cvvalues=0.*factors;
 
 
-
+epsilon2in=zeros(2*nsamp+1);
 
 for i=1:size(factors)[1]
 
@@ -78,11 +79,36 @@ fi,s =  divandrun(mask,pmn,xi,x,f,len,epsilon2.*factors[i]; otherargs...);
 residual=divand_residualobs(s,fi);
 nrealdata=sum(1-s.obsout);
 
+# TO DO : THINK ABOUT A VERSION WITH 30 REAL ESTIMATES OF KII AND THE RESIDUAL ONLY THERE
+# c
+# unique(collect(rand(1:1000,200)))[1:30]
 
 if nrealdata<switchvalue
    cvval=divand_cvestimator(s,residual./(1-divand_diagHKobs(s)));
+   epsilon2in[i] = 1/5000;
          else
-   cvval=divand_cvestimator(s,residual./(1-divand_GCVKiiobs(s)));	 
+   work=(1-divand_GCVKiiobs(s));
+   cvval1=divand_cvestimator(s,residual./work);	
+   epsilon2in[i] = 1/200/work^2;   
+# alternate version to test: sampling  
+# find(x -> x == 3,z) 
+#   onsea=find(x->x == 0,s.obsout);
+   onsea=find(s.obsout.==0);
+   lonsea=length(onsea)
+#   warn("So",lonsea)
+# if optimisation is to be used, make sure to use the same reference random points
+   srand(nrealdata)
+# otherwise you add noise to the cv field
+   indexlist1=unique(collect(rand(1:lonsea,50*samplesforHK)))[1:samplesforHK]
+   srand()
+   indexlist=onsea[indexlist1];
+#   indexlist=collect(1:lonsea);
+   residualc=zeros(length(residual));
+   residualc[indexlist]=residual[indexlist]./(1-divand_diagHKobs(s,indexlist))
+   scalefac=float(nrealdata)/float(samplesforHK)
+   cvval=scalefac*divand_cvestimator(s,residualc)
+   cvval=cvval1
+   epsilon2in[i] = 1/5000;
 end
 
 cvvalues[i]=cvval;
@@ -105,7 +131,7 @@ pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
 lenin = worder;
 
 # normalized obs. error variance
-epsilon2in = 1/500;
+
 
 # fi is the interpolated field
 # TODO adapt for seminorm

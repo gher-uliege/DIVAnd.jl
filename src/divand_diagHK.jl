@@ -29,8 +29,15 @@ Z=eye(size(R)[1],size(R)[1]);
 # parenthesis to force the order of operations
 
 #ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
-ZtHKZ =   (H * (P * (H' * (R \ Z))));
-    diagHK = diag(ZtHKZ);
+#    ZtHKZ =   (H * (P * (H' * (R \ Z))));
+#    diagHKb = diag(ZtHKZ);
+	
+    diagHK=diagLtCM(H',P,(H' * (R \ Z)))	
+#    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7) 
+#     warn("WTF")
+#    end	
+	
+	
 return diagHK
 
 end

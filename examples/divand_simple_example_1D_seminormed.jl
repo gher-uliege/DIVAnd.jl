@@ -1,38 +1,29 @@
-# A simple example of divand in 4 dimensions
+# A simple example of divand in 1 dimensions
 # with observations from an analytical function.
 
 using divand
 using PyPlot
 
-# observations
-nobs=200;
-x = rand(nobs);
-y = rand(nobs);
-z = rand(nobs);
-t = rand(nobs);
-f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
+# observations with points outside
+x = collect(linspace(0,1,13))
+f = sin(6*pi*x) ;
 
 # final grid
-#
-testsizexy=40
-testsizez=5
-testsizet=12
-xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
+
+xi=collect(linspace(-0.1,1.1,120));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6) .* sin(ti*2*pi);
+fref = sin(xi*6*pi) ;
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
-pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
-po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
-pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
+pm = ones(size(xi)) / (xi[2]-xi[1]);
+
 
 # correlation length
 len = 0.1;
@@ -40,26 +31,21 @@ len = 0.1;
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
+m = Int(ceil(1+1/2))
+  # alpha is the (m+1)th row of the Pascal triangle:
+  # m=0         1
+  # m=1       1   1
+  # m=1     1   2   1
+  # m=2   1   3   3   1
+  # ...
+alpha = [binomial(m,k) for k = 0:m];
+alpha[1]=0;
+
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
+fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
-# plotting of results
-subplot(1,2,1);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fref[:,:,3,6]);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
-
-subplot(1,2,2);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fi[:,:,3,6]);
-colorbar()
-clim(-1,1)
-title("Interpolated field");
-
-savefig("divand_simple_example_4D.png")
-
+plot(xi,fi,".",x,f,"o")
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
