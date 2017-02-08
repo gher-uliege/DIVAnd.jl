@@ -5,10 +5,15 @@ using Base.Test
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,10),linspace(0,1,10))
 
+# mask (all points are valid)
 mask = trues(xi)
+
+# metric (inverse of the resolution)
 pm = ones(xi) / (xi[2,1]-xi[1,1])
 pn = ones(xi) / (yi[1,2]-yi[1,1])
 
+# make sure that observations are strictly inside the domain
+# defined by xi and yi
 epsilon = 1e-10;
 
 # grid of observations
