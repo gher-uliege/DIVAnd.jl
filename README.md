@@ -87,6 +87,7 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
+Tools to help you are included ([divand_cv.jl]).
 
 # Fun
 
