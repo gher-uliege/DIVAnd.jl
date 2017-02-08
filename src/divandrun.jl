@@ -45,10 +45,6 @@ defined by the coordinates `xi` and the scales factors `pmn`.
           m=2   1   3   3   1   (n=3,4)
           ...
 
-* `diagnostics`: 0 or 1 turns diagnostic and debugging information on (1) or
-       off (0, default). If on, they will be returned as the last output
-       argument
-
 * `EOF`, EOF: sub-space constraint. Orthogonal (EOF' WE^2 EOF = I) (units of
        EOF: m^(-n/2))
 
@@ -103,7 +99,6 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 velocity = (),
                 EOF = [],
-                diagnostics = 0,
                 EOF_lambda = 0,
                 primal = true,
                 factorize = true,
