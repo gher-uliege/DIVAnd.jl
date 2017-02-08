@@ -19,7 +19,7 @@ y = [0.5]
 f = [1.]
 
 # correlation length
-len = .15;
+len = 0.6
 
 # normalized error variance
 epsilon2 = 1.;
@@ -40,7 +40,7 @@ errormethods = [
                 # clever poor man's error
                 divand_cpme,
                 # almost exact error
-                #divand_almostexacterror
+                divand_almostexacterror
                 ]
 
 
