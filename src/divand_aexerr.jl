@@ -92,7 +92,7 @@ for i=1:n
 	npgrid=npgrid*size(mask)[i];
 	nsamp[i]=Labs*pmn[i][1]/finesse;
 	npneeded=npneeded*size(mask)[i]/nsamp[i];
-	
+
 end
 
 
@@ -100,7 +100,7 @@ ndata=size(f)[1];
 
 
 if npneeded>upperlimit*npgrid
-# 
+#
    return 0,0,0,0
 
 end
@@ -130,7 +130,7 @@ Rfake=blkdiag(oriR,divand_obscovar(epsilonslarge,ncv));
 #xcc=deepcopy(x);
 xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
 
-# Make an analysis with those fake points and very low snr to get B at those locations 
+# Make an analysis with those fake points and very low snr to get B at those locations
 #xfake=x;
 #ffake=f;
 
@@ -164,7 +164,7 @@ Errdatapoints=divand_erroratdatapoints(sa);
 # Now get error reduction terms
 ffake=Batdatapoints-Errdatapoints;
 
-# Interpolate error reduction term 
+# Interpolate error reduction term
 f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1/100; otherargs...);
 
 # Calculate final error
@@ -199,5 +199,3 @@ end
 # this program; if not, see <http://www.gnu.org/licenses/>.
 
 # LocalWords:  fi divand pmn len diag CovarParam vel ceil moddim fracdim
-
-
