@@ -9,6 +9,8 @@ using Base.Test
     include("test_sparse_diff.jl");
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
+	
+	include("test_diagnostic_tools.jl");
 
     include("test_1dvar.jl");
 

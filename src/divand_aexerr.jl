@@ -1,5 +1,5 @@
 """
-Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error
+Compute a variational analysis of arbitrarily located observations to calculate the almost exact error and the analysis
 
 cpme = divand_aexerr(mask,pmn,xi,x,f,len,epsilon2,...);
 
@@ -100,9 +100,9 @@ ndata=size(f)[1];
 
 
 if npneeded>upperlimit*npgrid
-#
+# No need to make an approximation if it is close to cost of direct calculation
    return 0,0,0,0
-
+# Need to catch this event outside and use direct error calculation instead
 end
 
 
@@ -165,7 +165,7 @@ Errdatapoints=divand_erroratdatapoints(sa);
 ffake=Batdatapoints-Errdatapoints;
 
 # Interpolate error reduction term
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1/100; otherargs...);
+f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1.0/100.0; otherargs...);
 
 # Calculate final error
 aexerr=Bjmb-f1;
@@ -174,7 +174,7 @@ aexerr=Bjmb-f1;
 
 
 
-# Provide the error field, the background field for additional scaling and the analysis itself
+# Provides the almost error field aexerr, the background field Bjmb for additional scaling and the analysis fa itself with its strucure sa
 
 return aexerr,Bjmb,fa,sa
 
