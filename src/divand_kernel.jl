@@ -28,8 +28,16 @@ if [binomial(m,k) for k = 0:m] == alpha
 
   mu,K = divand_kernel_binom(n,m);
 else
+   if [binomial(m,k) for k = 1:m] == alpha[2:ind]
+  # alpha are binomial coefficients except first one
+    warn("Semi-norm used, check scaling")
+    mu,K = divand_kernel_binom(n,m);
+#   correction for missing term CHECK IF NOT THE INVERSE
+    mu = (mu/sum(alpha))*sum(alpha[2:ind]):
+   else
   # unsupported sequence of alpha
   throw(DomainError())
+   end
 end
 
 # if nargin == 3
