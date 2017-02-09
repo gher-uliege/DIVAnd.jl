@@ -66,26 +66,29 @@ epsilonslarge=maximum([1E6,epsilonref*1E6]);
 # Decide how many additional fake points are needed with almost zero weight
 
 
-# TODO: Assuming uniform grid as for divandgo needs adaptation for non-uniform pmn
+# 
 n = ndims(mask)
 nsamp=ones(n);
 npgrid=1;
 npneeded=1;
+Labspmnmin=zeros(n)
 
 for i=1:n
 	if isa(len,Number)
-		Labs = len;
+		Labspmnmin[i] = len*minimum(pmn[i]);
 	elseif isa(len,Tuple)
 
 		if isa(len[1],Number)
-			Labs = len[i]
+		    Labspmnmin[i] = len[i]*minimum(pmn[i]);
+			
 			else
-			Labs=len[i][1]
+			Labspmnmin[i] = minimum(len[i].*pmn[i])
+			
 		end
 
 	end
 	npgrid=npgrid*size(mask)[i];
-	nsamp[i]=Labs*pmn[i][1]/finesse;
+	nsamp[i]=Labspmnmin[i]/finesse;
 	npneeded=npneeded*size(mask)[i]/nsamp[i];
 
 end

@@ -5,6 +5,8 @@ using divand
 
 
 # observations
+# same random set used as sometimes qc flags vary depending on actual noise
+srand(11)
 x = rand(150);
 y = rand(150);
 
