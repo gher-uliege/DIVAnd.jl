@@ -180,6 +180,10 @@ elseif isa(Labs,Tuple)
 		for i=1:n
 	    Lscalespmnmax[i]=Lscales[i]*maximum(pmn[i]);
 	    end
+	else
+     	for i=1:n
+	    Lscalespmnmax[i]=maximum(Labs[i].*pmn[i]);
+	    end
     end
 
 end
