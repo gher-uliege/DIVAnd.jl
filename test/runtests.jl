@@ -13,6 +13,7 @@ using Base.Test
     include("test_diagnostic_tools.jl");
 
     include("test_1dvar.jl");
+	include("test_1D_seminormed.jl");
 
     include("test_2dvar_check.jl");
     include("test_2dvar_adv.jl");

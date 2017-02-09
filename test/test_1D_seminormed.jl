@@ -1,8 +1,10 @@
 # A simple example of divand in 1 dimensions
 # with observations from an analytical function.
 
+using Base.Test
+
 using divand
-using PyPlot
+
 
 # observations with points outside
 x = collect(linspace(0,1,7))
