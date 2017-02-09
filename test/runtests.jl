@@ -21,6 +21,7 @@ using Base.Test
     include("test_2dvar_error.jl");
 	include("test_2dvar_cv.jl");
 	include("test_2dvar_qc.jl");
+	include("test_variableLandpmn.jl")
 	
 	
 

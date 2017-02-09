@@ -235,12 +235,13 @@ include("divand_cvestimator.jl");
 include("divand_erroratdatapoints.jl");
 include("divand_cv.jl");
 include("divand_qc.jl");
+include("divand_sampler.jl");
 include("divand_adaptedeps2.jl");
 
 export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
    statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
-   divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo
+   divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo, divand_sampler
 
 end

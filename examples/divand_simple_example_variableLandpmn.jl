@@ -1,42 +1,16 @@
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
-using Base.Test
-using divand
 
+using divand
+using PyPlot
 
 # observations
-# same random set used as sometimes qc flags vary depending on actual noise
-srand(11)
-x = rand(150);
-y = rand(150);
-
-# Put two points in specific locations
-
-x[1]=0.25
-y[1]=0.75
-
-x[2]=0.75
-y[2]=0.25
-
-
-f = sin(x*2*pi) .* sin(y*2*pi);
-
-
-f=f+0.25*randn(150);
-
-# Now fake some mix up in  two points coordinates
-
-x[2]=0.25
-y[1]=0.75
-
-x[1]=0.75
-y[2]=0.25
-
-
-
+x = [2  3  4];
+y = [2  3  4];
+f=ones(3)
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,20),linspace(0,1,20));
+xi,yi = ndgrid(linspace(0,6,50),linspace(0,5,30));
 
 
 # all points are valid points
@@ -50,42 +24,48 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.1;
+len = 1;
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+fireg,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+
+@show sampler1=divand_sampler((pm,pn),len)
+
+fis,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len*0.5,len*1.5),epsilon2);
+
+@show  sampler1=divand_sampler((pm,pn),(len*0.5,len*1.5))
+
+pm=ones(xi)./((1+xi/5).*(xi[2,1]-xi[1,1]));
+pn=ones(yi)./((1+yi/5).*(yi[1,2]-yi[1,1]));
+
+lx=0.5+xi/5
+ly=0.5+yi/5
+
+finu,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(ly,lx),epsilon2);
+@show  sampler1=divand_sampler((pm,pn),(lx,ly))
 
 
-for method in [0 1 3 4]
-
-@show method
-
-qcval=divand_qc(fi,s,method)
-
-if method==4
-# Provide fake THETA value
-qcval=qcval*4
-end
-
-# Find suspect points
-
-sp=find(x-> x.>9,qcval)
-
-@test sum(sp)==3
-
-
-qcval=divand_qc(fi,s,2)
-@test qcval==0
-
-end
+# plotting of results
+subplot(1,3,1);
+pcolor(xi,yi,fireg);
+colorbar()
+clim(0,1)
+plot(x,y,"k.");
+subplot(1,3,2);
+pcolor(xi,yi,fis);
+colorbar()
+clim(0,1)
+subplot(1,3,3);
+pcolor(xi,yi,finu);
+colorbar()
+clim(0,1)
 
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
