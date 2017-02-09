@@ -30,6 +30,7 @@ epsilon2 = 1.;
 	
         @test abs(mean(divand_diagHK(s))-0.5)<0.05
 		@test abs(mean(divand_diagHKobs(s))-0.5)<0.05
+		@test abs(mean(divand_diagHKobs(s,[1]))-0.5)<0.05
 		@test abs(mean(divand_GCVKii(s))-0.5)<0.05
 		@test abs(mean(divand_GCVKiiobs(s))-0.5)<0.05
 		@test abs(mean(divand_residual(s,fi))-0.5)<0.05
