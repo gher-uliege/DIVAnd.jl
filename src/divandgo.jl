@@ -108,6 +108,8 @@ n=ndims(mask)
 
 # DOES NOT YET WORK WITH PERIODIC DOMAINS
 
+# Also there is a huge overhead in the test_divandgo case. Need to analyze
+
 
 # Hardwired
 
@@ -140,9 +142,7 @@ ndlast=0;
 fi=zeros(size(mask));
 # check inputs
 
-if !any(mask[:])
-  error("no sea points in mask");
-end
+
 
 Lscales=ones(n);
 stepsize=ones(Int,n);
@@ -197,7 +197,7 @@ end
 
 
 
-# Depending on problemlisze increase or decrease stepsize for the windowed part
+# Depending on problem size increase or decrease stepsize for the windowed part
 
 
 
@@ -287,24 +287,23 @@ warn("Test window $iw1 $iw2 $isol1 $isol2 $ij $istore1 $istore2 ")
 
 
 
+#################################################
+# Need to check how to work with aditional constraints...
+#################################################
 
-#Test for windowing; to prepare newtuples
-#windowpoints: indexes in ND grid to retain for the windowing
-#windowpoints=(iw1[1]:iw2[1],iw1[2]:iw2[2])
+
 
 windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 
-#pmnw=([ x[windowpoints...] for x in pmn ]...);
-#maskw=mask[windowpoints...];
-#xw=([ x[windowpoints...] for x in xi ]...);
-
-#################################################
-# Need to check how to work with constraints...
-#################################################
+#@time fw,s=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
 fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
 
+# maskb=mask[windowpoints...]
+# pmnb=([ x[windowpoints...] for x in pmn ]...)
+# xib=([ x[windowpoints...] for x in xi ]...)
 
+# fw,s=divandrun(maskb,pmnb,xib,x,f,Labs,epsilon2; otherargs...)
 # Now error fields
 # Cpme: just run and take out same window
 

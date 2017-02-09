@@ -23,6 +23,8 @@ using Base.Test
     include("test_3dvar.jl");
 
     include("test_4dvar.jl");
+	include("test_divandgo.jl");
+	
 
     # test kernel
     include("test_kernel.jl");
