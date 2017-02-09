@@ -5,12 +5,12 @@ using divand
 using PyPlot
 
 # observations with points outside
-x = collect(linspace(0,1,13))
-f = sin(6*pi*x) ;
+x = collect(linspace(0,1,7))
+f = sin(3*pi*x) ;
 
 # final grid
 
-xi=collect(linspace(-0.1,1.1,120));
+xi=collect(linspace(-0.1,1.1,220));
 
 # reference field
 fref = sin(xi*6*pi) ;
@@ -26,7 +26,7 @@ pm = ones(size(xi)) / (xi[2]-xi[1]);
 
 
 # correlation length
-len = 0.1;
+len = 0.05;
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
@@ -38,13 +38,38 @@ m = Int(ceil(1+1/2))
   # m=1     1   2   1
   # m=2   1   3   3   1
   # ...
+  
+  alpha = [binomial(m,k) for k = 0:m];
+# fi is the interpolated field
+
+firef,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;);
+
+
+fi4,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+  
+
+  
+  alpha = [binomial(m,k) for k = 0:m];
+  alpha=2*alpha
+# fi is the interpolated field
+fi1,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+
+
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
+fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
-# fi is the interpolated field
-fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
-plot(xi,fi,".",x,f,"o")
+
+alpha = [binomial(m,k) for k = 0:m];
+alpha[2]=0;
+fi3,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+
+
+plot(xi,fi1,".",x,f,"o",xi,fi2,"-",xi,fi3,":",xi,fi4,"+",xi,firef,"_")
+
+
+
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
