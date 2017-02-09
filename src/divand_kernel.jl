@@ -15,8 +15,6 @@
 
 function divand_kernel(n,alpha #,r
                        )
-
-
 # remove trailling zeros
 ind = maximum(find(!(alpha .== 0)))
 alpha = alpha[1:ind];
@@ -37,8 +35,9 @@ else
 
     jmscale=(1.0/2^(m))*sum(alpha[:])
 	@show jmscale
-	
-    mu = mu*jmscale^2;
+
+    mu = mu*jmscale;
+
    else
   # unsupported sequence of alpha
     warn("Unsupported norm used, check scaling $alpha $m $ind")
@@ -48,9 +47,7 @@ else
     jmscale=(1.0/2^(m))*sum(alpha[:])
 		@show jmscale
 		@show sum(alpha[:])
-    mu = mu*jmscale^2;
-    
-    throw(DomainError())
+    mu = mu*jmscale;
    end
 end
 
