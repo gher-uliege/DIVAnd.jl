@@ -22,7 +22,7 @@ ind = maximum(find(!(alpha .== 0)))
 alpha = alpha[1:ind];
 
 m = length(alpha)-1;
-@show n
+@show m
 K = [];
 if [binomial(m,k) for k = 0:m] == alpha
   # alpha are binomial coefficients
@@ -31,16 +31,21 @@ if [binomial(m,k) for k = 0:m] == alpha
 else
    if [binomial(m,k) for k = 1:m] == alpha[2:ind]
   # alpha are binomial coefficients except first one
-    warn("Semi-norm used, check scaling $alpha $n $ind")
+    warn("Semi-norm used, check scaling $alpha $m $ind")
     mu,K = divand_kernel_binom(n,m);
 #   correction for missing term CHECK IF NOT THE INVERSE
-    mu = (mu/2^(n+2))*sum(alpha[:]);
+
+    jmscale=(1/2^(m+1))*sum(alpha[:])
+    mu = mu*jmscale^2;
    else
   # unsupported sequence of alpha
-    warn("Unsupported norm used, check scaling $alpha $n $ind")
+    warn("Unsupported norm used, check scaling $alpha $m $ind")
     mu,K = divand_kernel_binom(n,m);
 #   correction for missing term CHECK IF NOT THE INVERSE
-    mu = (mu/2^(n+2))*sum(alpha[:]);
+
+    jmscale=(1/2^(m+1))*sum(alpha[:])
+    mu = mu*jmscale^2;
+    
     throw(DomainError())
    end
 end
