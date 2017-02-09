@@ -38,13 +38,12 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 function divand_cpme(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
-# check inputs
 
-if !any(mask[:])
-  error("no sea points in mask");
-end
 
 errorscale=1;
+
+# The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
+# Could be a small improvement. Also used in divand_aexerr
 
 cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len./1.70766,epsilon2; otherargs...);
 cpme=errorscale.*(-cpme.+1);

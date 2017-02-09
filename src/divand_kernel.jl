@@ -20,7 +20,7 @@ ind = maximum(find(!(alpha .== 0)))
 alpha = alpha[1:ind];
 
 m = length(alpha)-1;
-@show m
+
 K = [];
 if [binomial(m,k) for k = 0:m] == alpha
   # alpha are binomial coefficients
@@ -29,12 +29,12 @@ if [binomial(m,k) for k = 0:m] == alpha
 else
    if [binomial(m,k) for k = 1:m] == alpha[2:ind]
   # alpha are binomial coefficients except first one
-    warn("Semi-norm used, check scaling $alpha $m $ind")
+    warn("Semi-norm used?, check scaling $alpha")
     mu,K = divand_kernel_binom(n,m);
 #   correction for missing term CHECK IF NOT THE INVERSE
+#  Added fudge factor 2 to mimic same behaviour in test case
+    jmscale=(1.0/2^(m))*sum(alpha[:])/2
 
-    jmscale=(1.0/2^(m))*sum(alpha[:])
-	@show jmscale
 
     mu = mu*jmscale;
 
@@ -42,12 +42,11 @@ else
   # unsupported sequence of alpha
     
     mu,K = divand_kernel_binom(n,m);
-	warn("Unsupported norm used, check scaling $alpha $m $ind $mu")
-#   correction for missing term CHECK IF NOT THE INVERSE
+	warn("Unsupported norm used, check scaling $alpha")
+#   Scaling is correct of all alphas are binomials times a common factor
 
     jmscale=(1.0/2^(m))*sum(alpha[:])
-		@show jmscale
-		@show sum(alpha[:])
+
     mu = mu*jmscale;
    end
 end
