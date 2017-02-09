@@ -104,9 +104,26 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 				
 				
 				
+				
+				
+				
 n=ndims(mask)
 
-# DOES NOT YET WORK WITH PERIODIC DOMAINS
+# Need to check for cyclic boundaries
+
+moddim=zeros(n);
+
+kwargs_dict = Dict(otherargs)
+@show itiscyclic=haskey(kwargs_dict, :moddim)
+
+if itiscyclic
+moddim=kwargs_dict[:moddim]
+@show moddim  
+end
+
+@show moddim   
+# DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT 
+# IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
 
 # Also there is a huge overhead in the test_divandgo case. Need to analyze
 
@@ -147,16 +164,27 @@ fi=zeros(size(mask));
 Lscales=ones(n);
 stepsize=ones(Int,n);
 overlapping=ones(Int,n);
+Lscalespmnmax=ones(n);
 
 if isa(Labs,Number)
     Lscales=Labs*Lscales;
+	for i=1:n
+	 Lscalespmnmax[i]=Lscales[i]*maximum(pmn[i]);
+	end
+	
+		
 elseif isa(Labs,Tuple)
 
     if isa(Labs[1],Number)
         Lscales = [[Labs[i]  for i = 1:n]...]
+		for i=1:n
+	    Lscalespmnmax[i]=Lscales[i]*maximum(pmn[i]);
+	    end
     end
 
 end
+
+@show Lscalespmnmax
 
 problemsize=1;
 nwd=0
@@ -168,12 +196,14 @@ stepsize[i]=size(mask)[i];
 overlapping[i]=0;
 
 # if length scale is small compared to domain size
-if Lscales[i]<   lfactor*size(mask)[i]/pmn[i][1]
-overlapping[i]=ceil( factoroverlap*Lscales[i]*pmn[i][1]   )
+if Lscalespmnmax[i]<   lfactor*size(mask)[i]
+if moddim[i]==0
+overlapping[i]=ceil( factoroverlap*Lscalespmnmax[i]   )
  problemsize=problemsize*overlapping[i]
   nwd=nwd+1
                               else
- problemsize=problemsize*size(mask)[i]							  
+ problemsize=problemsize*size(mask)[i]		
+end 
 end
 
 # 
@@ -188,8 +218,10 @@ end
 
 for i=1:n
 # if length scale is small compared to domain size
-if Lscales[i]<   lfactor*size(mask)[i]/pmn[i][1]
-stepsize[i]=ceil( epsilon*factoroverlap*Lscales[i]*pmn[i][1]   )
+if Lscalespmnmax[i]<   lfactor*size(mask)[i]
+if moddim[i]==0
+stepsize[i]=ceil( epsilon*factoroverlap*Lscalespmnmax[i]   )
+end
 end
 
 # 

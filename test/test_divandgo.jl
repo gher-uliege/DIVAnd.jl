@@ -39,7 +39,11 @@ fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
 fi = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
+fifp = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2;moddim=[0 0]);
+
 @test maximum(fi) ≈ maximum(fiex)
+
+@test maximum(fifp) ≈ maximum(fiex)
 
 
 # Copyright (C) 2014, 2017 Alexander Barth         <a.barth@ulg.ac.be>
