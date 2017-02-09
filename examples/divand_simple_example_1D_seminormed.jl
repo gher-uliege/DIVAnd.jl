@@ -66,6 +66,8 @@ alpha[2]=0;
 fi3,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 
+
+
 plot(xi,fi1,".",x,f,"o",xi,fi2,"-",xi,fi3,":",xi,fi4,"+",xi,firef,"_")
 
 
