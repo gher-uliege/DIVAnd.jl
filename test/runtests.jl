@@ -15,10 +15,14 @@ using Base.Test
     include("test_1dvar.jl");
 	include("test_1D_seminormed.jl");
 
-    include("test_2dvar_check.jl");
+    
     include("test_2dvar_adv.jl");
     include("test_2dvar_iter.jl");
     include("test_2dvar_error.jl");
+	include("test_2dvar_cv.jl");
+	include("test_2dvar_qc.jl");
+	
+	
 
     include("test_3dvar.jl");
 

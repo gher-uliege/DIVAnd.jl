@@ -1,12 +1,12 @@
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
-
+using Base.Test
 using divand
-using PyPlot
+
 
 # observations
-x = rand(300);
-y = rand(300);
+x = rand(150);
+y = rand(150);
 
 # Put two points in specific locations
 
@@ -20,7 +20,7 @@ y[2]=0.25
 f = sin(x*2*pi) .* sin(y*2*pi);
 
 
-f=f+0.5*randn(300);
+f=f+0.25*randn(150);
 
 # Now fake some mix up in  two points coordinates
 
@@ -34,7 +34,7 @@ y[2]=0.25
 
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
+xi,yi = ndgrid(linspace(0,1,20),linspace(0,1,20));
 
 
 # all points are valid points
@@ -62,7 +62,7 @@ qcval=divand_qc(fi,s,1)
 
 sp=find(x-> x.>10,qcval)
 
-
+@test sum(sp)==3
 
 suspectindexes=sortperm(qcval,rev=true)
 
