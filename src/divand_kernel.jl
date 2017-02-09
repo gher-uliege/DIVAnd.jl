@@ -40,8 +40,9 @@ else
 
    else
   # unsupported sequence of alpha
-    warn("Unsupported norm used, check scaling $alpha $m $ind")
+    
     mu,K = divand_kernel_binom(n,m);
+	warn("Unsupported norm used, check scaling $alpha $m $ind $mu")
 #   correction for missing term CHECK IF NOT THE INVERSE
 
     jmscale=(1.0/2^(m))*sum(alpha[:])
