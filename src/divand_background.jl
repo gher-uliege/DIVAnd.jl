@@ -130,7 +130,6 @@ catch err
     end
 end
 
-# reshape(pmn,numel(mask),n)
 pmnv = cat(2,[_[:] for _ in pmn]...)
 pmnv[:,find(Ld == 0)] = 1
 
