@@ -56,15 +56,27 @@ epsilon2 = 1;
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-qcval=divand_qc(fi,s,1)
+
+for method in [0 1 3 4]
+
+@show method
+
+qcval=divand_qc(fi,s,method)
+
+if method==4
+# Provide fake THETA value
+qcval=qcval*4
+end
 
 # Find suspect points
 
-sp=find(x-> x.>10,qcval)
+sp=find(x-> x.>9,qcval)
 
 @test sum(sp)==3
 
-suspectindexes=sortperm(qcval,rev=true)
+
+end
+
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
