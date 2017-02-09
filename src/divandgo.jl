@@ -124,6 +124,12 @@ end
 @show moddim   
 # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT 
 # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
+# General approach in this future case prepare window indexes just taking any range including negative value and
+# apply a mod(myindexes-1,size(mask)[i])+1 in direction i when extracting 
+# for coordinates tuples of the grid (xin,yin, .. )  and data (x,y)
+# in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
+#
+#
 
 # Also there is a huge overhead in the test_divandgo case. Need to analyze
 
