@@ -35,7 +35,9 @@ else
     mu,K = divand_kernel_binom(n,m);
 #   correction for missing term CHECK IF NOT THE INVERSE
 
-    jmscale=(1/2^(m+1))*sum(alpha[:])
+    jmscale=(1.0/2^(m))*sum(alpha[:])
+	@show jmscale
+	
     mu = mu*jmscale^2;
    else
   # unsupported sequence of alpha
@@ -43,7 +45,9 @@ else
     mu,K = divand_kernel_binom(n,m);
 #   correction for missing term CHECK IF NOT THE INVERSE
 
-    jmscale=(1/2^(m+1))*sum(alpha[:])
+    jmscale=(1.0/2^(m))*sum(alpha[:])
+		@show jmscale
+		@show sum(alpha[:])
     mu = mu*jmscale^2;
     
     throw(DomainError())

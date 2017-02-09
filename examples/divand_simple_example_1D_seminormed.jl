@@ -50,7 +50,7 @@ fi4,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
   
   alpha = [binomial(m,k) for k = 0:m];
-  alpha=2*alpha
+  alpha=2.*alpha
 # fi is the interpolated field
 fi1,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
