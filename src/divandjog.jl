@@ -231,19 +231,20 @@ fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 # Recover sc.P and define the conditionner
 
 # tolerance on the gradient A x - b
-tol = 1e-4
+tol = 1e-2
 # tolerance on the result x
 tolres = 1e-3
 
 pcargs = [(:tol, tol),(:maxit,1000)]
 
 function compPC(iB,H,R)
-      return x -> HI*(sc.P*(HI'*x));
-	# return x->x;
+    #  return x -> HI*(sc.P\(HI'*x));
+	   return x->x;
 end
 # First guess is the HI* coarse solution
 
-# HI*(sc.P*(HI'  *x ))  is a good operator for the M-1 x operation in preconditionner
+# HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
+# Why do I need to take sc.P\ ??? So better use components of P*HI' ?
 
 
 # Then run with normal resolution and preconditionner
