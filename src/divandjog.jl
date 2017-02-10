@@ -134,12 +134,17 @@ if sum(nsteps)>n
 ####### use preconditionner methods
 
 
-# Copy deepcopy ??
+
+
+#######################################
+# HOW TO TREAT COARSE GRID NOT COVERING FINE GRID ?
+# Artificially add halo or also coordinates of last points in fine grid if the last step is beyond ?
+#######################################
 
 coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
 
 
-xic=deepcopy(([ x[coarsegridpoints...] for x in xi ]...));
+xic=([ x[coarsegridpoints...] for x in xi ]...);
 
 maskc=mask[coarsegridpoints...];
 
@@ -170,11 +175,13 @@ svf = statevector_init((mask,))
 
 # For each coordinate in the tuplet xi, go from grid representation to tuplet
 # to have the pseudo-data coordinates
-xfake=([statevector_pack(svf,x[:]) for x in xi]...)
-@show size(xfake)
+WTF=statevector_pack(svf,(xi[1],))
+@show size(WTF)
+xfake=([statevector_pack(svf,(x,)) for x in xi]...)
+
 @show size(xfake[1])
 # Create fractional indexes of these data points in the coarse grid
-Ic = localize_separable_grid(xic,maskc,xfake);
+Ic = localize_separable_grid(xfake,maskc,xic);
 
 # Create HI
 HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
@@ -210,14 +217,17 @@ fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 # using sc.sv
 # Apply HI; this vector can also be used as a first guess for the PC
 
-   xguess=HI*statevector_pack(sc.sv,fc);
+   xguess=HI*statevector_pack(sc.sv,(fc,));
 
 # which you unpack using the statevector form of the fine grid for the TEST only
 
-   figuess=statevector_unpack(svf,xguess)
-#
+   figuess,=statevector_unpack(svf,xguess)
+# Do not know why I need to squeeze here if I want to return a gridded approximation
+   figuess=squeeze(figuess,ndims(figuess))
 # Recover s.P and define the conditionner
 # First guess is the HI* coarse solution
+
+# HI*(sc.P*(HI'  *x ))  is a good operator for the M-1 x operation in preconditionner
 
 
 # Then run with normal resolution and preconditionner
