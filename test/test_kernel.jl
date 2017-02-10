@@ -86,5 +86,6 @@ xy = ([[0.5] for i = 1:n]...)
 fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[2,4,2]);
 @test 0.48 <= maximum(fi) <= 0.52
 
-fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[1,0,1]);
-@test 0.4 <= maximum(fi) <= 0.6
+#need divand_kernel from JMB branch
+#fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[1,0,1]);
+#@test 0.4 <= maximum(fi) <= 0.6
