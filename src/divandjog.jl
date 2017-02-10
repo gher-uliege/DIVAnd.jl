@@ -243,7 +243,7 @@ pcargs = [(:tol, tol),(:maxit,1000)]
 #jmPHI=sc.P.factors[:PtL]\copy(HI');
 
 function compPC(iB,H,R)
-        return x -> HI*(sc.P*(HI'*x));
+        return x -> 0.001*x+HI*(sc.P*(HI'*x));
 	#     return jmPHI'*(jmPHI*x);
 	#   return x->x;
 end

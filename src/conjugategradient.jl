@@ -107,6 +107,9 @@ for k=1:maxit
 
     zr_new = r ⋅ z;
 
+	@show dot(r,r)
+	@show dot(b,b)
+	
     if r ⋅ r < tol2 && k >= minit
         success = true
         break
