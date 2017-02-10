@@ -237,9 +237,15 @@ tolres = 1e-3
 
 pcargs = [(:tol, tol),(:maxit,1000)]
 
+@show size(HI)
+#@show sc.P.factors[:PtL]*ones(size(HI'))
+
+#jmPHI=sc.P.factors[:PtL]\copy(HI');
+
 function compPC(iB,H,R)
-    #  return x -> HI*(sc.P\(HI'*x));
-	   return x->x;
+        return x -> HI*(sc.P*(HI'*x));
+	#     return jmPHI'*(jmPHI*x);
+	#   return x->x;
 end
 # First guess is the HI* coarse solution
 
