@@ -153,7 +153,7 @@ maskc=trues(size(maskc));
 
 #Now scale pmn by the step factorsm if not possible during extraction this operation needs a copy
 # Here hardcoded factor 3 
-pmnc=([ (1.0/4)*x[coarsegridpoints...] for x in pmn ]...)
+pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
 
 # Check if Labs is a tuple of tuple; in this case also subsample
 
@@ -175,8 +175,7 @@ svf = statevector_init((mask,))
 
 # For each coordinate in the tuplet xi, go from grid representation to tuplet
 # to have the pseudo-data coordinates
-WTF=statevector_pack(svf,(xi[1],))
-@show size(WTF)
+
 xfake=([statevector_pack(svf,(x,)) for x in xi]...)
 
 @show size(xfake[1])
@@ -185,6 +184,12 @@ Ic = localize_separable_grid(xfake,maskc,xic);
 
 # Create HI
 HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
+
+@show maximum(xfake[1])
+
+@show maximum(xic[1])
+
+
 HI = HI * sparse_pack(maskc)';
 
 
@@ -205,11 +210,10 @@ HI = HI * sparse_pack(maskc)';
 
 
 #fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
-@show pmnc[1]
 
 
 
-@show Labsc
+
 
 fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 
@@ -224,16 +228,29 @@ fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
    figuess,=statevector_unpack(svf,xguess)
 # Do not know why I need to squeeze here if I want to return a gridded approximation
    figuess=squeeze(figuess,ndims(figuess))
-# Recover s.P and define the conditionner
+# Recover sc.P and define the conditionner
+
+# tolerance on the gradient A x - b
+tol = 1e-4
+# tolerance on the result x
+tolres = 1e-3
+
+pcargs = [(:tol, tol),(:maxit,1000)]
+
+function compPC(iB,H,R)
+      return x -> HI*(sc.P*(HI'*x));
+	# return x->x;
+end
 # First guess is the HI* coarse solution
 
 # HI*(sc.P*(HI'  *x ))  is a good operator for the M-1 x operation in preconditionner
 
 
 # Then run with normal resolution and preconditionner
+@time fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
 
 # First test
-return fc,sc,figuess
+return fc,sc,figuess,fi,si
 #####################################################
 # end of iterative version
 #####################################################

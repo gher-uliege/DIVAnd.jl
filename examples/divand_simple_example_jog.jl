@@ -10,7 +10,7 @@ y = rand(75);
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,200),linspace(0,1,200));
+xi,yi = ndgrid(linspace(0,1,201),linspace(0,1,201));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
@@ -32,11 +32,14 @@ len = 0.10;
 epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s,figuess = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+@time fi,s,figuess,fifine,sf = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+
+# fi is the interpolated field
+@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 # plotting of results
 subplot(2,2,1);
-pcolor(xi,yi,fref);
+pcolor(xi,yi,fifine);
 colorbar()
 clim(-1,1)
 plot(x,y,"k.");
@@ -49,6 +52,11 @@ colorbar()
 
 subplot(2,2,3);
 pcolor(xi,yi,figuess);
+colorbar()
+clim(-1,1)
+
+subplot(2,2,4);
+pcolor(xi,yi,fiex);
 colorbar()
 clim(-1,1)
 
