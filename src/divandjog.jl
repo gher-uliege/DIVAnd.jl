@@ -176,16 +176,23 @@ svf = statevector_init((mask,))
 # For each coordinate in the tuplet xi, go from grid representation to tuplet
 # to have the pseudo-data coordinates
 
-xfake=([statevector_pack(svf,(x,)) for x in xi]...)
+#xfake=([statevector_pack(svf,(x,)) for x in xi]...)
 
-@show size(xfake[1])
+#@show size(xfake[1])
 # Create fractional indexes of these data points in the coarse grid
-Ic = localize_separable_grid(xfake,maskc,xic);
+#Ic = localize_separable_grid(xfake,maskc,xic);
+
+
+
+Ic = localize_separable_grid(([statevector_pack(svf,(x,)) for x in xi]...),maskc,xic);
+
+#@show size(xfake[1])
+# Create fractional indexes of these data points in the coarse grid
 
 # Create HI
 HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
-@show maximum(xfake[1])
+#@show maximum(xfake[1])
 
 @show maximum(xic[1])
 
@@ -231,19 +238,24 @@ fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 # Recover sc.P and define the conditionner
 
 # tolerance on the gradient A x - b
-tol = 1e-2
-# tolerance on the result x
-tolres = 1e-3
+tol = 5e-2
 
-pcargs = [(:tol, tol),(:maxit,1000)]
+
+maxiter=10*Int(ceil(sqrt(size(HI)[1])))
+@show maxiter
+
+pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 @show size(HI)
 #@show sc.P.factors[:PtL]*ones(size(HI'))
 
 #jmPHI=sc.P.factors[:PtL]\copy(HI');
 
+diagshift=0.01*(sqrt(size(HI)[1]/size(HI)[2])-1);
+@show diagshift
+
 function compPC(iB,H,R)
-        return x -> 0.001*x+HI*(sc.P*(HI'*x));
+        return x -> diagshift*x+HI*(sc.P*(HI'*x));
 	#     return jmPHI'*(jmPHI*x);
 	#   return x->x;
 end
@@ -254,10 +266,13 @@ end
 
 
 # Then run with normal resolution and preconditionner
-@time fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
+fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
+
+errfield=diagMtCM(sc.P,HI')
+erri,=statevector_unpack(si,errfield)
 
 # First test
-return fc,sc,figuess,fi,si
+return fc,sc,figuess,fi,si,errfield
 #####################################################
 # end of iterative version
 #####################################################

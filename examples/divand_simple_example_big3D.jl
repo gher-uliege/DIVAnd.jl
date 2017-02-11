@@ -30,7 +30,7 @@ pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
 po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.5;
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
