@@ -93,3 +93,47 @@ Base.:*{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.fun(x)
 Base.:*{T,S}(MF:: MatFun{T}, M::AbstractMatrix{S}) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
 Base.:transpose{T}(MF:: MatFun{T}) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
 Base.Ac_mul_B{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.funt(x)
+
+
+
+
+
+type CovarHPHt{T} <: AbstractMatrix{T}
+    P:: AbstractMatrix{T}
+    H:: AbstractMatrix{T}
+end
+
+Base.size{T}(C::CovarHPHt{T}) = (size(C.H,1),size(C.H,1))
+
+#function CovarHPHt{T}(P::AbstractMatrix{T},H::AbstractMatrix{T})
+#    CovarIS(IS,factors)
+#end
+
+function Base.:*{T}(C::CovarHPHt{T}, v::AbstractVector{Float64})
+    return C.H * (C.P * (C.H' * v))
+end
+
+
+function A_mul_B{T}(C::CovarHPHt{T}, M::AbstractMatrix{Float64})
+    return C.H * (C.P * (C.H' * M))
+end
+
+# call to C * M
+Base.:*{T}(C::CovarHPHt{T}, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
+
+# The following two definitions are necessary; otherwise the full C matrix will be formed when
+# calculating C * M' or C * M.'
+
+# call to C * M' (conjugate transpose: C Mᴴ)
+Base.A_mul_Bc{T}(C::CovarHPHt{T}, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
+# call to C * M.' (transpose: C Mᵀ)
+Base.A_mul_Bt{T}(C::CovarHPHt{T}, M::AbstractMatrix{Float64}) = A_mul_B(C,M.')
+
+
+
+function Base.getindex{T}(C::CovarHPHt{T}, i::Int,j::Int)
+    ei = zeros(eltype(C),size(C,1)); ei[i] = 1
+    ej = zeros(eltype(C),size(C,1)); ej[j] = 1
+
+    return (ej'*(C*ei))[1]
+end

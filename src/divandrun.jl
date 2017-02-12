@@ -1,7 +1,5 @@
 """
-Compute a variational analysis of arbitrarily located observations.
-
-fi,s = divandrun(mask,pmn,xi,x,f,len,epsilon2,...);
+    divandrun(mask,pmn,xi,x,f,len,epsilon2; <keyword arguments>)
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -72,8 +70,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
     where iB is the inverse background error covariance, H the observation
     operator and R the error covariance of the observation. The function `compPC` returns the
-    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x) 
-    where `M` is a positive defined symmetric matrix. 
+    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x)
+    where `M` is a positive defined symmetric matrix [1].
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
 
@@ -93,7 +91,9 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Example:
   see divand_simple_example.jl
-  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
+
+# References
+[1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 
 function divandrun(mask,pmn,xi,x,f,len,epsilon2;
