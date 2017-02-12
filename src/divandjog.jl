@@ -159,12 +159,15 @@ pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
 
 	if isa(Labs,Tuple)
 		if isa(Labs[1],Tuple)
-		Labsc=([ x[coarsegridpoints...] for x in Labs ]...);    
+		Labsc=([ x[coarsegridpoints...] for x in Labs ]...);   
+           else
+        Labsc=Labs;		   
 		end
 	else
 	    Labsc=Labs;
 	end
-	
+
+
 
 # Now prepare HI do go from the coarse grid to the fine grid. To do so
 # interprete de fine grid coordinates as those of pseudo-obs and use divandtoos
@@ -224,11 +227,18 @@ HI = HI * sparse_pack(maskc)';
 
 fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 
+
+@show Labsc
+
+@show mean(fc)
+
 # TEST OF Higher take the fc coarse solution, pack to to statevector form 
 # using sc.sv
 # Apply HI; this vector can also be used as a first guess for the PC
 
    xguess=HI*statevector_pack(sc.sv,(fc,));
+   
+@show mean(xguess)
 
 # which you unpack using the statevector form of the fine grid for the TEST only
 
@@ -269,10 +279,16 @@ end
 fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
 
 errfield=diagMtCM(sc.P,HI')
-erri,=statevector_unpack(si,errfield)
+
+# 
+#erri,=statevector_unpack(si,errfield)
+# For error field based on coarse one, use divand_filter3 with ntimes=Int(ceil(mean(nsteps)))
+
 
 # First test
-return fc,sc,figuess,fi,si,errfield
+return fi,si
+
+#fc,sc,figuess,fi,si,errfield
 #####################################################
 # end of iterative version
 #####################################################
@@ -281,8 +297,9 @@ else
 # Run normal version
 #####################################################
 
+finter,sinter=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
-return 0 
+return finter,sinter
 end
 ##########################
 

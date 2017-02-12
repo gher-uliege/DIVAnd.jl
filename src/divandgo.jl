@@ -137,7 +137,7 @@ end
 # Hardwired
 
 # How wide is the overlap in terms of number of length scales
-factoroverlap=3
+factoroverlap=2
 
 # If possible use windows as large as possible but small enought to not reach the following problem size
 # This needs adaptions to the dimensionality of the problem; the more dimensions the more expensive
@@ -150,11 +150,17 @@ if n==3
 biggestproblem=50*50*50
 end
 if n==4
-biggestproblem=40*40*5*12
+biggestproblem=10*10*5*10
 end
 
+# But increase it again if divandjog is called and can use subsampling...
+laterscales=divand_sampler(pmn,Labs)
+@show biggestproblem
+biggestproblem=biggestproblem*prod(laterscales)
+@show biggestproblem
+
 # Fraction of domain size at which windowing is attempted if len is smaller
-lfactor=0.07
+lfactor=0.2
 
 pmnw=[];
 maskw=[];
@@ -194,6 +200,7 @@ elseif isa(Labs,Tuple)
 
 end
 
+@show Lscales
 @show Lscalespmnmax
 
 problemsize=1;
@@ -207,17 +214,24 @@ overlapping[i]=0;
 
 # if length scale is small compared to domain size
 if Lscalespmnmax[i]<   lfactor*size(mask)[i]
-if moddim[i]==0
-overlapping[i]=ceil( factoroverlap*Lscalespmnmax[i]   )
+ if moddim[i]==0
+ overlapping[i]=Int(ceil( factoroverlap*Lscalespmnmax[i]   ))
  problemsize=problemsize*overlapping[i]
-  nwd=nwd+1
+  nwd=nwd+1 
                               else
  problemsize=problemsize*size(mask)[i]		
-end 
+ end 
+else
+problemsize=problemsize*size(mask)[i]		
 end
 
 # 
 end
+
+@show problemsize
+@ show nwd
+@ show overlapping
+
 if nwd>0
   epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
 end
@@ -230,7 +244,7 @@ for i=1:n
 # if length scale is small compared to domain size
 if Lscalespmnmax[i]<   lfactor*size(mask)[i]
 if moddim[i]==0
-stepsize[i]=ceil( epsilon*factoroverlap*Lscalespmnmax[i]   )
+stepsize[i]=Int(ceil( epsilon*factoroverlap*Lscalespmnmax[i]   ))
 end
 end
 
@@ -337,9 +351,9 @@ warn("Test window $iw1 $iw2 $isol1 $isol2 $ij $istore1 $istore2 ")
 
 windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 
-#@time fw,s=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
+# @time fw,s=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
-fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
+fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
 
 # maskb=mask[windowpoints...]
 # pmnb=([ x[windowpoints...] for x in pmn ]...)
@@ -387,14 +401,14 @@ fi[windowpointsstore...]= fw[windowpointssol...];
 end
 
 
-return fi #,pmnw,xw,maskw,ndlast
+return fi,s #,pmnw,xw,maskw,ndlast
 
 
 
 
 
 
-return pmnw,n,Lscales,overlapping,stepsize
+# return pmnw,n,Lscales,overlapping,stepsize
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

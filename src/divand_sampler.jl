@@ -24,7 +24,8 @@ samplesteps = divand_sampler(pmn,len);
 
 function divand_sampler(pmn,len)
 
-
+# TO DO: in a single sweep compute both minimum and maximum with function extrema
+# Usefull for divandgo and divandjog
 
 
 n = ndims(pmn[1])
@@ -46,7 +47,7 @@ for i=1:n
 
 	end
 	
-	nsamp=Int(floor(Labspmnmin[i]/4));
+	nsamp=Int(floor(Labspmnmin[i]/3));
 	if nsamp>1
 	samplesteps[i]=nsamp
 	end

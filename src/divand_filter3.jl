@@ -11,16 +11,24 @@ function divand_filter3(A::AbstractArray,fillvalue,ntimes=1)
 	cw=3^nd-1
 	cw=1
     out = similar(A)
+	if ntimes>1
+	   B=deepcopy(A)
+	else
+	   B=A
+	end
+	
     R = CartesianRange(size(A))
     I1, Iend = first(R), last(R)
+	for nn=1:ntimes
+	
     for I in R
         w, s = 0.0, zero(eltype(out))
 # Define out[I] fillvalue
         out[I] = fillvalue
         for J in CartesianRange(max(I1, I-I1), min(Iend, I+I1))
 	# If not a fill value
-	    if !(A[J] == fillvalue)
-            s += A[J]
+	    if !(B[J] == fillvalue)
+            s += B[J]
 			if (I==J)
 			  w += cw 
 			else
@@ -33,5 +41,9 @@ function divand_filter3(A::AbstractArray,fillvalue,ntimes=1)
         out[I] = s/w
 		end
     end
+	B=out;
+	end
+	
+	
     return out
 end
