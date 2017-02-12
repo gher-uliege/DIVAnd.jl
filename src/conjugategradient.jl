@@ -8,7 +8,7 @@ where `A` is a symmetric positive defined matrix and `b` is a vector. The functi
 
 # Optional input arguments
 * `x0`: starting vector for the interations
-* `tol`: tolerance on Ax-b
+* `tol`: tolerance on  |Ax-b| / |b|
 * `maxit`: maximum of interations
 * `pc`: the preconditioner. The functions `pc(x)` should return M⁻¹ x (the inverse of M times x) where `M` is a symmetric positive defined matrix. Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M. Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
 
@@ -35,7 +35,11 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 success = false
 n = length(b);
 
-tol2 = tol^2;
+# relative tolerance
+tol2 = tol^2
+
+# absolute tolerance
+tol2 = tol2 * (b ⋅ b)
 
 # delta = [];
 # gamma = [];
