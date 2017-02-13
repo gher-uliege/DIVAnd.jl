@@ -3,8 +3,8 @@ using JSON
 
 
 ndim = 2
-sizes = 10:10:20
-#sizes = 100:100:1000
+#sizes = 10:10:20
+sizes = 100:100:1000
 memory = zeros(length(sizes))
 runtime = zeros(length(sizes))
 juliaexec = "julia"
@@ -16,7 +16,7 @@ for i = 1:length(sizes)
     # must be one line otherwise the result of time -v is too difficult to parse
     cmd = "using divand; using JSON; include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark2d_repeat($(sizes[i]),10)))"
 
-#    run(pipeline(`/usr/bin/time -v $(juliaexec) --eval $(cmd)`, stdout=fileout, stderr=fileerr))
+    run(pipeline(`/usr/bin/time -v $(juliaexec) --eval $(cmd)`, stdout=fileout, stderr=fileerr))
 end
 
 # load results
