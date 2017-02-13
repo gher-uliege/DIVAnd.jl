@@ -2,47 +2,6 @@
 
 using Base.Test
 
-"""
-mask,xyi,pmn = divand_squaredom(n,coord)
-
-Create a "square" domain in `n` dimensions with the coordinates `coord`
-assuming a Catersian metric. This functions returns
-the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
-
-# Example
-
-mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))
-"""
-function divand_squaredom(n,coord)
-    coords = ([coord for i = 1:n]...)
-    return divand_rectdom(coords...)
-end
-
-
-"""
-mask,xyi,pmn = divand_squaredom(n,coord)
-
-Create a "square" domain in `n` dimensions with the coordinates `coord`
-assuming a Catersian metric. This functions returns
-the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
-
-# Example
-
-mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
-"""
-function divand_rectdom(coords...)
-    # grid of background field
-    xyi = ndgrid(coords...)
-
-    # mask (all points are valid)
-    mask = trues(xyi[1])
-
-    # metric (inverse of the resolution)
-    pmn = ([ones(size(mask)) / (coords[i][2]-coords[i][1]) for i = 1:length(coords)]...)
-
-    return mask,pmn,xyi
-end
-
 
 # correlation length
 len = 0.2;

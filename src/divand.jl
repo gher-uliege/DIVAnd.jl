@@ -190,6 +190,50 @@ function sparse_pack(mask)
 
 end
 
+
+"""
+mask,xyi,pmn = divand_squaredom(n,coord)
+
+Create a "square" domain in `n` dimensions with the coordinates `coord`
+assuming a Catersian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
+
+# Example
+
+mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))
+"""
+function divand_squaredom(n,coord)
+    coords = ([coord for i = 1:n]...)
+    return divand_rectdom(coords...)
+end
+
+
+"""
+mask,xyi,pmn = divand_squaredom(n,coord)
+
+Create a "square" domain in `n` dimensions with the coordinates `coord`
+assuming a Catersian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
+
+# Example
+
+mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
+"""
+function divand_rectdom(coords...)
+    # grid of background field
+    xyi = ndgrid(coords...)
+
+    # mask (all points are valid)
+    mask = trues(xyi[1])
+
+    # metric (inverse of the resolution)
+    pmn = ([ones(size(mask)) / (coords[i][2]-coords[i][1]) for i = 1:length(coords)]...)
+
+    return mask,pmn,xyi
+end
+
+
+
 include("sparse_stagger.jl");
 include("sparse_diff.jl");
 include("sparse_interp.jl");
@@ -232,7 +276,7 @@ include("divand_cv.jl");
 include("divand_qc.jl");
 include("divand_adaptedeps2.jl");
 
-export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt
+export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
    statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
