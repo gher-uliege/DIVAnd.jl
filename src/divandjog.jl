@@ -164,7 +164,9 @@ pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
         Labsc=Labs;		   
 		end
 	else
-	    Labsc=Labs;
+	  # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
+	  #  Labsc=Labs;
+		Labsc=(Labs*ones(n)...);
 	end
 
 
@@ -223,10 +225,20 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
 
 
+#
+# For dimensions above 2 use L=0 to decouple and get managable preconditionner size
+jmmask=ones(n)
+jmmask[3:end]=0
+Labsccut=([Labsc[i]*jmmask[i] for i=1:n]...)
+#
 
 
-@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
+@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargs...)
 
+
+#TO Do
+#Save sc.P and newguess then reinitialize fc and sc with zero and garbage collection
+# 
 
 @show Labsc
 
@@ -237,6 +249,11 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 # Apply HI; this vector can also be used as a first guess for the PC
 
    xguess=HI*statevector_pack(sc.sv,(fc,));
+   scP=sc.P;
+   
+   s=0
+   fc=0
+   gc()
    
 @show mean(xguess)
 
@@ -257,15 +274,13 @@ maxiter=10*Int(ceil(sqrt(size(HI)[1])))
 pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 @show size(HI)
-#@show sc.P.factors[:PtL]*ones(size(HI'))
 
-#jmPHI=sc.P.factors[:PtL]\copy(HI');
 
 diagshift=0.01*(sqrt(size(HI)[1]/size(HI)[2])-1);
 @show diagshift
 
 function compPC(iB,H,R)
-        return x -> diagshift*x+HI*(sc.P*(HI'*x));
+        return x -> diagshift*x+HI*(scP*(HI'*x));
 	#     return jmPHI'*(jmPHI*x);
 	#   return x->x;
 end
@@ -278,15 +293,15 @@ end
 # Then run with normal resolution and preconditionner
 fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
 
-errfield=diagMtCM(sc.P,HI')
+#errfield=diagMtCM(sc.P,HI')
 
 # 
-#erri,=statevector_unpack(si,errfield)
+#erri,=statevector_unpack(si.sv,errfield)
 # For error field based on coarse one, use divand_filter3 with ntimes=Int(ceil(mean(nsteps)))
 
 
 # First test
-return fi,si
+return fi,0
 
 #fc,sc,figuess,fi,si,errfield
 #####################################################

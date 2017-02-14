@@ -41,7 +41,7 @@ return 0*x0,true,0
 end
 
 
-@show tol
+
 tol2 = tol^2*bb;
 
 # delta = [];
@@ -115,12 +115,11 @@ for k=1:maxit
     z = pc(r);
 
     zr_new = r ⋅ z;
-@show dot(r,r)
-@show dot(b,b)
+
 	
     if r ⋅ r < tol2 && k >= minit
         success = true
-		@show k
+		
         break
     end
 

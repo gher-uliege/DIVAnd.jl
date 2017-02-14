@@ -6,8 +6,8 @@ using PyPlot
 include("../src/overrride_ssmult.jl")
 # final grid
 #
-testsizex=100
-testsizey=90
+testsizex=200
+testsizey=200
 testsizez=10
 testsizet=12
 # observations
@@ -37,49 +37,13 @@ po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
 pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
 
 # correlation length
-len = (8, 8, 0, 0);
+len = (8, 8, 1, 1);
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
-
-PP=s.P
-x0=statevector_pack(s.sv,(fi,))
-
-s=0
-fi=0
-
-gc()
-
-len = (8, 8, 1, 1);
-
-# obs. error variance normalized by the background error variance
-
-
-tol = 5e-2
-
-
-maxiter=100
-@show maxiter
-
-pcargs = [(:tol, tol),(:maxit,maxiter)]
-
-
-
-diagshift=0.001;
-@show diagshift
-
-function compPC(iB,H,R)
-        return x -> diagshift*x+PP*x;
-	#     return jmPHI'*(jmPHI*x);
-	#   return x->x;
-end
-
-
-# fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12], pcargs..., inversion=:pcg,compPC = compPC, fi0 =x0);
+@time fi,s = divandgo(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
