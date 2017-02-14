@@ -48,7 +48,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `EOF_scaling`, EOF_scaling: (dimensional)
 
-* `constraint`: a structure with user specified constrain
+* `constraints`: a structure with user specified constrain
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. Halo points should
