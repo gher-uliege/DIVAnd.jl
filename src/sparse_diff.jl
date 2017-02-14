@@ -72,6 +72,7 @@ S = sparse(
     [L2;     L2o; ],
     [-one;   one  ], n2 , n1 )
 
+return MatFun(S)
 
 end
 

@@ -13,7 +13,11 @@ D = s.D;
 coeff = s.coeff;
 n = s.n;
 
-iB_ = Array{SparseMatrixCSC{Float64,Int64}}(length(alpha));
+#iB_ = Array{SparseMatrixCSC{Float64,Int64}}(length(alpha));
+### funoper DEBUG
+iB_ = Array{Any}(length(alpha));
+
+
 
 # constrain of total norm
 
