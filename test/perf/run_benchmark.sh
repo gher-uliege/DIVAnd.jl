@@ -7,4 +7,6 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=18000
 
-srun --mem-per-cpu=16000 --ntasks=1 --time=10:20:00 julia benchmark.jl
+# run as run_benchmark.sh benchmark.jl
+
+srun --mem-per-cpu=16000 --ntasks=1 --time=10:20:00 julia "$1"

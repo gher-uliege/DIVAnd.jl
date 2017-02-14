@@ -58,14 +58,14 @@ function test_2dvar_benchmark(name)
   return median_time,ng,time
 end
 
-function benchmark2d_repeat(ng,ntimes)
+function benchmark_nd_repeat(n,ng,ntimes)
     times = zeros(ntimes)
     RMS = zeros(ntimes)
 
-    times[1],RMS[1] = benchmark2d(ng)
+    times[1],RMS[1] = benchmark_nd(n,ng)
 
     for i = 1:ntimes
-        times[i],RMS[1] = benchmark2d(ng)
+        times[i],RMS[1] = benchmark_nd(n,ng)
     end
 
     mad(x) = median(abs(x - median(x)))
@@ -78,32 +78,24 @@ function benchmark2d_repeat(ng,ntimes)
 end
 
 
-function benchmark2d(ng)
-
+function benchmark_nd(n,ng)
   mg = ng/5;
   len = 10/ng;
 
   epsilon2 = 0.05;
 
-  f(x,y) = cos(2*pi*ng*x/20) .* cos(2*pi*ng*y/20);
-
+  f(xy...) = .*([cos(2*pi*ng*x/20) for x in xy]...)
 
   # grid of background field
-  xi,yi = ndgrid(linspace(0,1,ng),linspace(0,1,ng));
-  vi = f(xi,yi);
-
-  mask = trues(size(xi));
-  pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-  pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+  mask,pmn,xyi =  divand_squaredom(n,linspace(0,1,ng))  
+  vi = f(xyi...);
 
   # grid of observations
-  x,y = ndgrid(linspace(1e-6,1-1e-6,mg),linspace(1e-6,1-1e-6,mg));
-  x = x[:];
-  y = y[:];
-  v = f(x,y);
+  xy = ndgrid([linspace(1e-6,1-1e-6,mg) for i = 1:n]...)
+  v = f([x[:] for x in xy]...);
 
   t1 = time_ns()
-  va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,len,epsilon2);
+  va,s = divandrun(mask,pmn,xyi,xy,v,len,epsilon2);
   t2 = time_ns()
   time = (t2 - t1)/1e9
   RMS = rms(va,vi);
