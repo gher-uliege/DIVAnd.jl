@@ -3,11 +3,7 @@
 using Base.Test
 
 # grid of background field
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30))
-
-mask = trues(size(xi))
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
+mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,30))
 
 epsilon = 1e-10;
 
