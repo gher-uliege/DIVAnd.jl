@@ -10,7 +10,7 @@ y = rand(75);
 f = sin(x*6) .* cos(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,50),linspace(0,1,30));
+xi,yi = ndgrid(linspace(0,1,500),linspace(0,1,600));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6);
@@ -32,7 +32,7 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 # plotting of results
 subplot(1,2,1);

@@ -123,8 +123,9 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
+@show size(mask)
 
-s = divand_background(mask,pmn,len,alpha,moddim);
+@time s = divand_background(mask,pmn,len,alpha,moddim);
 s.betap = 0;
 s.EOF_lambda = EOF_lambda;
 s.primal = primal;
@@ -203,6 +204,8 @@ end
 
 # factorize a posteori error covariance matrix
 # or compute preconditioner
+
+
 divand_factorize!(s);
 
 #if !apply_EOF_contraint

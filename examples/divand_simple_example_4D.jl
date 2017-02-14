@@ -8,15 +8,15 @@ using PyPlot
 nobs=200;
 x = rand(nobs);
 y = rand(nobs);
-z = rand(nobs);
+z = 0.5+0.01*rand(nobs);
 t = rand(nobs);
 f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
 
 # final grid
 #
-testsizexy=40
-testsizez=5
-testsizet=12
+testsizexy=200
+testsizez=2
+testsizet=4
 xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
 
 # reference field
@@ -35,7 +35,7 @@ po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
 pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
 
 # correlation length
-len = 0.1;
+len = (0.1,0.1,0.1,0.1);
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
@@ -45,13 +45,13 @@ epsilon2 = 1;
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fref[:,:,3,6]);
+pcolor(xi[:,:,1,3],yi[:,:,1,3],fref[:,:,1,3]);
 colorbar()
 clim(-1,1)
 plot(x,y,"k.");
 
 subplot(1,2,2);
-pcolor(xi[:,:,3,6],yi[:,:,3,6],fi[:,:,3,6]);
+pcolor(xi[:,:,1,3],yi[:,:,1,3],fi[:,:,1,3]);
 colorbar()
 clim(-1,1)
 title("Interpolated field");

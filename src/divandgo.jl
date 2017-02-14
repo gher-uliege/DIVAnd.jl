@@ -150,7 +150,7 @@ if n==3
 biggestproblem=50*50*50
 end
 if n==4
-biggestproblem=10*10*5*10
+biggestproblem=100*100*3*12
 end
 
 # But increase it again if divandjog is called and can use subsampling...
@@ -217,6 +217,11 @@ if Lscalespmnmax[i]<   lfactor*size(mask)[i]
  if moddim[i]==0
  overlapping[i]=Int(ceil( factoroverlap*Lscalespmnmax[i]   ))
  problemsize=problemsize*overlapping[i]
+ # Forced small window on zero
+  if i==3
+  overlapping[i]=1
+  end
+ 
   nwd=nwd+1 
                               else
  problemsize=problemsize*size(mask)[i]		
@@ -247,7 +252,9 @@ if moddim[i]==0
 stepsize[i]=Int(ceil( epsilon*factoroverlap*Lscalespmnmax[i]   ))
 end
 end
-
+  if i==3
+  stepsize[i]=1
+  end
 # 
 end
 

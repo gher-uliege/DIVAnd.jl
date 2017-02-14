@@ -200,7 +200,7 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 @show maximum(xic[1])
 
 
-HI = HI * sparse_pack(maskc)';
+@time HI = HI * sparse_pack(maskc)';
 
 
 
@@ -225,7 +225,7 @@ HI = HI * sparse_pack(maskc)';
 
 
 
-fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
+@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 
 
 @show Labsc
@@ -242,9 +242,9 @@ fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsc,epsilon2; otherargs...)
 
 # which you unpack using the statevector form of the fine grid for the TEST only
 
-   figuess,=statevector_unpack(svf,xguess)
+#   figuess,=statevector_unpack(svf,xguess)
 # Do not know why I need to squeeze here if I want to return a gridded approximation
-   figuess=squeeze(figuess,ndims(figuess))
+#   figuess=squeeze(figuess,ndims(figuess))
 # Recover sc.P and define the conditionner
 
 # tolerance on the gradient A x - b

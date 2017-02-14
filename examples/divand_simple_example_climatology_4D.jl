@@ -3,21 +3,22 @@
 
 using divand
 using PyPlot
-
-# observations
-nobs=2000;
-x = rand(nobs);
-y = rand(nobs);
-z = rand(nobs);
-t = rand(nobs);
-f = sin(x*pi/180) .* cos(y*pi/180.)+sin(z*6/50) .* cos(x*6*pi/180) .* sin(t*2*pi/12);
-
+include("overrride_ssmult.jl")
 # final grid
 #
-testsizex=180
+testsizex=120
 testsizey=90
-testsizez=30
+testsizez=10
 testsizet=12
+# observations
+nobs=2000;
+x = rand(nobs)*testsizex;
+y = rand(nobs)*testsizey;
+z = rand(nobs)*testsizez;
+t = rand(nobs)*testsizet;
+f = sin(x*pi/180) .* cos(y*pi/180.)+sin(z*6/50) .* cos(x*6*pi/180) .* sin(t*2*pi/12);
+
+
 xi,yi,zi,ti = ndgrid(linspace(1,testsizex,testsizex),linspace(1,testsizey,testsizey),linspace(1,testsizez,testsizez),linspace(1,testsizet,testsizet));
 
 # reference field
@@ -36,13 +37,13 @@ po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
 pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
 
 # correlation length
-len = (8, 8, 6, 3);
+len = (8, 8, 1, 1);
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@ time fi,s = divandgo(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
 
 
 
