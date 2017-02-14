@@ -83,6 +83,9 @@ a2 = C2\b;
 M = randn(10,10)
 MF = MatFun(size(M),x -> M*x,x -> M'*x)
 
+M2 = randn(10,10)
+MF2 = MatFun(size(M2),x -> M2*x,x -> M2'*x)
+
 x = randn(size(M,2))
 A = randn(size(M,2),3)
 
@@ -90,6 +93,19 @@ A = randn(size(M,2),3)
 @test M*x ≈ MF*x
 @test M'*x ≈ MF'*x
 @test M*A ≈ MF*A
+
+
+MP = M * M2
+MPF = MF * MF2
+@test MP*x ≈ MPF*x
+
+MP = M + M2
+MPF = MF + MF2
+@test MP*x ≈ MPF*x
+
+MP = M - M2
+MPF = MF - MF2
+@test MP*x ≈ MPF*x
 
 
 

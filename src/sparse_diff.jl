@@ -67,10 +67,11 @@ end
 
 L2o = sub2ind(sz1,IJ...)::Array{Int64,1}
 
-sparse(
+S = sparse(
     [L1;     L1;  ],
     [L2;     L2o; ],
     [-one;   one  ], n2 , n1 )
+
 
 end
 

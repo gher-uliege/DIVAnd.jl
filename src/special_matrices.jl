@@ -89,14 +89,30 @@ type MatFun{T}  <: AbstractMatrix{Float64}
 end
 
 Base.size{T}(MF::MatFun{T}) = MF.sz
-Base.:*{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.fun(x)
-Base.:*{T,S}(MF:: MatFun{T}, M::AbstractMatrix{S}) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
+Base.:*{T,S}(MF::MatFun{T}, x::AbstractVector{S}) = MF.fun(x)
+Base.:*{T,S}(MF::MatFun{T}, M::AbstractMatrix{S}) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
+
+function Base.:*{T}(MF1::MatFun{T}, MF2::MatFun{T})
+    if size(MF1,2) != size(MF2,1)
+        error("incompatible sizes")
+    end
+    return MatFun((size(MF1,1),size(MF2,2)),x -> MF1.fun(MF2.fun(x)), x -> MF2.funt(MF1.funt(x)))
+end
+
+for op in [:+, :-]; @eval begin
+    function Base.$op{T}(MF1::MatFun{T}, MF2::MatFun{T})
+        return MatFun(size(MF1),x -> $op(MF1.fun(x),MF2.fun(x)), x -> $op(MF2.funt(x),MF1.funt(x)))
+    end
+end
+end
+
 Base.:transpose{T}(MF:: MatFun{T}) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
 Base.Ac_mul_B{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.funt(x)
 
+MatFun(S::AbstractSparseMatrix) = MatFun(size(S), x -> S*x, x -> S'*x)
 
 
-
+# CovarHPHt representing H P Hᵀ
 
 type CovarHPHt{T} <: AbstractMatrix{T}
     P:: AbstractMatrix{T}
