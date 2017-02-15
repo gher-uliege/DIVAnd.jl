@@ -133,21 +133,21 @@ end
 # in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
 #
 #
-pmnw=[];
-maskw=[];
-xw=[];
-fw=[];
-ndlast=0;
-
-fi=zeros(size(mask));
 
 
+
+# Analyse rations l/dx etc
 Lpmnrange = divand_Lpmnrange(pmn,Labs)
 
-
+# Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
 windowlist,csteps,lmask = divand_cutter(Lpmnrange,size(mask),moddim)
 
-for iwin=1:size(windowlist)[1]
+
+# For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
+ Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
+#fi=zeros(size(mask));
+fi=SharedArray(Float64,size(mask));
+@sync @parallel for iwin=1:size(windowlist)[1]
  
  iw1=windowlist[iwin][1]
  iw2=windowlist[iwin][2]
@@ -165,19 +165,20 @@ warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 # Need to check how to work with aditional constraints...
 #################################################
 
+# If C is square then maybe just take the sub-square corresponding to the part taken from x hoping the constraint is a local one ?
+#
+
+
+
 
 
 windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 fw=0
-
-# @time fw,s=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
-
+s=0
+# Verify if a direct solver was requested from the demain decomposer
 if sum(csteps)>0
-
 fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargs...)
-
                 else
-				
 fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)				
 end
 
@@ -219,22 +220,16 @@ windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
 fi[windowpointsstore...]= fw[windowpointssol...];
 
-# ndlast=sum(1-s.obsout)
 
-# end
-# end
-# end
 end
 
-@show size(fi)
-return fi,s #,pmnw,xw,maskw,ndlast
+# When finished apply an nd filtering to smooth possible edges, particularly in error fields.
+
+# For the moment s is not defined ?
+return fi,s 
 
 
 
-
-
-
-# return pmnw,n,Lscales,overlapping,stepsize
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

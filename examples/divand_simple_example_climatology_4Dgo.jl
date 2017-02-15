@@ -6,9 +6,9 @@ using PyPlot
 include("../src/overrride_ssmult.jl")
 # final grid
 #
-testsizex=200
+testsizex=300
 testsizey=200
-testsizez=10
+testsizez=40
 testsizet=12
 # observations
 nobs=2000;

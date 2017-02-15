@@ -218,7 +218,7 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 ####################################
 # Need to look at constraints later
 ####################################
-
+# Here should be straightfoward replace C by C*HI on the constraint structure
 
 
 
@@ -234,7 +234,7 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
 
 
-#
+## Preconditionner with desactivated correlations in some directions
 
 Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 #
@@ -243,9 +243,7 @@ Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 @time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargs...)
 
 
-#TO Do
-#Save sc.P and newguess then reinitialize fc and sc with zero and garbage collection
-# 
+
 
 @show Labsc
 
