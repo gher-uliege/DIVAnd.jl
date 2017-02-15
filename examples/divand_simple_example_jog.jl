@@ -32,7 +32,7 @@ len = 0.10;
 epsilon2 = 1;
 
 # fi is the interpolated field
-@time fi,s,figuess,fifine,sf ,erri= divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+@time fi,s,figuess,fifine,sf ,erri= divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,ones(2),ones(2));
 
 # fi is the interpolated field
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);

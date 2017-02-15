@@ -168,6 +168,7 @@ warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
 
 windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
+fw=0
 
 # @time fw,s=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
@@ -225,7 +226,7 @@ fi[windowpointsstore...]= fw[windowpointssol...];
 # end
 end
 
-
+@show size(fi)
 return fi,s #,pmnw,xw,maskw,ndlast
 
 

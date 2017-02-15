@@ -6,8 +6,8 @@ using PyPlot
 
 # observations
 nobs=500
-x = rand(nobs);
-y = rand(nobs);
+x = 0.01+0.98*rand(nobs);
+y = 0.01+0.98*rand(nobs);
 f = sin(x*6) .* cos(y*6);
 
 # final grid
@@ -35,7 +35,7 @@ epsilon2 = 1;
 # fi is the interpolated field
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
-@time fi = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
+@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
 subplot(1,3,1)
 pcolor(xi,yi,fi)

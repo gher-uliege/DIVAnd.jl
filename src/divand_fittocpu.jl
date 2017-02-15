@@ -39,7 +39,7 @@ n = size(Lpmnrange)[1]
 lfactor=0.2
 
 # How wide is the overlap in terms of number of length scales
-factoroverlap=2.8
+factoroverlap=3
 
 if n<3
 biggestproblemiter=500*500 
@@ -165,9 +165,14 @@ doesitfit=(prod(2*overlapping+stepsize)<biggestproblemiter)
 
 
 
-# Before returning, check if by chance the windows are now small enough even allow for a direct solver
+# Before returning, check if by chance the windows are now small enough to even allow for a direct solver
 
 isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
+
+####################################
+#Force direct solver
+# isdirect=(0<1)
+
 
 @show isdirect
 

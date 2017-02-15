@@ -283,7 +283,8 @@ pcargs = [(:tol, tol),(:maxit,maxiter)]
 @show size(HI)
 
 
-diagshift=0.02*(sqrt(size(HI)[1]/size(HI)[2])-1);
+diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
+
 @show diagshift
 
 function compPC(iB,H,R)
@@ -299,6 +300,7 @@ end
 
 # Then run with normal resolution and preconditionner
 fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
+#fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = divand_pc_sqrtiB, fi0 =xguess)
 
 #errfield=diagMtCM(sc.P,HI')
 
