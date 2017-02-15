@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations.
 
-fi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,...);
+fi,s = divandjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -96,7 +96,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 
 
-function divandjog(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
+function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
                 
                 )
 
@@ -124,7 +124,9 @@ end
 
 iscyclic = moddim .> 0
 
-nsteps=divand_sampler(pmn,Labs);
+#nsteps=divand_sampler(pmn,Labs);
+
+nsteps=csteps
 
 @show nsteps
 @show(sum(nsteps))
@@ -138,11 +140,18 @@ if sum(nsteps)>n
 
 #######################################
 # HOW TO TREAT COARSE GRID NOT COVERING FINE GRID ?
-# Artificially add halo or also coordinates of last points in fine grid if the last step is beyond ?
+# Artificially add of coordinates of last points in fine grid if the last step is beyond.
+# Slight inconsistency here for the error field as pmn was not adapted for last two points
 #######################################
 
-coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
+#coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
+#([unique(push!(collect(1:3:13),13)) for i in 1:4]...)
+coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
 
+# If last point not reached add last point and just forget about incorrect metric  there ?
+
+
+# To do ...
 
 xic=([ x[coarsegridpoints...] for x in xi ]...);
 
@@ -226,10 +235,8 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
 
 #
-# For dimensions above 2 use L=0 to decouple and get managable preconditionner size
-jmmask=ones(n)
-jmmask[3:end]=0
-Labsccut=([Labsc[i]*jmmask[i] for i=1:n]...)
+
+Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 #
 
 
@@ -265,7 +272,7 @@ Labsccut=([Labsc[i]*jmmask[i] for i=1:n]...)
 # Recover sc.P and define the conditionner
 
 # tolerance on the gradient A x - b
-tol = 5e-2
+tol = 2e-3
 
 
 maxiter=10*Int(ceil(sqrt(size(HI)[1])))
@@ -276,7 +283,7 @@ pcargs = [(:tol, tol),(:maxit,maxiter)]
 @show size(HI)
 
 
-diagshift=0.01*(sqrt(size(HI)[1]/size(HI)[2])-1);
+diagshift=0.02*(sqrt(size(HI)[1]/size(HI)[2])-1);
 @show diagshift
 
 function compPC(iB,H,R)

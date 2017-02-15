@@ -133,38 +133,6 @@ end
 # in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
 #
 #
-
-# Also there is a huge overhead in the test_divandgo case. Need to analyze
-
-
-# Hardwired
-
-# How wide is the overlap in terms of number of length scales
-factoroverlap=2
-
-# If possible use windows as large as possible but small enought to not reach the following problem size
-# This needs adaptions to the dimensionality of the problem; the more dimensions the more expensive
-# the problem is because of the bandwidth of the matrix. So typically
-
-if n<3
-biggestproblem=300*300 
-end
-if n==3
-biggestproblem=50*50*50
-end
-if n==4
-biggestproblem=50*50*10*12
-end
-
-# But increase it again if divandjog is called and can use subsampling...
-laterscales=divand_sampler(pmn,Labs)
-@show biggestproblem
-biggestproblem=biggestproblem*prod(laterscales)
-@show biggestproblem
-
-# Fraction of domain size at which windowing is attempted if len is smaller
-lfactor=0.2
-
 pmnw=[];
 maskw=[];
 xw=[];
@@ -172,300 +140,23 @@ fw=[];
 ndlast=0;
 
 fi=zeros(size(mask));
-# check inputs
 
 
+Lpmnrange = divand_Lpmnrange(pmn,Labs)
 
-Lscales=ones(n);
-stepsize=ones(Int,n);
-overlapping=ones(Int,n);
-Lscalespmnmax=ones(n);
 
-if isa(Labs,Number)
-    Lscales=Labs*Lscales;
-	for i=1:n
-	 Lscalespmnmax[i]=Lscales[i]*maximum(pmn[i]);
-	end
-	
-		
-elseif isa(Labs,Tuple)
+windowlist,csteps,lmask = divand_cutter(Lpmnrange,size(mask),moddim)
 
-    if isa(Labs[1],Number)
-        Lscales = [[Labs[i]  for i = 1:n]...]
-		for i=1:n
-	    Lscalespmnmax[i]=Lscales[i]*maximum(pmn[i]);
-	    end
-	else
-     	for i=1:n
-	    Lscalespmnmax[i]=maximum(Labs[i].*pmn[i]);
-	    end
-    end
-
-end
-
-@show Lscales
-@show Lscalespmnmax
-
-problemsize=1;
-nwd=0
-for i=1:n
-# For each dimension try to define windows
-# 
-# Default is no window:
-stepsize[i]=size(mask)[i];
-overlapping[i]=0;
-
-# if length scale is small compared to domain size
-if Lscalespmnmax[i]<   lfactor*size(mask)[i]
- if moddim[i]==0
- overlapping[i]=Int(ceil( factoroverlap*Lscalespmnmax[i]   ))
- problemsize=problemsize*overlapping[i]
-
+for iwin=1:size(windowlist)[1]
  
-  nwd=nwd+1 
-                              else
- problemsize=problemsize*size(mask)[i]		
- end 
-else
-problemsize=problemsize*size(mask)[i]		
-end
-
-# 
-end
-
-@show problemsize
-@ show nwd
-@ show overlapping
-
-if nwd>0
-  epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
-end
-if epsilon<0
-warn("SO what $epsilon $problemsize $nwd $overlapping")
-epsilon=1E-6
-end
-
-for i=1:n
-# if length scale is small compared to domain size
-if Lscalespmnmax[i]<   lfactor*size(mask)[i]
-if moddim[i]==0
-stepsize[i]=Int(ceil( epsilon*factoroverlap*Lscalespmnmax[i]   ))
-end
-end
-
-# 
-end
-
-# ##########################################################################################################
-# For climatology make a different windowing
-############################################################################################################
-
-# Unfortunataly for the moment the problem is memory bound by the unsampled grid. 
-
-laterscales=ones(n)
-
-if n<3
-biggestproblem=300*300 
-end
-if n==3
-biggestproblem=50*50*50
-end
-if n==4
-biggestproblem=50*50*10*12
-end
-biggestproblem= biggestproblem/(1.0+prod(size(mask)[3:end])/(0.01+prod(laterscales[3:end])))
-
-problemsize=1
-@show biggestproblem
-
-nwd=0
-for i=1:2
-# For each dimension try to define windows
-# Assuming uniform metrics
-# Default is no window:
-stepsize[i]=size(mask)[i];
-overlapping[i]=0;
-
-# if length scale is small compared to domain size
-if Lscalespmnmax[i]<   lfactor*size(mask)[i]
- if moddim[i]==0
- overlapping[i]=Int(ceil( factoroverlap*Lscalespmnmax[i]   ))
- problemsize=problemsize*overlapping[i]
- # Forced small window on zero
-  if i==3
-  overlapping[i]=1
-  end
- 
-  nwd=nwd+1 
-                              else
- problemsize=problemsize*size(mask)[i]		
- end 
-else
-problemsize=problemsize*size(mask)[i]		
-end
-
-# 
-end
-
-problemsize=problemsize/prod(laterscales[1:2])
-
-@show problemsize
-@ show nwd
-@ show overlapping
-
-if nwd>0
-  epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
-end
-if epsilon<0
-warn("SO what $epsilon $problemsize $nwd $overlapping")
-epsilon=1E-6
-end
-
-for i=1:2
-# if length scale is small compared to domain size
-if Lscalespmnmax[i]<   lfactor*size(mask)[i]
-if moddim[i]==0
-stepsize[i]=Int(ceil( epsilon*factoroverlap*Lscalespmnmax[i]   ))
-end
-end
-  
-# 
-end
-for i=3:n
-stepsize[i]=size(mask)[i]
-end	
-
-# END CLIMATOLOGY TYPE 
-
-# Depending on problem size increase or decrease stepsize for the windowed part
-
-
-#TODOTODOTODO
-# First and last window do not need to start on border but one overlapping region away.
-
-
-
-# Keep pointers to place where solution is found in output grid
-# window corners in main problem
-iw1=zeros(Int,n)
-iw2=zeros(Int,n)
-
-# Solution indexes in submodel
-isol1=zeros(Int,n)
-isol2=zeros(Int,n)
-ij=ones(Int,n)
-
-# Range for final storage
-istore1=zeros(Int,n)
-istore2=zeros(Int,n)
-
-
-# Now test hardcoded for maximum 4 dimensions
-ij=zeros(Int,4);
-ssize=ones(Int,4);
-lastp=ones(Int,4);
-
-ssize[1:n]=stepsize[1:n];
-lastp[1:n]=collect(size(mask));
-
-
-
-sz = size(mask)
-
-# TODO
-# need to subtract two overlap regions from total size to determine the number of tiles
-#subsz = ([ceil(Int,sz[i] / stepsize[i]) for i = 1:ndims(mask)]...)
-#JM
-subsz = ([ceil(Int,(sz[i]-2*overlapping[i]) / stepsize[i]) for i = 1:ndims(mask)]...)
-for cr in CartesianRange(subsz)
-    ij = [[(cr[i]-1)*stepsize[i]+1  for i = 1:ndims(mask)]...]
-        @show ij
-# end 
-
-# for il4=1:ssize[4]:lastp[4]
-# for il3=1:ssize[3]:lastp[3]
-# for il2=1:ssize[2]:lastp[2]
-# for il1=1:ssize[1]:lastp[1]
-
-# ij[1]=il1;
-# ij[2]=il2;
-# ij[3]=il3;
-# ij[4]=il4;
-
-# iw1 and iw2: the indexes of the starting and ending indexes in the global matrix
-# isol1 and isol2: the indexes in the local matrix from which to extract the solution
-# istore1 and istore2: the indexes where to store the extracted solution into the global matrix
-
-# ij the pointer of indexes in each dimension of the current window starting point.
-# In adapted version this must be the lower left corner of the overall window
-
-# Generic code again
-for nd=1:n
-
-
-#iw1[nd]=ij[nd]-overlapping[nd]
-
-iw1[nd]=ij[nd]
-
-# For normal tiles take middle part
-isol1[nd]=overlapping[nd]+1
-
-#JM
-# For first tile take up to the left limit
-if ij[nd]==1
-   isol1[nd]=1
-end
-
-# if iw1[nd]<1
- # isol1[nd]=isol1[nd]+iw1[nd]-1
- # iw1[nd]=1
-# end
-
-#JM
-#iw2[nd]=ij[nd]+stepsize[nd]+overlapping[nd]-1;
-# Tile size is stepsize[nd]+2*overlapping[nd]
-iw2[nd]=ij[nd]+stepsize[nd]+2*overlapping[nd]-1;
-
-
-
-
-#isol2[nd]=isol1[nd]+stepsize[nd]-1
-
-# For normal tiles take middel part
-
-isol2[nd]=overlapping[nd]+stepsize[nd]
-
-if iw2[nd]>=size(mask)[nd]
-# Last box
-
-iw2[nd]=size(mask)[nd]
-# Take up to the right borded
-isol2[nd]=iw2[nd]-iw1[nd]+1
-
-end
-
-
-# if isol2[nd]> iw2[nd]-iw1[nd]+1
- # isol2[nd]=iw2[nd]-iw1[nd]+1
-# end
-
-istore1[nd]=ij[nd];
-
-#JM
-if ij[nd]>1
-istore1[nd]=istore1[nd]+overlapping[nd]
-end
-
-istore2[nd]=istore1[nd]+isol2[nd]-isol1[nd];
-
-
-
-
-end
-
-
-
-warn("Test window $iw1 $iw2 $isol1 $isol2 $ij $istore1 $istore2 ")
+ iw1=windowlist[iwin][1]
+ iw2=windowlist[iwin][2]
+ isol1=windowlist[iwin][3]
+ isol2=windowlist[iwin][4]
+ istore1=windowlist[iwin][5]
+ istore2=windowlist[iwin][6]
+
+warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
 
 
@@ -480,7 +171,14 @@ windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 
 # @time fw,s=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
-fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
+if sum(csteps)>0
+
+fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargs...)
+
+                else
+				
+fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)				
+end
 
 # maskb=mask[windowpoints...]
 # pmnb=([ x[windowpoints...] for x in pmn ]...)

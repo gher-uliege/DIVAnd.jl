@@ -43,6 +43,11 @@ len = (8, 8, 1, 1);
 epsilon2 = 1;
 
 # fi is the interpolated field
+
+LPMNR=divand_Lpmnrange((pm,pn,po,pq),len)
+windowlist,csteps,lmask = divand_cutter(LPMNR,size(mask),[0 0 0 12])
+
+
 @time fi,s = divandgo(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
 
 
