@@ -57,7 +57,7 @@ D = divand_laplacian(operatortype,mask,pmn,nu,iscyclic)
 
 d = statevector_pack(sv,(1./( .*(pmn...)),))
 d = d[:,1]
-WE = sparse_diag(sqrt.(d))
+WE = oper_diag(operatortype,sqrt.(d))
 
 for i=1:n
   S = sparse_stagger(sz,i,iscyclic[i])
@@ -66,21 +66,20 @@ for i=1:n
   ma = (S * mask[:]) .== 1
   s.mask_stag[i] = ma
 
-  #d = sparse_pack(ma) * prod(S * reshape(pmn,length(mask),n),2)
-  d = sparse_pack(ma) *  (.*([S*_[:]  for _ in pmn]...))
+  d = oper_pack(operatortype,ma) *  (.*([S*_[:]  for _ in pmn]...))
   d = 1./d
-  s.WEs[i] = sparse_diag(sqrt.(d))
+  s.WEs[i] = oper_diag(operatortype,sqrt.(d))
 end
 
 s.Dx = sparse_gradient(operatortype,mask,pmn,iscyclic)
 
 if !isempty(mapindex)
   D = applybc * D * applybc
-  WE = sparse_diag(s.isinterior) * WE
+  WE = oper_diag(operatortype,s.isinterior) * WE
 
   for i=1:n
     S = sparse_stagger(sz,i,iscyclic[i])
-    s.isinterior_stag[i] =  sparse_pack(s.mask_stag[i]) * S * s.isinterior_unpacked(:)
+    s.isinterior_stag[i] =  oper_pack(operatortype,s.mask_stag[i]) * S * s.isinterior_unpacked(:)
 
     # the results of 's.Dx[i] * field' satisfies the bc is field does
     # there is need to reapply the bc on the result
