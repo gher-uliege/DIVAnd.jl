@@ -102,7 +102,7 @@ L = geomean(Ld[Ld .> 0])
 
 d = .*(pmn[Ld .> 0]...)
 
-WE = sparse_diag(statevector_pack(sv,(1./sqrt.(d),))[:,1])
+WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
 
 
 # scale iB such that the diagonal of inv(iB) is 1 far from
@@ -141,7 +141,7 @@ for i=1:n
     ma = (S * mask[:]) .== 1
     d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
     d = 1./d
-  s.WEs[i] = sparse_diag(sqrt.(d))
+  s.WEs[i] = oper_diag(operatortype,sqrt.(d))
 end
 
 # staggered version of norm scaled by length-scale
@@ -156,7 +156,7 @@ for i=1:n
     m = (S * mask[:]) .== 1
 
     tmp = sparse_pack(m) * sqrt.(S*Li2[:])
-    s.WEss[i] = sparse_diag(tmp) * s.WEs[i]
+    s.WEss[i] = oper_diag(operatortype,tmp) * s.WEs[i]
     #  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
 end
 
@@ -164,13 +164,13 @@ end
 if !isempty(mapindex)
   # ignore halo points at the center of the cell
 
-  WE = sparse_diag(s.isinterior) * WE
+  WE = oper_diag(operatortype,s.isinterior) * WE
 
   # divide weight be two at the edged of halo-interior cell
     # weight of the grid points between halo and interior points
     # are 1/2 (as there are two) and interior points are 1
   for i=1:n
-    s.WEs[i] = sparse_diag(sqrt.(s.isinterior_stag[i])) * s.WEs[i]
+    s.WEs[i] = oper_diag(operatortype,sqrt.(s.isinterior_stag[i])) * s.WEs[i]
   end
 end
 
