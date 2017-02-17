@@ -1,6 +1,16 @@
 
-oper_diff(::Type{Val{:sparse}},sz1,m,cyclic = false) = sparse_diff(sz1,m,cyclic)
-oper_diff(::Type{Val{:MatFun}},sz1,m,cyclic = false) = matfun_diff(sz1,m,cyclic)
+for fun in [:diag,:diff]
+    @eval begin
+        $(Symbol("oper_" * string(fun)))(::Type{Val{:sparse}},sz1,m,cyclic = false) = $(Symbol("sparse_" * string(fun)))(sz1,m,cyclic)
+        $(Symbol("oper_" * string(fun)))(::Type{Val{:MatFun}},sz1,m,cyclic = false) = $(Symbol("matfun_" * string(fun)))(sz1,m,cyclic)
+    end
+end
+
+matfun_diag(d) = MatFun((size(d,1),size(d,1)), x -> d.*x, x -> d.*x)
+
+function matfun_pack(mask)
+    MatFun(sparse_pack(mask))
+end
 
 """
 Sparse operator for differentiation.

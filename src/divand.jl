@@ -180,23 +180,6 @@ end
 
 
 
-sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
-#function sparse_diag(d)
-#    return MatFun((size(d,1),size(d,1)), x -> d.*x, x -> d.*x)
-#end
-
-function sparse_pack(mask)
-
-    j = find(mask)
-    m = length(j)
-    i = collect(1:m)
-    s = ones(m)
-    n = length(mask)
-    H = sparse(i,j,s,m,n)
-
-    return MatFun(H)
-end
-
 
 """
 mask,xyi,pmn = divand_squaredom(n,coord)
@@ -240,6 +223,8 @@ function divand_rectdom(coords...)
 end
 
 
+include("sparse_operator.jl");
+include("function_operator.jl");
 
 include("sparse_stagger.jl");
 include("sparse_diff.jl");
@@ -248,7 +233,6 @@ include("sparse_trim.jl");
 include("sparse_shift.jl");
 include("sparse_gradient.jl");
 
-include("function_operator.jl");
 
 include("localize_separable_grid.jl");
 

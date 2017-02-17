@@ -14,7 +14,7 @@
 #   Dx1,Dx2,...,Dxn: sparce matrix represeting a gradient along
 #     different dimensions
 
-function sparse_gradient(mask,pmn,iscyclic = falses(ndims(mask)))
+function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
 
 H = sparse_pack(mask)
 
@@ -32,7 +32,7 @@ for i=1:n
 
   d = m .* (S * pmn[i][:])
 
-  push!(out,sparse_pack(m) * sparse_diag(d) * sparse_diff(sz,i,iscyclic[i]) * H')
+  push!(out,sparse_pack(m) * sparse_diag(d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
 end
 
 (out...)
@@ -54,4 +54,3 @@ end
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; If not, see <http://www.gnu.org/licenses/>.
-

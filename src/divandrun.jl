@@ -125,6 +125,7 @@ end
 
 # type of operators Val{:sparse} or Val{:MatFun}
 operatortype = Val{:sparse}
+#operatortype = Val{:MatFun}
 
 s = divand_background(operatortype,mask,pmn,len,alpha,moddim);
 s.betap = 0;

@@ -72,7 +72,7 @@ for i=1:n
   s.WEs[i] = sparse_diag(sqrt.(d))
 end
 
-s.Dx = sparse_gradient(mask,pmn,iscyclic)
+s.Dx = sparse_gradient(operatortype,mask,pmn,iscyclic)
 
 if !isempty(mapindex)
   D = applybc * D * applybc
