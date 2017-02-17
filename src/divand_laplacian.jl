@@ -38,14 +38,14 @@ sz = size(mask)
 # default float type
 
 # extraction operator of sea points
-H = sparse_pack(mask)
+H = oper_pack(operatortype,mask)
 sz = size(mask)
 
 DD = spzeros(prod(sz),prod(sz))
 
 for i=1:n
   # operator for staggering in dimension i
-  S = sparse_stagger(sz,i,iscyclic[i])
+  S = oper_stagger(operatortype,sz,i,iscyclic[i])
 
   # d = 1 for interfaces surounded by water, zero otherwise
   d = zeros(Float64,size(S,1))
@@ -69,7 +69,7 @@ for i=1:n
   # Flux operators D
   # zero at "coastline"
 
-  D = sparse_diag(d) * sparse_diff(sz,i,iscyclic[i])
+  D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
 
   if !iscyclic[i]
     # extx: extension operator
@@ -78,13 +78,13 @@ for i=1:n
     tmp_szt[i] = tmp_szt[i]+1
     szt = (tmp_szt...)
 
-    extx = sparse_trim(szt,i)'
+    extx = oper_trim(operatortype,szt,i)'
     D = extx * D
-    DD = DD + sparse_diff(szt,i,iscyclic[i]) * D
+    DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
  else
     # shift back one grid cell along dimension i
-    D = sparse_shift(sz,i,iscyclic[i])' * D
-    DD = DD + sparse_diff(sz,i,iscyclic[i]) * D
+    D = oper_shift(operatortype,sz,i,iscyclic[i])' * D
+    DD = DD + oper_diff(operatortype,sz,i,iscyclic[i]) * D
   end
 
   # add laplacian along dimension i
@@ -93,7 +93,7 @@ end
 ivol = .*(pmn...)
 
 # Laplacian on regualar grid DD
-DD = sparse_diag(ivol[:]) * DD
+DD = oper_diag(operatortype,ivol[:]) * DD
 
 
 # Laplacian on grid with on sea points Lap

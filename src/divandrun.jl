@@ -113,7 +113,8 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 keepLanczosVectors = 0,
                 compPC = divand_pc_none,
                 fi0 = zeros(size(mask)),
-                f0 = zeros(size(f))
+                f0 = zeros(size(f)),
+                operatortype = Val{:sparse}
                 )
 
 
@@ -123,9 +124,6 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
-# type of operators Val{:sparse} or Val{:MatFun}
-operatortype = Val{:sparse}
-#operatortype = Val{:MatFun}
 
 s = divand_background(operatortype,mask,pmn,len,alpha,moddim);
 s.betap = 0;

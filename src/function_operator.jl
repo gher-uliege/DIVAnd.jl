@@ -1,5 +1,15 @@
 
-for fun in [:diag,:diff]
+
+oper_pack(::Type{Val{:sparse}},mask) = sparse_pack(mask)
+oper_pack(::Type{Val{:MatFun}},mask) = matfun_pack(mask)
+
+oper_diag(::Type{Val{:sparse}},d) = sparse_diag(d)
+oper_diag(::Type{Val{:MatFun}},d) = matfun_diag(d)
+
+oper_trim(::Type{Val{:sparse}},sz1,m) = sparse_trim(sz1,m)
+oper_trim(::Type{Val{:MatFun}},sz1,m) = matfun_trim(sz1,m)
+
+for fun in [:diff,:shift,:stagger]
     @eval begin
         $(Symbol("oper_" * string(fun)))(::Type{Val{:sparse}},sz1,m,cyclic = false) = $(Symbol("sparse_" * string(fun)))(sz1,m,cyclic)
         $(Symbol("oper_" * string(fun)))(::Type{Val{:MatFun}},sz1,m,cyclic = false) = $(Symbol("matfun_" * string(fun)))(sz1,m,cyclic)
