@@ -95,6 +95,10 @@ type divand_struct
         obsout = Array{Bool,1}()
         obsconstrain = divand_constrain([],[],[])
 
+        WEs = Array{Any,1}(n)
+        WEss = Array{Any,1}(n)
+
+
         compPC(iB,R,H) = identity
         preconditioner = identity
         new(n,
@@ -177,7 +181,9 @@ end
 
 
 sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
-
+#function sparse_diag(d)
+#    return MatFun((size(d,1),size(d,1)), x -> d.*x, x -> d.*x)
+#end
 
 function sparse_pack(mask)
 
@@ -188,6 +194,7 @@ function sparse_pack(mask)
     n = length(mask)
     H = sparse(i,j,s,m,n)
 
+    return MatFun(H)
 end
 
 

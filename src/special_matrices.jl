@@ -112,6 +112,7 @@ end
 
 Base.:*{T}(MF1::MatFun{T}, MF2::MatFun{T}) = A_mul_B(MF1,MF2)
 Base.:*{T}(MF::MatFun{T}, S::AbstractSparseMatrix) = MF * MatFun(S)
+Base.:A_mul_Bc{T}(S::AbstractSparseMatrix, MF::MatFun{T}) = MatFun(S) * MF
 Base.:*{T}(S::AbstractSparseMatrix,MF::MatFun{T}) = MatFun(S) * MF
 
 for op in [:/, :*]; @eval begin

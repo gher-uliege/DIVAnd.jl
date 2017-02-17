@@ -24,7 +24,7 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function divand_background(mask,pmn,Labs,alpha,moddim,mapindex = [])
+function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = [])
 
 # number of dimensions
 n = ndims(mask)
@@ -73,7 +73,7 @@ end
 #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
 #end
 
-s = divand_operators(mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex)
+s = divand_operators(operatortype,mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex)
 D = s.D # laplacian (a dimensional, since nu = Labs.^2)
 sv = s.sv
 n = s.n

@@ -21,7 +21,7 @@
 #     of a grid cell
 
 
-function divand_operators(mask,pmn,nu,iscyclic,mapindex)
+function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex)
 
 s = divand_struct(mask)
 
@@ -51,7 +51,7 @@ if !isempty(mapindex)
   s.mapindex_packed = mapindex_packed
 end
 
-D = divand_laplacian(mask,pmn,nu,iscyclic)
+D = divand_laplacian(operatortype,mask,pmn,nu,iscyclic)
 
 # XXX remove this WE
 

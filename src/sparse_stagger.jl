@@ -11,7 +11,8 @@
 #   cyclic: true if domain is cyclic along dimension m. False is the
 #   default value
 
-function sparse_stagger(sz1,m,cyclic = false)::SparseMatrixCSC{Float64,Int64}
+#function sparse_stagger(sz1,m,cyclic = false)::SparseMatrixCSC{Float64,Int64}
+function sparse_stagger(sz1,m,cyclic = false)
 
 n1 = prod(sz1)
 
@@ -55,6 +56,8 @@ S = sparse(
        [L2;  L2o; ],
        [v;   v    ], n2 , n1 );
 
+
+return MatFun(S)
 
 end
 

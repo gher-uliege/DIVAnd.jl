@@ -36,11 +36,13 @@ if cyclic
 end
 
 L2 = sub2ind(sz1,IJ...)
-sparse(L1,L2,one,n2,n1)
+S = sparse(L1,L2,one,n2,n1)
+
+return MatFun(S)
 
 end
 
-# Copyright (C) 2012,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2012-2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,4 +56,3 @@ end
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; If not, see <http://www.gnu.org/licenses/>.
-

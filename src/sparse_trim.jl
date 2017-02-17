@@ -9,7 +9,8 @@
 #   sz1: size of rhs
 #   m: dimension to trim
 
-function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
+#function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
+function sparse_trim(sz1,m)
 
 n1 = prod(sz1)
 sz2 = collect(sz1)
@@ -30,7 +31,10 @@ L2 = sub2ind(sz1,IJ...)
 
 one = ones(size(L1))
 
-sparse(L1, L2, one, n2, n1)
+S = sparse(L1, L2, one, n2, n1)
+
+@show typeof(S)
+return MatFun(S)
 
 end
 
@@ -48,4 +52,3 @@ end
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; If not, see <http://www.gnu.org/licenses/>.
-

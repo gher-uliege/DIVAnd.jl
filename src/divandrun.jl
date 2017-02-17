@@ -123,8 +123,10 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
+# type of operators Val{:sparse} or Val{:MatOper}
+operatortype = Val{:sparse}
 
-s = divand_background(mask,pmn,len,alpha,moddim);
+s = divand_background(operatortype,mask,pmn,len,alpha,moddim);
 s.betap = 0;
 s.EOF_lambda = EOF_lambda;
 s.primal = primal;
@@ -135,6 +137,7 @@ s.minit = minit;
 s.inversion = inversion;
 s.keepLanczosVectors = keepLanczosVectors;
 s.compPC = compPC;
+
 
 # # remove non-finite elements from observations
 # f = f[:];

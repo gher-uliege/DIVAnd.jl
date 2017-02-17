@@ -17,21 +17,21 @@
 #
 #
 
-function divand_laplacian(mask,pmn,nu::Float64,iscyclic)
+function divand_laplacian(operatortype,mask,pmn,nu::Float64,iscyclic)
 
     n = ndims(mask)
     nu_ = ([nu*ones(mask) for i = 1:n]...)
 
-    return divand_laplacian(mask,pmn,nu_,iscyclic)
+    return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 
 end
-function divand_laplacian{n}(mask,pmn,nu::Array{Float64,n},iscyclic)
+function divand_laplacian{n}(operatortype,mask,pmn,nu::Array{Float64,n},iscyclic)
     nu_ = ([nu for i = 1:n]...)
 
-    return divand_laplacian(mask,pmn,nu_,iscyclic)
+    return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 
-function divand_laplacian{n}(mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic)
+function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic)
 
 sz = size(mask)
 
