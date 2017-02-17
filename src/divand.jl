@@ -247,6 +247,9 @@ include("sparse_interp.jl");
 include("sparse_trim.jl");
 include("sparse_shift.jl");
 include("sparse_gradient.jl");
+
+include("function_operator.jl");
+
 include("localize_separable_grid.jl");
 
 include("special_matrices.jl");

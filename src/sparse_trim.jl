@@ -34,7 +34,7 @@ one = ones(size(L1))
 S = sparse(L1, L2, one, n2, n1)
 
 @show typeof(S)
-return MatFun(S)
+return S
 
 end
 

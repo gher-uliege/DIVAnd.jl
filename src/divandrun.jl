@@ -123,7 +123,7 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
-# type of operators Val{:sparse} or Val{:MatOper}
+# type of operators Val{:sparse} or Val{:MatFun}
 operatortype = Val{:sparse}
 
 s = divand_background(operatortype,mask,pmn,len,alpha,moddim);

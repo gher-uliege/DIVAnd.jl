@@ -1,3 +1,7 @@
+
+oper_diff(::Type{Val{:sparse}},sz1,m,cyclic = false) = sparse_diff(sz1,m,cyclic)
+oper_diff(::Type{Val{:MatFun}},sz1,m,cyclic = false) = matfun_diff(sz1,m,cyclic)
+
 """
 Sparse operator for differentiation.
 

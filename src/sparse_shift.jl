@@ -38,7 +38,7 @@ end
 L2 = sub2ind(sz1,IJ...)
 S = sparse(L1,L2,one,n2,n1)
 
-return MatFun(S)
+return S
 
 end
 

@@ -57,7 +57,7 @@ S = sparse(
        [v;   v    ], n2 , n1 );
 
 
-return MatFun(S)
+return S
 
 end
 
