@@ -204,7 +204,6 @@ a = randn(size(S,1))
 b = randn(size(S,2))
 @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
-
 # pack
 mask = rand(10,11) .> 0.5
 S = oper_pack(operatortype,mask)
