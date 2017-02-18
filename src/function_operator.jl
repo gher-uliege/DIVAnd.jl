@@ -23,11 +23,11 @@ function matfun_pack(mask)
 end
 
 """
-Sparse operator for differentiation.
+Operator for differentiation.
 
 diffx = matfun_diff(sz1,m,cyclic)
 
-Sparse operator for differentiation along dimension m for "collapsed" matrix
+Operator for differentiation along dimension m for "collapsed" matrix
 of the size sz1.
 
 Input:
@@ -58,15 +58,12 @@ end
 # adjoint
 function funt(x)
     x = reshape(x,sz2)
-    @show "here"
 
     if !cyclic
         ind0 = [ (i == m ? 1            : (1:sz2[i])) for i = 1:length(sz2)]
         ind1 = [ (i == m ? (2:sz2[i])   : (1:sz2[i])) for i = 1:length(sz2)]
         ind2 = [ (i == m ? (1:sz2[i]-1) : (1:sz2[i])) for i = 1:length(sz2)]
         ind3 = [ (i == m ? sz2[i]       : (1:sz2[i])) for i = 1:length(sz2)]
-        #return (x[ind1...] - x[ind2...])[:]
-        @show "here 1D"
         return cat(m,-x[ind0...],x[ind2...]-x[ind1...],x[ind3...])[:]
     else
         ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
@@ -77,25 +74,25 @@ return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 
+"""
+Operator shifting a field in a given dimension.
 
-# Sparse operator shifting a field in a given dimension.
-#
-# function S = matfun_shift(sz1,m,cyclic)
-#
-# Sparse operator shifting a field in the dimension m. The field is a
-# "collapsed" matrix of the size sz1.
-#
-# Input:
-#   sz1: size of rhs
-#   m: dimension to shift
-#   cyclic: true if domain is cyclic along dimension m. False is the
-#     default value
+function S = matfun_shift(sz1,m,cyclic)
+
+Operator shifting a field in the dimension m. The field is a
+"collapsed" matrix of the size sz1.
+
+Input:
+  sz1: size of rhs
+  m: dimension to shift
+  cyclic: true if domain is cyclic along dimension m. False is the
+    default value
+"""
 
 function matfun_shift(sz1,m,cyclic = false)
 
 # sz2 size of the resulting array
 sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
-
 
 function fun(x)
     x = reshape(x,sz1)
@@ -127,16 +124,18 @@ return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 
-# S = matfun_stagger(sz1,m,cyclic)
-#
-# Create a sparse operator for staggering a field in dimension m.
-# The field is a "collapsed" matrix of the size sz1.
-#
-# Input:
-#   sz1: size of rhs
-#   m: dimension to stagger
-#   cyclic: true if domain is cyclic along dimension m. False is the
-#   default value
+"""
+S = matfun_stagger(sz1,m,cyclic)
+
+Create a sparse operator for staggering a field in dimension m.
+The field is a "collapsed" matrix of the size sz1.
+
+Input:
+  sz1: size of rhs
+  m: dimension to stagger
+  cyclic: true if domain is cyclic along dimension m. False is the
+  default value
+"""
 
 function matfun_stagger(sz1,m,cyclic = false)
 
@@ -165,11 +164,8 @@ function funt(x)
         ind1 = [ (i == m ? (2:sz2[i])   : (1:sz2[i])) for i = 1:length(sz2)]
         ind2 = [ (i == m ? (1:sz2[i]-1) : (1:sz2[i])) for i = 1:length(sz2)]
         ind3 = [ (i == m ? sz2[i]       : (1:sz2[i])) for i = 1:length(sz2)]
-        #return (x[ind1...] - x[ind2...])[:]
-        @show "here stagger nc"
         return cat(m,x[ind0...],x[ind2...]+x[ind1...],x[ind3...])[:]/2
     else
-        @show "here stagger c"
         ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
         return (x[ind...] + x)[:]/2
     end
@@ -179,16 +175,18 @@ return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 
-# Sparse operator for trimming.
-#
-# T = matfun_trim(sz1,m)
-#
-# Create a sparse operator which trim first and last row (or column) in
-# The field is a "collapsed" matrix of the size sz1.
-#
-# Input:
-#   sz1: size of rhs
-#   m: dimension to trim
+"""
+Operator for trimming.
+
+T = matfun_trim(sz1,m)
+
+Create a sparse operator which trim first and last row (or column) in
+The field is a "collapsed" matrix of the size sz1.
+
+Input:
+  sz1: size of rhs
+  m: dimension to trim
+"""
 
 function matfun_trim(sz1,m)
 
@@ -198,7 +196,6 @@ sz2 = ntuple(i -> (i == m ? sz1[i]-2 : sz1[i]), length(sz1))
 
 function fun(x)
     x = reshape(x,sz1)
-    @show "trim"
     ind = [ (i == m ? (2:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
     return x[ind...][:]
 end
@@ -206,7 +203,6 @@ end
 # adjoint
 function funt(x)
     x = reshape(x,sz2)
-    @show "here trimshift nc"
     sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
     return cat(m,zeros(eltype(x),sz0),x,zeros(eltype(x),sz0))[:]
 end
