@@ -186,6 +186,31 @@ a = randn(size(S,1))
 b = randn(size(S,2))
 @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
+# stagger and non cyclic
+S = oper_stagger(operatortype,sz,3)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+# stagger and cyclic
+S = oper_stagger(operatortype,sz,3,true)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+# trim
+S = oper_trim(operatortype,sz,3)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+
+# pack
+mask = rand(10,11) .> 0.5
+S = oper_pack(operatortype,mask)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
 
 # Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>

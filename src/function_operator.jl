@@ -112,7 +112,6 @@ end
 # adjoint
 function funt(x)
     x = reshape(x,sz2)
-
     if !cyclic
         @show "here shift nc"
         sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
@@ -126,28 +125,8 @@ end
 
 return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
-
-
-#return MatFun(S)
-
 end
 
-# Copyright (C) 2012-2017 Alexander Barth <a.barth@ulg.ac.be>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; If not, see <http://www.gnu.org/licenses/>.
-# Sparse operator for staggering.
-#
 # S = matfun_stagger(sz1,m,cyclic)
 #
 # Create a sparse operator for staggering a field in dimension m.
@@ -159,7 +138,6 @@ end
 #   cyclic: true if domain is cyclic along dimension m. False is the
 #   default value
 
-#function matfun_stagger(sz1,m,cyclic = false)::SparseMatrixCSC{Float64,Int64}
 function matfun_stagger(sz1,m,cyclic = false)
 
 n1 = prod(sz1)
