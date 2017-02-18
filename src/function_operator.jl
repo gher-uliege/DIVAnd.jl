@@ -69,12 +69,14 @@ end
 # adjoint
 function funt(x)
     x = reshape(x,sz2)
+    #@show size(x),m
 
     if !cyclic
-        ind0 = [ (i == m ? 1            : (1:sz2[i])) for i = 1:length(sz2)]
-        ind1 = [ (i == m ? (2:sz2[i])   : (1:sz2[i])) for i = 1:length(sz2)]
-        ind2 = [ (i == m ? (1:sz2[i]-1) : (1:sz2[i])) for i = 1:length(sz2)]
-        ind3 = [ (i == m ? sz2[i]       : (1:sz2[i])) for i = 1:length(sz2)]
+        ind0 = [ (i == m ? (1:1)           : (1:sz2[i])) for i = 1:length(sz2)]
+        ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
+        ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
+        ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
+
         return cat(m,-x[ind0...],x[ind2...]-x[ind1...],x[ind3...])[:]
     else
         ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
@@ -169,10 +171,10 @@ function funt(x)
     x = reshape(x,sz2)
 
     if !cyclic
-        ind0 = [ (i == m ? 1            : (1:sz2[i])) for i = 1:length(sz2)]
-        ind1 = [ (i == m ? (2:sz2[i])   : (1:sz2[i])) for i = 1:length(sz2)]
-        ind2 = [ (i == m ? (1:sz2[i]-1) : (1:sz2[i])) for i = 1:length(sz2)]
-        ind3 = [ (i == m ? sz2[i]       : (1:sz2[i])) for i = 1:length(sz2)]
+        ind0 = [ (i == m ? (1:1)           : (1:sz2[i])) for i = 1:length(sz2)]
+        ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
+        ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
+        ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
         return cat(m,x[ind0...],x[ind2...]+x[ind1...],x[ind3...])[:]/2
     else
         ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]

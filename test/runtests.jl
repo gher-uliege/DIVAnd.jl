@@ -20,6 +20,7 @@ using Base.Test
     include("test_2dvar_error.jl");
     # cross-validation
     include("test_2dvar_cv.jl");
+    include("test_2dvar_matfun.jl");
 
     include("test_3dvar.jl");
 
