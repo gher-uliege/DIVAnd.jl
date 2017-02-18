@@ -123,7 +123,8 @@ function funt(x)
         @show "here 1D"
         return cat(m,-x2[ind0...],x2[ind2...]-x2[ind1...],x2[ind3...])[:]
     else
-        return S'*x
+        ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
+        return (-x2 + x2[ind...])[:]
     end
 end
 return MatFun((n2,n1),fun,funt)

@@ -3,12 +3,6 @@ using Base.Test
 # Testing sparse and MatFun operators.
 
 for operatortype in [Val{:sparse}, Val{:MatFun}]
-    # adjoint
-    f = randn(10)
-    S = oper_diff(operatortype,size(f),1)
-    a = randn(size(S,1))
-    b = randn(size(S,2))
-    @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
 
 
@@ -28,12 +22,6 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     f1 = f[:,:,2:end] - f[:,:,1:end-1]
     f2 = S*f[:]
     @test f1[:] ≈ f2
-
-
-    # adjoint
-    a = randn(size(S,1))
-    b = randn(size(S,2))
-    @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
     # cyclic
 
@@ -162,6 +150,31 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     @test Df1 ≈ Df2[1]
 
 end
+
+
+# adjoint
+
+operatortype = Val{:MatFun}
+f = randn(10)
+S = oper_diff(operatortype,size(f),1)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+sz = (10,9,8)
+# diff and non cyclic
+S = oper_diff(operatortype,sz,3)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+# diff and cyclic
+S = oper_diff(operatortype,sz,3,true)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+
 
 # Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
 #
