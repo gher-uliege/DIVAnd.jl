@@ -33,8 +33,7 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     # adjoint
     a = randn(size(S,1))
     b = randn(size(S,2))
-
-#    @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+    @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
     # cyclic
 

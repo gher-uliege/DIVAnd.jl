@@ -115,11 +115,13 @@ function funt(x)
     @show "here"
 
     if !cyclic
-        #ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
-        #ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+        ind0 = [ (i == m ? 1            : (1:sz2[i])) for i = 1:length(sz2)]
+        ind1 = [ (i == m ? (2:sz2[i])   : (1:sz2[i])) for i = 1:length(sz2)]
+        ind2 = [ (i == m ? (1:sz2[i]-1) : (1:sz2[i])) for i = 1:length(sz2)]
+        ind3 = [ (i == m ? sz2[i]       : (1:sz2[i])) for i = 1:length(sz2)]
         #return (x[ind1...] - x[ind2...])[:]
         @show "here 1D"
-        return cat(1,-x[1],x[1:end-1]-x[2:end],x[end])
+        return cat(m,-x2[ind0...],x2[ind2...]-x2[ind1...],x2[ind3...])[:]
     else
         return S'*x
     end
