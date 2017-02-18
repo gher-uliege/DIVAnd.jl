@@ -190,32 +190,28 @@ end
 #   sz1: size of rhs
 #   m: dimension to trim
 
-#function matfun_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
 function matfun_trim(sz1,m)
 
-n1 = prod(sz1)
-sz2 = collect(sz1)
-sz2[m] = sz2[m]-2
-n2 = prod(sz2)
-n = length(sz1)
+# sz2 size of the resulting array
+sz2 = ntuple(i -> (i == m ? sz1[i]-2 : sz1[i]), length(sz1))
 
-# L1
 
-vi = [collect(1:sz2[i]) for i = 1:n]
-IJ = [_[:] for _ in ndgrid(vi...)]
+function fun(x)
+    x = reshape(x,sz1)
+    @show "trim"
+    ind = [ (i == m ? (2:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+    return x[ind...][:]
+end
 
-L1 = sub2ind((sz2...),IJ...)
+# adjoint
+function funt(x)
+    x = reshape(x,sz2)
+    @show "here trimshift nc"
+    sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
+    return cat(m,zeros(eltype(x),sz0),x,zeros(eltype(x),sz0))[:]
+end
 
-IJ[m]=IJ[m]+1
-
-L2 = sub2ind(sz1,IJ...)
-
-one = ones(size(L1))
-
-S = sparse(L1, L2, one, n2, n1)
-
-@show typeof(S)
-return MatFun(S)
+return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 
