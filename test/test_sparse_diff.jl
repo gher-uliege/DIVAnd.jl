@@ -174,6 +174,18 @@ a = randn(size(S,1))
 b = randn(size(S,2))
 @test a ⋅ (S*b) ≈ b ⋅ (S'*a)
 
+# shift and non cyclic
+S = oper_shift(operatortype,sz,3)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
+# shift and cyclic
+S = oper_shift(operatortype,sz,3,true)
+a = randn(size(S,1))
+b = randn(size(S,2))
+@test a ⋅ (S*b) ≈ b ⋅ (S'*a)
+
 
 
 # Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
