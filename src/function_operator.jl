@@ -19,7 +19,24 @@ end
 matfun_diag(d) = MatFun((size(d,1),size(d,1)), x -> d.*x, x -> d.*x)
 
 function matfun_pack(mask)
-    MatFun(sparse_pack(mask))
+    n1 = length(mask)
+    n2 = sum(mask)
+
+    #MatFun(sparse_pack(mask))
+
+    return MatFun((n2,length(mask)),x ->  begin
+
+                  @show "here mask pack",size(x)
+                  xp = x[mask]
+                  @show "here mask pack"
+                  return xp
+                  end,
+                  x -> begin
+                  @show "here mask",size(x)
+                  x2 = zeros(eltype(x),mask)
+                  x2[mask] = x
+                  return x2[:]
+                  end)
 end
 
 """
