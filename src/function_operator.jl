@@ -22,17 +22,11 @@ function matfun_pack(mask)
     n1 = length(mask)
     n2 = sum(mask)
 
-    #MatFun(sparse_pack(mask))
-
     return MatFun((n2,length(mask)),x ->  begin
-
-                  @show "here mask pack",size(x)
                   xp = x[mask]
-                  @show "here mask pack"
                   return xp
                   end,
                   x -> begin
-                  @show "here mask",size(x)
                   x2 = zeros(eltype(x),mask)
                   x2[mask] = x
                   return x2[:]
@@ -127,11 +121,9 @@ end
 function funt(x)
     x = reshape(x,sz2)
     if !cyclic
-        @show "here shift nc"
         sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
         return cat(m,zeros(eltype(x),sz0),x)[:]
     else
-        @show "here shift c"
         ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
         return x[ind...][:]
     end
@@ -144,7 +136,7 @@ end
 """
 S = matfun_stagger(sz1,m,cyclic)
 
-Create a sparse operator for staggering a field in dimension m.
+Create an operator for staggering a field in dimension m.
 The field is a "collapsed" matrix of the size sz1.
 
 Input:
@@ -197,7 +189,7 @@ Operator for trimming.
 
 T = matfun_trim(sz1,m)
 
-Create a sparse operator which trim first and last row (or column) in
+Create an operator which trim first and last row (or column) in
 The field is a "collapsed" matrix of the size sz1.
 
 Input:

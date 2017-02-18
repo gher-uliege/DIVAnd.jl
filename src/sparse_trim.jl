@@ -9,8 +9,7 @@
 #   sz1: size of rhs
 #   m: dimension to trim
 
-#function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
-function sparse_trim(sz1,m)
+function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
 
 n1 = prod(sz1)
 sz2 = collect(sz1)
