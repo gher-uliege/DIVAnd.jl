@@ -115,8 +115,8 @@ function funt(x)
 
     if !cyclic
         @show "here shift nc"
-        ind = [ (i == m ?            1 : (1:sz2[i])) for i = 1:length(sz2)]
-        return cat(m,0*x[ind...],x)[:]
+        sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
+        return cat(m,zeros(eltype(x),sz0),x)[:]
     else
         @show "here shift c"
         ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
