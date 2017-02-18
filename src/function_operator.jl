@@ -96,7 +96,35 @@ S = sparse(
     [L2;     L2o; ],
     [-one;   one  ], n2 , n1 )
 
-return MatFun(S)
+
+function fun(x)
+    x = reshape(x,sz1)
+
+    if !cyclic
+        ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
+        ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+        return (x[ind1...] - x[ind2...])[:]
+    else
+        ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
+        return (x[ind...] - x)[:]
+    end
+end
+
+function funt(x)
+    x2 = reshape(x,(sz2...))
+    @show "here"
+
+    if !cyclic
+        #ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
+        #ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+        #return (x[ind1...] - x[ind2...])[:]
+        @show "here 1D"
+        return cat(1,-x[1],x[1:end-1]-x[2:end],x[end])
+    else
+        return S'*x
+    end
+end
+return MatFun((n2,n1),fun,funt)
 
 end
 
