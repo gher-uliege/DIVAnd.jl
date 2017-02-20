@@ -1,5 +1,6 @@
 module divand
 using Interpolations
+using NetCDF
 using Base.Test
 
 type divand_constrain

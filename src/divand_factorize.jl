@@ -27,6 +27,7 @@ if s.primal
             iP = iB + H'*(iR * H);
         else
             # warning: R \ H will be a full matrix (unless R is a Diagonal matrix)
+            @show typeof(R)
             iP = iB + H'*(R \ H);
         end
 
@@ -40,7 +41,7 @@ if s.primal
 
         s.P = P;
     else
-        s.preconditioner = s.compPC(iB,H,R);        
+        s.preconditioner = s.compPC(iB,H,R);
     end
 else # dual
     s.preconditioner = s.compPC(iB,H,R);
