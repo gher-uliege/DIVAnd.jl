@@ -89,7 +89,6 @@ n = s.n
 # mean correlation length in every dimension
 Ld = [mean(_) for _ in Labs]
 neff = sum(Ld .> 0)
-#L = mean(Ld(Ld > 0))
 
 # geometric mean
 geomean(v) = prod(v)^(1/length(v))

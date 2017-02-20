@@ -70,13 +70,8 @@ y = Y0 + ry*(j-1);
 # m = conv2(maskf,F);
 Xi,Yi = ndgrid(xi,yi);
 
-@show size(Xi)
-
 itp = interpolate((x,y), Int.(mask),Gridded(Linear()))
 mif = itp[xi,yi];
-
-@show size(xi)
-@show size(mif)
 
 mi = mif .> 1/2;
 NetCDF.close(nc);

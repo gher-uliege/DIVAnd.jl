@@ -104,7 +104,7 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 factorize = true,
                 tol = 1e-6,
                 maxit = 100,
-                minit = 10,
+                minit = 0,
                 constraints = (),
                 inversion = :chol,
                 moddim = [],

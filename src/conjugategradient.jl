@@ -116,6 +116,8 @@ for k=1:maxit
         break
     end
 
+    @show k, r ⋅ r, tol2
+
     #Fletcher-Reeves
     beta[k+1] = zr_new / zr_old;
     #Polak-Ribiere
