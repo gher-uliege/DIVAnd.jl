@@ -29,7 +29,7 @@ end
 
 
 fname = joinpath(ENV["HOME"],"Data/Salinity.bigfile")
-bath_name = joinpath(ENV["HOME"]"Data/DivaData/Global/gebco_30sec_16.nc")
+bath_name = joinpath(ENV["HOME"],"Data/DivaData/Global/gebco_30sec_16.nc")
 isglobal = true
 
 if !isdefined(:value)
