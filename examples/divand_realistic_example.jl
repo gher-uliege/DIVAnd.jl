@@ -39,7 +39,10 @@ end
 dx = dy = 0.1
 lonr = 27:dx:42
 latr = 40:dy:47
-depthr = 0:10.:30
+depthr = [0.0 10.0 20.0 30.0 50.0 75.0 100.0 125.0 150.0 200.0 250.0 300.0 400.0 500.0 600.0 700.0 800.0 900.0 1000.0 1100.0 1200.0 1300.0 1400.0 1500.0 1750.0 2000.0]';
+depthr = [0.0 10.0 20.0 30.0 50.0 75.0 100.0]';
+depthr = 0:10.:30.;
+
 timer = 1:1.:12
 
 mask,(pm,pn,po,pp),(xi,yi,zi,ti) = divand_rectdom(lonr,latr,depthr,timer)
@@ -55,7 +58,7 @@ mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 
 vm = mean(value)
 va = value - vm
-@time fi,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,0,0),epsilon2)
+@time fi,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,0,0.5),epsilon2)
 fi = fi+vm;
 
 
@@ -72,7 +75,7 @@ kwargs = [(:tol, tol),(:maxit,5000),(:minit,0)]
 
 compPC(iB,H,R) = x -> s.P*x
 
-@time fi2,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,10,0.12),epsilon2;
+@time fi2,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,20,0.5),epsilon2;
                         kwargs...,inversion=:pcg,operatortype=Val{:MatFun},fi0=fi
                         ,compPC = compPC
                         )
