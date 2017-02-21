@@ -23,11 +23,11 @@ function matfun_pack(mask)
     n2 = sum(mask)
 
     return MatFun((n2,length(mask)),x ->  begin
-                  xp = x[mask]
+                  xp = x[mask[:]]
                   return xp
                   end,
                   x -> begin
-                  x2 = zeros(eltype(x),mask)
+                  x2 = zeros(eltype(x),size(mask))
                   x2[mask] = x
                   return x2[:]
                   end)
