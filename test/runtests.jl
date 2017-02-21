@@ -42,5 +42,5 @@ using Base.Test
     mu,K = divand_kernel(2,[1,2,1])
     @test mu ≈ 4π
     @test K(0) ≈ 1
-    @test K(1) ≈ besselk(1,1)
+    @test K(1) ≈ SpecialFunctions.besselk(1,1)
 end
