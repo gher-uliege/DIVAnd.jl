@@ -39,9 +39,10 @@ end
 dx = dy = 0.1
 lonr = 27:dx:42
 latr = 40:dy:47
-depthr = [0.0 10.0 20.0 30.0 50.0 75.0 100.0 125.0 150.0 200.0 250.0 300.0 400.0 500.0 600.0 700.0 800.0 900.0 1000.0 1100.0 1200.0 1300.0 1400.0 1500.0 1750.0 2000.0]';
-depthr = [0.0 10.0 20.0 30.0 50.0 75.0 100.0]';
+depthr = [0, 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
+depthr = [0, 10, 20, 30, 50, 75, 100];
 depthr = 0:10.:30.;
+
 
 timer = 1:1.:12
 
@@ -56,10 +57,21 @@ mxi,myi,mask2 = load_mask(bath_name,isglobal,minimum(lonr),maximum(lonr),dx,mini
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 
 
+sz = size(mask)
+
+z = zeros(sz)
+# correlation length in arc degree
+lenx = fill(1.,sz)
+leny = fill(1.,sz)
+# correlation length in meters
+lenz = 10 + zi/5
+# correlation time-scale in month
+lent = fill(1.,sz)
+
 vm = mean(value)
 va = value - vm
-@time fi,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,0,0.5),epsilon2)
-fi = fi+vm;
+@time fi,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,z,lent),epsilon2)
+fi = fi + vm;
 
 
 #@time fip,sp = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,0,0.00001),epsilon2)
@@ -70,12 +82,12 @@ tol = 1e-4
 # tolerance on the result x
 tolres = 1e-3
 
-kwargs = [(:tol, tol),(:maxit,5000),(:minit,0)]
+kwargs = [(:tol, tol),(:maxit,10000),(:minit,0)]
 
 
 compPC(iB,H,R) = x -> s.P*x
 
-@time fi2,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,20,0.5),epsilon2;
+@time fi2,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,lenz,lent),epsilon2;
                         kwargs...,inversion=:pcg,operatortype=Val{:MatFun},fi0=fi
                         ,compPC = compPC
                         )
