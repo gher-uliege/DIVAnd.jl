@@ -1,5 +1,6 @@
 module divand
 using Interpolations
+using SpecialFunctions
 using Base.Test
 
 type divand_constrain
