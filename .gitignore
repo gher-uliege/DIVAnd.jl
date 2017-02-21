@@ -2,3 +2,7 @@
 *.jl.*.cov
 *.jl.mem
 *~
+docs/build/
+docs/site/
+test/perf/*.err
+test/perf/*.out
