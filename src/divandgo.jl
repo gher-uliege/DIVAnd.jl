@@ -144,7 +144,7 @@ windowlist,csteps,lmask = divand_cutter(Lpmnrange,size(mask),moddim)
 
 
 # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
- Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
+# Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
 #fi=zeros(size(mask));
 fi=SharedArray(Float64,size(mask));
 @sync @parallel for iwin=1:size(windowlist)[1]

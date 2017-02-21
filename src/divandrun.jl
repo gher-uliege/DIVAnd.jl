@@ -123,9 +123,9 @@ if !any(mask[:])
   error("no sea points in mask");
 end
 
-@show size(mask)
+#@show size(mask)
 
-@time s = divand_background(mask,pmn,len,alpha,moddim);
+s = divand_background(mask,pmn,len,alpha,moddim);
 s.betap = 0;
 s.EOF_lambda = EOF_lambda;
 s.primal = primal;
