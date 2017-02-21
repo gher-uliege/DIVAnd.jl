@@ -1,6 +1,7 @@
 module divand
 using Interpolations
 using NetCDF
+import SpecialFunctions
 using Base.Test
 
 type divand_constrain

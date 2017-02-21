@@ -73,7 +73,7 @@ r = abs(r);
 if r == 0
     K = 1.
 else
-    K = 2/gamma(nu) * ((r/2).^nu .* besselk(nu,r));
+    K = 2/gamma(nu) * ((r/2).^nu .* SpecialFunctions.besselk(nu,r));
 end
 
 return K
