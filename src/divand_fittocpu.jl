@@ -32,6 +32,10 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
 # Number of dimensions
 n = size(Lpmnrange)[1]
 
+if moddim==[]
+   moddim=zeros[n]
+end
+
 # Some tweaking parameters #####
 
 
@@ -39,7 +43,7 @@ n = size(Lpmnrange)[1]
 lfactor=0.2
 
 # How wide is the overlap in terms of number of length scales
-factoroverlap=3
+factoroverlap=3.3
 
 if n<3
 biggestproblemiter=500*500 

@@ -21,7 +21,19 @@ if nancount > 0
     error("$(nancount) velocity values are equal to NaN");
 end
 
+
+
 mask = s.mask;
+
+
+@show size(mask)
+
+@show size(velocity[1])
+
+@show velocity[1][1,1]
+
+
+
 n  = s.n;
 iscyclic = s.iscyclic;
 

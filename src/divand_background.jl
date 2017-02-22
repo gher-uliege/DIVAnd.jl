@@ -24,7 +24,7 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function divand_background(mask,pmn,Labs,alpha,moddim,mapindex = [])
+function divand_background(mask,pmn,Labs,alpha,moddim,mapindex = [];alphabc=2)
 
 # number of dimensions
 n = ndims(mask)
@@ -101,6 +101,46 @@ L = geomean(Ld[Ld .> 0])
 #d = prod(pmnp(find(Ld > 0),:),1)'
 
 d = .*(pmn[Ld .> 0]...)
+
+#JMB This is probably the place to increase weight on anomaly constrained near borders.
+# d is 1/volume of each grid box and an n dimensional array ?
+# Use of CartesianRange to get boundaries of the n-dimensional box ?
+# Or slicedime exploiting use by reference ??? in which the matrix from where the slice is "taken"
+# is also updated ? Check in simplecase Nope does not work as reshape ... 
+# view works ! view(A,2,1)[1,1]=1000
+
+# For the moment hardcoded in 2D AND with average length scale instead of local one
+
+# d=d./(alphabc.*pmn.*l)
+# Dimension 1
+#alphabc=0
+@show alphabc
+if alphabc>0
+
+if n==1
+
+d[1]=d[1]./(alphabc.*pmn[1][1].*Ld[1])
+d[end]=d[end]./(alphabc.*pmn[1][end].*Ld[1])
+
+end
+
+
+if n==2
+
+d[1,:]=d[1,:]./(alphabc.*pmn[1][1,:].*Ld[1])
+d[end,:]=d[end,:]./(alphabc.*pmn[1][end,:].*Ld[1])
+
+d[:,1]=d[:,1]./(alphabc.*pmn[2][:,1].*Ld[2])
+d[:,end]=d[:,end]./(alphabc.*pmn[2][:,end].*Ld[2])
+
+end
+
+
+
+end
+
+#/JMB
+
 
 WE = sparse_diag(statevector_pack(sv,(1./sqrt.(d),))[:,1])
 

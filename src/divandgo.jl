@@ -159,27 +159,66 @@ fi=SharedArray(Float64,size(mask));
 warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
 
+windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
+
 
 
 #################################################
 # Need to check how to work with aditional constraints...
 #################################################
 
+#################################
+# Search for velocity argument:
+jfound=0
+for j=1:size(otherargs)[1]
+  if otherargs[j][1]==:velocity
+  jfound=j
+  break
+  end
+end
+
+@show jfound
+
+warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
+
+
+
+if jfound>0
+# modify the parameter
+   otherargsw=deepcopy(otherargs)
+   otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
+   else
+   otherargsw=otherargs
+end
+
+
+
+
+
+
+
 # If C is square then maybe just take the sub-square corresponding to the part taken from x hoping the constraint is a local one ?
-#
+# 
 
 
 
 
 
-windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
+# If C projects x on a low dimensional vector: maybe C'C x-C'd as a constraint, then pseudo inverse and woodbury to transform into a similar constraint but on each subdomain 
+# Would for example replace a global average constraint to be replaced by the same constraint applied to each subdomain. Not exact but not too bad neither
+
+
+
+
+
+
 fw=0
 s=0
 # Verify if a direct solver was requested from the demain decomposer
 if sum(csteps)>0
-fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargs...)
+fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargsw...)
                 else
-fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)				
+fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsw...)				
 end
 
 # maskb=mask[windowpoints...]

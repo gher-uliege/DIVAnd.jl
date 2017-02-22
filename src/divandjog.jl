@@ -110,7 +110,7 @@ n=ndims(mask)
 
 # Need to check for cyclic boundaries
 
-moddim=zeros(1,n);
+moddim=zeros(n);
 
 kwargs_dict = Dict(otherargs)
 @show itiscyclic=haskey(kwargs_dict, :moddim)
@@ -218,6 +218,31 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 ####################################
 # Need to look at constraints later
 ####################################
+
+
+
+# Search for velocity argument:
+jfound=0
+for j=1:size(otherargs)[1]
+  if otherargs[j][1]==:velocity
+  jfound=j
+  break
+  end
+end
+
+@show jfound
+
+if jfound>0
+# modify the parameter only in the coarse model
+   otherargsc=deepcopy(otherargs)
+   otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...))
+   else
+   otherargsc=otherargs
+end
+
+
+
+# For other constraints: 
 # Here should be straightfoward replace C by C*HI on the constraint structure
 
 
@@ -230,7 +255,7 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
 
 
-#fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargs...)
+#fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsc...)
 
 
 
@@ -240,7 +265,7 @@ Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 #
 
 
-@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargs...)
+@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
 
 
