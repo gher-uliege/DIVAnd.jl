@@ -73,8 +73,8 @@ end
 #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
 #end
 
-s = divand_operators(operatortype,mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex)
-D = s.D # laplacian (a dimensional, since nu = Labs.^2)
+s,D = divand_operators(operatortype,mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex)
+# D is laplacian (a dimensional, since nu = Labs.^2)
 sv = s.sv
 n = s.n
 
@@ -140,7 +140,7 @@ for i=1:n
     ma = (S * mask[:]) .== 1
     d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
     d = 1./d
-  s.WEs[i] = oper_diag(operatortype,sqrt.(d))
+    s.WEs[i] = oper_diag(operatortype,sqrt.(d))
 end
 
 # staggered version of norm scaled by length-scale
@@ -178,16 +178,11 @@ s.coeff = coeff
 # number of dimensions
 s.n = n
 
-iB_,iB = divand_background_components(s,alpha)
+iB = divand_background_components(s,D,alpha)
 
-# to save memory
-iB_ = 0
 
 # inverse of background covariance matrix
 s.iB = iB
-
-# individual terms of background covariance matrix (corresponding alpha)
-s.iB_ = iB_
 
 #s.L = L
 #s.Ln = Ln

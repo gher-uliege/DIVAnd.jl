@@ -95,7 +95,7 @@ s.mask = mask
 s.WE = WE
 s.n = n
 
-return s
+return s,D
 
 end
 # Copyright (C) 2014,2016,2017 Alexander Barth <a.barth@ulg.ac.be>
