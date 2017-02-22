@@ -74,25 +74,25 @@ va = value - vm
 fi = fi + vm;
 
 
-#@time fip,sp = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,0,0.00001),epsilon2)
-#fip = fip+vm;
+# #@time fip,sp = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(1,1,0,0.00001),epsilon2)
+# #fip = fip+vm;
 
-# tolerance on the gradient A x - b
-tol = 1e-4
-# tolerance on the result x
-tolres = 1e-3
+# # tolerance on the gradient A x - b
+# tol = 1e-4
+# # tolerance on the result x
+# tolres = 1e-3
 
-kwargs = [(:tol, tol),(:maxit,10000),(:minit,0)]
+# kwargs = [(:tol, tol),(:maxit,10000),(:minit,0)]
 
 
-compPC(iB,H,R) = x -> s.P*x
+# compPC(iB,H,R) = x -> s.P*x
 
-@time fi2,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,lenz,lent),epsilon2;
-                        kwargs...,inversion=:pcg,operatortype=Val{:MatFun},fi0=fi
-                        ,compPC = compPC
-                        )
-fi2 = fi2+vm;
+# @time fi2,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,lenz,lent),epsilon2;
+#                         kwargs...,inversion=:pcg,operatortype=Val{:MatFun},fi0=fi
+#                         ,compPC = compPC
+#                         )
+# fi2 = fi2+vm;
 
-@show s.niter
+# @show s.niter
 
-nothing
+# nothing

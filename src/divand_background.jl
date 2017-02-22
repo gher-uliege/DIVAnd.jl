@@ -180,6 +180,9 @@ s.n = n
 
 iB_,iB = divand_background_components(s,alpha)
 
+# to save memory
+iB_ = 0
+
 # inverse of background covariance matrix
 s.iB = iB
 

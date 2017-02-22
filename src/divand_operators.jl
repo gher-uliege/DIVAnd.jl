@@ -95,10 +95,10 @@ s.mask = mask
 s.WE = WE
 s.n = n
 
-s
+return s
 
 end
-# Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014,2016,2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
