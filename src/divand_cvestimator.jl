@@ -9,16 +9,16 @@ theta = divand_cvestimator(s,residual);
 
 function divand_cvestimator(s,residual)
 
-#Corrected to take into account only points in domain
+    #Corrected to take into account only points in domain
 
 
-v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
-v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
-if VERSION == v"0.5"
-    return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
-else
-    return (residual'*v1) / (ones(size(residual))'*v2)
-end
+    v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
+    v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
+    if VERSION == v"0.5"
+        return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
+    else
+        return (residual'*v1) / (ones(size(residual))'*v2)
+    end
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

@@ -5,7 +5,7 @@ function divand_save(filename,mask,varname,fi)
             NcDim("latitude",sz[2]),
             NcDim("depth",sz[3]),
             NcDim("time",sz[4])]
-    
+
     @show filename
     nc = NetCDF.create(filename,NcVar(varname,dims))
     nc[varname][:,:,:,:] = fi

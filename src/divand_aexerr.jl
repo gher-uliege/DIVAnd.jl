@@ -46,129 +46,129 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 
 
-# Hardwired value:
-finesse=1.7
+    # Hardwired value:
+    finesse=1.7
 
-# No need to make an approximation if it is close to cost of direct calculation
-upperlimit=0.4
-
-
-
-
-oriR=divand_obscovar(epsilon2,size(f)[1]);
-
-epsilonref=mean(diag(oriR));
-
-epsilonslarge=maximum([1E6,epsilonref*1E6]);
-
-
-
-# Decide how many additional fake points are needed with almost zero weight
-
-
-# 
-n = ndims(mask)
-nsamp=ones(n);
-npgrid=1;
-npneeded=1;
-Labspmnmin=zeros(n)
-
-for i=1:n
-	if isa(len,Number)
-		Labspmnmin[i] = len*minimum(pmn[i]);
-	elseif isa(len,Tuple)
-
-		if isa(len[1],Number)
-		    Labspmnmin[i] = len[i]*minimum(pmn[i]);
-			
-			else
-			Labspmnmin[i] = minimum(len[i].*pmn[i])
-			
-		end
-
-	end
-	npgrid=npgrid*size(mask)[i];
-	nsamp[i]=Labspmnmin[i]/finesse;
-	npneeded=npneeded*size(mask)[i]/nsamp[i];
-
-end
-
-
-ndata=size(f)[1];
-
-
-if npneeded>upperlimit*npgrid
-# No need to make an approximation if it is close to cost of direct calculation
-   return 0,0,0,0
-# Need to catch this event outside and use direct error calculation instead
-end
-
-
-npongrid=Int(ceil(maximum([npgrid/10^n,npneeded-ndata])));
-
-randindexes=ones(Int,npongrid);
-
-nsa=Int(ceil(npgrid/npongrid));
-
-randindexes=collect(1:nsa:npgrid);
-
-ncv=size(randindexes)[1];
-
-# add npongrind fake points onto the grid with zero value and very high R value
-
-ffake=deepcopy(f);
-
-ffake=append!(ffake, 0.*xi[1][randindexes]);
-Rfake=blkdiag(oriR,divand_obscovar(epsilonslarge,ncv));
-xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
-
-# Make an analysis with those fake points and very low snr to get B at those locations
-
-
-epsilon2fake=10_000;
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
-
-
-# Interpolate B on the final grid with high snr
-
-# First get B, the error of the previous analysis with bad data at the data locations
-Batdatapoints=divand_erroratdatapoints(s1);
-
-# Now use semi norm here ...
-m = Int(ceil(1+n/2))
-alpha = [binomial(m,k) for k = 0:m];
-alpha[1]=0;
-
-
-# Analyse with semi-norm and larger length scales
-Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/20; alpha=alpha, otherargs...)
-
-
-# Now do the same with normal snr to get real error at the "data" points
-# incidentally fa and sa are almost the real analysis
-fa,sa=divandrun(mask,pmn,xi,xfake,ffake,len,Rfake; otherargs...);
-Errdatapoints=divand_erroratdatapoints(sa);
-
-
-# Now get error reduction terms
-ffake=Batdatapoints-Errdatapoints;
-
-# Interpolate error reduction term
-# The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
-# Could be a small improvement. Also used in divand_cpme
-
-f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1.0/100.0; otherargs...);
-
-# Calculate final error
-aexerr=Bjmb-f1;
+    # No need to make an approximation if it is close to cost of direct calculation
+    upperlimit=0.4
 
 
 
 
+    oriR=divand_obscovar(epsilon2,size(f)[1]);
 
-# Provides the almost error field aexerr, the background field Bjmb for additional scaling and the analysis fa itself with its strucure sa
+    epsilonref=mean(diag(oriR));
 
-return aexerr,Bjmb,fa,sa
+    epsilonslarge=maximum([1E6,epsilonref*1E6]);
+
+
+
+    # Decide how many additional fake points are needed with almost zero weight
+
+
+    #
+    n = ndims(mask)
+    nsamp=ones(n);
+    npgrid=1;
+    npneeded=1;
+    Labspmnmin=zeros(n)
+
+    for i=1:n
+        if isa(len,Number)
+            Labspmnmin[i] = len*minimum(pmn[i]);
+        elseif isa(len,Tuple)
+
+            if isa(len[1],Number)
+                Labspmnmin[i] = len[i]*minimum(pmn[i]);
+
+            else
+                Labspmnmin[i] = minimum(len[i].*pmn[i])
+
+            end
+
+        end
+        npgrid=npgrid*size(mask)[i];
+        nsamp[i]=Labspmnmin[i]/finesse;
+        npneeded=npneeded*size(mask)[i]/nsamp[i];
+
+    end
+
+
+    ndata=size(f)[1];
+
+
+    if npneeded>upperlimit*npgrid
+        # No need to make an approximation if it is close to cost of direct calculation
+        return 0,0,0,0
+        # Need to catch this event outside and use direct error calculation instead
+    end
+
+
+    npongrid=Int(ceil(maximum([npgrid/10^n,npneeded-ndata])));
+
+    randindexes=ones(Int,npongrid);
+
+    nsa=Int(ceil(npgrid/npongrid));
+
+    randindexes=collect(1:nsa:npgrid);
+
+    ncv=size(randindexes)[1];
+
+    # add npongrind fake points onto the grid with zero value and very high R value
+
+    ffake=deepcopy(f);
+
+    ffake=append!(ffake, 0.*xi[1][randindexes]);
+    Rfake=blkdiag(oriR,divand_obscovar(epsilonslarge,ncv));
+    xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
+
+    # Make an analysis with those fake points and very low snr to get B at those locations
+
+
+    epsilon2fake=10_000;
+    f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
+
+
+    # Interpolate B on the final grid with high snr
+
+    # First get B, the error of the previous analysis with bad data at the data locations
+    Batdatapoints=divand_erroratdatapoints(s1);
+
+    # Now use semi norm here ...
+    m = Int(ceil(1+n/2))
+    alpha = [binomial(m,k) for k = 0:m];
+    alpha[1]=0;
+
+
+    # Analyse with semi-norm and larger length scales
+    Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/20; alpha=alpha, otherargs...)
+
+
+    # Now do the same with normal snr to get real error at the "data" points
+    # incidentally fa and sa are almost the real analysis
+    fa,sa=divandrun(mask,pmn,xi,xfake,ffake,len,Rfake; otherargs...);
+    Errdatapoints=divand_erroratdatapoints(sa);
+
+
+    # Now get error reduction terms
+    ffake=Batdatapoints-Errdatapoints;
+
+    # Interpolate error reduction term
+    # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
+    # Could be a small improvement. Also used in divand_cpme
+
+    f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1.0/100.0; otherargs...);
+
+    # Calculate final error
+    aexerr=Bjmb-f1;
+
+
+
+
+
+    # Provides the almost error field aexerr, the background field Bjmb for additional scaling and the analysis fa itself with its strucure sa
+
+    return aexerr,Bjmb,fa,sa
 
 
 

@@ -72,9 +72,9 @@ diagshift=0.001;
 @show diagshift
 
 function compPC(iB,H,R)
-        return x -> diagshift*x+PP*x;
-	#     return jmPHI'*(jmPHI*x);
-	#   return x->x;
+    return x -> diagshift*x+PP*x;
+    #     return jmPHI'*(jmPHI*x);
+    #   return x->x;
 end
 
 

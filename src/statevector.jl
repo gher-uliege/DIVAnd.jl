@@ -43,28 +43,28 @@ License: GPL 2 or later
 """
 function statevector(masks::Tuple)
 
-numels = [sum(mask)    for mask in masks]
-ind = [0 cumsum(numels)...]
+    numels = [sum(mask)    for mask in masks]
+    ind = [0 cumsum(numels)...]
 
-# vector mapping packed indices to unpacked indices
-packed2unpacked = [(1:length(mask))[mask[:]] for mask in masks]
+    # vector mapping packed indices to unpacked indices
+    packed2unpacked = [(1:length(mask))[mask[:]] for mask in masks]
 
-# vector mapping unpacked indices packed indices
-unpacked2packed = [unpack_(1:sum(mask),mask) for mask in masks]
+    # vector mapping unpacked indices packed indices
+    unpacked2packed = [unpack_(1:sum(mask),mask) for mask in masks]
 
-sv = statevector(
-     [mask for mask in masks],
-     length(masks),
-     numels,
-     [length(mask) for mask in masks],
-     [size(mask) for mask in masks],
-     ind,
-     ind[end],
-     packed2unpacked,
-     unpacked2packed
-)
+    sv = statevector(
+                     [mask for mask in masks],
+                     length(masks),
+                     numels,
+                     [length(mask) for mask in masks],
+                     [size(mask) for mask in masks],
+                     ind,
+                     ind[end],
+                     packed2unpacked,
+                     unpacked2packed
+                     )
 
-return sv
+    return sv
 end
 
 
@@ -131,40 +131,40 @@ var1, var2, ... have also an additional trailing dimension.
 
 function unpack(sv::statevector,x,fillvalue = 0)
 
-out = []
-
-if ndims(x) == 1
-
-    for i=1:sv.nvar
-        v = zeros(sv.numels_all[i])
-        v[:] = fillvalue
-
-        ind = find(sv.mask[i])
-
-        v[ind] = x[sv.ind[i]+1:sv.ind[i+1]]
-
-        #push!(out,reshape(v,([sv.size[i]...]...)))
-        push!(out,reshape(v,sv.size[i]))
-    end
-else
-    k = size(x,2)
-
     out = []
 
-    for i=1:sv.nvar
-        v = zeros(sv.numels_all[i],k)
-        v[:] = fillvalue
+    if ndims(x) == 1
 
-        ind = find(sv.mask[i])
+        for i=1:sv.nvar
+            v = zeros(sv.numels_all[i])
+            v[:] = fillvalue
 
-        v[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
+            ind = find(sv.mask[i])
 
-        push!(out,reshape(v,([sv.size[i]... k]...)))
+            v[ind] = x[sv.ind[i]+1:sv.ind[i+1]]
+
+            #push!(out,reshape(v,([sv.size[i]...]...)))
+            push!(out,reshape(v,sv.size[i]))
+        end
+    else
+        k = size(x,2)
+
+        out = []
+
+        for i=1:sv.nvar
+            v = zeros(sv.numels_all[i],k)
+            v[:] = fillvalue
+
+            ind = find(sv.mask[i])
+
+            v[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
+
+            push!(out,reshape(v,([sv.size[i]... k]...)))
+        end
     end
-end
 
 
-return (out...)
+    return (out...)
 end
 
 
@@ -177,16 +177,16 @@ The first element of the subscript indicates the variable index and the remainin
 
 function Base.ind2sub(sv::statevector,index::Integer)
 
-# variable index
-ivar = sum(sv.ind .< index)
+    # variable index
+    ivar = sum(sv.ind .< index)
 
-# substract offset
-vind = index - sv.ind[ivar]
+    # substract offset
+    vind = index - sv.ind[ivar]
 
-# spatial subscript
-subscript = ind2sub(sv.size[ivar],sv.packed2unpacked[ivar][vind])
+    # spatial subscript
+    subscript = ind2sub(sv.size[ivar],sv.packed2unpacked[ivar][vind])
 
-return (ivar,subscript...)
+    return (ivar,subscript...)
 
 end
 
@@ -200,16 +200,16 @@ The first element of the subscript indicates the variable index and the remainin
 
 function Base.sub2ind(sv::statevector,subscripts::Tuple)
 
-# index of variable
-ivar = subscripts[1]
+    # index of variable
+    ivar = subscripts[1]
 
-# offset of variable
-ioff = sv.ind[ivar]
+    # offset of variable
+    ioff = sv.ind[ivar]
 
-# linear index in ivar-th array
-index = sub2ind(sv.size[ivar],Tuple(subscripts[2:end])...)
+    # linear index in ivar-th array
+    index = sub2ind(sv.size[ivar],Tuple(subscripts[2:end])...)
 
-return ioff + sv.unpacked2packed[ivar][index]
+    return ioff + sv.unpacked2packed[ivar][index]
 
 end
 

@@ -40,14 +40,14 @@ cvval=99999
 for imeth=0:3
 
 
-bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,4,imeth);
+    bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,4,imeth);
 
-subplot(2,2,imeth+1)
-plot(xi2D,cvinter,"-")
-xlabel("Log10 scale factor e2")
-plot(x2Ddata,cvvalues,".")
-plot(log10(bestfactore), cvval,"o")
-title("Method $imeth")
+    subplot(2,2,imeth+1)
+    plot(xi2D,cvinter,"-")
+    xlabel("Log10 scale factor e2")
+    plot(x2Ddata,cvvalues,".")
+    plot(log10(bestfactore), cvval,"o")
+    title("Method $imeth")
 
 end
 
@@ -63,10 +63,10 @@ cvbest2=zeros(20);
 eps2=zeros(20)
 for i=1:20
 
-cvval,factor=divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,3);
-eps2[i]=epsilon2;
-cvbest2[i]=cvval;
-epsilon2=epsilon2*factor
+    cvval,factor=divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,3);
+    eps2[i]=epsilon2;
+    cvbest2[i]=cvval;
+    epsilon2=epsilon2*factor
 
 end
 

@@ -35,12 +35,12 @@ operatortype = Val{:sparse}
 
 # iterative (without preconditioner)
 @time vas,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
-                         kwargs..., inversion=:pcg,operatortype=Val{:sparse})
+                           kwargs..., inversion=:pcg,operatortype=Val{:sparse})
 
 #@show typeof(s_np.iB)
 
 @time vamf,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
-                         kwargs..., inversion=:pcg,operatortype=Val{:MatFun})
+                            kwargs..., inversion=:pcg,operatortype=Val{:MatFun})
 
 #@show typeof(s_np.iB)
 

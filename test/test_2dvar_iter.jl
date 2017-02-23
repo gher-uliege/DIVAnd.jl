@@ -32,16 +32,16 @@ kwargs = [(:tol, tol),(:maxit,1000)]
 
 # direct inversion
 va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                            kwargs..., inversion=:chol)
+                      kwargs..., inversion=:chol)
 
 # iterative (without preconditioner)
 va_iter,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                            kwargs..., inversion=:pcg)
+                         kwargs..., inversion=:pcg)
 @test norm(va_chol[mask] - va_iter[mask]) < tolres
 
 # iterative (without preconditioner but a good starting point :-)
 va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                            kwargs..., inversion=:pcg, fi0 = va_chol)
+                      kwargs..., inversion=:pcg, fi0 = va_chol)
 @test va_iter ≈ va_chol
 @test s.niter == 0
 
@@ -49,7 +49,7 @@ va_iter,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
 # iterative (with preconditioner)
 
 va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                      kwargs..., inversion=:pcg,compPC = divand_pc_sqrtiB)
+                         kwargs..., inversion=:pcg,compPC = divand_pc_sqrtiB)
 @test norm(va_chol[mask] - va_iter[mask]) < tolres
 @test s_wp.niter < s_np.niter
 
@@ -59,13 +59,13 @@ function compPC(iB,H,R)
     return x -> iB \ x;
 end
 va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                      kwargs..., inversion=:pcg,compPC = compPC);
+                         kwargs..., inversion=:pcg,compPC = compPC);
 @test norm(va_chol[mask] - va_iter[mask]) < tolres
 
 # iterative dual (without precondiditioner)
 
 va_dual,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                      kwargs..., primal=false);
+                         kwargs..., primal=false);
 @test norm(va_chol[mask] - va_dual[mask]) < tolres
 
 # iterative dual (with precondiditioner)
@@ -77,7 +77,7 @@ function compPCdual(iB,H,R)
     return x -> iM * x;
 end
 va_dual,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                      kwargs..., primal=false,compPC = compPCdual);
+                         kwargs..., primal=false,compPC = compPCdual);
 @test norm(va_chol[mask] - va_dual[mask]) < tolres
 @test s_wp.niter < s_np.niter
 

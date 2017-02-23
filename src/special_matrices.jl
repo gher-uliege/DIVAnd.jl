@@ -56,9 +56,9 @@ end
 Base.:\{T}(C::CovarIS{T}, M::AbstractArray{Float64,2}) = C.IS * M
 
 function factorize!{T}(C::CovarIS{T})
-#    C.factors = cholfact(Symmetric(C.IS), Val{true})
+    #    C.factors = cholfact(Symmetric(C.IS), Val{true})
     C.factors = cholfact(Symmetric(C.IS))
-#    C.factors = cholfact(C.IS, Val{true})
+    #    C.factors = cholfact(C.IS, Val{true})
 end
 
 

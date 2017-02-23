@@ -14,66 +14,66 @@
 
 function divand_factorize!(s)
 
-R = s.R;
-iB = s.iB;
-H = s.H;
+    R = s.R;
+    iB = s.iB;
+    H = s.H;
 
-if s.primal
-    if s.inversion == :chol
-        if isa(R,Diagonal)
-            # this is only necessary for julia 0.5.0
-            # https://github.com/JuliaLang/julia/issues/20367
-            iR = Diagonal(1./diag(R))
-            iP = iB + H'*(iR * H);
+    if s.primal
+        if s.inversion == :chol
+            if isa(R,Diagonal)
+                # this is only necessary for julia 0.5.0
+                # https://github.com/JuliaLang/julia/issues/20367
+                iR = Diagonal(1./diag(R))
+                iP = iB + H'*(iR * H);
+            else
+                # warning: R \ H will be a full matrix (unless R is a Diagonal matrix)
+                @show typeof(R)
+                iP = iB + H'*(R \ H);
+            end
+
+            P = CovarIS(iP);
+
+            # Cholesky factor of the inverse of a posteriori
+            # error covariance iP
+            if s.factorize
+                factorize!(P);
+            end
+
+            s.P = P;
         else
-            # warning: R \ H will be a full matrix (unless R is a Diagonal matrix)
-            @show typeof(R)
-            iP = iB + H'*(R \ H);
+            s.preconditioner = s.compPC(iB,H,R);
         end
-
-        P = CovarIS(iP);
-
-        # Cholesky factor of the inverse of a posteriori
-        # error covariance iP
-        if s.factorize
-            factorize!(P);
-        end
-
-        s.P = P;
-    else
+    else # dual
         s.preconditioner = s.compPC(iB,H,R);
+
+        # #C = H * (iB \ H') + R;
+        # s.B = CovarIS(iB);
+        # # pre-conditioning function for conjugate gradient
+        # s.funPC = [];
+
+        # if s.factorize
+        #     s.B = factorize(s.B);
+
+        #     # iM = inv(H * B * H' + sparse_diag(diag(R)))
+        #     # iM * (H * B * H' + R) is identify matrix if R is diagonal
+
+        #     M = H * (s.B * H') + sparse_diag(diag(R));
+        #     #M = H * (s.B * H') + sparse_diag(sum(R,1));
+        #     iM = CovarIS(M);
+        #     iM = factorize(iM);
+
+        #     # pre-conditioning function for conjugate gradient
+        #     s.funPC = @(x) iM*x;
+
+        #     if 0
+        #         C = H * (s.B * H') + sparse_diag(diag(R));
+        #         [RC, q, QC] = chol (C);
+        #         s.funPC = @(x) RC' \ (QC*x);
+
+        #     end
     end
-else # dual
-    s.preconditioner = s.compPC(iB,H,R);
 
-    # #C = H * (iB \ H') + R;
-    # s.B = CovarIS(iB);
-    # # pre-conditioning function for conjugate gradient
-    # s.funPC = [];
-
-    # if s.factorize
-    #     s.B = factorize(s.B);
-
-    #     # iM = inv(H * B * H' + sparse_diag(diag(R)))
-    #     # iM * (H * B * H' + R) is identify matrix if R is diagonal
-
-    #     M = H * (s.B * H') + sparse_diag(diag(R));
-    #     #M = H * (s.B * H') + sparse_diag(sum(R,1));
-    #     iM = CovarIS(M);
-    #     iM = factorize(iM);
-
-    #     # pre-conditioning function for conjugate gradient
-    #     s.funPC = @(x) iM*x;
-
-    #     if 0
-    #         C = H * (s.B * H') + sparse_diag(diag(R));
-    #         [RC, q, QC] = chol (C);
-    #         s.funPC = @(x) RC' \ (QC*x);
-
-    #     end
-end
-
-return s
+    return s
 end
 
 # LocalWords:  divand

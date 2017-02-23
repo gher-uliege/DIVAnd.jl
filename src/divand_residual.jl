@@ -10,7 +10,7 @@ function divand_residual(s,fi)
 
 
 
-return squeeze(s.yo-(s.H)*statevector_pack(s.sv,(fi,)),2)
+    return squeeze(s.yo-(s.H)*statevector_pack(s.sv,(fi,)),2)
 
 end
 

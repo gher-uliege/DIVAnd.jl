@@ -18,26 +18,26 @@ Output:
 
 function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
 
-H = oper_pack(operatortype,mask)
+    H = oper_pack(operatortype,mask)
 
-sz = size(mask)
-n = ndims(mask)
+    sz = size(mask)
+    n = ndims(mask)
 
-out = []
+    out = []
 
-for i=1:n
-  # staggering operator
-  S = oper_stagger(operatortype,sz,i,iscyclic[i])
+    for i=1:n
+        # staggering operator
+        S = oper_stagger(operatortype,sz,i,iscyclic[i])
 
-  # mask for staggered variable
-  m = (S * mask[:]) .== 1
+        # mask for staggered variable
+        m = (S * mask[:]) .== 1
 
-  d = m .* (S * pmn[i][:])
+        d = m .* (S * pmn[i][:])
 
-  push!(out,oper_pack(operatortype,m) * oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
-end
+        push!(out,oper_pack(operatortype,m) * oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
+    end
 
-(out...)
+    (out...)
 
 end
 

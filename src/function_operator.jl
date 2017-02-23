@@ -50,40 +50,40 @@ Input:
 
 function matfun_diff(sz1,m,cyclic = false)
 
-# sz2 size of the resulting array
-sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
+    # sz2 size of the resulting array
+    sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
 
-function fun(x)
-    x = reshape(x,sz1)
+    function fun(x)
+        x = reshape(x,sz1)
 
-    if !cyclic
-        ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
-        ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
-        return (x[ind1...] - x[ind2...])[:]
-    else
-        ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
-        return (x[ind...] - x)[:]
+        if !cyclic
+            ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
+            ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+            return (x[ind1...] - x[ind2...])[:]
+        else
+            ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
+            return (x[ind...] - x)[:]
+        end
     end
-end
 
-# adjoint
-function funt(x)
-    x = reshape(x,sz2)
-    #@show size(x),m
+    # adjoint
+    function funt(x)
+        x = reshape(x,sz2)
+        #@show size(x),m
 
-    if !cyclic
-        ind0 = [ (i == m ? (1:1)           : (1:sz2[i])) for i = 1:length(sz2)]
-        ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
-        ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
-        ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
+        if !cyclic
+            ind0 = [ (i == m ? (1:1)           : (1:sz2[i])) for i = 1:length(sz2)]
+            ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
+            ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
+            ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
 
-        return cat(m,-x[ind0...],x[ind2...]-x[ind1...],x[ind3...])[:]
-    else
-        ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
-        return (x[ind...] - x)[:]
+            return cat(m,-x[ind0...],x[ind2...]-x[ind1...],x[ind3...])[:]
+        else
+            ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
+            return (x[ind...] - x)[:]
+        end
     end
-end
-return MatFun((prod(sz2),prod(sz1)),fun,funt)
+    return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 
@@ -104,34 +104,34 @@ Input:
 
 function matfun_shift(sz1,m,cyclic = false)
 
-# sz2 size of the resulting array
-sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
+    # sz2 size of the resulting array
+    sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
 
-function fun(x)
-    x = reshape(x,sz1)
+    function fun(x)
+        x = reshape(x,sz1)
 
-    if !cyclic
-        ind = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
-        return x[ind...][:]
-    else
-        ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
-        return x[ind...][:]
+        if !cyclic
+            ind = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
+            return x[ind...][:]
+        else
+            ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
+            return x[ind...][:]
+        end
     end
-end
 
-# adjoint
-function funt(x)
-    x = reshape(x,sz2)
-    if !cyclic
-        sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
-        return cat(m,zeros(eltype(x),sz0),x)[:]
-    else
-        ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
-        return x[ind...][:]
+    # adjoint
+    function funt(x)
+        x = reshape(x,sz2)
+        if !cyclic
+            sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
+            return cat(m,zeros(eltype(x),sz0),x)[:]
+        else
+            ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
+            return x[ind...][:]
+        end
     end
-end
 
-return MatFun((prod(sz2),prod(sz1)),fun,funt)
+    return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 
@@ -150,38 +150,38 @@ Input:
 
 function matfun_stagger(sz1,m,cyclic = false)
 
-# sz2 size of the resulting array
-sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
+    # sz2 size of the resulting array
+    sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
 
-function fun(x)
-    x = reshape(x,sz1)
+    function fun(x)
+        x = reshape(x,sz1)
 
-    if !cyclic
-        ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
-        ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
-        return (x[ind1...] + x[ind2...])[:]/2
-    else
-        ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
-        return (x[ind...] + x)[:]/2
+        if !cyclic
+            ind1 = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
+            ind2 = [ (i == m ? (1:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+            return (x[ind1...] + x[ind2...])[:]/2
+        else
+            ind = [ (i == m ? [2:sz1[i]; 1] : (1:sz1[i])) for i = 1:length(sz1)]
+            return (x[ind...] + x)[:]/2
+        end
     end
-end
 
-# adjoint
-function funt(x)
-    x = reshape(x,sz2)
+    # adjoint
+    function funt(x)
+        x = reshape(x,sz2)
 
-    if !cyclic
-        ind0 = [ (i == m ? (1:1)           : (1:sz2[i])) for i = 1:length(sz2)]
-        ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
-        ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
-        ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
-        return cat(m,x[ind0...],x[ind2...]+x[ind1...],x[ind3...])[:]/2
-    else
-        ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
-        return (x[ind...] + x)[:]/2
+        if !cyclic
+            ind0 = [ (i == m ? (1:1)           : (1:sz2[i])) for i = 1:length(sz2)]
+            ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
+            ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
+            ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
+            return cat(m,x[ind0...],x[ind2...]+x[ind1...],x[ind3...])[:]/2
+        else
+            ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
+            return (x[ind...] + x)[:]/2
+        end
     end
-end
-return MatFun((prod(sz2),prod(sz1)),fun,funt)
+    return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 
 end
@@ -201,24 +201,24 @@ Input:
 
 function matfun_trim(sz1,m)
 
-# sz2 size of the resulting array
-sz2 = ntuple(i -> (i == m ? sz1[i]-2 : sz1[i]), length(sz1))
+    # sz2 size of the resulting array
+    sz2 = ntuple(i -> (i == m ? sz1[i]-2 : sz1[i]), length(sz1))
 
 
-function fun(x)
-    x = reshape(x,sz1)
-    ind = [ (i == m ? (2:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
-    return x[ind...][:]
-end
+    function fun(x)
+        x = reshape(x,sz1)
+        ind = [ (i == m ? (2:sz1[i]-1) : (1:sz1[i])) for i = 1:length(sz1)]
+        return x[ind...][:]
+    end
 
-# adjoint
-function funt(x)
-    x = reshape(x,sz2)
-    sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
-    return cat(m,zeros(eltype(x),sz0),x,zeros(eltype(x),sz0))[:]
-end
+    # adjoint
+    function funt(x)
+        x = reshape(x,sz2)
+        sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
+        return cat(m,zeros(eltype(x),sz0),x,zeros(eltype(x),sz0))[:]
+    end
 
-return MatFun((prod(sz2),prod(sz1)),fun,funt)
+    return MatFun((prod(sz2),prod(sz1)),fun,funt)
 
 end
 

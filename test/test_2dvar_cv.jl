@@ -44,8 +44,8 @@ for imeth=0:3
     @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     @test 0.3 < bestfactorl*len/len_true < 3
 
-#    @show bestfactore*epsilon2
-#    @show bestfactorl*len
+    #    @show bestfactore*epsilon2
+    #    @show bestfactorl*len
 end
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

@@ -10,7 +10,7 @@ function divand_erroratdatapoints(s)
 
 
 
-return diagMtCM(s.P,s.obsconstrain.H')
+    return diagMtCM(s.P,s.obsconstrain.H')
 
 end
 

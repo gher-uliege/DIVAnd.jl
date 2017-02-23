@@ -1,7 +1,7 @@
 # adapter from Julia
 
 function myspmatmul{Tv,Ti}(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti};
-                         sortindices::Symbol = :sortcols)
+                           sortindices::Symbol = :sortcols)
 
     mA, nA = size(A)
     mB, nB = size(B)

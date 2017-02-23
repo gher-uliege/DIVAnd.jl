@@ -17,56 +17,56 @@ Output:
 
 function divand_solve!(s,fi0,f0)
 
-H = s.H;
-sv = s.sv;
-R = s.R;
-yo = s.yo;
+    H = s.H;
+    sv = s.sv;
+    R = s.R;
+    yo = s.yo;
 
 
-if s.primal
-    if s.inversion == :chol
-        P = s.P;
-        fpi =  P * (H'* (R \ yo[:]));
-     else
-        HiRyo = H'* (R \ yo[:]);
-        fun(x) = s.iB*x + H'*(R \ (H * x));
+    if s.primal
+        if s.inversion == :chol
+            P = s.P;
+            fpi =  P * (H'* (R \ yo[:]));
+        else
+            HiRyo = H'* (R \ yo[:]);
+            fun(x) = s.iB*x + H'*(R \ (H * x));
 
-        fpi,success,s.niter = conjugategradient(fun,HiRyo,tol = s.tol,
-                                      maxit = s.maxit,
-                                      minit = s.minit,
-                                      x0 = fi0,
-                                      pc = s.preconditioner)
+            fpi,success,s.niter = conjugategradient(fun,HiRyo,tol = s.tol,
+                                                    maxit = s.maxit,
+                                                    minit = s.minit,
+                                                    x0 = fi0,
+                                                    pc = s.preconditioner)
 
+            if !success
+                warn("Preconditioned conjugate gradients method did not converge")
+            end
+
+            #s.P = CovarLanczos(Q,T);
+        end
+    else # dual
+        B = CovarIS(s.iB);
+
+        # fun(x) computes (H B H' + R)*x
+        fundual(x) = H * (B * (H'*x)) + R*x;
+
+        tmp,success,s.niter = conjugategradient(fundual,yo,tol = s.tol,
+                                                maxit = s.maxit,
+                                                minit = s.minit,
+                                                x0 = f0,
+                                                pc = s.preconditioner)
         if !success
             warn("Preconditioned conjugate gradients method did not converge")
         end
 
-        #s.P = CovarLanczos(Q,T);
-     end
-else # dual
-    B = CovarIS(s.iB);
-
-    # fun(x) computes (H B H' + R)*x
-    fundual(x) = H * (B * (H'*x)) + R*x;
-
-    tmp,success,s.niter = conjugategradient(fundual,yo,tol = s.tol,
-                                            maxit = s.maxit,
-                                            minit = s.minit,
-                                            x0 = f0,
-                                            pc = s.preconditioner)
-    if !success
-        warn("Preconditioned conjugate gradients method did not converge")
+        fpi = B * (H'*tmp);
     end
 
-    fpi = B * (H'*tmp);
-end
 
+    fi, = statevector_unpack(sv,fpi);
 
-fi, = statevector_unpack(sv,fpi);
+    fi[!s.mask] = NaN;
 
-fi[!s.mask] = NaN;
-
-return fi
+    return fi
 end
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

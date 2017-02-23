@@ -87,7 +87,7 @@ function benchmark_nd(n,ng)
   f(xy...) = .*([cos(2*pi*ng*x/20) for x in xy]...)
 
   # grid of background field
-  mask,pmn,xyi =  divand_squaredom(n,linspace(0,1,ng))  
+  mask,pmn,xyi =  divand_squaredom(n,linspace(0,1,ng))
   vi = f(xyi...);
 
   # grid of observations

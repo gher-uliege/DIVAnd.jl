@@ -15,38 +15,38 @@
 
 function divand_constr_advec(s,velocity)
 
-# check for NaNs
-nancount = sum([sum(isnan(_)) for _ in velocity])
-if nancount > 0
-    error("$(nancount) velocity values are equal to NaN");
-end
+    # check for NaNs
+    nancount = sum([sum(isnan(_)) for _ in velocity])
+    if nancount > 0
+        error("$(nancount) velocity values are equal to NaN");
+    end
 
-mask = s.mask;
+    mask = s.mask;
 
-n  = s.n;
-iscyclic = s.iscyclic;
+    n  = s.n;
+    iscyclic = s.iscyclic;
 
-sz = size(mask);
+    sz = size(mask);
 
-A = spzeros(s.sv.n,s.sv.n)
+    A = spzeros(s.sv.n,s.sv.n)
 
-for i=1:n
-  S = sparse_stagger(sz,i,iscyclic[i]);
-  m = (S * mask[:]) .== 1;
+    for i=1:n
+        S = sparse_stagger(sz,i,iscyclic[i]);
+        m = (S * mask[:]) .== 1;
 
-  d = velocity[i]
+        d = velocity[i]
 
-  A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
-end
+        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
+    end
 
-l = size(A,1);
+    l = size(A,1);
 
-H = A;
-yo = spzeros(l,1);
-R = Diagonal(ones(l));
-#R = speye(size(H,1));
+    H = A;
+    yo = spzeros(l,1);
+    R = Diagonal(ones(l));
+    #R = speye(size(H,1));
 
-return divand_constrain(yo,R,H)
+    return divand_constrain(yo,R,H)
 
 end
 
