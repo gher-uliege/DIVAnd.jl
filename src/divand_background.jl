@@ -106,37 +106,28 @@ d = .*(pmn[Ld .> 0]...)
 # d is 1/volume of each grid box and an n dimensional array ?
 # Use of CartesianRange to get boundaries of the n-dimensional box ?
 # Or slicedime exploiting use by reference ??? in which the matrix from where the slice is "taken"
-# is also updated ? Check in simplecase Nope does not work as reshape ... 
+# is also updated ? Check in simplecase Nope does not work as reshape ...
 # view works ! view(A,2,1)[1,1]=1000
 
 # For the moment hardcoded in 2D AND with average length scale instead of local one
 
+# TODO: for n dimensions
 # d=d./(alphabc.*pmn.*l)
 # Dimension 1
 #alphabc=0
-@show alphabc
 if alphabc>0
+    if n==1
+        d[1]=d[1]./(alphabc.*pmn[1][1].*Ld[1])
+        d[end]=d[end]./(alphabc.*pmn[1][end].*Ld[1])
+    end
 
-if n==1
+    if n==2
+        d[1,:]=d[1,:]./(alphabc.*pmn[1][1,:].*Ld[1])
+        d[end,:]=d[end,:]./(alphabc.*pmn[1][end,:].*Ld[1])
 
-d[1]=d[1]./(alphabc.*pmn[1][1].*Ld[1])
-d[end]=d[end]./(alphabc.*pmn[1][end].*Ld[1])
-
-end
-
-
-if n==2
-
-d[1,:]=d[1,:]./(alphabc.*pmn[1][1,:].*Ld[1])
-d[end,:]=d[end,:]./(alphabc.*pmn[1][end,:].*Ld[1])
-
-d[:,1]=d[:,1]./(alphabc.*pmn[2][:,1].*Ld[2])
-d[:,end]=d[:,end]./(alphabc.*pmn[2][:,end].*Ld[2])
-
-end
-
-
-
+        d[:,1]=d[:,1]./(alphabc.*pmn[2][:,1].*Ld[2])
+        d[:,end]=d[:,end]./(alphabc.*pmn[2][:,end].*Ld[2])
+    end
 end
 
 #/JMB

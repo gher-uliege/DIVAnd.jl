@@ -72,8 +72,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
     where iB is the inverse background error covariance, H the observation
     operator and R the error covariance of the observation. The function `compPC` returns the
-    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x) 
-    where `M` is a positive defined symmetric matrix. 
+    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x)
+    where `M` is a positive defined symmetric matrix.
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
 
@@ -114,14 +114,13 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 compPC = divand_pc_none,
                 fi0 = zeros(size(mask)),
 #JM
-                alphabc=2,
+                alphabc = 2,
 #/JM
                 f0 = zeros(size(f))
                 )
 
 
 # check inputs
-@show alphabc
 if !any(mask[:])
   error("no sea points in mask");
 end
