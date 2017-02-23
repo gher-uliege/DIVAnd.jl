@@ -122,11 +122,11 @@ for k=1:maxit
 	
     if r ⋅ r < tol2 && k >= minit
         success = true
-		@show k
+	@show k
         break
     end
 
-    @show k, r ⋅ r, tol2
+    #@show k, r ⋅ r, tol2
 
     #Fletcher-Reeves
     beta[k+1] = zr_new / zr_old;

@@ -46,7 +46,7 @@ operatortype = Val{:sparse}
 
 #@show s_np.niter
 
-@test_approx_eq_eps vas vamf 1e-6
+@test_approx_eq_eps vas vamf 1e-5
 
 
 # Copyright (C) 2017 Alexander Barth <a.barth@ulg.ac.be>
