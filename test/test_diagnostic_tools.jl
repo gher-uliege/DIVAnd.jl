@@ -33,7 +33,7 @@ fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 @test abs(mean(divand_residual(s,fi))-0.5)<0.05
 @test abs(mean(divand_residualobs(s,fi))-0.5)<0.05
 @test abs(mean(divand_erroratdatapoints(s))-0.5)<0.05
-@test abs(mean(divand_adaptedeps2(s,fi))-0.89)<0.05
+@test abs(mean(divand_adaptedeps2(s,fi))-0.89)<0.15
 @test abs(divand_cvestimator(s,divand_residual(s,fi))-0.22)<0.05
 
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>

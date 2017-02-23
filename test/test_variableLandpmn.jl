@@ -35,14 +35,14 @@ fireg,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 sampler1=divand_sampler((pm,pn),len)
 
 @test sampler1==[1,1]
-@test 0.68 < maximum(fireg) < 0.7
+@test 0.59 < maximum(fireg) < 0.7
 
 fis,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len*0.5,len*1.5),epsilon2);
 
 sampler1=divand_sampler((pm,pn),(len*0.5,len*1.5))
 
 @test sampler1==[1,1]
-@test 0.68 < maximum(fis) < 0.7
+@test 0.59 < maximum(fis) < 0.7
 
 pm=ones(xi)./((1+xi/5).*(xi[2,1]-xi[1,1]));
 pn=ones(yi)./((1+yi/5).*(yi[1,2]-yi[1,1]));
