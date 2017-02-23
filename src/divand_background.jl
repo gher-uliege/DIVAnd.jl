@@ -151,7 +151,33 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
         end
     end
 
+	@show size(pmn[1])
+	
     pmnv = cat(2,[_[:] for _ in pmn]...)
+	
+	#JM now just an access as ndimensional array
+		wjmb=reshape(pmnv,tuple(size(pmn[1])...,n))
+	# and exploit that changes there will change pmnv
+	if alphabc>0
+        if n==1
+            wjmb[1]=1.0/(alphabc.*Ld[1])
+            wjmb[end]=1.0/(alphabc*Ld[1])
+        end
+
+        if n==2
+           
+        end
+    end
+	
+	
+	#/JM
+	
+	
+	@show size(wjmb)
+	
+	@show size(pmnv)
+	
+	
     pmnv[:,find(Ld == 0)] = 1
 
     # staggered version of norm
