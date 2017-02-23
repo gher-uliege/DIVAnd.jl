@@ -67,7 +67,7 @@ for n = 1:3
     #@show maximum(fi),n,ndims(mask)
 
     if n < 3
-        @test 0.48 <= maximum(fi) <= 0.52
+        @test 0.45 <= maximum(fi) <= 0.55
     else
         @test 0.4 <= maximum(fi) <= 0.6
     end
@@ -84,7 +84,7 @@ xy = ([[0.5] for i = 1:n]...)
 
 # make the analysis
 fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[2,4,2]);
-@test 0.48 <= maximum(fi) <= 0.52
+@test 0.47 <= maximum(fi) <= 0.53
 
 fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[1,0,1]);
 @test 0.4 <= maximum(fi) <= 0.6
