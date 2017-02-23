@@ -9,7 +9,7 @@ xiref=0
 aj=zeros(300)
 vj=zeros(300)
 
-# Calculate reference solution on a very wide domain 
+# Calculate reference solution on a very wide domain
 
 xiref = collect(linspace(-100,100,2001));
 len=2
@@ -57,52 +57,52 @@ mask=0
 
 for j=1:500
 
-alen=j/50
+    alen=j/50
 
 
-xi = collect(linspace(-10,10,201));
-
-
-
-# all points are valid points
-mask = trues(xi);
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(xi) / (xi[2]-xi[1]);
-# obs. error variance normalized by the background error variance
-
-
-#Test to push boundary to wider distance:
+    xi = collect(linspace(-10,10,201));
 
 
 
+    # all points are valid points
+    mask = trues(xi);
+
+    # this problem has a simple cartesian metric
+    # pm is the inverse of the resolution along the 1st dimension
+    # pn is the inverse of the resolution along the 2nd dimension
+
+    pm = ones(xi) / (xi[2]-xi[1]);
+    # obs. error variance normalized by the background error variance
 
 
-
-# pm[201]=1./(alen*len);
-# pm[1]  =1./(alen*len);
-
-
-# correlation length
-
-
-
-# fi is the interpolated field
-fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
+    #Test to push boundary to wider distance:
 
 
 
 
-aj[j]=alen
-vj[j]=var(diag(s.P))
 
-# Now with real data for comparison of analysis
-fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2,alphabc=alen);
 
-rj[j]=sqrt(var(firef[901:1101]-fi2))
+    # pm[201]=1./(alen*len);
+    # pm[1]  =1./(alen*len);
+
+
+    # correlation length
+
+
+
+    # fi is the interpolated field
+    fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
+
+
+
+
+    aj[j]=alen
+    vj[j]=var(diag(s.P))
+
+    # Now with real data for comparison of analysis
+    fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2,alphabc=alen);
+
+    rj[j]=sqrt(var(firef[901:1101]-fi2))
 
 end
 

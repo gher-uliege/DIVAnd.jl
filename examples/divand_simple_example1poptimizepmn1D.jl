@@ -24,105 +24,105 @@ lpmc=zeros(lpmsize)
 dsoverl=collect(linspace(4,20,dsoverlsize))
 
 for ii=1:lpmsize
-for jj=1:dsoverlsize
+    for jj=1:dsoverlsize
 
-len=1.0/dsoverl[jj]
+        len=1.0/dsoverl[jj]
 
-testpm=lpm[ii]/len
+        testpm=lpm[ii]/len
 
-isize=Int(ceil(testpm))
+        isize=Int(ceil(testpm))
 
-@show isize
+        @show isize
 
-xi=0
-mask=0
-epsilon2=0
-x=0
-f=0
-pm=0
-
-
-aj=zeros(300)
-vj=zeros(300)
-
-for j=1:300
-#for j=1:1
-alen=j/50
-
-alen=2
-
-# observations
-x = [0.5];
-f = [1];
-
-xi = collect(linspace(0,1,isize));
+        xi=0
+        mask=0
+        epsilon2=0
+        x=0
+        f=0
+        pm=0
 
 
+        aj=zeros(300)
+        vj=zeros(300)
 
-# all points are valid points
-mask = trues(xi);
+        for j=1:300
+            #for j=1:1
+            alen=j/50
 
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
+            alen=2
 
-pm = ones(xi) / (xi[2]-xi[1]);
-# obs. error variance normalized by the background error variance
-epsilon2 = 10000;
+            # observations
+            x = [0.5];
+            f = [1];
 
-#Test to push boundary to wider distance:
-
-@show pm[1]*len
-@show len
-lpmc[ii]=pm[1]*len
+            xi = collect(linspace(0,1,isize));
 
 
 
+            # all points are valid points
+            mask = trues(xi);
 
-pm[isize]=1./(alen*len);
-pm[1]  =1./(alen*len);
+            # this problem has a simple cartesian metric
+            # pm is the inverse of the resolution along the 1st dimension
+            # pn is the inverse of the resolution along the 2nd dimension
 
+            pm = ones(xi) / (xi[2]-xi[1]);
+            # obs. error variance normalized by the background error variance
+            epsilon2 = 10000;
 
-# correlation length
+            #Test to push boundary to wider distance:
 
-
-
-# fi is the interpolated field
-fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
-
-
-#pcolor(reshape(diag(s.P),59,59)')
-#colorbar()
-
-aj[j]=alen
-vj[j]=var(diag(s.P))
-
-end
-alpha[ii,jj]=aj[indmin(vj)]
-varb[ii,jj]=vj[indmin(vj)]
-
-# now reference var
-pm = ones(xi) / (xi[2]-xi[1]);
-# obs. error variance normalized by the background error variance
-epsilon2 = 10000;
-
-#Test to push boundary to wider distance:
-
-@show pm[1]*len
-
-# fi is the interpolated field
-fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
-
-
-#pcolor(reshape(diag(s.P),59,59)')
-#colorbar()
-
-
-varr[ii,jj]=var(diag(s.P))
+            @show pm[1]*len
+            @show len
+            lpmc[ii]=pm[1]*len
 
 
 
-end
+
+            pm[isize]=1./(alen*len);
+            pm[1]  =1./(alen*len);
+
+
+            # correlation length
+
+
+
+            # fi is the interpolated field
+            fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+
+
+            #pcolor(reshape(diag(s.P),59,59)')
+            #colorbar()
+
+            aj[j]=alen
+            vj[j]=var(diag(s.P))
+
+        end
+        alpha[ii,jj]=aj[indmin(vj)]
+        varb[ii,jj]=vj[indmin(vj)]
+
+        # now reference var
+        pm = ones(xi) / (xi[2]-xi[1]);
+        # obs. error variance normalized by the background error variance
+        epsilon2 = 10000;
+
+        #Test to push boundary to wider distance:
+
+        @show pm[1]*len
+
+        # fi is the interpolated field
+        fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+
+
+        #pcolor(reshape(diag(s.P),59,59)')
+        #colorbar()
+
+
+        varr[ii,jj]=var(diag(s.P))
+
+
+
+    end
 end
 
 

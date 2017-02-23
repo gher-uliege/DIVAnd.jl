@@ -27,35 +27,35 @@ Note:
 function divand_obs(s,xi,x,yo,R; I = [])
 
 
-#xi = cat_cell_array(xi);
-#x = cat_cell_array(x);
+    #xi = cat_cell_array(xi);
+    #x = cat_cell_array(x);
 
-mask = s.mask;
-iscyclic = s.iscyclic;
-moddim = s.moddim;
-
-
-if isempty(I)
-  I = localize_separable_grid(x,mask,xi);
-end
-
-H,out,outbbox = sparse_interp(mask,I,iscyclic);
-
-nout = sum(out);
-if nout != 0
-    noutbbox = sum(outbbox);
-    #    fprintf(1,'Observations out of bounding box: %d and touching land %d\n',...
-    #  noutbbox,nout-noutbbox);
-end
+    mask = s.mask;
+    iscyclic = s.iscyclic;
+    moddim = s.moddim;
 
 
-H = H * sparse_pack(mask)';
+    if isempty(I)
+        I = localize_separable_grid(x,mask,xi);
+    end
+
+    H,out,outbbox = sparse_interp(mask,I,iscyclic);
+
+    nout = sum(out);
+    if nout != 0
+        noutbbox = sum(outbbox);
+        #    fprintf(1,'Observations out of bounding box: %d and touching land %d\n',...
+        #  noutbbox,nout-noutbbox);
+    end
 
 
-s.obsout = out;
-s.obsconstrain = divand_constrain(yo,R,H)
+    H = H * sparse_pack(mask)';
 
-return s.obsconstrain
+
+    s.obsout = out;
+    s.obsconstrain = divand_constrain(yo,R,H)
+
+    return s.obsconstrain
 end
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

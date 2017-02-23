@@ -61,24 +61,24 @@ fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 for method in [0 1 3 4]
 
-@show method
+    @show method
 
-qcval=divand_qc(fi,s,method)
+    qcval=divand_qc(fi,s,method)
 
-if method==4
-# Provide fake THETA value
-qcval=qcval*4
-end
+    if method==4
+        # Provide fake THETA value
+        qcval=qcval*4
+    end
 
-# Find suspect points
+    # Find suspect points
 
-sp=find(x-> x.>9,qcval)
+    sp=find(x-> x.>9,qcval)
 
-@test sum(sp)==3
+    @test sum(sp)==3
 
 
-qcval=divand_qc(fi,s,2)
-@test qcval==0
+    qcval=divand_qc(fi,s,2)
+    @test qcval==0
 
 end
 

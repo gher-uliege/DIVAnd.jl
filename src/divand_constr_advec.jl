@@ -9,55 +9,44 @@
 #   velocity: tuple of velocity vectors
 #
 # Output:
-#   c: structure to be used by divand_addc with the following fields: R (a 
-#     covariance matrix), H (extraction operator) and yo (specified value for 
+#   c: structure to be used by divand_addc with the following fields: R (a
+#     covariance matrix), H (extraction operator) and yo (specified value for
 #     the constrain).
 
 function divand_constr_advec(s,velocity)
 
-# check for NaNs
-nancount = sum([sum(isnan(_)) for _ in velocity])
-if nancount > 0
-    error("$(nancount) velocity values are equal to NaN");
-end
+    # check for NaNs
+    nancount = sum([sum(isnan(_)) for _ in velocity])
+    if nancount > 0
+        error("$(nancount) velocity values are equal to NaN");
+    end
 
+    mask = s.mask;
 
+    n  = s.n;
+    iscyclic = s.iscyclic;
 
-mask = s.mask;
+    sz = size(mask);
 
+    A = spzeros(s.sv.n,s.sv.n)
 
-@show size(mask)
+    for i=1:n
+        S = sparse_stagger(sz,i,iscyclic[i]);
+        m = (S * mask[:]) .== 1;
 
-@show size(velocity[1])
+        d = velocity[i]
 
-@show velocity[1][1,1]
+        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
+    end
 
+    l = size(A,1);
 
+    H = A;
+    yo = spzeros(l,1);
+    R = Diagonal(ones(l));
+    #R = speye(size(H,1));
 
-n  = s.n;
-iscyclic = s.iscyclic;
-
-sz = size(mask);
-
-A = spzeros(s.sv.n,s.sv.n)
-
-for i=1:n
-  S = sparse_stagger(sz,i,iscyclic[i]);
-  m = (S * mask[:]) .== 1;
-  
-  d = velocity[i]
-  
-  A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
-end
-
-l = size(A,1);
-
-H = A;
-yo = spzeros(l,1);
-R = Diagonal(ones(l));
-#R = speye(size(H,1));
-
-return divand_constrain(yo,R,H)
+    return divand_constrain(yo,R,H)
 
 end
 

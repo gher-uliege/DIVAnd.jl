@@ -8,36 +8,36 @@ Kii = divand_GCVKii(s);
 
 function divand_GCVKii(s,nr=5)
 
-#the second, optional argument is the number of random vectors nr used for the estimate
+    #the second, optional argument is the number of random vectors nr used for the estimate
 
 
-H = s.H;
-R = s.R;
+    H = s.H;
+    R = s.R;
 
 
-#if optimisation is to be used, make sure to use the same reference random points
-   srand(nr)
-Z=randn(size(R)[1],nr);
-   srand()
+    #if optimisation is to be used, make sure to use the same reference random points
+    srand(nr)
+    Z=randn(size(R)[1],nr);
+    srand()
 
 
 
-   P = s.P;
-   WW=P * (H'* (R \ Z));
-   ZtHKZ=  Z'*(H*WW);
-   ZtZ  =  Z'*Z;
+    P = s.P;
+    WW=P * (H'* (R \ Z));
+    ZtHKZ=  Z'*(H*WW);
+    ZtZ  =  Z'*Z;
 
-# correction for points out of the domain:
-   nrealdata=sum(1-s.obsout);
-   ndata=size(s.obsout)[1];
-   if nrealdata==0
-     Kii=0.0;
-	          else
-     factorc=ndata/nrealdata;
-# Now take average of the nr different estimates, 
-     Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
-   end
-return Kii
+    # correction for points out of the domain:
+    nrealdata=sum(1-s.obsout);
+    ndata=size(s.obsout)[1];
+    if nrealdata==0
+        Kii=0.0;
+    else
+        factorc=ndata/nrealdata;
+        # Now take average of the nr different estimates,
+        Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
+    end
+    return Kii
 
 end
 

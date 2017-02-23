@@ -91,181 +91,177 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Example:
   see divand_simple_example_go.jl
-  
+
   Higher level with windowing etc
 """
 
 
 
 function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
-                
-                )
 
-				
-				
-				
-				
-				
-				
-n=ndims(mask)
-# Needed to make sure results are saved.
-fi=0
-s=0
+                  )
 
-# Need to check for cyclic boundaries
 
-moddim=zeros(n);
 
-kwargs_dict = Dict(otherargs)
-@show itiscyclic=haskey(kwargs_dict, :moddim)
 
-if itiscyclic
-moddim=kwargs_dict[:moddim]
-@show moddim  
-end
 
-@show moddim   
-# DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT 
-# IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
-# General approach in this future case prepare window indexes just taking any range including negative value and
-# apply a mod(myindexes-1,size(mask)[i])+1 in direction i when extracting 
-# for coordinates tuples of the grid (xin,yin, .. )  and data (x,y)
-# in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
-#
-#
 
 
+    n=ndims(mask)
+    # Needed to make sure results are saved.
+    fi=0
+    s=0
 
-# Analyse rations l/dx etc
-Lpmnrange = divand_Lpmnrange(pmn,Labs)
+    # Need to check for cyclic boundaries
 
-# Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
-windowlist,csteps,lmask = divand_cutter(Lpmnrange,size(mask),moddim)
+    moddim=zeros(n);
 
+    kwargs_dict = Dict(otherargs)
 
-# For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
-# Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
-#fi=zeros(size(mask));
-fi=SharedArray(Float64,size(mask));
-@sync @parallel for iwin=1:size(windowlist)[1]
- 
- iw1=windowlist[iwin][1]
- iw2=windowlist[iwin][2]
- isol1=windowlist[iwin][3]
- isol2=windowlist[iwin][4]
- istore1=windowlist[iwin][5]
- istore2=windowlist[iwin][6]
+    if haskey(kwargs_dict,:moddim)
+        moddim=kwargs_dict[:moddim]
+    end
 
-warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
+    # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
+    # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
+    # General approach in this future case prepare window indexes just taking any range including negative value and
+    # apply a mod(myindexes-1,size(mask)[i])+1 in direction i when extracting
+    # for coordinates tuples of the grid (xin,yin, .. )  and data (x,y)
+    # in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
+    #
+    #
 
 
-windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 
+    # Analyse rations l/dx etc
+    Lpmnrange = divand_Lpmnrange(pmn,Labs)
 
+    # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
+    windowlist,csteps,lmask = divand_cutter(Lpmnrange,size(mask),moddim)
 
-#################################################
-# Need to check how to work with aditional constraints...
-#################################################
 
-#################################
-# Search for velocity argument:
-jfound=0
-for j=1:size(otherargs)[1]
-  if otherargs[j][1]==:velocity
-  jfound=j
-  break
-  end
-end
+    # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
+    # Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
+    #fi=zeros(size(mask));
+    fi=SharedArray(Float64,size(mask));
+    @sync @parallel for iwin=1:size(windowlist)[1]
 
-@show jfound
+        iw1=windowlist[iwin][1]
+        iw2=windowlist[iwin][2]
+        isol1=windowlist[iwin][3]
+        isol2=windowlist[iwin][4]
+        istore1=windowlist[iwin][5]
+        istore2=windowlist[iwin][6]
 
-warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
+        warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
 
+        windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 
-if jfound>0
-# modify the parameter
-   otherargsw=deepcopy(otherargs)
-   otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
-   else
-   otherargsw=otherargs
-end
 
 
+        #################################################
+        # Need to check how to work with aditional constraints...
+        #################################################
 
+        #################################
+        # Search for velocity argument:
+        jfound=0
+        for j=1:size(otherargs)[1]
+            if otherargs[j][1]==:velocity
+                jfound=j
+                break
+            end
+        end
 
 
+        warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
 
 
-# If C is square then maybe just take the sub-square corresponding to the part taken from x hoping the constraint is a local one ?
-# 
 
+        if jfound>0
+            # modify the parameter
+            otherargsw=deepcopy(otherargs)
+            otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
+        else
+            otherargsw=otherargs
+        end
 
 
 
 
-# If C projects x on a low dimensional vector: maybe C'C x-C'd as a constraint, then pseudo inverse and woodbury to transform into a similar constraint but on each subdomain 
-# Would for example replace a global average constraint to be replaced by the same constraint applied to each subdomain. Not exact but not too bad neither
 
 
 
+        # If C is square then maybe just take the sub-square corresponding to the part taken from x hoping the constraint is a local one ?
+        #
 
 
 
-fw=0
-s=0
-# Verify if a direct solver was requested from the demain decomposer
-if sum(csteps)>0
-fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargsw...)
-                else
-fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsw...)				
-end
 
-# maskb=mask[windowpoints...]
-# pmnb=([ x[windowpoints...] for x in pmn ]...)
-# xib=([ x[windowpoints...] for x in xi ]...)
 
-# fw,s=divandrun(maskb,pmnb,xib,x,f,Labs,epsilon2; otherargs...)
-# Now error fields
-# Cpme: just run and take out same window
+        # If C projects x on a low dimensional vector: maybe C'C x-C'd as a constraint, then pseudo inverse and woodbury to transform into a similar constraint but on each subdomain
+        # Would for example replace a global average constraint to be replaced by the same constraint applied to each subdomain. Not exact but not too bad neither
 
-# AEXERR: just run and take out same window
 
 
-# EXERR: P only to points on the inner grid, not the overlapping one !
 
 
-# End error fields
 
+        fw=0
+        s=0
+        # Verify if a direct solver was requested from the demain decomposer
+        if sum(csteps)>0
+            fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargsw...)
+        else
+            fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsw...)
+        end
 
+        # maskb=mask[windowpoints...]
+        # pmnb=([ x[windowpoints...] for x in pmn ]...)
+        # xib=([ x[windowpoints...] for x in xi ]...)
 
-# Do similar things with other properties if asked for
+        # fw,s=divandrun(maskb,pmnb,xib,x,f,Labs,epsilon2; otherargs...)
+        # Now error fields
+        # Cpme: just run and take out same window
 
-# or better, replace the divandrun call by a divandrunsmart call with these parameters ? Would allow exploitation of optimised versions of the solver ?
+        # AEXERR: just run and take out same window
 
 
+        # EXERR: P only to points on the inner grid, not the overlapping one !
 
 
+        # End error fields
 
 
-# copy, deepcopy or just = ???
 
+        # Do similar things with other properties if asked for
 
+        # or better, replace the divandrun call by a divandrunsmart call with these parameters ? Would allow exploitation of optimised versions of the solver ?
 
-windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
-windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
-#fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
 
-fi[windowpointsstore...]= fw[windowpointssol...];
 
 
-end
 
-# When finished apply an nd filtering to smooth possible edges, particularly in error fields.
+        # copy, deepcopy or just = ???
 
-# For the moment s is not defined ?
-return fi,s 
+
+
+        windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
+        windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
+
+        #fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
+
+        fi[windowpointsstore...]= fw[windowpointssol...];
+
+
+    end
+
+    # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
+
+    # For the moment s is not defined ?
+    return fi,s
 
 
 

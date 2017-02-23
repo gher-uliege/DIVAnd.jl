@@ -9,14 +9,14 @@ estimate of the R matrix
 
 function divand_adaptedeps2(s,fi);
 
-residual=divand_residualobs(s,fi);
-d0d=dot((1-s.obsout).*(s.yo),(s.yo));
-d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
-ll1= d0d/(d0dmd1d)-1;
-eps1=1/ll1;
-eps2 = mean(diag(s.obsconstrain.R));
-factor=eps1/eps2;
-return factor
+    residual=divand_residualobs(s,fi);
+    d0d=dot((1-s.obsout).*(s.yo),(s.yo));
+    d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
+    ll1= d0d/(d0dmd1d)-1;
+    eps1=1/ll1;
+    eps2 = mean(diag(s.obsconstrain.R));
+    factor=eps1/eps2;
+    return factor
 
 
 end

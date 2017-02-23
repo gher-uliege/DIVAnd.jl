@@ -38,7 +38,7 @@ len = 0.1;
 # obs. error variance normalized by the background error variance
 epsilon2 = 0.2;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
-#errorscale=1 
+#errorscale=1
 # fi is the interpolated field
 cpme=  divand_cpme(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 #cpme=errorscale.*(-cpme.+1);

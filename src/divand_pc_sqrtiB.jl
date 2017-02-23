@@ -12,9 +12,9 @@ chol, divand_pc_michol
 """
 function divand_pc_sqrtiB(iB,H,R)
 
-F = cholfact(iB); 
+    F = cholfact(iB);
 
-return x -> F \ x
+    return x -> F \ x
 end
 
 # LocalWords:  preconditioner diavnd pc michol iB Cholesky chol divand sqrtiB

@@ -97,227 +97,214 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 
 function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
-                
-                )
 
-				
-				
-				
-				
-				
-				
-n=ndims(mask)
+                   )
 
-# Need to check for cyclic boundaries
 
-moddim=zeros(n);
 
-kwargs_dict = Dict(otherargs)
-@show itiscyclic=haskey(kwargs_dict, :moddim)
 
-if itiscyclic
-moddim=kwargs_dict[:moddim]
-@show moddim  
-end
 
-@show moddim   
 
-iscyclic = moddim .> 0
 
-#nsteps=divand_sampler(pmn,Labs);
+    n=ndims(mask)
 
-nsteps=csteps
+    # Need to check for cyclic boundaries
 
-@show nsteps
-@show(sum(nsteps))
+    moddim=zeros(n);
 
-if sum(nsteps)>n 
+    kwargs_dict = Dict(otherargs)
 
-####### use preconditionner methods
+    if itiscyclic
+        moddim=kwargs_dict[:moddim]
+    end
 
 
+    iscyclic = moddim .> 0
 
+    #nsteps=divand_sampler(pmn,Labs);
 
-#######################################
-# HOW TO TREAT COARSE GRID NOT COVERING FINE GRID ?
-# Artificially add of coordinates of last points in fine grid if the last step is beyond.
-# Slight inconsistency here for the error field as pmn was not adapted for last two points
-#######################################
+    nsteps=csteps
 
-#coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
-#([unique(push!(collect(1:3:13),13)) for i in 1:4]...)
-coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
 
-# If last point not reached add last point and just forget about incorrect metric  there ?
+    if sum(nsteps)>n
 
+        ####### use preconditionner methods
 
-# To do ...
 
-xic=([ x[coarsegridpoints...] for x in xi ]...);
 
-maskc=mask[coarsegridpoints...];
 
-# Forget about land to start with
-maskc=trues(size(maskc));
+        #######################################
+        # HOW TO TREAT COARSE GRID NOT COVERING FINE GRID ?
+        # Artificially add of coordinates of last points in fine grid if the last step is beyond.
+        # Slight inconsistency here for the error field as pmn was not adapted for last two points
+        #######################################
 
-#Now scale pmn by the step factorsm if not possible during extraction this operation needs a copy
-# Here hardcoded factor 3 
-pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
+        #coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
+        #([unique(push!(collect(1:3:13),13)) for i in 1:4]...)
+        coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
 
-# Check if Labs is a tuple of tuple; in this case also subsample
+        # If last point not reached add last point and just forget about incorrect metric  there ?
 
-	if isa(Labs,Tuple)
-		if isa(Labs[1],Tuple)
-		Labsc=([ x[coarsegridpoints...] for x in Labs ]...);   
-           else
-        Labsc=Labs;		   
-		end
-	else
-	  # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
-	  #  Labsc=Labs;
-		Labsc=(Labs*ones(n)...);
-	end
 
+        # To do ...
 
+        xic=([ x[coarsegridpoints...] for x in xi ]...);
 
-# Now prepare HI do go from the coarse grid to the fine grid. To do so
-# interprete de fine grid coordinates as those of pseudo-obs and use divandtoos
-#
-# 
-# Need the statevector strucure for the fine grid to go from grid to array
-svf = statevector_init((mask,))
+        maskc=mask[coarsegridpoints...];
 
-# For each coordinate in the tuplet xi, go from grid representation to tuplet
-# to have the pseudo-data coordinates
+        # Forget about land to start with
+        maskc=trues(size(maskc));
 
-#xfake=([statevector_pack(svf,(x,)) for x in xi]...)
+        #Now scale pmn by the step factorsm if not possible during extraction this operation needs a copy
+        # Here hardcoded factor 3
+        pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
 
-#@show size(xfake[1])
-# Create fractional indexes of these data points in the coarse grid
-#Ic = localize_separable_grid(xfake,maskc,xic);
+        # Check if Labs is a tuple of tuple; in this case also subsample
 
+        if isa(Labs,Tuple)
+            if isa(Labs[1],Tuple)
+                Labsc=([ x[coarsegridpoints...] for x in Labs ]...);
+            else
+                Labsc=Labs;
+            end
+        else
+            # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
+            #  Labsc=Labs;
+            Labsc=(Labs*ones(n)...);
+        end
 
 
-Ic = localize_separable_grid(([statevector_pack(svf,(x,)) for x in xi]...),maskc,xic);
 
-#@show size(xfake[1])
-# Create fractional indexes of these data points in the coarse grid
+        # Now prepare HI do go from the coarse grid to the fine grid. To do so
+        # interprete de fine grid coordinates as those of pseudo-obs and use divandtoos
+        #
+        #
+        # Need the statevector strucure for the fine grid to go from grid to array
+        svf = statevector_init((mask,))
 
-# Create HI
-HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
+        # For each coordinate in the tuplet xi, go from grid representation to tuplet
+        # to have the pseudo-data coordinates
 
-#@show maximum(xfake[1])
+        #xfake=([statevector_pack(svf,(x,)) for x in xi]...)
 
-@show maximum(xic[1])
+        #@show size(xfake[1])
+        # Create fractional indexes of these data points in the coarse grid
+        #Ic = localize_separable_grid(xfake,maskc,xic);
 
 
-@time HI = HI * sparse_pack(maskc)';
 
+        Ic = localize_separable_grid(([statevector_pack(svf,(x,)) for x in xi]...),maskc,xic);
 
+        #@show size(xfake[1])
+        # Create fractional indexes of these data points in the coarse grid
 
-####################################
-# Need to look at constraints later
-####################################
+        # Create HI
+        HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
+        #@show maximum(xfake[1])
 
 
-# Search for velocity argument:
-jfound=0
-for j=1:size(otherargs)[1]
-  if otherargs[j][1]==:velocity
-  jfound=j
-  break
-  end
-end
 
-@show jfound
+        @time HI = HI * sparse_pack(maskc)';
 
-if jfound>0
-# modify the parameter only in the coarse model
-   otherargsc=deepcopy(otherargs)
-   otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...))
-   else
-   otherargsc=otherargs
-end
 
 
+        ####################################
+        # Need to look at constraints later
+        ####################################
 
-# For other constraints: 
-# Here should be straightfoward replace C by C*HI on the constraint structure
 
 
+        # Search for velocity argument:
+        jfound=0
+        for j=1:size(otherargs)[1]
+            if otherargs[j][1]==:velocity
+                jfound=j
+                break
+            end
+        end
 
 
+        if jfound>0
+            # modify the parameter only in the coarse model
+            otherargsc=deepcopy(otherargs)
+            otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...))
+        else
+            otherargsc=otherargs
+        end
 
-# Rune the coarse grid problem
 
 
+        # For other constraints:
+        # Here should be straightfoward replace C by C*HI on the constraint structure
 
 
 
-#fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsc...)
 
 
+        # Rune the coarse grid problem
 
-## Preconditionner with desactivated correlations in some directions
 
-Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
-#
 
 
-@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
+        #fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsc...)
 
 
 
-@show Labsc
+        ## Preconditionner with desactivated correlations in some directions
 
-@show mean(fc)
+        Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
+        #
 
-# TEST OF Higher take the fc coarse solution, pack to to statevector form 
-# using sc.sv
-# Apply HI; this vector can also be used as a first guess for the PC
 
-   xguess=HI*statevector_pack(sc.sv,(fc,));
-   scP=sc.P;
-   
-   s=0
-   fc=0
-   gc()
-   
-@show mean(xguess)
+        @time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
-# which you unpack using the statevector form of the fine grid for the TEST only
 
-#   figuess,=statevector_unpack(svf,xguess)
-# Do not know why I need to squeeze here if I want to return a gridded approximation
-#   figuess=squeeze(figuess,ndims(figuess))
-# Recover sc.P and define the conditionner
 
-# tolerance on the gradient A x - b
-tol = 2e-3
 
 
-maxiter=10*Int(ceil(sqrt(size(HI)[1])))
-@show maxiter
 
-pcargs = [(:tol, tol),(:maxit,maxiter)]
+        # TEST OF Higher take the fc coarse solution, pack to to statevector form
+        # using sc.sv
+        # Apply HI; this vector can also be used as a first guess for the PC
 
-@show size(HI)
+        xguess=HI*statevector_pack(sc.sv,(fc,));
+        scP=sc.P;
 
+        s=0
+        fc=0
+        gc()
 
-diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
 
-@show diagshift
+        # which you unpack using the statevector form of the fine grid for the TEST only
 
-function compPC(iB,H,R)
-        return x -> diagshift*x+HI*(scP*(HI'*x));
-	#     return jmPHI'*(jmPHI*x);
-	#   return x->x;
-end
-# First guess is the HI* coarse solution
+        #   figuess,=statevector_unpack(svf,xguess)
+        # Do not know why I need to squeeze here if I want to return a gridded approximation
+        #   figuess=squeeze(figuess,ndims(figuess))
+        # Recover sc.P and define the conditionner
 
-# HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
+        # tolerance on the gradient A x - b
+        tol = 2e-3
+
+
+        maxiter=10*Int(ceil(sqrt(size(HI)[1])))
+
+        pcargs = [(:tol, tol),(:maxit,maxiter)]
+
+
+
+        diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
+
+
+        function compPC(iB,H,R)
+            return x -> diagshift*x+HI*(scP*(HI'*x));
+            #     return jmPHI'*(jmPHI*x);
+            #   return x->x;
+        end
+        # First guess is the HI* coarse solution
+
+        # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?
 
 
@@ -327,7 +314,7 @@ fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=
 
 #errfield=diagMtCM(sc.P,HI')
 
-# 
+#
 #erri,=statevector_unpack(si.sv,errfield)
 # For error field based on coarse one, use divand_filter3 with ntimes=Int(ceil(mean(nsteps)))
 

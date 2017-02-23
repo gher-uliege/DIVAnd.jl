@@ -10,7 +10,7 @@ diavnd_pc_michol, diavnd_pc_sqrtiB
 """
 
 function divand_pc_none(iB,H,R)
-return identity
+    return identity
 end
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

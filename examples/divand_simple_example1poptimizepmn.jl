@@ -17,53 +17,53 @@ aj=zeros(1000)
 vj=zeros(1000)
 
 for j=1:1000
-alen=j/100
+    alen=j/100
 
-# observations
-x = [10];
-y = [10];
-f = [1];
+    # observations
+    x = [10];
+    y = [10];
+    f = [1];
 
-idim=59
-# final grid
-xi,yi = ndgrid(linspace(0,30,idim),linspace(0,30,idim));
-
-
-
-# all points are valid points
-mask = trues(xi);
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
-#Test to push boundary to wider distance:
-
-@show pm[1,1]*len
-
-pn[:,idim]=1./(alen*len);
-pn[:,1]=1./(alen*len);
-pm[idim,:]=1./(alen*len);
-pm[1,:]=1./(alen*len);
+    idim=59
+    # final grid
+    xi,yi = ndgrid(linspace(0,30,idim),linspace(0,30,idim));
 
 
-# correlation length
+
+    # all points are valid points
+    mask = trues(xi);
+
+    # this problem has a simple cartesian metric
+    # pm is the inverse of the resolution along the 1st dimension
+    # pn is the inverse of the resolution along the 2nd dimension
+
+    pm = ones(xi) / (xi[2,1]-xi[1,1]);
+    pn = ones(xi) / (yi[1,2]-yi[1,1]);
+    #Test to push boundary to wider distance:
+
+    @show pm[1,1]*len
+
+    pn[:,idim]=1./(alen*len);
+    pn[:,1]=1./(alen*len);
+    pm[idim,:]=1./(alen*len);
+    pm[1,:]=1./(alen*len);
 
 
-# obs. error variance normalized by the background error variance
-epsilon2 = 10000;
-
-# fi is the interpolated field
-fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+    # correlation length
 
 
-#pcolor(reshape(diag(s.P),59,59)')
-#colorbar()
+    # obs. error variance normalized by the background error variance
+    epsilon2 = 10000;
 
-aj[j]=alen
-vj[j]=var(diag(s.P))
+    # fi is the interpolated field
+    fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+
+
+    #pcolor(reshape(diag(s.P),59,59)')
+    #colorbar()
+
+    aj[j]=alen
+    vj[j]=var(diag(s.P))
 
 end
 

@@ -1,5 +1,7 @@
 module divand
 using Interpolations
+using NetCDF
+import SpecialFunctions
 using Base.Test
 
 type divand_constrain
@@ -95,6 +97,10 @@ type divand_struct
         obsout = Array{Bool,1}()
         obsconstrain = divand_constrain([],[],[])
 
+        WEs = Array{Any,1}(n)
+        WEss = Array{Any,1}(n)
+
+
         compPC(iB,R,H) = identity
         preconditioner = identity
         new(n,
@@ -176,19 +182,51 @@ end
 
 
 
-sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
 
+"""
+mask,xyi,pmn = divand_squaredom(n,coord)
 
-function sparse_pack(mask)
+Create a "square" domain in `n` dimensions with the coordinates `coord`
+assuming a Catersian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
 
-    j = find(mask)
-    m = length(j)
-    i = collect(1:m)
-    s = ones(m)
-    n = length(mask)
-    H = sparse(i,j,s,m,n)
+# Example
 
+mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))
+"""
+function divand_squaredom(n,coord)
+    coords = ([coord for i = 1:n]...)
+    return divand_rectdom(coords...)
 end
+
+
+"""
+mask,xyi,pmn = divand_squaredom(n,coord)
+
+Create a "square" domain in `n` dimensions with the coordinates `coord`
+assuming a Catersian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
+
+# Example
+
+mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
+"""
+function divand_rectdom(coords...)
+    # grid of background field
+    xyi = ndgrid(coords...)
+
+    # mask (all points are valid)
+    mask = trues(xyi[1])
+
+    # metric (inverse of the resolution)
+    pmn = ([ones(size(mask)) / (coords[i][2]-coords[i][1]) for i = 1:length(coords)]...)
+
+    return mask,pmn,xyi
+end
+
+
+include("sparse_operator.jl");
+include("function_operator.jl");
 
 include("sparse_stagger.jl");
 include("sparse_diff.jl");
@@ -196,17 +234,13 @@ include("sparse_interp.jl");
 include("sparse_trim.jl");
 include("sparse_shift.jl");
 include("sparse_gradient.jl");
+
+
 include("localize_separable_grid.jl");
 
 include("special_matrices.jl");
 include("conjugategradient.jl");
-
-include("statevector_init.jl");
-include("statevector_pack.jl");
-include("statevector_unpack.jl");
-include("statevector_sub2ind.jl");
-include("statevector_ind2sub.jl");
-
+include("statevector.jl");
 include("divand_laplacian.jl");
 include("divand_operators.jl");
 include("divand_background_components.jl")
@@ -243,10 +277,15 @@ include("divand_adaptedeps2.jl");
 include("divand_filter3.jl");
 include("divand_Lpmnrange.jl");
 
-export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag
+include("divand_save.jl");
+
+include("load_mask.jl");
+
+
+export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
-   divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo, divandjog, divand_sampler, divand_filter3, divand_Lpmnrange, divand_cutter, divand_fittocpu
+statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
+divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo, divandjog, divand_sampler, divand_filter3, divand_Lpmnrange, divand_cutter, divand_fittocpu
 
 end

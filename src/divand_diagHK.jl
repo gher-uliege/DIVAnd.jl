@@ -8,37 +8,37 @@ diagonalterms = divand_diagHK(s);
 
 function divand_diagHK(s)
 
-#
+    #
 
 
-H = s.H;
-R = s.R;
-
-
-
-Z=eye(size(R)[1],size(R)[1]);
+    H = s.H;
+    R = s.R;
 
 
 
-# to be replaced later exploiting the factors of P ?
-# 
-   P = s.P;
-#   WW=P * (H'* (R \ Z));
-#   ZtHKZ =  Z'*H*WW;
+    Z=eye(size(R)[1],size(R)[1]);
 
-# parenthesis to force the order of operations
 
-#ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
-#    ZtHKZ =   (H * (P * (H' * (R \ Z))));
-#    diagHKb = diag(ZtHKZ);
-	
-    diagHK=diagLtCM(H',P,(H' * (R \ Z)))	
-#    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7) 
-#     warn("WTF")
-#    end	
-	
-	
-return diagHK
+
+    # to be replaced later exploiting the factors of P ?
+    #
+    P = s.P;
+    #   WW=P * (H'* (R \ Z));
+    #   ZtHKZ =  Z'*H*WW;
+
+    # parenthesis to force the order of operations
+
+    #ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
+    #    ZtHKZ =   (H * (P * (H' * (R \ Z))));
+    #    diagHKb = diag(ZtHKZ);
+
+    diagHK=diagLtCM(H',P,(H' * (R \ Z)))
+    #    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7)
+    #     warn("WTF")
+    #    end
+
+
+    return diagHK
 
 end
 

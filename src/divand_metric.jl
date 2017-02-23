@@ -24,35 +24,35 @@ end
 
 function divand_metric(lon,lat)
 
-sz = size(lon);
-i = 2:sz[1]-1;
-j = 2:sz[2]-1;
+    sz = size(lon);
+    i = 2:sz[1]-1;
+    j = 2:sz[2]-1;
 
 
-dx = distance.(lat[i-1,:],lon[i-1,:],lat[i+1,:],lon[i+1,:])/2;
-dx = cat(1,dx[1:1,:],dx,dx[end:end,:]);
+    dx = distance.(lat[i-1,:],lon[i-1,:],lat[i+1,:],lon[i+1,:])/2;
+    dx = cat(1,dx[1:1,:],dx,dx[end:end,:]);
 
-dy = distance.(lat[:,j-1],lon[:,j-1],lat[:,j+1],lon[:,j+1])/2;
-dy = cat(2,dy[:,1:1],dy,dy[:,end:end]);
+    dy = distance.(lat[:,j-1],lon[:,j-1],lat[:,j+1],lon[:,j+1])/2;
+    dy = cat(2,dy[:,1:1],dy,dy[:,end:end]);
 
-dx = real(dx);
-dy = real(dy);
+    dx = real(dx);
+    dy = real(dy);
 
-dx = deg2m(dx);
-dy = deg2m(dy);
+    dx = deg2m(dx);
+    dy = deg2m(dy);
 
 
-pm = 1./dx;
-pn = 1./dy;
+    pm = 1./dx;
+    pn = 1./dy;
 
-return pm,pn
+    return pm,pn
 end
 
 function deg2m(dlat)
-# Mean radius (http://en.wikipedia.org/wiki/Earth_radius)
-R = 6371.009e3;
+    # Mean radius (http://en.wikipedia.org/wiki/Earth_radius)
+    R = 6371.009e3;
 
-return dlat*(2*pi*R)/360;
+    return dlat*(2*pi*R)/360;
 end
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

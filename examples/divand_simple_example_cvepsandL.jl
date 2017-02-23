@@ -15,9 +15,6 @@ f=f+randn(nobs);
 # final grid
 xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100));
 
-# reference field
-fref = sin(6xi) .* cos(6yi);
-
 # all points are valid points
 mask = trues(xi);
 
@@ -39,19 +36,20 @@ epsilon2 = 2;
 for imeth=0:3
 
 
-bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth);
+    bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth);
 
-subplot(2,2,imeth+1)
-pcolor(xi2D,yi2D,cvinter)
-colorbar()
-xlabel("Log10 scale factor L")
-ylabel("Log10 scale factor e2")
-plot(x2Ddata,y2Ddata,".")
-plot(log10(bestfactorl), log10(bestfactore),"o")
-title("Method $imeth")
+    subplot(2,2,imeth+1)
+    pcolor(xi2D,yi2D,cvinter)
+    colorbar()
+    xlabel("Log10 scale factor L")
+    ylabel("Log10 scale factor e2")
+    plot(x2Ddata,y2Ddata,".")
+    plot(log10(bestfactorl), log10(bestfactore),"o")
+    title("Method $imeth")
 
 end
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2017 Alexander Barth    <a.barth@ulg.ac.be>
+#                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

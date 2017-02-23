@@ -1,41 +1,43 @@
-# Sparse operator for a gradient.
-#
-# [Dx1,Dx2,...,Dxn] = sparse_gradient(mask,pmn)
-#
-# Form the gradient using finite differences in all n-dimensions
-#
-# Input:
-#   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
-#         For oceanographic application, this is the land-sea mask.
-#
-#   pmn: scale factor of the grid.
-#
-# Output:
-#   Dx1,Dx2,...,Dxn: sparce matrix represeting a gradient along
-#     different dimensions
+"""
+Sparse operator for a gradient.
 
-function sparse_gradient(mask,pmn,iscyclic = falses(ndims(mask)))
+Dx1,Dx2,...,Dxn = sparse_gradient(mask,pmn)
 
-H = sparse_pack(mask)
+Form the gradient using finite differences in all n-dimensions
 
-sz = size(mask)
-n = ndims(mask)
+Input:
+  mask: binary mask delimiting the domain. 1 is inside and 0 outside.
+        For oceanographic application, this is the land-sea mask.
 
-out = []
+  pmn: scale factor of the grid.
 
-for i=1:n
-  # staggering operator
-  S = sparse_stagger(sz,i,iscyclic[i])
+Output:
+  Dx1,Dx2,...,Dxn: operators represeting a gradient along
+    different dimensions
+"""
 
-  # mask for staggered variable
-  m = (S * mask[:]) .== 1
+function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
 
-  d = m .* (S * pmn[i][:])
+    H = oper_pack(operatortype,mask)
 
-  push!(out,sparse_pack(m) * sparse_diag(d) * sparse_diff(sz,i,iscyclic[i]) * H')
-end
+    sz = size(mask)
+    n = ndims(mask)
 
-(out...)
+    out = []
+
+    for i=1:n
+        # staggering operator
+        S = oper_stagger(operatortype,sz,i,iscyclic[i])
+
+        # mask for staggered variable
+        m = (S * mask[:]) .== 1
+
+        d = m .* (S * pmn[i][:])
+
+        push!(out,oper_pack(operatortype,m) * oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
+    end
+
+    (out...)
 
 end
 
@@ -54,4 +56,3 @@ end
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; If not, see <http://www.gnu.org/licenses/>.
-

@@ -26,28 +26,28 @@ Lpmnrange = divand_Lpmnrange(pmn,len);
 function divand_Lpmnrange(pmn,len)
 
 
-n = ndims(pmn[1])
-Lpmnrange=Array(Tuple, n)
+    n = ndims(pmn[1])
+    Lpmnrange=Array(Tuple, n)
 
-for i=1:n
-	if isa(len,Number)
-		Lpmnrange[i] = extrema(len*pmn[i]);
-	elseif isa(len,Tuple)
+    for i=1:n
+        if isa(len,Number)
+            Lpmnrange[i] = extrema(len*pmn[i]);
+        elseif isa(len,Tuple)
 
-		if isa(len[1],Number)
-		    Lpmnrange[i] = extrema(len[i]*pmn[i]);
-			
-			else
-			Lpmnrange[i] = extrema(len[i].*pmn[i])
-			
-		end
+            if isa(len[1],Number)
+                Lpmnrange[i] = extrema(len[i]*pmn[i]);
 
-	end
-end
+            else
+                Lpmnrange[i] = extrema(len[i].*pmn[i])
+
+            end
+
+        end
+    end
 
 
 
-return Lpmnrange
+    return Lpmnrange
 
 
 

@@ -15,54 +15,54 @@
 
 function divand_kernel(n,alpha #,r
                        )
-# remove trailling zeros
-ind = maximum(find(!(alpha .== 0)))
-alpha = alpha[1:ind];
+    # remove trailling zeros
+    ind = maximum(find(!(alpha .== 0)))
+    alpha = alpha[1:ind];
 
-m = length(alpha)-1;
+    m = length(alpha)-1;
 
-K = [];
-if [binomial(m,k) for k = 0:m] == alpha
-  # alpha are binomial coefficients
+    K = [];
+    if [binomial(m,k) for k = 0:m] == alpha
+        # alpha are binomial coefficients
 
-  mu,K = divand_kernel_binom(n,m);
-else
-   if [binomial(m,k) for k = 1:m] == alpha[2:ind]
-  # alpha are binomial coefficients except first one
-    warn("Semi-norm used?, check scaling $alpha")
-    mu,K = divand_kernel_binom(n,m);
-#   correction for missing term CHECK IF NOT THE INVERSE
-#  Added fudge factor 2 to mimic same behaviour in test case
-    jmscale=(1.0/2^(m))*sum(alpha[:])/2
-
-
-    mu = mu*jmscale;
-
-   else
-  # unsupported sequence of alpha
-    
-    mu,K = divand_kernel_binom(n,m);
-	warn("Unsupported norm used, check scaling $alpha")
-#   Scaling is correct of all alphas are binomials times a common factor
-
-    jmscale=(1.0/2^(m))*sum(alpha[:])
-
-    mu = mu*jmscale;
-   end
-end
-
-# if nargin == 3
-#   # evaluate the kernel for the given values of r
-#   K = K(r);
-# end
-
-# if nargout == 3
-#   # determine at which distance r K(r) = 1/2
-#   rh = abs(fzero(@(r) K(abs(r))-.5,1));
-# end
+        mu,K = divand_kernel_binom(n,m);
+    else
+        if [binomial(m,k) for k = 1:m] == alpha[2:ind]
+            # alpha are binomial coefficients except first one
+            warn("Semi-norm used?, check scaling $alpha")
+            mu,K = divand_kernel_binom(n,m);
+            #   correction for missing term CHECK IF NOT THE INVERSE
+            #  Added fudge factor 2 to mimic same behaviour in test case
+            jmscale=(1.0/2^(m))*sum(alpha[:])/2
 
 
-return mu,K #,rh
+            mu = mu*jmscale;
+
+        else
+            # unsupported sequence of alpha
+
+            mu,K = divand_kernel_binom(n,m);
+            warn("Unsupported norm used, check scaling $alpha")
+            #   Scaling is correct of all alphas are binomials times a common factor
+
+            jmscale=(1.0/2^(m))*sum(alpha[:])
+
+            mu = mu*jmscale;
+        end
+    end
+
+    # if nargin == 3
+    #   # evaluate the kernel for the given values of r
+    #   K = K(r);
+    # end
+
+    # if nargout == 3
+    #   # determine at which distance r K(r) = 1/2
+    #   rh = abs(fzero(@(r) K(abs(r))-.5,1));
+    # end
+
+
+    return mu,K #,rh
 
 end
 
@@ -71,31 +71,31 @@ end
 function divand_kernel_binom(n,m)
 
 
-# #if isequal(alpha,1)
+    # #if isequal(alpha,1)
 
-nu = m-n/2;
-mu = (4*pi)^(n/2) * gamma(m) / gamma(nu);
-K(x) = divand_rbesselk(nu,x);
+    nu = m-n/2;
+    mu = (4*pi)^(n/2) * gamma(m) / gamma(nu);
+    K(x) = divand_rbesselk(nu,x);
 
-if nu <= 0
-  warn("divand:nonorm","No normalization possible. Extend parameter alpha.");
-  mu = 1;
-end
+    if nu <= 0
+        warn("divand:nonorm","No normalization possible. Extend parameter alpha.");
+        mu = 1;
+    end
 
-return mu,K
+    return mu,K
 end
 
 
 function divand_rbesselk(nu,r)
-r = abs(r);
+    r = abs(r);
 
-if r == 0
-    K = 1.
-else
-    K = 2/gamma(nu) * ((r/2).^nu .* besselk(nu,r));
-end
+    if r == 0
+        K = 1.
+    else
+        K = 2/gamma(nu) * ((r/2).^nu .* SpecialFunctions.besselk(nu,r));
+    end
 
-return K
+    return K
 end
 
 

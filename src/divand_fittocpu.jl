@@ -4,9 +4,9 @@
 stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
-# Also calculates already the subsampling steps csteps for the preconditionners 
+# Also calculates already the subsampling steps csteps for the preconditionners
 # as well as the mask lmask to apply to the length scales in the preconditionner, allowing to reduce
-# the problem size 
+# the problem size
 
 # Input:
 
@@ -14,7 +14,7 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
 
 * `gridsize`: number of points in each direction (size(mask))
 
-* `moddim`: 
+* `moddim`:
 
 
 
@@ -28,161 +28,153 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
 function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
 
 
-#################################################################################
-# Number of dimensions
-n = size(Lpmnrange)[1]
+    #################################################################################
+    # Number of dimensions
+    n = size(Lpmnrange)[1]
 
-if moddim==[]
-   moddim=zeros[n]
-end
+    if moddim==[]
+        moddim=zeros[n]
+    end
 
-# Some tweaking parameters #####
-
-
-# Fraction of domain size at which windowing is attempted if len is smaller
-lfactor=0.2
-
-# How wide is the overlap in terms of number of length scales
-factoroverlap=3.3
-
-if n<3
-biggestproblemiter=500*500 
-biggestproblemdirect=200*200
-end
-if n==3
-biggestproblemiter=50*50*50
-biggestproblemdirect=50*50*20
-end
-if n>3
-biggestproblemiter=55*55*10*12
-biggestproblemdirect=50*50*10
-end
+    # Some tweaking parameters #####
 
 
+    # Fraction of domain size at which windowing is attempted if len is smaller
+    lfactor=0.2
+
+    # How wide is the overlap in terms of number of length scales
+    factoroverlap=3.3
+
+    if n<3
+        biggestproblemiter=500*500
+        biggestproblemdirect=200*200
+    end
+    if n==3
+        biggestproblemiter=50*50*50
+        biggestproblemdirect=50*50*20
+    end
+    if n>3
+        biggestproblemiter=55*55*10*12
+        biggestproblemdirect=50*50*10
+    end
 
 
 
 
 
 
-# Default
-stepsize=collect(gridsize)
-overlapping=zeros(Int,n)
-
-# Test if cutting is necessary:
-isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
-
-if isdirect
- return stepsize,overlapping,isdirect
-end
 
 
+    # Default
+    stepsize=collect(gridsize)
+    overlapping=zeros(Int,n)
 
+    # Test if cutting is necessary:
+    isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
 
-# Unfortunataly for the moment the problem is memory bound by the unsampled grid. 
-
-laterscales=ones(n)
-
-#####################################################################################
-# Define overlapping and stepsize 
-
-# Now hardwired windowing over x,y
-# For the moment on z: overlapping of two layers and stepping of 4 keeps the size small enough
-# and overhead a factor of two
-
-# For time: no windowing for the moment neither
-
-
-
-biggestproblem= biggestproblemiter
-
-higherdims=1
-
-if n>2
-stepsize[3]=2;
-overlapping[3]=2;
-higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
-end
+    if isdirect
+        return stepsize,overlapping,isdirect
+    end
 
 
 
 
+    # Unfortunataly for the moment the problem is memory bound by the unsampled grid.
 
-biggestproblem=biggestproblem/higherdims
+    laterscales=ones(n)
 
-problemsize=1
+    #####################################################################################
+    # Define overlapping and stepsize
 
-@show biggestproblem
+    # Now hardwired windowing over x,y
+    # For the moment on z: overlapping of two layers and stepping of 4 keeps the size small enough
+    # and overhead a factor of two
 
-nwd=0
-for i=1:minimum([n,2])
+    # For time: no windowing for the moment neither
 
 
-# if length scale is small compared to domain size
-if Lpmnrange[i][2]<   lfactor*gridsize[i]
- if moddim[i]==0
- overlapping[i]=Int(ceil( factoroverlap*Lpmnrange[i][2]   ))
- problemsize=problemsize*overlapping[i]
 
- 
-  nwd=nwd+1 
-                              else
- problemsize=problemsize*gridsize[i]		
- end 
-else
-problemsize=problemsize*gridsize[i]		
-end
+    biggestproblem= biggestproblemiter
 
-# 
-end
+    higherdims=1
 
-problemsize=problemsize/prod(laterscales[1:2])
-
-@show problemsize
-@ show nwd
-@ show overlapping
-
-if nwd>0
-  epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
-end
-if epsilon<0
-warn("SO what $epsilon $problemsize $nwd $overlapping")
-epsilon=1E-6
-end
-
-for i=1:minimum([n,2])
-# if length scale is small compared to domain size
-if Lpmnrange[i][2]<   lfactor*gridsize[i]
-if moddim[i]==0
-stepsize[i]=Int(ceil( epsilon*factoroverlap*Lpmnrange[i][2]   ))
-end
-end
-end
+    if n>2
+        stepsize[3]=2;
+        overlapping[3]=2;
+        higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
+    end
 
 
 
 
-doesitfit=(prod(2*overlapping+stepsize)<biggestproblemiter)
 
-@show doesitfit
+    biggestproblem=biggestproblem/higherdims
 
-
-
-
-# Before returning, check if by chance the windows are now small enough to even allow for a direct solver
-
-isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
-
-####################################
-#Force direct solver
-# isdirect=(0<1)
+    problemsize=1
 
 
-@show isdirect
+    nwd=0
+    for i=1:minimum([n,2])
 
-@show stepsize
-@show overlapping
-return stepsize,overlapping,isdirect
+
+        # if length scale is small compared to domain size
+        if Lpmnrange[i][2]<   lfactor*gridsize[i]
+            if moddim[i]==0
+                overlapping[i]=Int(ceil( factoroverlap*Lpmnrange[i][2]   ))
+                problemsize=problemsize*overlapping[i]
+
+
+                nwd=nwd+1
+            else
+                problemsize=problemsize*gridsize[i]
+            end
+        else
+            problemsize=problemsize*gridsize[i]
+        end
+
+        #
+    end
+
+    problemsize=problemsize/prod(laterscales[1:2])
+
+
+    if nwd>0
+        epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
+    end
+    if epsilon<0
+        warn("SO what $epsilon $problemsize $nwd $overlapping")
+        epsilon=1E-6
+    end
+
+    for i=1:minimum([n,2])
+        # if length scale is small compared to domain size
+        if Lpmnrange[i][2]<   lfactor*gridsize[i]
+            if moddim[i]==0
+                stepsize[i]=Int(ceil( epsilon*factoroverlap*Lpmnrange[i][2]   ))
+            end
+        end
+    end
+
+
+
+
+    doesitfit=(prod(2*overlapping+stepsize)<biggestproblemiter)
+
+
+
+
+
+    # Before returning, check if by chance the windows are now small enough to even allow for a direct solver
+
+    isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
+
+    ####################################
+    #Force direct solver
+    # isdirect=(0<1)
+
+
+
+    return stepsize,overlapping,isdirect
 
 
 

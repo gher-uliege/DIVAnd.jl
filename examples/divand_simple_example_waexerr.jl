@@ -38,7 +38,7 @@ len = 0.1;
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
-#errorscale=1 
+#errorscale=1
 # fi is the interpolated field
 @time myerr,bjmb,fa,sa=  divand_aexerr(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 

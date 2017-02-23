@@ -1,7 +1,5 @@
 """
-Compute a variational analysis of arbitrarily located observations.
-
-fi,s = divandrun(mask,pmn,xi,x,f,len,epsilon2,...);
+    divandrun(mask,pmn,xi,x,f,len,epsilon2; <keyword arguments>)
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -50,7 +48,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `EOF_scaling`, EOF_scaling: (dimensional)
 
-* `constraint`: a structure with user specified constrain
+* `constraints`: a structure with user specified constrain
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. Halo points should
@@ -72,8 +70,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
     where iB is the inverse background error covariance, H the observation
     operator and R the error covariance of the observation. The function `compPC` returns the
-    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x) 
-    where `M` is a positive defined symmetric matrix. 
+    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x)
+    where `M` is a positive defined symmetric matrix [1].
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
 
@@ -93,131 +91,132 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Example:
   see divand_simple_example.jl
-  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
+
+# References
+[1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 
 function divandrun(mask,pmn,xi,x,f,len,epsilon2;
-                velocity = (),
-                EOF = [],
-                EOF_lambda = 0,
-                primal = true,
-                factorize = true,
-                tol = 1e-6,
-                maxit = 100,
-                minit = 10,
-                constraints = (),
-                inversion = :chol,
-                moddim = [],
-                fracindex = [],
-                alpha = [],
-                keepLanczosVectors = 0,
-                compPC = divand_pc_none,
-                fi0 = zeros(size(mask)),
-#JM
-                alphabc=2,
-#/JM
-                f0 = zeros(size(f))
-                )
+                   velocity = (),
+                   EOF = [],
+                   EOF_lambda = 0,
+                   primal = true,
+                   factorize = true,
+                   tol = 1e-6,
+                   maxit = 100,
+                   minit = 0,
+                   constraints = (),
+                   inversion = :chol,
+                   moddim = [],
+                   fracindex = [],
+                   alpha = [],
+                   keepLanczosVectors = 0,
+                   compPC = divand_pc_none,
+                   fi0 = zeros(size(mask)),
+                   f0 = zeros(size(f)),
+                   operatortype = Val{:sparse},
+                   alphabc = 2
+                   )
 
 
-# check inputs
-@show alphabc
-if !any(mask[:])
-  error("no sea points in mask");
-end
+    # check inputs
+    if !any(mask[:])
+        error("no sea points in mask");
+    end
 
-#@show size(mask)
-#JM add alphabc for the moment
-s = divand_background(mask,pmn,len,alpha,moddim,[];alphabc=alphabc);
-s.betap = 0;
-s.EOF_lambda = EOF_lambda;
-s.primal = primal;
-s.factorize = factorize;
-s.tol = tol;
-s.maxit = maxit;
-s.minit = minit;
-s.inversion = inversion;
-s.keepLanczosVectors = keepLanczosVectors;
-s.compPC = compPC;
+    #JM add alphabc for the moment
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[];alphabc=alphabc);
 
-# # remove non-finite elements from observations
-# f = f[:];
-# valid = isfinite(f);
-# x = cat_cell_array(x);
-
-# if !all(valid)
-#   fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
-#   x = reshape(x,[length(f) s.n]);
-#   f = f[valid];
-#   x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
-
-#   if !isempty(fracindex)
-#     fracindex = fracindex[:,valid];
-#   end
-
-#   if isscalar(epsilon2)
-#     # do nothing
-#   elseif isvector(epsilon2)
-#     epsilon2 = epsilon2[valid];
-#   elseif ismatrix(epsilon2)
-#     epsilon2 = epsilon2[valid,valid];
-#   end
-# end
-
-# apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
-
-# s.mode = 1;
-
-# if !apply_EOF_contraint
-#     s.betap = 0;
-# else
-#     if s.mode==0
-#         s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
-#     elseif s.mode==1
-#         s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
-#     end
-# end
-
-# increase contraint on total enegery to ensure system is still positive defined
-#s.betap
-#s.iB = s.iB + s.betap * s.WE'*s.WE;
-
-# observation error covariance (scaled)
-# Note: iB is scaled such that diag(inv(iB)) is 1 far from the
-# boundary
-
-R = divand_obscovar(epsilon2,length(f));
-
-# add observation constrain to cost function
-s = divand_addc(s,divand_obs(s,xi,x,f,R,I = fracindex));
-
-# add advection constraint to cost function
-if !isempty(velocity)
-    s = divand_addc(s,divand_constr_advec(s,velocity));
-end
-
-# add all additional constrains
-for i=1:length(constraints)
-    s = divand_addc(s,constraints[i]);
-end
-
-#if apply_EOF_contraint
-#    s = divand_eof_contraint(s,EOF_lambda,EOF);
-#end
-
-# factorize a posteori error covariance matrix
-# or compute preconditioner
+    s.betap = 0;
+    s.EOF_lambda = EOF_lambda;
+    s.primal = primal;
+    s.factorize = factorize;
+    s.tol = tol;
+    s.maxit = maxit;
+    s.minit = minit;
+    s.inversion = inversion;
+    s.keepLanczosVectors = keepLanczosVectors;
+    s.compPC = compPC;
 
 
-divand_factorize!(s);
+    # # remove non-finite elements from observations
+    # f = f[:];
+    # valid = isfinite(f);
+    # x = cat_cell_array(x);
 
-#if !apply_EOF_contraint
+    # if !all(valid)
+    #   fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
+    #   x = reshape(x,[length(f) s.n]);
+    #   f = f[valid];
+    #   x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
+
+    #   if !isempty(fracindex)
+    #     fracindex = fracindex[:,valid];
+    #   end
+
+    #   if isscalar(epsilon2)
+    #     # do nothing
+    #   elseif isvector(epsilon2)
+    #     epsilon2 = epsilon2[valid];
+    #   elseif ismatrix(epsilon2)
+    #     epsilon2 = epsilon2[valid,valid];
+    #   end
+    # end
+
+    # apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
+
+    # s.mode = 1;
+
+    # if !apply_EOF_contraint
+    #     s.betap = 0;
+    # else
+    #     if s.mode==0
+    #         s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
+    #     elseif s.mode==1
+    #         s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
+    #     end
+    # end
+
+    # increase contraint on total enegery to ensure system is still positive defined
+    #s.betap
+    #s.iB = s.iB + s.betap * s.WE'*s.WE;
+
+    # observation error covariance (scaled)
+    # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
+    # boundary
+
+    R = divand_obscovar(epsilon2,length(f));
+
+    # add observation constrain to cost function
+    s = divand_addc(s,divand_obs(s,xi,x,f,R,I = fracindex));
+
+    # add advection constraint to cost function
+    if !isempty(velocity)
+        s = divand_addc(s,divand_constr_advec(s,velocity));
+    end
+
+    # add all additional constrains
+    for i=1:length(constraints)
+        s = divand_addc(s,constraints[i]);
+    end
+
+    #if apply_EOF_contraint
+    #    s = divand_eof_contraint(s,EOF_lambda,EOF);
+    #end
+
+    # factorize a posteori error covariance matrix
+    # or compute preconditioner
+
+
+    divand_factorize!(s);
+
+    #if !apply_EOF_contraint
     fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0);
-#else
-#    fi,s = divand_solve_eof(s,f);
-#end
+    #else
+    #    fi,s = divand_solve_eof(s,f);
+    #end
 
-return fi,s
+    return fi,s
 
 
 end

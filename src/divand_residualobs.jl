@@ -10,7 +10,7 @@ function divand_residualobs(s,fi)
 
 
 
-return squeeze(s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,)),2)
+    return squeeze(s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,)),2)
 
 end
 
