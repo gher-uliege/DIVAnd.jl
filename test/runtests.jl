@@ -13,23 +13,23 @@ using Base.Test
     include("test_diagnostic_tools.jl");
 
     include("test_1dvar.jl");
-	include("test_1D_seminormed.jl");
+    include("test_1D_seminormed.jl");
 
-    
+
     include("test_2dvar_adv.jl");
     include("test_2dvar_iter.jl");
     include("test_2dvar_error.jl");
-	include("test_2dvar_cv.jl");
-	include("test_2dvar_qc.jl");
-	include("test_variableLandpmn.jl")
-	
-	
+    include("test_2dvar_cv.jl");
+    include("test_2dvar_qc.jl");
+    include("test_variableLandpmn.jl")
+
+
 
     include("test_3dvar.jl");
 
     include("test_4dvar.jl");
-	include("test_divandgo.jl");
-	
+    include("test_divandgo.jl");
+
 
     # test kernel
     include("test_kernel.jl");
