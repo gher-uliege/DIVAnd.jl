@@ -118,7 +118,7 @@ moddim=zeros(n);
 
 kwargs_dict = Dict(otherargs)
 
-if itiscyclic
+if haskey(kwargs_dict,:moddim)
 moddim=kwargs_dict[:moddim]
 end
 
