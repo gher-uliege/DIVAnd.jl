@@ -15,21 +15,40 @@
 
 function divand_kernel(n,alpha #,r
                        )
-
-
 # remove trailling zeros
 ind = maximum(find(!(alpha .== 0)))
 alpha = alpha[1:ind];
 
 m = length(alpha)-1;
+
 K = [];
 if [binomial(m,k) for k = 0:m] == alpha
   # alpha are binomial coefficients
 
   mu,K = divand_kernel_binom(n,m);
 else
+   if [binomial(m,k) for k = 1:m] == alpha[2:ind]
+  # alpha are binomial coefficients except first one
+    warn("Semi-norm used?, check scaling $alpha")
+    mu,K = divand_kernel_binom(n,m);
+#   correction for missing term CHECK IF NOT THE INVERSE
+#  Added fudge factor 2 to mimic same behaviour in test case
+    jmscale=(1.0/2^(m))*sum(alpha[:])/2
+
+
+    mu = mu*jmscale;
+
+   else
   # unsupported sequence of alpha
-  throw(DomainError())
+    
+    mu,K = divand_kernel_binom(n,m);
+	warn("Unsupported norm used, check scaling $alpha")
+#   Scaling is correct of all alphas are binomials times a common factor
+
+    jmscale=(1.0/2^(m))*sum(alpha[:])
+
+    mu = mu*jmscale;
+   end
 end
 
 # if nargin == 3

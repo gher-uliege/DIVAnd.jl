@@ -12,8 +12,9 @@ f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) ;
 
 # final grid
 #
-testsize=50
-xi,yi,zi = ndgrid(linspace(0,1,testsize),linspace(0,1,testsize),linspace(0,1,testsize));
+testsize=300
+testsizez=3
+xi,yi,zi = ndgrid(linspace(0,1,testsize),linspace(0,1,testsize),linspace(0,1,testsizez));
 
 # reference field
 fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6);
@@ -30,23 +31,23 @@ pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
 po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.5;
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
+@time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi[:,:,15],yi[:,:,15],fref[:,:,15]);
+pcolor(xi[:,:,2],yi[:,:,2],fref[:,:,2]);
 colorbar()
 clim(-1,1)
 plot(x,y,"k.");
 
 subplot(1,2,2);
-pcolor(xi[:,:,15],yi[:,:,15],fi[:,:,15]);
+pcolor(xi[:,:,2],yi[:,:,2],fi[:,:,2]);
 colorbar()
 clim(-1,1)
 title("Interpolated field");

@@ -9,8 +9,8 @@
 #   velocity: tuple of velocity vectors
 #
 # Output:
-#   c: structure to be used by divand_addc with the following fields: R (a 
-#     covariance matrix), H (extraction operator) and yo (specified value for 
+#   c: structure to be used by divand_addc with the following fields: R (a
+#     covariance matrix), H (extraction operator) and yo (specified value for
 #     the constrain).
 
 function divand_constr_advec(s,velocity)
@@ -22,6 +22,7 @@ if nancount > 0
 end
 
 mask = s.mask;
+
 n  = s.n;
 iscyclic = s.iscyclic;
 
@@ -32,9 +33,9 @@ A = spzeros(s.sv.n,s.sv.n)
 for i=1:n
   S = sparse_stagger(sz,i,iscyclic[i]);
   m = (S * mask[:]) .== 1;
-  
+
   d = velocity[i]
-  
+
   A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
 end
 

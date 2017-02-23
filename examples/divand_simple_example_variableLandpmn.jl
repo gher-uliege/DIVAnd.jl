@@ -5,19 +5,13 @@ using divand
 using PyPlot
 
 # observations
-nobs=500
-x = 0.01+0.98*rand(nobs);
-y = 0.01+0.98*rand(nobs);
-f = sin(x*6) .* cos(y*6);
-x=[0.5,0.75]
-y=[0.5,0.75]
-f=[1,1]
+x = [2  3  4];
+y = [2  3  4];
+f=ones(3)
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,950),linspace(0,1,830));
+xi,yi = ndgrid(linspace(0,6,50),linspace(0,5,30));
 
-# reference field
-fref = sin(xi*6) .* cos(yi*6);
 
 # all points are valid points
 mask = trues(xi);
@@ -30,31 +24,48 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.03;
+len = 1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 0.01;
+epsilon2 = 1;
 
 # fi is the interpolated field
-@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(0.001*yi,-0.001*xi));
+fireg,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(0.001*yi,-0.001*xi));
+@show sampler1=divand_sampler((pm,pn),len)
 
-subplot(1,3,1)
-pcolor(xi,yi,fi)
-clim(-1,1)
-subplot(1,3,2)
-pcolor(xi,yi,fiex)
+fis,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len*0.5,len*1.5),epsilon2);
+
+@show  sampler1=divand_sampler((pm,pn),(len*0.5,len*1.5))
+
+pm=ones(xi)./((1+xi/5).*(xi[2,1]-xi[1,1]));
+pn=ones(yi)./((1+yi/5).*(yi[1,2]-yi[1,1]));
+
+lx=0.5+xi/5
+ly=0.5+yi/5
+
+finu,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(ly,lx),epsilon2);
+@show  sampler1=divand_sampler((pm,pn),(lx,ly))
+
+
+# plotting of results
+subplot(1,3,1);
+pcolor(xi,yi,fireg);
 colorbar()
-clim(-1,1)
-subplot(1,3,3)
-pcolor(xi,yi,fiex-fi)
+clim(0,1)
+plot(x,y,"k.");
+subplot(1,3,2);
+pcolor(xi,yi,fis);
 colorbar()
+clim(0,1)
+subplot(1,3,3);
+pcolor(xi,yi,finu);
+colorbar()
+clim(0,1)
 
 
 
-# Copyright (C) 2014, 2017 Alexander Barth         <a.barth@ulg.ac.be>
-#                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

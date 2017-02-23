@@ -113,18 +113,21 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                 keepLanczosVectors = 0,
                 compPC = divand_pc_none,
                 fi0 = zeros(size(mask)),
+#JM
+                alphabc = 2,
+#/JM
                 f0 = zeros(size(f))
                 )
 
 
 # check inputs
-
 if !any(mask[:])
   error("no sea points in mask");
 end
 
-
-s = divand_background(mask,pmn,len,alpha,moddim);
+#@show size(mask)
+#JM add alphabc for the moment
+s = divand_background(mask,pmn,len,alpha,moddim,[];alphabc=alphabc);
 s.betap = 0;
 s.EOF_lambda = EOF_lambda;
 s.primal = primal;
@@ -203,6 +206,8 @@ end
 
 # factorize a posteori error covariance matrix
 # or compute preconditioner
+
+
 divand_factorize!(s);
 
 #if !apply_EOF_contraint

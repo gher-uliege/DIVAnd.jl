@@ -35,11 +35,17 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 success = false
 n = length(b);
 
+bb = b ⋅ b
+
+if bb == 0
+    return zeros(size(b)),true,0
+end
+
 # relative tolerance
 tol2 = tol^2
 
 # absolute tolerance
-tol2 = tol2 * (b ⋅ b)
+tol2 = tol2 * bb
 
 # delta = [];
 # gamma = [];
@@ -59,6 +65,8 @@ r = b - fun(x);
 if r⋅r < tol2
     return x,true,0
 end
+
+
 
 # apply preconditioner
 z = pc(r);
@@ -111,8 +119,10 @@ for k=1:maxit
 
     zr_new = r ⋅ z;
 
+	
     if r ⋅ r < tol2 && k >= minit
         success = true
+		@show k
         break
     end
 

@@ -5,16 +5,37 @@ using divand
 using PyPlot
 
 # observations
-x = -1.+3*rand(300);
+x = rand(300);
 y = rand(300);
-f = sin(x*6) .* cos(y*6);
-f=f+randn(300);
+
+# Put two points in specific locations
+
+x[1]=0.25
+y[1]=0.75
+
+x[2]=0.75
+y[2]=0.25
+
+
+f = sin(x*2*pi) .* sin(y*2*pi);
+
+
+f=f+0.5*randn(300);
+
+# Now fake some mix up in  two points coordinates
+
+x[2]=0.25
+y[1]=0.75
+
+x[1]=0.75
+y[2]=0.25
+
+
+
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
 
-# reference field
-fref = sin(6xi) .* cos(6yi);
 
 # all points are valid points
 mask = trues(xi);
@@ -33,9 +54,15 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2)
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 qcval=divand_qc(fi,s,1)
+
+# Find suspect points
+
+sp=find(x-> x.>10,qcval)
+
+
 
 suspectindexes=sortperm(qcval,rev=true)
 

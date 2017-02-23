@@ -1,8 +1,10 @@
 # A simple example of divand in 1 dimensions
 # with observations from an analytical function.
 
+using Base.Test
+
 using divand
-using PyPlot
+
 
 # observations with points outside
 x = collect(linspace(0,1,7))
@@ -10,7 +12,7 @@ f = sin(3*pi*x) ;
 
 # final grid
 
-xi=collect(linspace(-0.1,1.1,220));
+xi=collect(linspace(-0.1,1.1,100));
 
 # reference field
 fref = sin(xi*6*pi) ;
@@ -67,9 +69,12 @@ fi3,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 
 
-
-plot(xi,fi1,".",x,f,"o",xi,fi2,"-",xi,fi3,":",xi,fi4,"+",xi,firef,"_")
-
+@test 0.4 < maximum(fi1) < 0.6
+@test 0.4 < maximum(fi2) < 0.6
+@test 0.4 < maximum(fi3) < 0.6
+@test 0.4 < maximum(fi4) < 0.6
+@test 0.4 < maximum(firef) < 0.6
+@test maximum(fi4) ≈ maximum(firef)
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
