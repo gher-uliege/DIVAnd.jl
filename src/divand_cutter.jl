@@ -113,7 +113,6 @@ subsz = ([ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]) for i = 1:n]...
 
 ntiles=prod(subsz)
 
-@show ntiles
 
 windowlist=Array(Tuple,ntiles)
 

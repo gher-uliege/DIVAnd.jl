@@ -112,7 +112,6 @@ biggestproblem=biggestproblem/higherdims
 
 problemsize=1
 
-@show biggestproblem
 
 nwd=0
 for i=1:minimum([n,2])
@@ -138,9 +137,6 @@ end
 
 problemsize=problemsize/prod(laterscales[1:2])
 
-@show problemsize
-@ show nwd
-@ show overlapping
 
 if nwd>0
   epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
@@ -164,7 +160,6 @@ end
 
 doesitfit=(prod(2*overlapping+stepsize)<biggestproblemiter)
 
-@show doesitfit
 
 
 
@@ -178,10 +173,7 @@ isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
 # isdirect=(0<1)
 
 
-@show isdirect
 
-@show stepsize
-@show overlapping
 return stepsize,overlapping,isdirect
 
 

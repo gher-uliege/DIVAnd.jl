@@ -113,14 +113,11 @@ n=ndims(mask)
 moddim=zeros(n);
 
 kwargs_dict = Dict(otherargs)
-@show itiscyclic=haskey(kwargs_dict, :moddim)
 
 if itiscyclic
 moddim=kwargs_dict[:moddim]
-@show moddim  
 end
 
-@show moddim   
 
 iscyclic = moddim .> 0
 
@@ -128,8 +125,6 @@ iscyclic = moddim .> 0
 
 nsteps=csteps
 
-@show nsteps
-@show(sum(nsteps))
 
 if sum(nsteps)>n 
 
@@ -208,7 +203,6 @@ HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
 #@show maximum(xfake[1])
 
-@show maximum(xic[1])
 
 
 @time HI = HI * sparse_pack(maskc)';
@@ -230,7 +224,6 @@ for j=1:size(otherargs)[1]
   end
 end
 
-@show jfound
 
 if jfound>0
 # modify the parameter only in the coarse model
@@ -270,9 +263,7 @@ Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 
 
 
-@show Labsc
 
-@show mean(fc)
 
 # TEST OF Higher take the fc coarse solution, pack to to statevector form 
 # using sc.sv
@@ -285,7 +276,6 @@ Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
    fc=0
    gc()
    
-@show mean(xguess)
 
 # which you unpack using the statevector form of the fine grid for the TEST only
 
@@ -299,16 +289,13 @@ tol = 2e-3
 
 
 maxiter=10*Int(ceil(sqrt(size(HI)[1])))
-@show maxiter
 
 pcargs = [(:tol, tol),(:maxit,maxiter)]
 
-@show size(HI)
 
 
 diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
 
-@show diagshift
 
 function compPC(iB,H,R)
         return x -> diagshift*x+HI*(scP*(HI'*x));

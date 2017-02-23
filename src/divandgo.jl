@@ -117,14 +117,11 @@ s=0
 moddim=zeros(n);
 
 kwargs_dict = Dict(otherargs)
-@show itiscyclic=haskey(kwargs_dict, :moddim)
 
 if itiscyclic
 moddim=kwargs_dict[:moddim]
-@show moddim  
 end
 
-@show moddim   
 # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT 
 # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
 # General approach in this future case prepare window indexes just taking any range including negative value and
@@ -177,7 +174,6 @@ for j=1:size(otherargs)[1]
   end
 end
 
-@show jfound
 
 warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
 
