@@ -16,7 +16,6 @@ n = s.n;
 
 kw = Dict((kwargs...))
 
-
 # constrain of total norm
 
 iB_ =  (1/coeff) * (WE'*WE);
@@ -46,6 +45,7 @@ for j=2:length(alpha)
             Dx = s.WEss[i] * s.Dx[i] * D^k;
             iB_ = iB_ + Dx'*Dx;
         end
+		
     else
         # constrain of derivative with even order (j-1)
         # (laplacian, biharmonic,...)
@@ -68,12 +68,16 @@ for j=2:length(alpha)
     iB = iB + alpha[j] * iB_
 end
 
+# iB is adimentional
+
 return iB
 end
 
 # LocalWords:  iB divand
 
 # Copyright (C) 2014 Alexander Barth <a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+#
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

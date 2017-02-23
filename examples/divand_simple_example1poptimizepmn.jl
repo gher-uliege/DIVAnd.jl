@@ -1,23 +1,34 @@
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
 
+
+# To test a single point
+#Analysis in very large domain,
+#diagnose value at distance 3*l
+
+# Then the same but domain size just sligtly larger than 6*l with data in the center
+
+# Then the same but with data at the border
+
 using divand
 using PyPlot
+len = 4;
+aj=zeros(1000)
+vj=zeros(1000)
+
+for j=1:1000
+alen=j/100
 
 # observations
-nobs=500
-x = 0.01+0.98*rand(nobs);
-y = 0.01+0.98*rand(nobs);
-f = sin(x*6) .* cos(y*6);
-x=[0.5,0.75]
-y=[0.5,0.75]
-f=[1,1]
+x = [10];
+y = [10];
+f = [1];
 
+idim=59
 # final grid
-xi,yi = ndgrid(linspace(0,1,950),linspace(0,1,830));
+xi,yi = ndgrid(linspace(0,30,idim),linspace(0,30,idim));
 
-# reference field
-fref = sin(xi*6) .* cos(yi*6);
+
 
 # all points are valid points
 mask = trues(xi);
@@ -28,33 +39,39 @@ mask = trues(xi);
 
 pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
+#Test to push boundary to wider distance:
+
+@show pm[1,1]*len
+
+pn[:,idim]=1./(alen*len);
+pn[:,1]=1./(alen*len);
+pm[idim,:]=1./(alen*len);
+pm[1,:]=1./(alen*len);
+
 
 # correlation length
-len = 0.03;
+
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 0.01;
+epsilon2 = 10000;
 
 # fi is the interpolated field
-@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(0.001*yi,-0.001*xi));
+fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(0.001*yi,-0.001*xi));
 
-subplot(1,3,1)
-pcolor(xi,yi,fi)
-clim(-1,1)
-subplot(1,3,2)
-pcolor(xi,yi,fiex)
-colorbar()
-clim(-1,1)
-subplot(1,3,3)
-pcolor(xi,yi,fiex-fi)
-colorbar()
+#pcolor(reshape(diag(s.P),59,59)')
+#colorbar()
+
+aj[j]=alen
+vj[j]=var(diag(s.P))
+
+end
 
 
 
-# Copyright (C) 2014, 2017 Alexander Barth         <a.barth@ulg.ac.be>
-#                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+
+
+# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

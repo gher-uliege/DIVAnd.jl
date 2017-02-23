@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations.
 
-fi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,...);
+fi,s = divandjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -90,14 +90,13 @@ defined by the coordinates `xi` and the scales factors `pmn`.
   observations before calling divand and then add the first guess back in.
 
 # Example:
-  see divand_simple_example_go.jl
-  
-  Higher level with windowing etc
+
+  Higher level with recursive call with iterative method etc
 """
 
 
 
-function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
+function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
                 
                 )
 
@@ -108,9 +107,6 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 				
 				
 n=ndims(mask)
-# Needed to make sure results are saved.
-fi=0
-s=0
 
 # Need to check for cyclic boundaries
 
@@ -118,53 +114,107 @@ moddim=zeros(n);
 
 kwargs_dict = Dict(otherargs)
 
-if haskey(kwargs_dict,:moddim)
+if itiscyclic
 moddim=kwargs_dict[:moddim]
 end
 
-# DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT 
-# IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
-# General approach in this future case prepare window indexes just taking any range including negative value and
-# apply a mod(myindexes-1,size(mask)[i])+1 in direction i when extracting 
-# for coordinates tuples of the grid (xin,yin, .. )  and data (x,y)
-# in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
+
+iscyclic = moddim .> 0
+
+#nsteps=divand_sampler(pmn,Labs);
+
+nsteps=csteps
+
+
+if sum(nsteps)>n 
+
+####### use preconditionner methods
+
+
+
+
+#######################################
+# HOW TO TREAT COARSE GRID NOT COVERING FINE GRID ?
+# Artificially add of coordinates of last points in fine grid if the last step is beyond.
+# Slight inconsistency here for the error field as pmn was not adapted for last two points
+#######################################
+
+#coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
+#([unique(push!(collect(1:3:13),13)) for i in 1:4]...)
+coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
+
+# If last point not reached add last point and just forget about incorrect metric  there ?
+
+
+# To do ...
+
+xic=([ x[coarsegridpoints...] for x in xi ]...);
+
+maskc=mask[coarsegridpoints...];
+
+# Forget about land to start with
+maskc=trues(size(maskc));
+
+#Now scale pmn by the step factorsm if not possible during extraction this operation needs a copy
+# Here hardcoded factor 3 
+pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
+
+# Check if Labs is a tuple of tuple; in this case also subsample
+
+	if isa(Labs,Tuple)
+		if isa(Labs[1],Tuple)
+		Labsc=([ x[coarsegridpoints...] for x in Labs ]...);   
+           else
+        Labsc=Labs;		   
+		end
+	else
+	  # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
+	  #  Labsc=Labs;
+		Labsc=(Labs*ones(n)...);
+	end
+
+
+
+# Now prepare HI do go from the coarse grid to the fine grid. To do so
+# interprete de fine grid coordinates as those of pseudo-obs and use divandtoos
 #
-#
+# 
+# Need the statevector strucure for the fine grid to go from grid to array
+svf = statevector_init((mask,))
+
+# For each coordinate in the tuplet xi, go from grid representation to tuplet
+# to have the pseudo-data coordinates
+
+#xfake=([statevector_pack(svf,(x,)) for x in xi]...)
+
+#@show size(xfake[1])
+# Create fractional indexes of these data points in the coarse grid
+#Ic = localize_separable_grid(xfake,maskc,xic);
 
 
 
-# Analyse rations l/dx etc
-Lpmnrange = divand_Lpmnrange(pmn,Labs)
+Ic = localize_separable_grid(([statevector_pack(svf,(x,)) for x in xi]...),maskc,xic);
 
-# Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
-windowlist,csteps,lmask = divand_cutter(Lpmnrange,size(mask),moddim)
+#@show size(xfake[1])
+# Create fractional indexes of these data points in the coarse grid
 
+# Create HI
+HI,outc,outbboxc = sparse_interp(maskc,Ic,iscyclic);
 
-# For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
-# Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
-#fi=zeros(size(mask));
-fi=SharedArray(Float64,size(mask));
-@sync @parallel for iwin=1:size(windowlist)[1]
- 
- iw1=windowlist[iwin][1]
- iw2=windowlist[iwin][2]
- isol1=windowlist[iwin][3]
- isol2=windowlist[iwin][4]
- istore1=windowlist[iwin][5]
- istore2=windowlist[iwin][6]
-
-warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
-
-
-windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
+#@show maximum(xfake[1])
 
 
 
-#################################################
-# Need to check how to work with aditional constraints...
-#################################################
+@time HI = HI * sparse_pack(maskc)';
 
-#################################
+
+
+####################################
+# Need to look at constraints later
+####################################
+
+
+
 # Search for velocity argument:
 jfound=0
 for j=1:size(otherargs)[1]
@@ -175,95 +225,117 @@ for j=1:size(otherargs)[1]
 end
 
 
-warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
-
-
-
 if jfound>0
-# modify the parameter
-   otherargsw=deepcopy(otherargs)
-   otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
+# modify the parameter only in the coarse model
+   otherargsc=deepcopy(otherargs)
+   otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...))
    else
-   otherargsw=otherargs
+   otherargsc=otherargs
 end
 
 
 
+# For other constraints: 
+# Here should be straightfoward replace C by C*HI on the constraint structure
 
 
 
 
-# If C is square then maybe just take the sub-square corresponding to the part taken from x hoping the constraint is a local one ?
+
+# Rune the coarse grid problem
+
+
+
+
+
+#fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsc...)
+
+
+
+## Preconditionner with desactivated correlations in some directions
+
+Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
+#
+
+
+@time fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
+
+
+
+
+
+
+# TEST OF Higher take the fc coarse solution, pack to to statevector form 
+# using sc.sv
+# Apply HI; this vector can also be used as a first guess for the PC
+
+   xguess=HI*statevector_pack(sc.sv,(fc,));
+   scP=sc.P;
+   
+   s=0
+   fc=0
+   gc()
+   
+
+# which you unpack using the statevector form of the fine grid for the TEST only
+
+#   figuess,=statevector_unpack(svf,xguess)
+# Do not know why I need to squeeze here if I want to return a gridded approximation
+#   figuess=squeeze(figuess,ndims(figuess))
+# Recover sc.P and define the conditionner
+
+# tolerance on the gradient A x - b
+tol = 2e-3
+
+
+maxiter=10*Int(ceil(sqrt(size(HI)[1])))
+
+pcargs = [(:tol, tol),(:maxit,maxiter)]
+
+
+
+diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
+
+
+function compPC(iB,H,R)
+        return x -> diagshift*x+HI*(scP*(HI'*x));
+	#     return jmPHI'*(jmPHI*x);
+	#   return x->x;
+end
+# First guess is the HI* coarse solution
+
+# HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
+# Why do I need to take sc.P\ ??? So better use components of P*HI' ?
+
+
+# Then run with normal resolution and preconditionner
+fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
+#fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = divand_pc_sqrtiB, fi0 =xguess)
+
+#errfield=diagMtCM(sc.P,HI')
+
 # 
+#erri,=statevector_unpack(si.sv,errfield)
+# For error field based on coarse one, use divand_filter3 with ntimes=Int(ceil(mean(nsteps)))
 
 
+# First test
+return fi,0
 
+#fc,sc,figuess,fi,si,errfield
+#####################################################
+# end of iterative version
+#####################################################
+else
+#####################################################
+# Run normal version
+#####################################################
 
+finter,sinter=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
-# If C projects x on a low dimensional vector: maybe C'C x-C'd as a constraint, then pseudo inverse and woodbury to transform into a similar constraint but on each subdomain 
-# Would for example replace a global average constraint to be replaced by the same constraint applied to each subdomain. Not exact but not too bad neither
-
-
-
-
-
-
-fw=0
-s=0
-# Verify if a direct solver was requested from the demain decomposer
-if sum(csteps)>0
-fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2,csteps,lmask; otherargsw...)
-                else
-fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),([ x[windowpoints...] for x in xi ]...),x,f,Labs,epsilon2; otherargsw...)				
+return finter,sinter
 end
-
-# maskb=mask[windowpoints...]
-# pmnb=([ x[windowpoints...] for x in pmn ]...)
-# xib=([ x[windowpoints...] for x in xi ]...)
-
-# fw,s=divandrun(maskb,pmnb,xib,x,f,Labs,epsilon2; otherargs...)
-# Now error fields
-# Cpme: just run and take out same window
-
-# AEXERR: just run and take out same window
-
-
-# EXERR: P only to points on the inner grid, not the overlapping one !
-
-
-# End error fields
-
-
-
-# Do similar things with other properties if asked for
-
-# or better, replace the divandrun call by a divandrunsmart call with these parameters ? Would allow exploitation of optimised versions of the solver ?
-
-
-
-
-
-
-# copy, deepcopy or just = ???
-
-
-
-windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
-windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
-
-#fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
-
-fi[windowpointsstore...]= fw[windowpointssol...];
-
-
-end
-
-# When finished apply an nd filtering to smooth possible edges, particularly in error fields.
-
-# For the moment s is not defined ?
-return fi,s 
-
-
+##########################
 
 end
 

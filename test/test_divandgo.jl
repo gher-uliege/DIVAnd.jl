@@ -1,23 +1,21 @@
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
 
+using Base.Test
+
 using divand
-using PyPlot
+
 
 # observations
-nobs=500
-x = 0.01+0.98*rand(nobs);
-y = 0.01+0.98*rand(nobs);
-f = sin(x*6) .* cos(y*6);
-x=[0.5,0.75]
-y=[0.5,0.75]
-f=[1,1]
+nobs=1
+x = [0.5];
+y = [0.5];
+f = [1.];
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,950),linspace(0,1,830));
+xi,yi = ndgrid(linspace(0,1,23),linspace(0,1,22));
 
-# reference field
-fref = sin(xi*6) .* cos(yi*6);
+
 
 # all points are valid points
 mask = trues(xi);
@@ -30,27 +28,22 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.03;
+len = 0.005;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 0.01;
+epsilon2 = 1;
 
 # fi is the interpolated field
-@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(0.001*yi,-0.001*xi));
 
-@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(0.001*yi,-0.001*xi));
+fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
-subplot(1,3,1)
-pcolor(xi,yi,fi)
-clim(-1,1)
-subplot(1,3,2)
-pcolor(xi,yi,fiex)
-colorbar()
-clim(-1,1)
-subplot(1,3,3)
-pcolor(xi,yi,fiex-fi)
-colorbar()
+fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
+fifp,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2;moddim=[0 0]);
+
+@test maximum(fi) ≈ maximum(fiex)
+
+@test maximum(fifp) ≈ maximum(fiex)
 
 
 # Copyright (C) 2014, 2017 Alexander Barth         <a.barth@ulg.ac.be>

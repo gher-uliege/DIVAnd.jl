@@ -1,19 +1,28 @@
-# A simple example of divand in 2 dimensions
+# A simple example of divand in 4 dimensions
 # with observations from an analytical function.
 
 using divand
 using PyPlot
-
-# observations
-x = rand(75);
-y = rand(75);
-f = sin(x*6) .* cos(y*6);
-
+include("../src/overrride_ssmult.jl")
 # final grid
-xi,yi = ndgrid(linspace(0,1,500),linspace(0,1,600));
+#
+testsizex=300
+testsizey=200
+testsizez=40
+testsizet=12
+# observations
+nobs=2000;
+x = rand(nobs)*testsizex;
+y = rand(nobs)*testsizey;
+z = rand(nobs)*testsizez;
+t = rand(nobs)*testsizet;
+f = sin(x*pi/180) .* cos(y*pi/180.)+sin(z*6/50) .* cos(x*6*pi/180) .* sin(t*2*pi/12);
+
+
+xi,yi,zi,ti = ndgrid(linspace(1,testsizex,testsizex),linspace(1,testsizey,testsizey),linspace(1,testsizez,testsizez),linspace(1,testsizet,testsizet));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = sin(xi*pi/180) .* cos(yi*pi/180.)+sin(zi*6/50) .* cos(xi*6*pi/180) .* sin(ti*2*pi/12);
 
 # all points are valid points
 mask = trues(xi);
@@ -22,34 +31,28 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
+pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
+po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
+pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
 
 # correlation length
-len = 0.1;
+len = (8, 8, 1, 1);
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-# plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,fref);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
+#LPMNR=divand_Lpmnrange((pm,pn,po,pq),len)
+#windowlist,csteps,lmask = divand_cutter(LPMNR,size(mask),[0 0 0 12])
 
-subplot(1,2,2);
-pcolor(xi,yi,fi);
-colorbar()
-clim(-1,1)
-title("Interpolated field");
 
-savefig("divand_simple_example.png")
+@time fi,s = divandgo(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

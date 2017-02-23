@@ -53,24 +53,6 @@ end
 
 D = divand_laplacian(operatortype,mask,pmn,nu,iscyclic)
 
-# XXX remove this WE
-
-d = statevector_pack(sv,(1./( .*(pmn...)),))
-d = d[:,1]
-WE = oper_diag(operatortype,sqrt.(d))
-
-for i=1:n
-  S = sparse_stagger(sz,i,iscyclic[i])
-
-  # mask on staggered grid
-  ma = (S * mask[:]) .== 1
-  s.mask_stag[i] = ma
-
-  d = oper_pack(operatortype,ma) *  (.*([S*_[:]  for _ in pmn]...))
-  d = 1./d
-  s.WEs[i] = oper_diag(operatortype,sqrt.(d))
-end
-
 s.Dx = sparse_gradient(operatortype,mask,pmn,iscyclic)
 
 if !isempty(mapindex)
@@ -92,7 +74,6 @@ end
 s.D = D
 s.sv = sv
 s.mask = mask
-s.WE = WE
 s.n = n
 
 return s,D

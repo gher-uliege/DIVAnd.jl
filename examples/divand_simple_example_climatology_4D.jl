@@ -3,24 +3,26 @@
 
 using divand
 using PyPlot
-
-# observations
-nobs=200;
-x = rand(nobs);
-y = rand(nobs);
-z = 0.5+0.01*rand(nobs);
-t = rand(nobs);
-f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
-
+include("../src/overrride_ssmult.jl")
 # final grid
 #
-testsizexy=200
-testsizez=2
-testsizet=4
-xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
+testsizex=100
+testsizey=90
+testsizez=10
+testsizet=12
+# observations
+nobs=2000;
+x = rand(nobs)*testsizex;
+y = rand(nobs)*testsizey;
+z = rand(nobs)*testsizez;
+t = rand(nobs)*testsizet;
+f = sin(x*pi/180) .* cos(y*pi/180.)+sin(z*6/50) .* cos(x*6*pi/180) .* sin(t*2*pi/12);
+
+
+xi,yi,zi,ti = ndgrid(linspace(1,testsizex,testsizex),linspace(1,testsizey,testsizey),linspace(1,testsizez,testsizez),linspace(1,testsizet,testsizet));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6) .* sin(ti*2*pi);
+fref = sin(xi*pi/180) .* cos(yi*pi/180.)+sin(zi*6/50) .* cos(xi*6*pi/180) .* sin(ti*2*pi/12);
 
 # all points are valid points
 mask = trues(xi);
@@ -35,28 +37,50 @@ po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
 pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
 
 # correlation length
-len = (0.1,0.1,0.1,0.1);
+len = (8, 8, 0, 0);
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
 
-# plotting of results
-subplot(1,2,1);
-pcolor(xi[:,:,1,3],yi[:,:,1,3],fref[:,:,1,3]);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
+PP=s.P
+x0=statevector_pack(s.sv,(fi,))
 
-subplot(1,2,2);
-pcolor(xi[:,:,1,3],yi[:,:,1,3],fi[:,:,1,3]);
-colorbar()
-clim(-1,1)
-title("Interpolated field");
+s=0
+fi=0
 
-savefig("divand_simple_example_4D.png")
+gc()
+
+len = (8, 8, 1, 1);
+
+# obs. error variance normalized by the background error variance
+
+
+tol = 5e-2
+
+
+maxiter=100
+@show maxiter
+
+pcargs = [(:tol, tol),(:maxit,maxiter)]
+
+
+
+diagshift=0.001;
+@show diagshift
+
+function compPC(iB,H,R)
+        return x -> diagshift*x+PP*x;
+	#     return jmPHI'*(jmPHI*x);
+	#   return x->x;
+end
+
+
+# fi is the interpolated field
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12], pcargs..., inversion=:pcg,compPC = compPC, fi0 =x0);
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
