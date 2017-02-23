@@ -36,7 +36,7 @@ sampler1=divand_sampler((pm,pn),len)
 
 @test sampler1==[1,1]
 @test 0.68 < maximum(fireg) < 0.7
- 
+
 fis,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len*0.5,len*1.5),epsilon2);
 
 sampler1=divand_sampler((pm,pn),(len*0.5,len*1.5))
@@ -56,7 +56,7 @@ finu,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(ly,lx),epsilon2);
 sampler1=divand_sampler((pm,pn),(lx,ly))
 
 @test sampler1==[1,1]
-@test 0.63 < maximum(finu) <0.7
+@test 0.63 < maximum(finu) < 0.7
 
 
 

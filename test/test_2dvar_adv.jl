@@ -19,9 +19,9 @@ len = 0.2
 
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,velocity = (u,v));
 
-@test abs(fi[18,24] - 0.89935) < 1e-3
+@test abs(fi[18,24] - 0.8757560548013) < 1e-3
 
-  
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
