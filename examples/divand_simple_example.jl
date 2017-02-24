@@ -4,16 +4,19 @@
 using divand
 using PyPlot
 
+# function to interpolate
+fun(x,y) = sin(6x) * cos(6y)
+
 # observations
 x = rand(75);
 y = rand(75);
-f = sin(x*6) .* cos(y*6);
+f = fun.(x,y)
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,500),linspace(0,1,600));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = fun.(xi,yi)
 
 # all points are valid points
 mask = trues(xi);

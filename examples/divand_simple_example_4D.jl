@@ -4,35 +4,32 @@
 using divand
 using PyPlot
 
+# function to interpolate
+fun(x,y,z,t) = sin(6x) .* cos(6y)+sin(6z) .* cos(6x) .* sin(2*pi*t) ;
+
 # observations
-nobs=200;
+nobs = 200;
 x = rand(nobs);
 y = rand(nobs);
 z = 0.5+0.01*rand(nobs);
 t = rand(nobs);
-f = sin(x*6) .* cos(y*6)+sin(z*6) .* cos(x*6) .* sin(t*2*pi) ;
+f = fun.(x,y,z,t)
 
 # final grid
-#
-testsizexy=200
+testsizexy=100
 testsizez=2
 testsizet=4
-xi,yi,zi,ti = ndgrid(linspace(0,1,testsizexy),linspace(0,1,testsizexy),linspace(0,1,testsizez),linspace(0,1,testsizet));
+
+# mask: all points are valid points
+# this problem has a simple cartesian metric
+# pm is the inverse of the resolution along the 1st dimension,...
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(0,1,testsizexy),
+                                                  linspace(0,1,testsizexy),
+                                                  linspace(0,1,testsizez),
+                                                  linspace(0,1,testsizet))
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6)+sin(zi*6) .* cos(xi*6) .* sin(ti*2*pi);
-
-# all points are valid points
-mask = trues(xi);
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
-pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
-po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
-pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
+fref = fun.(xi,yi,zi,ti)
 
 # correlation length
 len = (0.1,0.1,0.1,0.1);
@@ -41,7 +38,7 @@ len = (0.1,0.1,0.1,0.1);
 epsilon2 = 1;
 
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
 
 # plotting of results
 subplot(1,2,1);
@@ -59,7 +56,7 @@ title("Interpolated field");
 savefig("divand_simple_example_4D.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+#                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
