@@ -114,7 +114,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
     kwargs_dict = Dict(otherargs)
 
-    if itiscyclic
+    if haskey(kwargs_dict,:moddim)
         moddim=kwargs_dict[:moddim]
     end
 
