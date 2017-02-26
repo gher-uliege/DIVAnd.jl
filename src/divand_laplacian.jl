@@ -18,16 +18,20 @@
 #
 
 function divand_laplacian(operatortype,mask,pmn,nu::Float64,iscyclic)
-
     n = ndims(mask)
-    nu_ = ([nu*ones(mask) for i = 1:n]...)
+    nu_ = ((fill(nu,size(mask)) for i = 1:n)...)
 
     return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 
 end
-function divand_laplacian{n}(operatortype,mask,pmn,nu::Array{Float64,n},iscyclic)
-    nu_ = ([nu for i = 1:n]...)
 
+function divand_laplacian{n}(operatortype,mask,pmn,nu::Array{Float64,n},iscyclic)
+    nu_ = ((nu for i = 1:n)...)
+    return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
+end
+
+function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Number,n}},iscyclic)
+    nu_ = ((fill(nui,size(mask)) for nui = nu)...)
     return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 

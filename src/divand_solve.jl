@@ -35,7 +35,9 @@ function divand_solve!(s,fi0,f0)
                                                     maxit = s.maxit,
                                                     minit = s.minit,
                                                     x0 = fi0,
-                                                    pc = s.preconditioner)
+                                                    pc = s.preconditioner,
+                                                    progress = s.progress
+                                                    )
 
             if !success
                 warn("Preconditioned conjugate gradients method did not converge")
@@ -53,7 +55,9 @@ function divand_solve!(s,fi0,f0)
                                                 maxit = s.maxit,
                                                 minit = s.minit,
                                                 x0 = f0,
-                                                pc = s.preconditioner)
+                                                pc = s.preconditioner,
+                                                progress = s.progress
+                                                )
         if !success
             warn("Preconditioned conjugate gradients method did not converge")
         end

@@ -42,6 +42,7 @@ type divand_struct
     inversion
     niter
     compPC
+    progress
     preconditioner
     keepLanczosVectors
     yo
@@ -102,7 +103,9 @@ type divand_struct
 
 
         compPC(iB,R,H) = identity
+        progress(iter,x,r,tol2) = nothing
         preconditioner = identity
+
         new(n,
             neff,
             coeff,
@@ -134,6 +137,7 @@ type divand_struct
             inversion,
             niter,
             compPC,
+            progress,
             preconditioner,
             keepLanczosVectors,
             yo,

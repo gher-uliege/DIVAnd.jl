@@ -112,6 +112,7 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                    alpha = [],
                    keepLanczosVectors = 0,
                    compPC = divand_pc_none,
+                   progress = (iter,x,r,tol2) -> nothing,
                    fi0 = zeros(size(mask)),
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},
@@ -137,7 +138,7 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
     s.inversion = inversion;
     s.keepLanczosVectors = keepLanczosVectors;
     s.compPC = compPC;
-
+    s.progress = progress
 
     # # remove non-finite elements from observations
     # f = f[:];

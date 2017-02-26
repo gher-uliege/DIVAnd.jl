@@ -39,11 +39,11 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
 
 
     if isa(Labs,Number)
-        Labs = ((Labs * ones(size(mask)) for i=1:n)...)
+        Labs = ((fill(Labs,size(mask)) for i=1:n)...)
     elseif isa(Labs,Tuple)
 
         if isa(Labs[1],Number)
-            Labs = ([Labs[i] * ones(size(mask)) for i = 1:n]...)
+            Labs = ([fill(Labs[i],size(mask)) for i = 1:n]...)
         end
 
         for i=1:n
