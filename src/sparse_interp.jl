@@ -49,12 +49,11 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     for i = 1:n
         if !iscyclic[i]
             # make a range check only for non-cyclic dimension
+            inside = inside & (1 .<= I[i,:] .<= sz[i])
 
             # handle border cases
             p = find(I[i,:] == sz[i])
             ind[i,p] = sz[i]-1
-
-            inside = inside & (1 .<= ind[i,:] .<= sz[i])
         end
     end
 
