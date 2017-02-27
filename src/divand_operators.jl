@@ -21,7 +21,7 @@
 #     of a grid cell
 
 
-function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex)
+function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex,Labs,alphabc)
 
     s = divand_struct(mask)
 
@@ -53,7 +53,7 @@ function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex)
 
     D = divand_laplacian(operatortype,mask,pmn,nu,iscyclic)
 
-    s.Dx = sparse_gradient(operatortype,mask,pmn,iscyclic)
+    s.Dx = sparse_gradient(operatortype,mask,pmn,Labs,alphabc,iscyclic)
 
     if !isempty(mapindex)
         D = applybc * D * applybc

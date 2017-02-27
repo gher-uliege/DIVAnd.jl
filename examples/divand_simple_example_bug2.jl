@@ -3,17 +3,18 @@
 
 using divand
 using PyPlot
+srand(77235445)
 
 # observations
-x = rand(5);
-y = rand(5);
-f = sin(x*6) .* cos(y*6);
+x = -10+30*rand(150000);
+y = -10+30*rand(150000);
+f = y
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,110));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+
 
 # all points are valid points
 mask = trues(xi);
@@ -26,28 +27,21 @@ pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.03;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 0.001;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2);
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
 # plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,fref);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
 
-subplot(1,2,2);
 pcolor(xi,yi,fi);
 colorbar()
-clim(-1,1)
-title("Interpolated field");
+clim(0,1)
+#plot(x,y,"k.");
 
-savefig("divand_simple_example.png")
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

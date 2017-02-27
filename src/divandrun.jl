@@ -124,8 +124,12 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
         error("no sea points in mask");
     end
 
-    #JM add alphabc for the moment
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[];alphabc=alphabc);
+
+	
+
+	#For testing this version of alphabc deactivate the other one
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[];alphabcin=alphabc);
+
 
     s.betap = 0;
     s.EOF_lambda = EOF_lambda;
