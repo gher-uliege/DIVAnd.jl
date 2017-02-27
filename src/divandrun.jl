@@ -56,7 +56,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
      is cyclic, then the grid point corresponding to mask(1,j) should be
      between mask(end,1) (left neighbor) and mask(2,j) (right neighbor)
 
-* `fracdim`: fractional indices (n-by-m array). If this array is specified,
+* `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
 
 * `inversion`: direct solver (:chol for Cholesky factorization) or a
