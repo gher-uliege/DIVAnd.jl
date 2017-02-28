@@ -74,7 +74,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
     #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
     #end
 
-    s,D = divand_operators(operatortype,mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex)
+    s,D = divand_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...),iscyclic,mapindex)
     # D is laplacian (a dimensional, since nu = Labs.^2)
     sv = s.sv
     n = s.n
