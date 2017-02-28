@@ -1,17 +1,18 @@
-# Return the analytical kernel and normalization factor.
-#
-# [mu,K] = divand_kernel(n,alpha)
-# [mu,K] = divand_kernel(n,alpha,r)
-#
-# Analytical (normalized) kernels for infinite domain in dimension n and for
-# coefficients alpha
-# Input
-#   n: number of dimensions
-#   alpha: coefficients
-#   r (optional): distance from origin
-# Output:
-#   K: kernel function evaluate at the values of r if present or a function handle
-#   mu: normalization factor
+"""
+Return the analytical kernel and normalization factor.
+
+mu,K = divand_kernel(n,alpha)
+
+Analytical (normalized) kernels `K` for infinite domain in dimension `n` and for
+coefficients `alpha` and normalization factor `mu`.
+Input
+  n: number of dimensions
+  alpha: coefficients
+  r (optional): distance from origin
+Output:
+  K(r): kernel function (function of the normalized distance `r`)
+  mu: normalization factor
+"""
 
 function divand_kernel(n,alpha #,r
                        )
@@ -92,7 +93,7 @@ function divand_rbesselk(nu,r)
     if r == 0
         K = 1.
     else
-        K = 2/gamma(nu) * ((r/2).^nu .* SpecialFunctions.besselk(nu,r));
+        K = 2/gamma(nu) * ((r/2).^nu .* SpecialFunctions.besselk.(nu,r));
     end
 
     return K
