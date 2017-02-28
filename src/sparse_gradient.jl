@@ -37,8 +37,7 @@ function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
         push!(out,oper_pack(operatortype,m) * oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
     end
 
-    (out...)
-
+    return (out...)
 end
 
 
