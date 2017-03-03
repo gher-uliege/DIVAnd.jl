@@ -17,7 +17,7 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function divand_background(operatortype,mask,pmnin,Labs,alpha,moddim,mapindex = [];alphabcin=2)
+function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = [])
 
 
     # number of dimensions
@@ -50,52 +50,52 @@ function divand_background(operatortype,mask,pmnin,Labs,alpha,moddim,mapindex = 
 	
 	
 	
-	    #JM add alphabc for the moment
-	# New version, make a
+	    # #JM add alphabc for the moment
+	# # New version, make a
 	
-	if alphabcin>0
-	    alphabc=deepcopy(alphabcin)
-		pmn=deepcopy(pmnin)
-        for i=1:n
-		wjmb=pmn[i]
-# For the moment, hardcoded for 1D and 2D
+	# if alphabcin>0
+	    # alphabc=deepcopy(alphabcin)
+		# pmn=deepcopy(pmnin)
+        # for i=1:n
+		# wjmb=pmn[i]
+# # For the moment, hardcoded for 1D and 2D
 	
-#	    @show alphabc
-        if n==1
-#		 @show wjmb[1], pmn[1][1],wjmb[2],2*alphabc.*Labs[1][1]
-		  if ~iscyclic[1]
-		    wjmb[1]=1.0./max((2*alphabc.*Labs[1][1].-1.0./wjmb[2]),1/wjmb[2])
-            wjmb[end]=1.0/max((2*alphabc.*Labs[1][end].-1.0./wjmb[end-1]),1/wjmb[end-1])
-		  end
-#		  @show wjmb[1], pmn[1][1],wjmb[2]
-        end
+# #	    @show alphabc
+        # if n==1
+# #		 @show wjmb[1], pmn[1][1],wjmb[2],2*alphabc.*Labs[1][1]
+		  # if ~iscyclic[1]
+		    # wjmb[1]=1.0./max((2*alphabc.*Labs[1][1].-1.0./wjmb[2]),1/wjmb[2])
+            # wjmb[end]=1.0/max((2*alphabc.*Labs[1][end].-1.0./wjmb[end-1]),1/wjmb[end-1])
+		  # end
+# #		  @show wjmb[1], pmn[1][1],wjmb[2]
+        # end
 
-        if n==2
-		  if i==1
-		  if ~iscyclic[1]
-#		    wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
-#            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
-		    wjmb[1,:]=1.0./max((2*alphabc.*Labs[1][1,:].-1.0./wjmb[2,:]),1.0./wjmb[2,:])
-            wjmb[end,:]=1.0./max((2*alphabc.*Labs[1][end,:].-1.0./wjmb[end-1,:]),1.0./wjmb[end-1,:])
+        # if n==2
+		  # if i==1
+		  # if ~iscyclic[1]
+# #		    wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
+# #            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
+		    # wjmb[1,:]=1.0./max((2*alphabc.*Labs[1][1,:].-1.0./wjmb[2,:]),1.0./wjmb[2,:])
+            # wjmb[end,:]=1.0./max((2*alphabc.*Labs[1][end,:].-1.0./wjmb[end-1,:]),1.0./wjmb[end-1,:])
 
 
-			end
-		  end
-		  if i==2
-		  if ~iscyclic[2]
-#            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
-#            wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
-			wjmb[:,1]=1.0./max((2*alphabc.*Labs[2][:,1].-1.0./wjmb[:,2]),1.0./wjmb[:,2])
-            wjmb[:,end]=1.0./max((2*alphabc.*Labs[2][:,end].-1.0./wjmb[:,end-1]),1.0./wjmb[:,end-1])
-		  end
-		  end
-        end 
-		end
+			# end
+		  # end
+		  # if i==2
+		  # if ~iscyclic[2]
+# #            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
+# #            wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
+			# wjmb[:,1]=1.0./max((2*alphabc.*Labs[2][:,1].-1.0./wjmb[:,2]),1.0./wjmb[:,2])
+            # wjmb[:,end]=1.0./max((2*alphabc.*Labs[2][:,end].-1.0./wjmb[:,end-1]),1.0./wjmb[:,end-1])
+		  # end
+		  # end
+        # end 
+		# end
 		 
 	
-	          else
-		pmn=pmnin	  
-	end
+	          # else
+		# pmn=pmnin	  
+	# end
 	# For the moment deactivate other versions
 	alphabc=0
 	
@@ -123,7 +123,7 @@ function divand_background(operatortype,mask,pmnin,Labs,alpha,moddim,mapindex = 
     #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
     #end
 
-    s,D = divand_operators(operatortype,mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex,Labs,alphabc)
+    s,D = divand_operators(operatortype,mask,pmn,([_.^2 for _ in Labs]...),iscyclic,mapindex,Labs)
     # D is laplacian (a dimensional, since nu = Labs.^2)
     sv = s.sv
     n = s.n
@@ -164,26 +164,26 @@ function divand_background(operatortype,mask,pmnin,Labs,alpha,moddim,mapindex = 
     # d=d./(alphabc.*pmn.*l)
     # Dimension 1
     #alphabc=0
-    if alphabc>0
-	    @show alphabc
-        if n==1
-		    if ~iscyclic[1]
-              d[1]=d[1]./(alphabc.*pmn[1][1].*Labs[1][1])
-              d[end]=d[end]./(alphabc.*pmn[1][end].*Labs[1][end])
-			end
-        end
+    # if alphabc>0
+	    # @show alphabc
+        # if n==1
+		    # if ~iscyclic[1]
+              # d[1]=d[1]./(alphabc.*pmn[1][1].*Labs[1][1])
+              # d[end]=d[end]./(alphabc.*pmn[1][end].*Labs[1][end])
+			# end
+        # end
 
-        if n==2
-		    if ~iscyclic[1]
-               d[1,:]=d[1,:]./(alphabc.*pmn[1][1,:].*Labs[1][1,:])
-               d[end,:]=d[end,:]./(alphabc.*pmn[1][end,:].*Labs[1][end,:])
-            end
-			if ~iscyclic[2]
-               d[:,1]=d[:,1]./(alphabc.*pmn[2][:,1].*Labs[2][:,1])
-               d[:,end]=d[:,end]./(alphabc.*pmn[2][:,end].*Labs[2][:,end])
-			end
-        end
-    end
+        # if n==2
+		    # if ~iscyclic[1]
+               # d[1,:]=d[1,:]./(alphabc.*pmn[1][1,:].*Labs[1][1,:])
+               # d[end,:]=d[end,:]./(alphabc.*pmn[1][end,:].*Labs[1][end,:])
+            # end
+			# if ~iscyclic[2]
+               # d[:,1]=d[:,1]./(alphabc.*pmn[2][:,1].*Labs[2][:,1])
+               # d[:,end]=d[:,end]./(alphabc.*pmn[2][:,end].*Labs[2][:,end])
+			# end
+        # end
+    # end
 
     WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
 
@@ -219,28 +219,28 @@ function divand_background(operatortype,mask,pmnin,Labs,alpha,moddim,mapindex = 
     pmnv = cat(2,[_[:] for _ in pmn]...)
 	
 	#JM now just an access as ndimensional array
-		wjmb=reshape(pmnv,tuple(size(pmn[1])...,n))
+	#	wjmb=reshape(pmnv,tuple(size(pmn[1])...,n))
 	# and exploit that changes there will change pmnv
-	if alphabc>0
-	    @show alphabc
-        if n==1
-		  if ~iscyclic[1]
-            wjmb[1]=1.0/(alphabc.*Labs[1][1])
-            wjmb[end]=1.0/(alphabc.*Labs[1][end])
-		  end
-        end
+	# if alphabc>0
+	    # @show alphabc
+        # if n==1
+		  # if ~iscyclic[1]
+            # wjmb[1]=1.0/(alphabc.*Labs[1][1])
+            # wjmb[end]=1.0/(alphabc.*Labs[1][end])
+		  # end
+        # end
 
-        if n==2
-		  if ~iscyclic[1]
-		    wjmb[1,:,1]=1.0./(alphabc.*Labs[1][1,:])
-            wjmb[end,:,1]=1.0./(alphabc.*Labs[1][end,:])
-		  end
-		  if ~iscyclic[2]
-            wjmb[:,1,2]=1.0./(alphabc.*Labs[2][:,1])
-            wjmb[:,end,2]=1.0./(alphabc.*Labs[2][:,end])
-		  end
-        end
-    end
+        # if n==2
+		  # if ~iscyclic[1]
+		    # wjmb[1,:,1]=1.0./(alphabc.*Labs[1][1,:])
+            # wjmb[end,:,1]=1.0./(alphabc.*Labs[1][end,:])
+		  # end
+		  # if ~iscyclic[2]
+            # wjmb[:,1,2]=1.0./(alphabc.*Labs[2][:,1])
+            # wjmb[:,end,2]=1.0./(alphabc.*Labs[2][:,end])
+		  # end
+        # end
+    # end
 	
 	# How to do this nicely in ND ? also replace Ld with Len
 	#/JM

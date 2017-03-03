@@ -239,7 +239,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         # Verify if a direct solver was requested from the demain decomposer
          if sum(csteps)>0
 #          if 3==2		 
-             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2,csteps,lmask; otherargsw...)
+             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2,csteps,lmask; otherargsw...,alphabc=0.5)
          else
              fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2; otherargsw...)
          end

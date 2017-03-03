@@ -41,7 +41,7 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 # 
 
     if alphabc==0
-	    warn("divand_bc_stretch was just used to fill in Labs")
+#	    warn("divand_bc_stretch was just used to fill in Labs")
 	    return pmnin,xiin,Labs
 	end
 	
@@ -58,29 +58,36 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 		
 #		  x first to work with undmodified pmninin
 
-			if n==1
+			
 				if ~iscyclic[i]
-					xi[i][1]=xi[i][1]+(xi[i][1]-xi[i][2])*max( ((2.0.*alphabc*Labs[i][1]*pmnin[i][2]-1.0)*pmnin[i][1]-pmnin[i][2])/(pmnin[i][1]+pmnin[i][2])    ,0.)
-					xi[i][end]=xi[i][end]+(xi[i][end]-xi[i][end-1])*max( ((2.0.*alphabc*Labs[i][end]*pmnin[i][end-1]-1.0)*pmnin[i][end]-pmnin[i][end-1])/(pmnin[i][end]+pmnin[i][end-1])    ,0.)
+				    ind1 = [(j == i ? (1) : (:)) for j = 1:n] 
+				    ind2 = [(j == i ? (2) : (:)) for j = 1:n]
+                    
+					xi[i][ind1...]=xi[i][ind1...].+(xi[i][ind1...]-xi[i][ind2...]).*max( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...].-1.0).*pmnin[i][ind1...].-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
+					ind1 = [(j == i ? (sz[i]) : (:)) for j = 1:n] 
+				    ind2 = [(j == i ? (sz[i]-1) : (:)) for j = 1:n]
+					
+					xi[i][ind1...]=xi[i][ind1...]+(xi[i][ind1...]-xi[i][ind2...]).*max( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...]-1.0).*pmnin[i][ind1...]-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
+#					xi[i][end]=xi[i][end]+(xi[i][end]-xi[i][end-1])*max( ((2.0.*alphabc*Labs[i][end]*pmnin[i][end-1]-1.0)*pmnin[i][end]-pmnin[i][end-1])/(pmnin[i][end]+pmnin[i][end-1])    ,0.)
 				end
-			end
+			
 		
 		
-			if n==2
-			    if i==1
-					if ~iscyclic[i]
-#					@show max( ((2*alphabc*Labs[i][1,:].*pmnin[i][2,:]-1).*pmnin[i][1,:]-pmnin[i][2,:])./(pmnin[i][1,:]+pmnin[i][2,:])    ,0.0)
-						xi[i][1,:]=xi[i][1,:]+(xi[i][1,:]-xi[i][2,:]).*max( ((2*alphabc*Labs[i][1,:].*pmnin[i][2,:]-1).*pmnin[i][1,:]-pmnin[i][2,:])./(pmnin[i][1,:]+pmnin[i][2,:])    ,0.0)
-						xi[i][end,:]=xi[i][end,:]+(xi[i][end,:]-xi[i][end-1,:]).*max( ((2*alphabc*Labs[i][end,:].*pmnin[i][end-1,:]-1).*pmnin[i][end,:]-pmnin[i][end-1,:])./(pmnin[i][end,:]+pmnin[i][end-1,:])    ,0.0)
-					end
-				end
-				if i==2
-					if ~iscyclic[i]	
-						xi[i][:,1]=xi[i][:,1]+(xi[i][:,1]-xi[i][:,2]).*max( ((2*alphabc*Labs[i][:,1].*pmnin[i][:,2]-1).*pmnin[i][:,1]-pmnin[i][:,2])./(pmnin[i][:,1]+pmnin[i][:,2])    ,0.0)
-						xi[i][:,end]=xi[i][:,end]+(xi[i][:,end]-xi[i][:,end-1]).*max( ((2*alphabc*Labs[i][:,end].*pmnin[i][:,end-1]-1).*pmnin[i][:,end]-pmnin[i][:,end-1])./(pmnin[i][:,end]+pmnin[i][:,end-1])    ,0.0)
-					end
-				end
-			end
+			# if n==2
+			    # if i==1
+					# if ~iscyclic[i]
+# #					@show max( ((2*alphabc*Labs[i][1,:].*pmnin[i][2,:]-1).*pmnin[i][1,:]-pmnin[i][2,:])./(pmnin[i][1,:]+pmnin[i][2,:])    ,0.0)
+						# xi[i][1,:]=xi[i][1,:]+(xi[i][1,:]-xi[i][2,:]).*max( ((2*alphabc*Labs[i][1,:].*pmnin[i][2,:]-1).*pmnin[i][1,:]-pmnin[i][2,:])./(pmnin[i][1,:]+pmnin[i][2,:])    ,0.0)
+						# xi[i][end,:]=xi[i][end,:]+(xi[i][end,:]-xi[i][end-1,:]).*max( ((2*alphabc*Labs[i][end,:].*pmnin[i][end-1,:]-1).*pmnin[i][end,:]-pmnin[i][end-1,:])./(pmnin[i][end,:]+pmnin[i][end-1,:])    ,0.0)
+					# end
+				# end
+				# if i==2
+					# if ~iscyclic[i]	
+						# xi[i][:,1]=xi[i][:,1]+(xi[i][:,1]-xi[i][:,2]).*max( ((2*alphabc*Labs[i][:,1].*pmnin[i][:,2]-1).*pmnin[i][:,1]-pmnin[i][:,2])./(pmnin[i][:,1]+pmnin[i][:,2])    ,0.0)
+						# xi[i][:,end]=xi[i][:,end]+(xi[i][:,end]-xi[i][:,end-1]).*max( ((2*alphabc*Labs[i][:,end].*pmnin[i][:,end-1]-1).*pmnin[i][:,end]-pmnin[i][:,end-1])./(pmnin[i][:,end]+pmnin[i][:,end-1])    ,0.0)
+					# end
+				# end
+			# end
 		
 		
 # now pmn	
@@ -91,31 +98,37 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 # For the moment, hardcoded for 1D and 2D
 	
 #	    
-			if n==1
-				if ~iscyclic[1]
-					wjmb[1]=1.0./max((2*alphabc.*Labs[1][1].-1.0./wjmb[2]),1/wjmb[2])
-					wjmb[end]=1.0/max((2*alphabc.*Labs[1][end].-1.0./wjmb[end-1]),1/wjmb[end-1])
+#			if n==1
+				if ~iscyclic[i]
+				    ind1 = [(j == i ? (1) : (:)) for j = 1:n] 
+				    ind2 = [(j == i ? (2) : (:)) for j = 1:n]
+						
+					wjmb[ind1...]=1.0./max((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
+					
+					ind1 = [(j == i ? (sz[i]) : (:)) for j = 1:n] 
+				    ind2 = [(j == i ? (sz[i]-1) : (:)) for j = 1:n]
+					wjmb[ind1...]=1.0./max((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
 				end
-			end
+#			end
 
-			if n==2
-				if i==1
-					if ~iscyclic[1]
-#					    wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
-#			            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
-						wjmb[1,:]=1.0./max((2*alphabc.*Labs[1][1,:].-1.0./wjmb[2,:]),1.0./wjmb[2,:])
-						wjmb[end,:]=1.0./max((2*alphabc.*Labs[1][end,:].-1.0./wjmb[end-1,:]),1.0./wjmb[end-1,:])
-					end
-				end
-				if i==2
-					if ~iscyclic[2]
-#			            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
-#           			wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
-						wjmb[:,1]=1.0./max((2*alphabc.*Labs[2][:,1].-1.0./wjmb[:,2]),1.0./wjmb[:,2])
-						wjmb[:,end]=1.0./max((2*alphabc.*Labs[2][:,end].-1.0./wjmb[:,end-1]),1.0./wjmb[:,end-1])
-					end
-				end
-			end 
+			# if n==2
+				# if i==1
+					# if ~iscyclic[1]
+# #					    wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
+# #			            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
+						# wjmb[1,:]=1.0./max((2*alphabc.*Labs[1][1,:].-1.0./wjmb[2,:]),1.0./wjmb[2,:])
+						# wjmb[end,:]=1.0./max((2*alphabc.*Labs[1][end,:].-1.0./wjmb[end-1,:]),1.0./wjmb[end-1,:])
+					# end
+				# end
+				# if i==2
+					# if ~iscyclic[2]
+# #			            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
+# #           			wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
+						# wjmb[:,1]=1.0./max((2*alphabc.*Labs[2][:,1].-1.0./wjmb[:,2]),1.0./wjmb[:,2])
+						# wjmb[:,end]=1.0./max((2*alphabc.*Labs[2][:,end].-1.0./wjmb[:,end-1]),1.0./wjmb[:,end-1])
+					# end
+				# end
+			# end 
 		 
 	        
 #

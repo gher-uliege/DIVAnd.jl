@@ -126,9 +126,10 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
 
     pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 	
+	
 
 	#For testing this version of alphabc deactivate the other one
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[];alphabcin=alphabc);
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[]);
 
 
     s.betap = 0;

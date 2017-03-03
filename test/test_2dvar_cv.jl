@@ -40,7 +40,7 @@ epsilon2 = 2;
 
 # loop over all methods
 for imeth=0:3
-    bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth);
+    bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth;alphabc=0);
     @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     @test 0.3 < bestfactorl*len/len_true < 3
 
