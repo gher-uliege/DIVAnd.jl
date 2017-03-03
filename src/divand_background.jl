@@ -62,24 +62,31 @@ function divand_background(operatortype,mask,pmnin,Labs,alpha,moddim,mapindex = 
 	
 #	    @show alphabc
         if n==1
+#		 @show wjmb[1], pmn[1][1],wjmb[2],2*alphabc.*Labs[1][1]
 		  if ~iscyclic[1]
-            wjmb[1]=1.0/(alphabc.*Labs[1][1])
-            wjmb[end]=1.0/(alphabc.*Labs[1][end])
+		    wjmb[1]=1.0./max((2*alphabc.*Labs[1][1].-1.0./wjmb[2]),1/wjmb[2])
+            wjmb[end]=1.0/max((2*alphabc.*Labs[1][end].-1.0./wjmb[end-1]),1/wjmb[end-1])
 		  end
-#		  @show wjmb[1], pmn[1][1]
+#		  @show wjmb[1], pmn[1][1],wjmb[2]
         end
 
         if n==2
 		  if i==1
 		  if ~iscyclic[1]
-		    wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
-            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
-		  end
+#		    wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
+#            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
+		    wjmb[1,:]=1.0./max((2*alphabc.*Labs[1][1,:].-1.0./wjmb[2,:]),1.0./wjmb[2,:])
+            wjmb[end,:]=1.0./max((2*alphabc.*Labs[1][end,:].-1.0./wjmb[end-1,:]),1.0./wjmb[end-1,:])
+
+
+			end
 		  end
 		  if i==2
 		  if ~iscyclic[2]
-            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
-            wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
+#            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
+#            wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
+			wjmb[:,1]=1.0./max((2*alphabc.*Labs[2][:,1].-1.0./wjmb[:,2]),1.0./wjmb[:,2])
+            wjmb[:,end]=1.0./max((2*alphabc.*Labs[2][:,end].-1.0./wjmb[:,end-1]),1.0./wjmb[:,end-1])
 		  end
 		  end
         end 

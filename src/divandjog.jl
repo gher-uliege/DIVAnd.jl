@@ -144,7 +144,12 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
         #coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
         #([unique(push!(collect(1:3:13),13)) for i in 1:4]...)
 		
-        coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
+#        coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
+
+		# Test for better convergence making sure the expanded points are take in the preconditionner
+		
+		
+        coarsegridpoints=([sort(unique(push!(collect(2:nsteps[i]:size(mask)[i]-1),size(mask)[i],size(mask)[i]-1,1))) for i in 1:n]...);
 
         # If last point not reached add last point and just forget about incorrect metric  there ?
 
@@ -210,7 +215,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
         HI = HI * sparse_pack(maskc)';
 
-
+        
 
         ####################################
         # Need to look at constraints later
@@ -260,7 +265,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
         Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
         #
 
-
+@show Labsccut
         fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
 

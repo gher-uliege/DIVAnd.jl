@@ -216,28 +216,29 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 		xiw=deepcopy(([ x[windowpoints...] for x in xi ]...))
 		
 		
-        for i=1:n
-		wjmb=xiw[i]
-# For the moment, hardcoded for 1D and 2D and assuming non cycic
+        # for i=1:n
+		# wjmb=xiw[i]
+# # For the moment, hardcoded for 1D and 2D and assuming non cycic
 	
 
-        if n==2
-		  if i==1
-		    wjmb[1,:]=wjmb[1,:]-0.05
-            wjmb[end,:]=wjmb[end,:]+0.05
-		  end
-		  if i==2
-            wjmb[:,1]=wjmb[:,1]-0.025
-            wjmb[:,end]=wjmb[:,end]+0.025
-		  end
-        end 
-		end
+        # if n==2
+		# lalen=1.2
+		  # if i==1
+		    # wjmb[1,:]=wjmb[1,:]-lalen*0.03
+            # wjmb[end,:]=wjmb[end,:]+lalen*0.03
+		  # end
+		  # if i==2
+            # wjmb[:,1]=wjmb[:,1]-lalen*0.015
+            # wjmb[:,end]=wjmb[:,end]+lalen*0.015
+		  # end
+        # end 
+		# end
 		
 		
 		
         # Verify if a direct solver was requested from the demain decomposer
-#         if sum(csteps)>0
-          if 3==2		 
+         if sum(csteps)>0
+#          if 3==2		 
              fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2,csteps,lmask; otherargsw...)
          else
              fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2; otherargsw...)

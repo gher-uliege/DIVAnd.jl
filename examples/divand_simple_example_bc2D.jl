@@ -56,7 +56,7 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2.06);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=1.09);
 
 Bnew=diag(s.P)
 @show mean(Bnew)
@@ -75,7 +75,7 @@ varr=zeros(100)
 rms=zeros(100)
 al=zeros(100)
 for ii=1:100
-alen=0+ii/100*2.5
+alen=0.25+ii/100*1.25
 fi,si = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alen);
 fbi,sbi = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,1E6;alphabc=alen);
 Bi=diag(sbi.P);
@@ -120,7 +120,7 @@ clim(-1,1)
 
 subplot(2,2,3);
 rmval=sqrt(var(fidir-firef))
-title("alpha=2.06  rms $rmval")
+title("alpha=1.09  rms $rmval")
 pcolor(xi,yi,fidir);
 colorbar()
 clim(-1,1)

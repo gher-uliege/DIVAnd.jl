@@ -31,7 +31,7 @@ for iround=1:2
 
 for ii=1:lpmsize
 
-@show lpm[ii]
+#@show lpm[ii]
     for jj=1:dsoverlsize
 
         len=1.0/dsoverl[jj]
@@ -60,10 +60,10 @@ for ii=1:lpmsize
 
         for j=1:isam
             #for j=1:1
-            alen=j/50
+            alen=0.25+j/100
            
            if iround==2
-		   alen=2
+		   alen=1
 		   end
 
             # observations
@@ -163,7 +163,7 @@ figure("alpha")
 title("Optimal value of alpha as a function of l*pm and L/l")
 pcolor(lpmc,dsoverl,alpha')
 colorbar()
-clim(1.5,2.5)
+clim(0.5,1.5)
 
 figure("bidon")
 
@@ -173,7 +173,7 @@ end
 if iround==2
 
 figure("varbc")
-title("Variance of diag(B) with new BC as a function of l*pm and L/l fixed alpha=2")
+title("Variance of diag(B) with new BC as a function of l*pm and L/l fixed alpha=1")
 pcolor(lpmc,dsoverl,varb')
 colorbar()
 clim(0,0.0025)
