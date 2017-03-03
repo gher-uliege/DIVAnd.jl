@@ -3,12 +3,12 @@
 using Base.Test
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,30))
+mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,15))
 
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(linspace(epsilon,1-epsilon,10),linspace(epsilon,1-epsilon,10))
+x,y = ndgrid(linspace(epsilon,1-epsilon,5),linspace(epsilon,1-epsilon,5))
 x = x[:]
 y = y[:]
 v = sin(x*6) .* cos(y*6)
