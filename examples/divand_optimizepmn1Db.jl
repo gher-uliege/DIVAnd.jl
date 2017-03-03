@@ -11,9 +11,9 @@ vj=zeros(300)
 
 # Calculate reference solution on a very wide domain
 
-xiref = collect(linspace(-100,100,2001));
+xiref = collect(linspace(-100.0,100.0,2001));
 len=2
-x = [-3, 8];
+x = [-3.0, 8];
 f = [1,  1];
 pmref = ones(xiref) / (xiref[2]-xiref[1]);
 maskref = trues(xiref);
@@ -24,9 +24,9 @@ epsilon2large = 10000;
 firefb,s = divandrun(maskref,(pmref,),(xiref,),(x,),f,len,epsilon2large,alphabc=0);
 bref=diag(s.P)
 
-xirefl = collect(linspace(-10,10,201));
+xirefl = collect(linspace(-10.0,10.0,201));
 len=2
-x = [-3, 8];
+x = [-3.0, 8];
 f = [1,  1];
 pmrefl = ones(xirefl) / (xirefl[2]-xirefl[1]);
 maskrefl = trues(xirefl);
@@ -57,10 +57,10 @@ mask=0
 
 for j=1:500
 
-    alen=j/50
+    alen=0.25+j/100
 
 
-    xi = collect(linspace(-10,10,201));
+    xi = collect(linspace(-10.0,10.0,201));
 
 
 

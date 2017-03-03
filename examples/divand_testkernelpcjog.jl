@@ -4,50 +4,51 @@
 using divand
 using PyPlot
 
-# observations
-x = rand(5);
-y = rand(5);
-f = sin(x*6) .* cos(y*6);
 
-# final grid
-xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,110));
+x=[0]
+y=[0]
+z=[0]
+f=[1]
 
-# reference field
-fref = sin(xi*6) .* cos(yi*6);
+x=randn(200)
+y=randn(200)
+z=randn(200)
+t=randn(200)
+f=x+y-t+z
 
-# all points are valid points
-mask = trues(xi);
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,31),linspace(-1,1,31),linspace(-1,1,31),linspace(-1,1,31))
 
 # correlation length
-len = 0.1;
+len = 0.3
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
-# fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2);
+scalel=1.25715/0.69315
 
-# plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,fref);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
+#@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2);
 
-subplot(1,2,2);
-pcolor(xi,yi,fi);
-colorbar()
-clim(-1,1)
-title("Interpolated field");
+@time fipca,spc = divandjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2 2 2 2],[scalel scalel scalel 0];alphabc=2);
 
-savefig("divand_simple_example.png")
+       tol = 2e-3
+
+
+        maxiter=10000
+
+        pcargs = [(:tol, tol),(:maxit,maxiter)]
+
+
+
+        diagshift=0.00004;
+
+
+
+
+@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg);
+
+var(fipca-fiiter)/var(fipca)
+
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

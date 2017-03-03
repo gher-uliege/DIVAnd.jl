@@ -43,7 +43,7 @@ function divand_kernel(n,alpha #,r
 
             mu,K = divand_kernel_binom(n,m);
             warn("Unsupported norm used, check scaling $alpha")
-            #   Scaling is correct of all alphas are binomials times a common factor
+            #   Scaling is correct if all alphas are binomials times a common factor
 
             jmscale=(1.0/2^(m))*sum(alpha[:])
 
@@ -78,7 +78,7 @@ function divand_kernel_binom(n,m)
     K(x) = divand_rbesselk(nu,x);
 
     if nu <= 0
-        warn("divand:nonorm","No normalization possible. Extend parameter alpha.");
+        warn("divand:nonorm ","No normalization possible. Extend parameter alpha.");
         mu = 1;
     end
 

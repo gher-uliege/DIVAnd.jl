@@ -276,6 +276,7 @@ include("divand_fittocpu.jl");
 include("divand_adaptedeps2.jl");
 include("divand_filter3.jl");
 include("divand_Lpmnrange.jl");
+include("divand_bc_stretch.jl");
 
 include("divand_save.jl");
 
@@ -286,6 +287,6 @@ export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, state
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
 statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
-divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo, divandjog, divand_sampler, divand_filter3, divand_Lpmnrange, divand_cutter, divand_fittocpu
+divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo, divandjog, divand_sampler, divand_filter3, divand_Lpmnrange, divand_cutter, divand_fittocpu, divand_bc_stretch
 
 end

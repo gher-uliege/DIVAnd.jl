@@ -1,16 +1,11 @@
 """
 Sparse operator for a gradient.
-
 Dx1,Dx2,...,Dxn = sparse_gradient(mask,pmn)
-
 Form the gradient using finite differences in all n-dimensions
-
 Input:
   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
         For oceanographic application, this is the land-sea mask.
-
   pmn: scale factor of the grid.
-
 Output:
   Dx1,Dx2,...,Dxn: operators represeting a gradient along
     different dimensions

@@ -3,7 +3,7 @@
 using Base.Test
 
 # grid of background field (its size should be odd)
-xi,yi = ndgrid(linspace(0,1,15),linspace(0,1,15))
+xi,yi = ndgrid(linspace(0.0,1.0,15),linspace(0.0,1.0,15))
 
 # mask (all points are valid)
 mask = trues(xi)
@@ -23,7 +23,7 @@ len = 0.2
 # normalized error variance
 epsilon2 = 1.;
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
 @test abs(mean(divand_diagHK(s))-0.5)<0.05
 @test abs(mean(divand_diagHKobs(s))-0.5)<0.05
