@@ -9,7 +9,7 @@ n = 2
 fun(xy...) = .*([cos(6*x) for x in xy]...)
 
 # grid of background field
-mask,pmn,xyi = divand_squaredom(2,linspace(0,1,100))
+mask,pmn,xyi = divand_squaredom(2,linspace(0,1,20))
 
 epsilon = 1e-10;
 
@@ -28,18 +28,17 @@ tol = 1e-4
 tolres = 1e-3
 
 kwargs = [(:tol, tol),(:maxit,10000)]
-
 # type of operators Val{:sparse} or Val{:MatFun}
 operatortype = Val{:sparse}
 #operatortype = Val{:MatFun}
 
 # iterative (without preconditioner)
-@time vas,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
+vas,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
                            kwargs..., inversion=:pcg,operatortype=Val{:sparse})
 
 #@show typeof(s_np.iB)
 
-@time vamf,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
+vamf,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
                             kwargs..., inversion=:pcg,operatortype=Val{:MatFun})
 
 #@show typeof(s_np.iB)
