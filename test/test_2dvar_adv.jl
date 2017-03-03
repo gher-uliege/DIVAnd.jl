@@ -17,9 +17,9 @@ v = -a*xi;
 epsilon2 = 1/200
 len = 0.2
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,velocity = (u,v));
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;velocity = (u,v),alphabc=0);
 
-@test abs(fi[18,24] - 0.8757560548013) < 1e-3
+@test abs(fi[18,24] - 0.8993529043140029) < 1e-2
 
 
 

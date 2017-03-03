@@ -5,12 +5,37 @@ using divand
 using PyPlot
 
 # observations
-x = [0.5];
-y = [0.5];
-f = [1];
+x = [-0.7,0.7,0.7,-0.7];
+y = [0.,-.7,0.7,0.7];
+f = [1,-1,1,-1];
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,500),linspace(0,1,600));
+xi,yi = ndgrid(linspace(-1,1,81),linspace(-1,1,81));
+xifin,yifin = ndgrid(linspace(-10,10,801),linspace(-10,10,801));
+
+varb1=0
+Bi=0
+Bold=0
+
+pmfin = ones(xifin) / (xifin[2,1]-xifin[1,1]);
+pnfin = ones(xifin) / (yifin[1,2]-yifin[1,1]);
+
+# correlation length
+len = 1/4.1*8/9.75;
+@show len
+@show 2/len
+
+# obs. error variance normalized by the background error variance
+epsilon2 = 1;
+
+maskfin = trues(xifin);
+# fi is the interpolated field
+fifin,sfin = divandrun(maskfin,(pmfin,pnfin),(xifin,yifin),(x,y),f,len,epsilon2;alphabc=0);
+
+firef=fifin[401-40:401+40,401-40:401+40];
+
+
+
 
 
 # all points are valid points
@@ -23,28 +48,90 @@ mask = trues(xi);
 pm = ones(xi) / (xi[2,1]-xi[1,1]);
 pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
+@show pm[1,1]*len
 # correlation length
-len = 0.3;
+
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
-firef,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=1.09);
+
+Bnew=diag(s.P)
+@show mean(Bnew)
+
+fiold,sold = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,1E6;alphabc=0);
+Bold=diag(sold.P);
+@show mean(Bold)
+
+#pcolor(reshape(Bold,81,81));colorbar()
+figure("ww")
+
+fiold,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
+
+@show sqrt(var(fiold-fi))/sqrt(var(fiold-firef))
+varr=zeros(100)
+rms=zeros(100)
+al=zeros(100)
+for ii=1:100
+alen=0.25+ii/100*1.25
+fi,si = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alen);
+fbi,sbi = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,1E6;alphabc=alen);
+Bi=diag(sbi.P);
+varr[ii]=sqrt(var(Bi))/sqrt(var(Bold))
+rms[ii]=sqrt(var(firef-fi))/sqrt(var(fiold-firef))
+al[ii]=alen
+
+end
+
+
+figure("min")
+subplot(1,2,1)
+plot(al,varr,"-")
+subplot(1,2,2)
+plot(al,rms,"-")
+@show al[indmin(varr)]
+
+
+alphaopt=al[indmin(varr)]
+fi,swhat = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alphaopt);
+#fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
+fidir,swhat = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2.06);
+
+figure("other")
 
 # plotting of results
-subplot(1,2,1);
+subplot(2,2,1);
+rmval=sqrt(var(firef-firef))
+title("Reference rms $rmval")
 pcolor(xi,yi,firef);
 colorbar()
-clim(0,1)
+clim(-1,1)
 plot(x,y,"k.");
 
-subplot(1,2,2);
+subplot(2,2,2);
+rmval=sqrt(var(fi-firef))
+title("optimal alpha  rms $rmval")
 pcolor(xi,yi,fi);
 colorbar()
-clim(0,1)
-title("Interpolated field");
+clim(-1,1)
+
+
+subplot(2,2,3);
+rmval=sqrt(var(fidir-firef))
+title("alpha=1.09  rms $rmval")
+pcolor(xi,yi,fidir);
+colorbar()
+clim(-1,1)
+
+subplot(2,2,4);
+rmval=sqrt(var(fiold-firef))
+title("old bc  rms $rmval")
+pcolor(xi,yi,fiold);
+colorbar()
+clim(-1,1)
+
 
 
 

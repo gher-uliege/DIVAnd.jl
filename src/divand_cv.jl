@@ -245,7 +245,7 @@ function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
         alpha = [binomial(m,k) for k = 0:m];
         alpha[1]=0;
 
-        cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactorse,),cvvalues,lenin,epsilon2in;alpha=alpha)
+        cvinter,scv = divandrun(maskcv,(pmcv,),(epsilon2inter,),(logfactorse,),cvvalues,lenin,epsilon2in;alpha=alpha,alphabc=0)
 
 
         bestvalue=findmin(cvinter)
@@ -268,7 +268,7 @@ if ne==0
     alpha = [binomial(m,k) for k = 0:m];
     alpha[1]=0;
 
-    cvinter,scv = divandrun(maskcv,(pmcv,),(linter,),(logfactorsl,),cvvalues,lenin,epsilon2in;alpha=alpha)
+    cvinter,scv = divandrun(maskcv,(pmcv,),(linter,),(logfactorsl,),cvvalues,lenin,epsilon2in;alpha=alpha,alphabc=0)
 
 
     bestvalue=findmin(cvinter)
@@ -303,7 +303,7 @@ m = Int(ceil(1+2/2))
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
 
-cvinter,scv = divandrun(maskcv,(pm2D,pn2D),(xi2D,yi2D),(x2Ddata,y2Ddata),cvvalues,lenin,epsilon2in;alpha=alpha)
+cvinter,scv = divandrun(maskcv,(pm2D,pn2D),(xi2D,yi2D),(x2Ddata,y2Ddata),cvvalues,lenin,epsilon2in;alpha=alpha,alphabc=0)
 
 bestvalue=findmin(cvinter)
 posbestfactor=bestvalue[2]

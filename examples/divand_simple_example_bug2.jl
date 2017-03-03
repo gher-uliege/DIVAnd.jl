@@ -1,23 +1,20 @@
-# Testing divand in 3 dimensions.
+# A simple example of divand in 2 dimensions
+# with observations from an analytical function.
 
-using Base.Test
-
-# function to interpolate
-fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)
-
-# grid of background field
-xi,yi,zi = ndgrid(linspace(0,1.,15),linspace(0,1.,15),linspace(0,1.,15));
-fi_ref = fun.(xi,yi,zi)
-
-ϵ = eps()
-# grid of observations
-x,y,z = ndgrid(linspace(ϵ,1-ϵ,10),linspace(ϵ,1-ϵ,10),linspace(ϵ,1-ϵ,10));
-x = x[:];
-y = y[:];
-z = z[:];
+using divand
+using PyPlot
+srand(77235445)
 
 # observations
-f = fun.(x,y,z)
+x = -10+30*rand(150000);
+y = -10+30*rand(150000);
+f = y
+
+# final grid
+xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,110));
+
+# reference field
+
 
 # all points are valid points
 mask = trues(xi);
@@ -25,27 +22,28 @@ mask = trues(xi);
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
-# po is the inverse of the resolution along the 3rd dimension
-pm = ones(xi) / (xi[2,1,1]-xi[1,1,1]);
-pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
-po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
+
+pm = ones(xi) / (xi[2,1]-xi[1,1]);
+pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
-len = 0.1;
+len = 0.03;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 0.01;
+epsilon2 = 0.001;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=0);
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
-# compute RMS to background field
-rms = sqrt(mean((fi_ref[:] - fi[:]).^2));
+# plotting of results
 
-@test rms < 0.04
+pcolor(xi,yi,fi);
+colorbar()
+clim(0,1)
+#plot(x,y,"k.");
 
 
-# Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

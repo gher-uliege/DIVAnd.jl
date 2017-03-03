@@ -8,12 +8,13 @@ using PyPlot
 fun(x,y) = sin(6x) * cos(6y)
 
 # observations
+
 x = rand(75);
 y = rand(75);
 f = fun.(x,y)
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,500),linspace(0,1,600));
+xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,110));
 
 # reference field
 fref = fun.(xi,yi)
@@ -35,7 +36,7 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2);
 
 # plotting of results
 subplot(1,2,1);

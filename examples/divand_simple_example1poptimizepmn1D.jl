@@ -12,9 +12,9 @@
 
 using divand
 using PyPlot
-
-lpmsize=30
-dsoverlsize=30
+varb1=0
+lpmsize=37
+dsoverlsize=33
 alpha=zeros(lpmsize,dsoverlsize)
 varb=zeros(lpmsize,dsoverlsize)
 varr=zeros(lpmsize,dsoverlsize)
@@ -23,7 +23,15 @@ lpm=collect(linspace(4,40,lpmsize))
 lpmc=zeros(lpmsize)
 dsoverl=collect(linspace(4,20,dsoverlsize))
 
+
+
+
+
+for iround=1:2
+
 for ii=1:lpmsize
+
+#@show lpm[ii]
     for jj=1:dsoverlsize
 
         len=1.0/dsoverl[jj]
@@ -32,7 +40,7 @@ for ii=1:lpmsize
 
         isize=Int(ceil(testpm))
 
-        @show isize
+#        @show isize
 
         xi=0
         mask=0
@@ -42,14 +50,21 @@ for ii=1:lpmsize
         pm=0
 
 
-        aj=zeros(300)
-        vj=zeros(300)
+		isam=300
+		if iround==2
+		isam=1
+		end
+		
+        aj=zeros(isam)
+        vj=zeros(isam)
 
-        for j=1:300
+        for j=1:isam
             #for j=1:1
-            alen=j/50
-
-            alen=2
+            alen=0.25+j/100
+           
+           if iround==2
+		   alen=1
+		   end
 
             # observations
             x = [0.5];
@@ -72,15 +87,15 @@ for ii=1:lpmsize
 
             #Test to push boundary to wider distance:
 
-            @show pm[1]*len
-            @show len
+#            @show pm[1]*len
+#            @show len
             lpmc[ii]=pm[1]*len
 
 
 
 
-            pm[isize]=1./(alen*len);
-            pm[1]  =1./(alen*len);
+#            pm[isize]=1./(alen*len);
+#            pm[1]  =1./(alen*len);
 
 
             # correlation length
@@ -88,7 +103,7 @@ for ii=1:lpmsize
 
 
             # fi is the interpolated field
-            fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+            fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=alen);
 
 
             #pcolor(reshape(diag(s.P),59,59)')
@@ -108,10 +123,10 @@ for ii=1:lpmsize
 
         #Test to push boundary to wider distance:
 
-        @show pm[1]*len
+#        @show pm[1]*len
 
         # fi is the interpolated field
-        fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+        fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=0);
 
 
         #pcolor(reshape(diag(s.P),59,59)')
@@ -125,18 +140,51 @@ for ii=1:lpmsize
     end
 end
 
+if iround==1
 
+@show lpmc[5]
+@show dsoverl[13]
+@show alpha[5,13]
 
-pcolor(lpmc,dsoverl,varb)
+varb1=deepcopy(varb)
+figure("varb")
+title("Variance of diag(B) with new optimal BC as a function of l*pm and L/l")
+pcolor(lpmc,dsoverl,varb1')
 colorbar()
-clim(0,0.005)
-savefig("var.withalpha2.png")
+clim(0,0.0025)
 
-pcolor(lpmc,dsoverl,varr)
+figure("varr")
+title("Variance of diag(B) with old BC as a function of l*pm and L/l")
+pcolor(lpmc,dsoverl,varr')
 colorbar()
 clim(0,0.1)
-savefig("varr.png")
 
+figure("alpha")
+title("Optimal value of alpha as a function of l*pm and L/l")
+pcolor(lpmc,dsoverl,alpha')
+colorbar()
+clim(0.5,1.5)
+
+figure("bidon")
+
+
+end
+
+if iround==2
+
+figure("varbc")
+title("Variance of diag(B) with new BC as a function of l*pm and L/l fixed alpha=1")
+pcolor(lpmc,dsoverl,varb')
+colorbar()
+clim(0,0.0025)
+
+
+end
+
+
+
+
+end
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

@@ -21,7 +21,7 @@
 #     of a grid cell
 
 
-function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex)
+function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex,Labs)
 
     s = divand_struct(mask)
 

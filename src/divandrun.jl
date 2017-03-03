@@ -56,7 +56,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
      is cyclic, then the grid point corresponding to mask(1,j) should be
      between mask(end,1) (left neighbor) and mask(2,j) (right neighbor)
 
-* `fracdim`: fractional indices (n-by-m array). If this array is specified,
+* `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
 
 * `inversion`: direct solver (:chol for Cholesky factorization) or a
@@ -96,7 +96,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 
-function divandrun(mask,pmn,xi,x,f,len,epsilon2;
+function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    velocity = (),
                    EOF = [],
                    EOF_lambda = 0,
@@ -116,7 +116,7 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
                    fi0 = zeros(size(mask)),
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},
-                   alphabc = 2
+                   alphabc = 1
                    )
 
 
@@ -125,8 +125,13 @@ function divandrun(mask,pmn,xi,x,f,len,epsilon2;
         error("no sea points in mask");
     end
 
-    #JM add alphabc for the moment
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[];alphabc=alphabc);
+    pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
+	
+	
+
+	#For testing this version of alphabc deactivate the other one
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[]);
+
 
     s.betap = 0;
     s.EOF_lambda = EOF_lambda;

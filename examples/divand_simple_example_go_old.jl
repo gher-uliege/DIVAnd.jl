@@ -3,13 +3,12 @@
 
 using divand
 using PyPlot
-srand(1234)
+
 # observations
 nobs=100
 x = 0.01+0.98*rand(nobs);
 y = 0.01+0.98*rand(nobs);
 f = sin(x*6) .* cos(y*6);
-#f=-1+2*x
 # x=[0.5,0.75]
 # y=[0.5,0.75]
 # f=[1,1]
@@ -34,61 +33,25 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.03;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 0.01;
 vscale=0.001
 vscale=0
 
 # fi is the interpolated field
-@time fiexOLD,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=0);
+@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=0);
 
-@time fiOLD,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=0);
-
-
-
-figure("P1")
+@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=0);
 
 subplot(1,3,1)
-title("Old version")
-pcolor(xi,yi,fiOLD)
-clim(-1,1)
-subplot(1,3,2)
-title("Reference")
-pcolor(xi,yi,fiexOLD)
-clim(-1,1)
-subplot(1,3,3)
-rms=sqrt(var(fiexOLD-fiOLD))
-title("rms $rms")
-pcolor(xi,yi,fiexOLD-fiOLD)
-clim(-0.05,0.05)
-plot(x,y,"k.");
-colorbar()
-
-@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=2.);
-
-@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=2.);
-
-figure("Pp")
-
-subplot(1,3,1)
-title("NEW version")
 pcolor(xi,yi,fi)
 clim(-1,1)
 subplot(1,3,2)
-title("Reference")
 pcolor(xi,yi,fiex)
+colorbar()
 clim(-1,1)
 subplot(1,3,3)
-rms=sqrt(var(fiex-fi))
-title("rms $rms")
 pcolor(xi,yi,fiex-fi)
-clim(-0.05,0.05)
-plot(x,y,"k.");
 colorbar()
-
-
-
-
-
 
 
 
