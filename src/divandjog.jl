@@ -169,10 +169,10 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
         # Check if Labs is a tuple of tuple; in this case also subsample
 
         if isa(Labs,Tuple)
-            if isa(Labs[1],Tuple)
-                Labsc=([ x[coarsegridpoints...] for x in Labs ]...);
-            else
+            if isa(Labs[1],Number)
                 Labsc=Labs;
+            else
+                Labsc=([ x[coarsegridpoints...] for x in Labs ]...); 
             end
         else
             # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
@@ -180,7 +180,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
             Labsc=(Labs*ones(n)...);
         end
 
-
+@show size(Labsc[1])
 
         # Now prepare HI do go from the coarse grid to the fine grid. To do so
         # interprete de fine grid coordinates as those of pseudo-obs and use divandtoos
@@ -263,8 +263,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
         Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
         #
-
-@show Labsccut
+@show size(lmask)
+@show size(Labsccut[1])
+@show Labsccut[1][1]
         fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
 

@@ -19,7 +19,7 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
     iscyclic = moddim .> 0
 	
     Labs=deepcopy(Lin)
-
+#@show Labs
     if isa(Labs,Number)
         Labs = ((Labs * ones(size(mask)) for i=1:n)...)
     elseif isa(Labs,Tuple)
@@ -30,8 +30,10 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 
         for i=1:n
             if !isequal(size(mask),size(Labs[i]))
+			@show size(mask)
+			@show size(Labs[i])
                 error("mask (%s) and correlation length (%s) have incompatible size",
-                      formatsize(size(mask)),formatsize(size(Labs[i])))
+                      (size(mask)),(size(Labs[i])))
             end
         end
     end
