@@ -73,7 +73,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     # For the moment on z: overlapping of two layers and stepping of 4 keeps the size small enough
     # and overhead a factor of two
 
-    # For time: if periodic, to windowing, otherwise as for x and y ?
+    # For time: if periodic, do windowing, otherwise as for x and y ?
 
 
     stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,moddim)

@@ -40,6 +40,9 @@ using Base.Test
 
     # test kernel
     include("test_kernel.jl");
+	
+	
+	include("test_averaged_bg.jl");
 
 
     # test divand_metric

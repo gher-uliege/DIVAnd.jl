@@ -39,9 +39,9 @@ vscale=0.001
 vscale=0
 
 # fi is the interpolated field
-@time fiexOLD,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=0);
+@time fiexOLD,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
-@time fiOLD,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=0);
+@time fiOLD,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
 
 
@@ -63,9 +63,9 @@ clim(-0.05,0.05)
 plot(x,y,"k.");
 colorbar()
 
-@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=2.);
+@time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
-@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;velocity=(vscale*yi,-vscale*xi),alphabc=2.);
+@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
 figure("Pp")
 

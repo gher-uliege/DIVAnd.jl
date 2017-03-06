@@ -1,4 +1,5 @@
 using divand
+using PyPlot
 using NetCDF
 
 function loadbigfile(fname)
@@ -63,7 +64,7 @@ timer = 1:1.:12
 mask,(pm,pn,po,pp),(xi,yi,zi,ti) = divand_rectdom(lonr,latr,depthr,timer)
 @show size(mask)     ()
 
-epsilon2 = 0.1
+epsilon2 = 1
 
 time2 = Dates.month.(time)
 
@@ -77,15 +78,73 @@ sz = size(mask)
 
 z = zeros(sz)
 # correlation length in arc degree
-lenx = fill(.5,sz)
-leny = fill(.5,sz)
+lenx = fill(.3,sz)
+leny = fill(.3,sz)
 # correlation length in meters
 lenz = 10 + zi/5
 # correlation time-scale in month
 lent = fill(1.,sz)
 
+
+# Prepare background as mean vertical profile and time evolution. Just call divand in two dimensions forgetting x and y ...
+#
+ mask4=trues(size(mask3)[3],size(mask3)[4])
 vm = mean(value)
 va = value - vm
+fm,sm=divandrun(mask4,(po[1,1,:,:],pp[1,1,:,:]),(zi[1,1,:,:],ti[1,1,:,:]),(depth,time2),va,(4*lenz[1,1,:,:],4*lent[1,1,:,:]),epsilon2)
+vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
+
+
+
+fma=zeros(size(mask3))
+
+for i=1:size(mask3)[1]
+for ii=1:size(mask3)[2]
+fma[i,ii,:,:]=fm[:,:]
+end
+end
+
+n=ndims(mask3)
+
+toaverage=[true true false false]
+
+dimstokeep=[]
+	for i=1:n
+		if !toaverage[i]
+		  dimstokeep=vcat(dimstokeep,[i])
+		end
+	end
+    @show dimstokeep	
+	
+
+reshapeshape =([(toaverage[i] ? (1) : (size(mask3)[i])) for i = 1:n]...)
+copyshape =([(toaverage[i] ? (size(mask3)[i]) : (1)) for i = 1:n]...)
+@show reshapeshape
+@show copyshape
+
+fmaa=repeat(reshape(fm,reshapeshape), inner=copyshape)
+
+#fmaa=repeat(reshape(fm,(1,1,size(mask3)[3],size(mask3)[4])), inner=(size(mask3)[1],size(mask3)[2],1,1))
+@show size(fma)
+va=va-vaanalyzed
+
+
+
+
+@show var(fma-fmaa)
+
+
+fmb,ffb=divand_averaged_bg(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,4*lenz,4*lent),epsilon2,toaverage)
+
+@show var(fma-fmb)
+
+pcolor(zi[1,1,:,:],ti[1,1,:,:],fm+vm)
+
+#Todo: define new anomalies based on this profiles using sm.H of course. 
+# Maybe an even better solution is to make a general averaging function
+
+
+
 #@time fi,s = divandrun(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,z,lent),epsilon2)
 #fi = fi + vm;
 
@@ -121,7 +180,7 @@ compPC(iB,H,R) = x -> s.P*x
 
 @show mean(va)
 
-fib = figo + vm;
+fib = figo + vm+fma;
 
 @show var(fib-fi)/var(fi)
 

@@ -267,11 +267,11 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 		# @show windowpoints[3]
 		# @show windowpoints[4]
 		
-		
+		# If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
         # Verify if a direct solver was requested from the demain decomposer
         if sum(csteps)>n
 #          if 3==2		 
-             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask; otherargsw...,alphabc=0.5)
+             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask; otherargsw...)
          else
              fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
          end

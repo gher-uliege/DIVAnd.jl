@@ -266,6 +266,30 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 @show size(lmask)
 @show size(Labsccut[1])
 @show Labsccut[1][1]
+
+#TODO try to force alphabc=0 if another value is already in otherargsc...
+
+# Search for velocity argument:
+        jfound=0
+        for j=1:size(otherargs)[1]
+            if otherargs[j][1]==:alphabc
+                jfound=j
+                break
+            end
+        end
+
+  
+        if jfound>0
+            # modify the parameter only in the coarse model
+            @show otherargsc[jfound]
+            otherargsc[jfound]=(:alphabc,0.0)
+			@show otherargsc[jfound]
+			@show jfound
+            else
+			warn("Need to expand")
+			otherargsc=hcat(otherargsc,(:alphabc,0.0))
+		end
+@show otherargsc
         fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
 
@@ -278,6 +302,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
         # Apply HI; this vector can also be used as a first guess for the PC
 
         xguess=HI*statevector_pack(sc.sv,(fc,));
+		@show size(xguess)
         scP=sc.P;
 
         s=0
@@ -287,7 +312,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
         # which you unpack using the statevector form of the fine grid for the TEST only
 
-        #   figuess,=statevector_unpack(svf,xguess)
+           figuess,=statevector_unpack(svf,xguess)
         # Do not know why I need to squeeze here if I want to return a gridded approximation
         #   figuess=squeeze(figuess,ndims(figuess))
         # Recover sc.P and define the conditionner
@@ -302,11 +327,17 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
 
 
-        diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
-
-
+         diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
+		 @show diagshift
+         diagshift=mean(diag(scP))
+#		 @show diagshift
+		 @show size(HI)[2]
+		 Z=randn(size(HI)[2],5);
+		 @time diagshift=mean(diagMtCM(scP,Z)./diag(Z'*Z))
+         @show diagshift
+		 diagshift=0.021*diagshift
         function compPC(iB,H,R)
-            return x -> diagshift*x+HI*(scP*(HI'*x));
+            return x -> diagshift*x-diagshift*(HI*(HI'*x))+HI*(scP*(HI'*x));
             #     return jmPHI'*(jmPHI*x);
             #   return x->x;
         end
@@ -317,7 +348,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
 
 # Then run with normal resolution and preconditionner
-fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess)
+fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =figuess)
+
+@show si.niter
 #fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = divand_pc_sqrtiB, fi0 =xguess)
 
 #errfield=diagMtCM(sc.P,HI')
