@@ -17,6 +17,7 @@ using Base.Test
 
 
     include("test_2dvar_adv.jl");
+	include("test_2dvar_jog.jl");
     # currently broken in v 0.6
     if VERSION == v"0.5"
         include("test_2dvar_iter.jl");

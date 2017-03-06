@@ -126,7 +126,7 @@ fmaa=repeat(reshape(fm,reshapeshape), inner=copyshape)
 
 #fmaa=repeat(reshape(fm,(1,1,size(mask3)[3],size(mask3)[4])), inner=(size(mask3)[1],size(mask3)[2],1,1))
 @show size(fma)
-va=va-vaanalyzed
+#va=va-vaanalyzed
 
 
 
@@ -134,7 +134,7 @@ va=va-vaanalyzed
 @show var(fma-fmaa)
 
 
-fmb,ffb=divand_averaged_bg(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,4*lenz,4*lent),epsilon2,toaverage)
+@time fmb,ffb=divand_averaged_bg(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,4*lenz,4*lent),epsilon2,toaverage)
 
 @show var(fma-fmb)
 

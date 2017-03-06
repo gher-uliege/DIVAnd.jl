@@ -125,8 +125,8 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
         error("no sea points in mask");
     end
 
-	@show alphabc
-	@show moddim
+#	@show alphabc
+#	@show moddim
 	
     pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 	

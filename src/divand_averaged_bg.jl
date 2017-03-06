@@ -106,7 +106,7 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 #	@show size(maskm)
 	
 	
-	fm,sm=divandrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
+@time	fm,sm=divandrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
 	vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
 	faanom=f-vaanalyzed
 

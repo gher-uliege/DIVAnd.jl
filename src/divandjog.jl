@@ -180,7 +180,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
             Labsc=(Labs*ones(n)...);
         end
 
-@show size(Labsc[1])
+#@show size(Labsc[1])
 
         # Now prepare HI do go from the coarse grid to the fine grid. To do so
         # interprete de fine grid coordinates as those of pseudo-obs and use divandtoos
@@ -263,33 +263,31 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
         Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
         #
-@show size(lmask)
-@show size(Labsccut[1])
-@show Labsccut[1][1]
+
 
 #TODO try to force alphabc=0 if another value is already in otherargsc...
 
 # Search for velocity argument:
-        jfound=0
+        kfound=0
         for j=1:size(otherargs)[1]
             if otherargs[j][1]==:alphabc
-                jfound=j
+                kfound=j
                 break
             end
         end
 
   
-        if jfound>0
+        if kfound>0
+		  if jfound==0
+		   otherargsc=deepcopy(otherargs)
+		  end
             # modify the parameter only in the coarse model
-            @show otherargsc[jfound]
-            otherargsc[jfound]=(:alphabc,0.0)
-			@show otherargsc[jfound]
-			@show jfound
+            otherargsc[kfound]=(:alphabc,0.25)
             else
-			warn("Need to expand")
-			otherargsc=hcat(otherargsc,(:alphabc,0.0))
+#			warn("Need to expand")
+			otherargsc=vcat(otherargsc,(:alphabc,0.25))
 		end
-@show otherargsc
+#@show otherargsc
         fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 
 
@@ -302,7 +300,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
         # Apply HI; this vector can also be used as a first guess for the PC
 
         xguess=HI*statevector_pack(sc.sv,(fc,));
-		@show size(xguess)
+#		@show size(xguess)
         scP=sc.P;
 
         s=0
@@ -328,16 +326,16 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 
 
          diagshift=0.004*(sqrt(size(HI)[1]/size(HI)[2])-1);
-		 @show diagshift
-         diagshift=mean(diag(scP))
 #		 @show diagshift
-		 @show size(HI)[2]
-		 Z=randn(size(HI)[2],5);
-		 @time diagshift=mean(diagMtCM(scP,Z)./diag(Z'*Z))
-         @show diagshift
-		 diagshift=0.021*diagshift
+#        diagshift=mean(diag(scP))
+#		 @show diagshift
+#		 @show size(HI)[2]
+#		 Z=randn(size(HI)[2],5);
+#		 diagshift=mean(diagMtCM(scP,Z)./diag(Z'*Z))
+#         diagshift=0.021*diagshift
         function compPC(iB,H,R)
-            return x -> diagshift*x-diagshift*(HI*(HI'*x))+HI*(scP*(HI'*x));
+            #return x -> diagshift*x-diagshift*(HI*(HI'*x))+HI*(scP*(HI'*x));
+			return x -> diagshift*x+HI*(scP*(HI'*x));
             #     return jmPHI'*(jmPHI*x);
             #   return x->x;
         end
