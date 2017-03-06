@@ -348,7 +348,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
 
     # For the moment s is not defined ?
-	fi=divand_filter3(fi,9999,2)
+	# fi=divand_filter3(fi,9999,2)
 	
     return fi,s
 
