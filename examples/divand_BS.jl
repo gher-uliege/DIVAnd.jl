@@ -46,7 +46,7 @@ end
 
 dx = dy = 0.1
 dx = dy = 0.2
-dx = dy = 0.02
+dx = dy = 0.05
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
 

@@ -96,8 +96,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 
 
-function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
-
+function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],otherargs...
                    )
 
 
@@ -118,7 +117,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
         moddim=kwargs_dict[:moddim]
     end
 
+    
 
+	
     iscyclic = moddim .> 0
 
     #nsteps=divand_sampler(pmn,Labs);
@@ -287,8 +288,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; otherargs...
 #			warn("Need to expand")
 			otherargsc=vcat(otherargsc,(:alphabc,0.25))
 		end
-#@show otherargsc
-        fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
+@show otherargsc
+@show alphapc
+        fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc)
 
 
 

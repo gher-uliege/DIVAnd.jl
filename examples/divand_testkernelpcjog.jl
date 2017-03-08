@@ -16,7 +16,7 @@ z=randn(200)
 t=randn(200)
 f=x+y-t+z
 
-mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,31),linspace(-1,1,31),linspace(-1,1,31),linspace(-1,1,31))
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,29),linspace(-1,1,29),linspace(-1,1,29),linspace(-1,1,29))
 
 # correlation length
 len = 0.3
@@ -26,9 +26,9 @@ epsilon2 = 1;
 
 scalel=1.25715/0.69315
 
-#@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2);
+#@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1);
 
-@time fipca,spc = divandjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2 2 2 2],[scalel scalel scalel 0];alphabc=2);
+@time fipca,spc = divandjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2 2 2 2],[scalel scalel scalel 0];alphabc=1);
 
        tol = 2e-3
 
@@ -44,7 +44,7 @@ scalel=1.25715/0.69315
 
 
 
-@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg);
+@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg);
 
 var(fipca-fiiter)/var(fipca)
 

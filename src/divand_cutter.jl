@@ -61,10 +61,26 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     # Decide which directions are not coupled during preconditionning
     lmask=ones(n)
 
-    # For the moment hardwired decoupling on z and terms
-    lmask[3:end]=0
+    # For the moment hardwired decoupling on z only
+	
+	
+    lmask=ones(n)
+	
+	
+	alphapc=[1 2 1]
 
-
+	if n==4	
+	 lmask[3]=0
+	 lmask=lmask*1.25715/0.69315
+	end
+    
+	
+	if n==3	
+	 lmask=lmask*1.25715/0.69315
+	end
+	
+	
+	
 
     #####################################################################################
     # Define overlapping and stepsize
@@ -175,10 +191,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
 
 
 
-
-
-
-    return windowlist,csteps,lmask
+    return windowlist,csteps,lmask,alphapc
 
 
 
