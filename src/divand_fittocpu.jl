@@ -99,7 +99,7 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
     higherdims=1
 
     if n>2
-        stepsize[3]=2;
+	    stepsize[3]=2;
         overlapping[3]=2;
         higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
     end

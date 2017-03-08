@@ -35,7 +35,7 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
 	if sum(toaverage)==0
 		warn("no averaging was asked in averaging routine")
-		fma,s=divandrun(mask,pmnin,xiin,x,f,lin,epsilon2)
+		fma,s=divandrun(mask,pmn,xi,x,f,len,epsilon2)
 		faanom=f-s.H*statevector_pack(s.sv,(fma,))
 		return fma,faanom
 	end

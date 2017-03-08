@@ -22,6 +22,17 @@ fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,ep
 
 @test -1.6 < fi[1,1,1,1] < -1.4
 
+fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true true true]);
+
+
+
+@test -0.15 < fi[1,1,1,1] < 0
+
+fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
+
+
+
+@test -1.2 < fi[1,1,1,1] < -1.1
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
