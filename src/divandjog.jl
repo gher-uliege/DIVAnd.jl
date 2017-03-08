@@ -157,9 +157,22 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
         # To do ...
 
         xic=([ x[coarsegridpoints...] for x in xi ]...);
-
-        maskc=mask[coarsegridpoints...];
-
+		
+		
+		# Create a slightly expanded sea mask if nsteps are not 1
+		
+		if sum(nsteps)> n
+			
+		maskf=deepcopy(mask)
+		for ii=1:n
+		 if nsteps[ii]>1
+		 maskf=mapslices(dvmaskexpand,maskf,ii)
+		 end
+        end
+		    maskc=maskf[coarsegridpoints...];
+		       else
+		    maskc=mask[coarsegridpoints...];
+        end
         # Forget about land to start with try with coarse mask later
         # maskc=trues(size(maskc));
 		# Actually using the sampled original mask seems to work nicely
@@ -297,7 +310,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
 
 
 
-
+	if !(sc==0)
         # TEST OF Higher take the fc coarse solution, pack to to statevector form
         # using sc.sv
         # Apply HI; this vector can also be used as a first guess for the PC
@@ -305,10 +318,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
         xguess=HI*statevector_pack(sc.sv,(fc,));
 #		@show size(xguess)
         scP=sc.P;
+		
 
-        s=0
-        fc=0
-        gc()
 
 
         # which you unpack using the statevector form of the fine grid for the TEST only
@@ -317,7 +328,13 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
         # Do not know why I need to squeeze here if I want to return a gridded approximation
         #   figuess=squeeze(figuess,ndims(figuess))
         # Recover sc.P and define the conditionner
-
+             else
+		scP=1	 
+		figuess=zeros(size(mask))
+	end
+        s=0
+        fc=0
+        gc()
         # tolerance on the gradient A x - b
         tol = 2e-3
 
@@ -351,7 +368,11 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
 # Then run with normal resolution and preconditionner
 fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =figuess)
 
-@show si.niter
+if !(si==0)
+
+	@show si.niter
+	
+end
 #fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = divand_pc_sqrtiB, fi0 =xguess)
 
 #errfield=diagMtCM(sc.P,HI')

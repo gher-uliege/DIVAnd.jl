@@ -122,7 +122,12 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
 
     # check inputs
     if !any(mask[:])
-        error("no sea points in mask");
+        warn("no sea points in mask, will return NaN");
+		
+	return     fill!(Array(Float64,size(mask)),NaN),0
+
+
+
     end
 
 #	@show alphabc

@@ -302,7 +302,9 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         if sum(csteps)>0
 #          if 3==2		 
              fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
+# for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ? 
          else
+# Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
              fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
          end
 #@show fw[1]

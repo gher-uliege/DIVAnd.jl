@@ -106,6 +106,7 @@ type divand_struct
         progress(iter,x,r,tol2) = nothing
         preconditioner = identity
 
+		
         new(n,
             neff,
             coeff,
@@ -229,6 +230,20 @@ function divand_rectdom(coords...)
 end
 
 
+function dvmaskexpand(x)
+		z=deepcopy(x)
+		sz=size(z)[1]
+			for i=1:sz
+				if !z[i]
+					ip=min(i+1,sz)
+					im=max(i-1,1)
+					z[i]=(x[im] | x[ip])
+				end
+			end
+		return z
+end
+
+
 include("sparse_operator.jl");
 include("function_operator.jl");
 
@@ -288,7 +303,7 @@ include("divand_save.jl");
 include("load_mask.jl");
 
 
-export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save
+export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save, dvmaskexpand
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
 statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
