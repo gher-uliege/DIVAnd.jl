@@ -127,7 +127,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
     nsteps=csteps
 
 
-    if sum(nsteps)>n
+    if sum(nsteps)>0
 
         ####### use preconditionner methods
 
@@ -160,8 +160,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
 
         maskc=mask[coarsegridpoints...];
 
-        # Forget about land to start with
-        maskc=trues(size(maskc));
+        # Forget about land to start with try with coarse mask later
+        # maskc=trues(size(maskc));
+		# Actually using the sampled original mask seems to work nicely
 
         #Now scale pmn by the step factorsm if not possible during extraction this operation needs a copy
         # Here hardcoded factor 3

@@ -56,7 +56,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
             csteps[i]=nsamp
         end
     end
-
+@show csteps
     #################################################################
     # Decide which directions are not coupled during preconditionning
     lmask=ones(n)
@@ -96,7 +96,8 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows
-        csteps=0*csteps
+        #csteps=0*csteps
+		warn("Testing forced jog")
     end
 
 

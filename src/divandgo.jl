@@ -298,7 +298,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 		# If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
         # Verify if a direct solver was requested from the demain decomposer
 		@show alphanormpc
-        if sum(csteps)>n
+		@show csteps
+        if sum(csteps)>0
 #          if 3==2		 
              fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
          else
