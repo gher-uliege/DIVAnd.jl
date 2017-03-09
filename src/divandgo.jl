@@ -144,6 +144,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     # Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
     #fi=zeros(size(mask));
     fi=SharedArray(Float64,size(mask));
+	erri=SharedArray(Float64,size(mask));
     @sync @parallel for iwin=1:size(windowlist)[1]
 
         iw1=windowlist[iwin][1]
@@ -302,10 +303,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         if sum(csteps)>0
 #          if 3==2		 
              fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
+			 errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
 # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ? 
          else
 # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
              fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
+			 errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
          end
 #@show fw[1]
         # maskb=mask[windowpoints...]
@@ -345,7 +348,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         #fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
 
         fi[windowpointsstore...]= fw[windowpointssol...];
-
+		erri[windowpointsstore...]=errw[windowpointssol...];
+		
 
     end
 
@@ -354,7 +358,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     # For the moment s is not defined ?
 	# fi=divand_filter3(fi,9999,2)
 	
-    return fi,s
+    return fi,erri
 
 
 
