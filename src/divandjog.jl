@@ -323,7 +323,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 		# To compensate for the missing correlations in HI*scP*HI'
 		
-        diagshift=0.0003*(sqrt(size(HI)[1]/size(HI)[2])-1);
+        diagshift=0.028*(sqrt(size(HI)[1]/size(HI)[2])-1);
 
 		#		 Z=randn(size(HI)[2],5);
 		#		 diagshift=mean(diagMtCM(scP,Z)./diag(Z'*Z))
