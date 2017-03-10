@@ -1,7 +1,7 @@
 """
 
 
-windowlist,csteps,lmask = divand_cutter(Lpmnrange,gridsize,moddim=[]);
+windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps csteps for the preconditionners
@@ -21,6 +21,9 @@ windowlist,csteps,lmask = divand_cutter(Lpmnrange,gridsize,moddim=[]);
 # Output:
 
 * `windowlist`: Array of tuples (iw1 iw2 ...)
+* `csteps` : Array of steps for the coarse grid preconditionner
+* `lmask` : Array of multiplication factors for length scale of preconditionner
+* `alphapc` : Norm defining coefficients for preconditionner
 
 """
 
@@ -47,7 +50,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     ######################################################
     # Calculate the sampling steps for the preconditionner
     #
-    # TODO: if you want a direct solver put csteps zero
+    # If you want a direct solver put csteps zero
     ######################################################
     csteps=ones(Int,n);
     for i=1:n
@@ -96,7 +99,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows
-        #csteps=0*csteps
+        csteps=0*csteps
 		warn("Testing forced jog")
     end
 
@@ -179,7 +182,8 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
         end
         # end loop over all dimensions
 
-        # Need a deepopy here otherwise last values everywhere as only memory adress would be used
+        # Need a deepcopy here otherwise last values everywhere as only memory adress would be used
+
         windowlist[iw]=deepcopy((iw1,iw2,isol1,isol2,istore1,istore2,))
 
     end

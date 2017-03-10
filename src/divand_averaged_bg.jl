@@ -5,7 +5,7 @@
 # As for divandrun, including all dimensions before averaging
 
 # additional argument:
-* toaverage: Array of boolean telling if in the corresponding direction averaging must be done
+* toaverage: Array of ndims of boolean telling if in the corresponding direction averaging must be done
 
 # Presently NO optional arguments from divandrun supported except moddim
 
@@ -106,15 +106,15 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 #	@show size(maskm)
 	
 	
-@time	fm,sm=divandrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
+    fm,sm=divandrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
 	vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
 	faanom=f-vaanalyzed
 
 	reshapeshape =([(toaverage[i] ? (1) : (size(mask)[i])) for i = 1:n]...)
 	copyshape =([(toaverage[i] ? (size(mask)[i]) : (1)) for i = 1:n]...)
 
-	@show reshapeshape
-	@show copyshape
+#	@show reshapeshape
+#	@show copyshape
 	fma=repeat(reshape(fm,reshapeshape), inner=copyshape)
 
 

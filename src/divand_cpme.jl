@@ -36,7 +36,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 """
 
 
-function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[],lmask=[], alphapc=[], otherargs...)
+function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
 
 
 @show otherargs

@@ -5,8 +5,6 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps csteps for the preconditionners
-# as well as the mask lmask to apply to the length scales in the preconditionner, allowing to reduce
-# the problem size
 
 # Input:
 
@@ -20,7 +18,6 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
 
 # Output:
 
-* `windowlist`: Array of tuples (iw1 iw2 ...)
 
 """
 
@@ -45,18 +42,24 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
     # How wide is the overlap in terms of number of length scales
     factoroverlap=3.3
 
-    if n<3
-        biggestproblemiter=500*500
-        biggestproblemdirect=200*200
-    end
-    if n==3
-        biggestproblemiter=50*50*50
-        biggestproblemdirect=50*50*20
-    end
-    if n>3
-        biggestproblemiter=55*55*10*12
-        biggestproblemdirect=50*50*10
-    end
+	biggestproblemitern=[500*500 500*500 50*50*50 55*55*10*12]
+	biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]
+	
+	biggestproblemiter=biggestproblemitern[minimum([n,4])]
+	biggestproblemdirect=biggestproblemdirectn[minimum([n,4])]
+	
+    #if n<3
+    #    biggestproblemiter=500*500
+    #    biggestproblemdirect=200*200
+    #end
+    #if n==3
+    #    biggestproblemiter=50*50*50
+    #    biggestproblemdirect=50*50*20
+    #end
+    #if n>3
+    #    biggestproblemiter=55*55*10*12
+    #    biggestproblemdirect=50*50*10
+    #end
 
 
 
@@ -169,7 +172,7 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
     isdirect=(prod(2*overlapping+stepsize)<biggestproblemdirect)
 
     ####################################
-    #Force direct solver
+    #Force direct solver if you want by uncommenting next line
     # isdirect=(0<1)
 
 

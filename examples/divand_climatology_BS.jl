@@ -47,7 +47,7 @@ end
 dx = dy = 0.1
 dx = dy = 0.2
 dx = dy = 0.07
-dx = dy = 0.05
+dx = dy = 0.04
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
 
@@ -82,7 +82,7 @@ z = zeros(sz)
 lenx = fill(.3,sz)
 leny = fill(.3,sz)
 # correlation length in meters
-lenz = (10 + zi/5)/5
+lenz = (10 + zi/5)/3
 # correlation time-scale in month
 lent = fill(1.,sz)
 
@@ -100,12 +100,14 @@ toaverage=[true true false false]
 
 vaa=va-ffb
 
-fi,si=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,z,lent),epsilon2;moddim=moddim)
+fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,z,lent),epsilon2;moddim=moddim)
 
 
 fi=fi+fmb+vm
-fi=divand_filter3(fi,NaN,2)
+# Why is this filter necessary; sharedArray not supported ?? 
+#fi=divand_filter3(fi,NaN,2)
+#erri=divand_filter3(erri,NaN,2)
 
-divand_save(replace(@__FILE__,r".jl$","hr.nc"),mask,"Salinity",fi)
-
+divand_save(replace(@__FILE__,r".jl$","hrS.nc"),mask,"Salinity",fi)
+divand_save(replace(@__FILE__,r".jl$","hrE.nc"),mask,"Errorfield",erri)
 nothing

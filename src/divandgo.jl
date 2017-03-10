@@ -1,104 +1,29 @@
 """
 Compute a variational analysis of arbitrarily located observations.
 
-fi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,...);
+fi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Input:
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
 
-* `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
-       element represents the scale factor of the corresponding dimension. Its
-       inverse is the local resolution of the grid in a particular dimension.
+As for divandrun but as a higher level routine which will automatically create windowing etc
+it also include the definition of the errormethod
 
-*  `xi`: tuple with n elements. Every element represents a coordinate
-  of the final grid on which the observations are interpolated
+* errormethod : cpme none exact
 
-* `x`: tuple with n elements. Every element represents a coordinate of
-  the observations
-
-* `f`: value of the observations *minus* the background estimate (m-by-1 array).
-    (see note)
-
-* `len`: correlation length
-
-* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
-
-# Optional input arguments specified as keyword arguments
-
-* `velocity`: velocity of advection constraint. The default is
-       no-advection constraint
-
-* `alpha`: alpha is vector of coefficients multiplying various terms in the
-       cost function. The first element multiplies the norm.
-       The other i-th element of alpha multiplies the (i+1)-th derivative.
-       Per default, the highest derivative is m = ceil(1+n/2) where n is the
-       dimension of the problem.
-
-       The values of alpha is the (m+1)th row of the Pascal triangle:
-          m=0         1
-          m=1       1   1
-          m=1     1   2   1     (n=1,2)
-          m=2   1   3   3   1   (n=3,4)
-          ...
-
-* `diagnostics`: 0 or 1 turns diagnostic and debugging information on (1) or
-       off (0, default). If on, they will be returned as the last output
-       argument
-
-* `EOF`, EOF: sub-space constraint. Orthogonal (EOF' WE^2 EOF = I) (units of
-       EOF: m^(-n/2))
-
-* `EOF_scaling`, EOF_scaling: (dimensional)
-
-* `constraint`: a structure with user specified constrain
-
-* `moddim`: modulo for cyclic dimension (vector with n elements).
-     Zero is used for non-cyclic dimensions. Halo points should
-     not be included for cyclic dimensions. For example if the first dimension
-     is cyclic, then the grid point corresponding to mask(1,j) should be
-     between mask(end,1) (left neighbor) and mask(2,j) (right neighbor)
-
-* `fracdim`: fractional indices (n-by-m array). If this array is specified,
-     then x and xi are not used.
-
-* `inversion`: direct solver ('chol' for Cholesky factorization) or a
-     interative solver ('pcg' for preconditioned conjugate gradient) can be
-     used.
-
-* `compPC`: function that returns a preconditioner for the primal formulation
-     if inversion is set to 'pcg'. The function has the following arguments:
-
-           [M1,M2] = compPC(iB,H,R)
-
-    where iB is the inverse background error covariance, H the observation
-    operator and R the error covariance of the observation. The used
-    preconditioner M will be M = M1 * M2 (or just M = M1 if M2 is empty).
-    Per default a modified incomplete Cholesky factorization will be used a
-    preconditioner.
 
 # Output:
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
 
-# Note:
-  If zero is not a valid first guess for your variable (as it is the case for
-  e.g. ocean temperature), you have to subtract the first guess from the
-  observations before calling divand and then add the first guess back in.
-
-# Example:
-  see divand_simple_example_go.jl
-
-  Higher level with windowing etc
 """
 
 
 
-function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
-
+function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                   )
 
 
@@ -129,7 +54,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     # for coordinates tuples of the grid (xin,yin, .. )  and data (x,y)
     # in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
     #
-    #
+    
 
 
 
@@ -143,7 +68,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
     # Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
     #fi=zeros(size(mask));
-    fi=SharedArray(Float64,size(mask));
+    
+	fi=SharedArray(Float64,size(mask));
 	erri=SharedArray(Float64,size(mask));
     @sync @parallel for iwin=1:size(windowlist)[1]
 
@@ -185,7 +111,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
             # modify the parameter
             otherargsw=deepcopy(otherargs)
             otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
-        else
+         else
             otherargsw=otherargs
         end
 
@@ -213,63 +139,19 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         fw=0
         s=0
 		
-		# Idea here: make the outer edge larger so that data points near the edge are taken in
-		
 		xiw=deepcopy(([ x[windowpoints...] for x in xi ]...))
 		
-		
-        # for i=1:n
-		# wjmb=xiw[i]
-# # For the moment, hardcoded for 1D and 2D and assuming non cycic
-	
-
-        # if n==2
-		# lalen=1.2
-		  # if i==1
-		    # wjmb[1,:]=wjmb[1,:]-lalen*0.03
-            # wjmb[end,:]=wjmb[end,:]+lalen*0.03
-		  # end
-		  # if i==2
-            # wjmb[:,1]=wjmb[:,1]-lalen*0.015
-            # wjmb[:,end]=wjmb[:,end]+lalen*0.015
-		  # end
-        # end 
-		# end
 		
 		# NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
 		
 		Labsw=Labs
-		   
-		   if !isa(Labs,Number)
+		if !isa(Labs,Number)
            if !isa(Labs[1],Number)
              Labsw= ([ x[windowpoints...] for x in Labs ]...)
            end
-           end
-		
-		# @show mean(x[1])
-		# @show mean(x[2])
-		# @show mean(x[3])
-		# @show mean(x[4])
-		# @show csteps
-		# @show lmask
-		# @show mean(pmn[1])
-		# @show mean(pmn[2])
-		# @show mean(pmn[3])
-		# @show mean(pmn[4])
-		# @show mean(f)
-		# @show size(f)
-		# @show mean(xiw[1])
-		# @show mean(xiw[2])
-		# @show mean(xiw[3])
-		# @show mean(xiw[4])
-		# @show epsilon2
-		# @show windowpoints[1]
-		# @show windowpoints[2]
-		# @show windowpoints[3]
-		# @show windowpoints[4]
+        end
 		
 		
-		#
         kfound=0
         for j=1:size(otherargs)[1]
             if otherargs[j][1]==:alphabc
@@ -279,18 +161,16 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         end
 
         if 3==2
-		# Force alpha=1
-        if kfound>0
+		if kfound>0
             # modify the parameter only in the window model
-            
-			if jfound>0
-			# Ok this is alreay a copy and you can change it
-            otherargsw[kfound]=(:alphabc,1)
-			       else
-		    otherargsw=deepcopy(otherargs)
-			otherargsw[kfound]=(:alphabc,1)
+            if jfound>0
+				# Ok this is alreay a copy and you can change it
+				otherargsw[kfound]=(:alphabc,1)
+			  else
+				otherargsw=deepcopy(otherargs)
+				otherargsw[kfound]=(:alphabc,1)
 		    end
-			else
+		  else
 			warn("Need to expand")
 			otherargsw=vcat(otherargsw,(:alphabc,1))
 		end
@@ -301,41 +181,60 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
 		@show alphanormpc
 		@show csteps
         if sum(csteps)>0
-#          if 3==2		 
              fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
-			 errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
+			 if errormethod==:cpme
+			  errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
+			 end
 # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ? 
          else
 # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
              fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
-			 errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
+			 if errormethod==:cpme
+			  errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
+			 end
          end
-#@show fw[1]
-        # maskb=mask[windowpoints...]
-        # pmnb=([ x[windowpoints...] for x in pmn ]...)
-        # xib=([ x[windowpoints...] for x in xi ]...)
 
-        # fw,s=divandrun(maskb,pmnb,xib,x,f,Labs,epsilon2; otherargs...)
-        # Now error fields
-        # Cpme: just run and take out same window
+		 if errormethod==:none
+		  errw=fill!(Array(Float64,size(fw)),NaN)
+		 end
+		 
+    	 # Cpme: just run and take out same window
 
-        # AEXERR: just run and take out same window
+        # AEXERR: just run and() take out same window
 
-
+         if errormethod==:exact
         # EXERR: P only to points on the inner grid, not the overlapping one !
-
-
+		# Initialize errw everywhere,
+					errw=0.*fw
+		# For packing, take the stavevector returned except when sum(csteps)>n 
+		# in this case recreate a statevector
+					if sum(csteps)==n
+						sverr=statevector_init((mask[windowpoints...],))
+			         else
+						sverr=s.sv   
+					end
+					svn=size(sverr)[1]
+					@show size(sverr)
+					errv=statevector_pack(sverr,(errw,))
+		# Loop over window points. From grid index to statevector index so that ve is 
+		# zero exect one at that index. Then calculate the error and store it in the the 
+		# sv representation of the error
+		            
+					@show windowpoints[1]
+					for gridindex in windowpoints
+					  @show gridindex
+					  ei=zeros(svn)
+					  ind = statevector_sub2ind(svn,gridindex)
+					  ei[ind]=1
+					#  HIP=HI'*ei
+					#  errv[ind]=diagMtCM(sc.P,HIP)
+					end
+					errw=statevector_unpack(svn,errv)
+        # Maybe better fill in first HIP = HI'*[ ... ei ...] 
+		# then something as errfield=diagMtCM(sc.P,HIP)
+        # at the end of the loop, unpack the sv error field into errw
         # End error fields
-
-
-
-        # Do similar things with other properties if asked for
-
-        # or better, replace the divandrun call by a divandrunsmart call with these parameters ? Would allow exploitation of optimised versions of the solver ?
-
-
-
-
+		 end
 
 
         # copy, deepcopy or just = ???
@@ -345,8 +244,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
         windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
-        #fi[istore1[1]:istore2[1],istore1[2]:istore2[2]]= fw[isol1[1]:isol2[1],isol1[2]:isol2[2]];
-
+    
         fi[windowpointsstore...]= fw[windowpointssol...];
 		erri[windowpointsstore...]=errw[windowpointssol...];
 		
@@ -354,9 +252,10 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     end
 
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
+    # it also makes the shared array possible to save in netCDF??
+	fi=divand_filter3(fi,NaN,2)
+	erri=divand_filter3(erri,NaN,3)
 
-    # For the moment s is not defined ?
-	# fi=divand_filter3(fi,9999,2)
 	
     return fi,erri
 
