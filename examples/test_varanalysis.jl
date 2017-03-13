@@ -4,14 +4,15 @@
 using divand
 #using PyPlot
 
-ndims = 2
+# final grid
+gridsize = (101,101,21)
+
+ndims = length(gridsize)
 
 # observations
 xy = ntuple(i -> [0.5],ndims)
 f = [1]
 
-# final grid
-gridsize = (101,101)
 
 # mask: all points are valid points
 # this problem has a simple cartesian metric
