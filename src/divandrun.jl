@@ -79,6 +79,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `f0`: starting field for iterative dual algorithm (same size as the observations `f`)
 
+* `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions 
+    to define the constrains.
 
 # Output:
 *  `fi`: the analysed field
