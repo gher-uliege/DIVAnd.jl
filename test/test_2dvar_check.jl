@@ -70,17 +70,11 @@ m = length(x)
 
 R = spdiagm((ones(m-1),4*ones(m),ones(m-1)),(-1,0,1))
 
-# currently broken in v 0.6
-# https://github.com/JuliaLang/julia/issues/18970
-if VERSION == v"0.5.0"
-    xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
-    diagP, = statevector_unpack(s.sv,diag(s.P))
-    xa_check, diagP_check = naive_analysis(s,v)
-    @test xa ≈ xa_check
-    @test diagP ≈ diagP_check
-end
-
-
+xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
+diagP, = statevector_unpack(s.sv,diag(s.P))
+xa_check, diagP_check = naive_analysis(s,v)
+@test xa ≈ xa_check
+@test diagP ≈ diagP_check
 
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #

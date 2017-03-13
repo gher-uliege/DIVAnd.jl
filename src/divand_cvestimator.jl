@@ -8,17 +8,14 @@ theta = divand_cvestimator(s,residual);
 
 
 function divand_cvestimator(s,residual)
+    # Corrected to take into account only points in domain
 
-    #Corrected to take into account only points in domain
+    v1 = (1-s.obsout).*(s.obsconstrain.R\ residual)
+    v2 = (1-s.obsout).*(s.obsconstrain.R\ ones(size(residual)))
 
-
-    v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
-    v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
-    if VERSION == v"0.5"
-        return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
-    else
-        return (residual'*v1) / (ones(size(residual))'*v2)
-    end
+    # operator a⋅b returns a scalar in julia version 0.5.0, 0.5.1 and 0.6-dev
+    # unlike a'*b
+    return (residual ⋅ v1) / (ones(size(residual)) ⋅ v2)
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

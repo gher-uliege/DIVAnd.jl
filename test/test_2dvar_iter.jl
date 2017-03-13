@@ -69,11 +69,16 @@ va_dual,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
 @test norm(va_chol[mask] - va_dual[mask]) < tolres
 
 # iterative dual (with precondiditioner)
+# This is not efficient for large cases, only a consistency check
 function compPCdual(iB,H,R)
     B = CovarIS(iB)
-    M = H * (B * H') + sparse_diag(diag(R));
+    M = H * (B * full(H)') + sparse_diag(diag(R));
+    
     iM = CovarIS(M);
     factorize!(iM);
+    @show typeof(M)
+    @show typeof(iM)
+
     return x -> iM * x;
 end
 va_dual,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
