@@ -184,8 +184,8 @@ function blkdiag(X::Diagonal...)
     Diagonal(cat(1,[diag(x) for x in X]...))
 end
 
-
-
+"""display size as a string """
+formatsize(sz) = join(sz,"×")
 
 """
 mask,xyi,pmn = divand_squaredom(n,coord)
