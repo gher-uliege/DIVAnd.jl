@@ -9,4 +9,5 @@
 
 # run as run_benchmark.sh benchmark.jl
 
-srun --mem-per-cpu=16000 --ntasks=1 --time=10:20:00 julia "$1"
+module load  EasyBuild  Python/3.5.1-foss-2016a
+srun --mem-per-cpu=16000 --ntasks=1 --time=10:20:00 julia "$@"

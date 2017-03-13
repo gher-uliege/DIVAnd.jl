@@ -58,14 +58,14 @@ function test_2dvar_benchmark(name)
   return median_time,ng,time
 end
 
-function benchmark_nd_repeat(n,ng,ntimes)
+function benchmark_nd_repeat(n,ng,ntimes; kwargs...)
     times = zeros(ntimes)
     RMS = zeros(ntimes)
 
-    times[1],RMS[1] = benchmark_nd(n,ng)
+    times[1],RMS[1] = benchmark_nd(n,ng; kwargs...)
 
     for i = 1:ntimes
-        times[i],RMS[1] = benchmark_nd(n,ng)
+        times[i],RMS[1] = benchmark_nd(n,ng; kwargs...)
     end
 
     mad(x) = median(abs(x - median(x)))
@@ -78,8 +78,8 @@ function benchmark_nd_repeat(n,ng,ntimes)
 end
 
 
-function benchmark_nd(n,ng)
-  mg = ng/5;
+function benchmark_nd(n,ng; kwargs...)
+  mg = max(ceil(Int,ng/5),2);
   len = 10/ng;
 
   epsilon2 = 0.05;
@@ -95,7 +95,7 @@ function benchmark_nd(n,ng)
   v = f([x[:] for x in xy]...);
 
   t1 = time_ns()
-  va,s = divandrun(mask,pmn,xyi,xy,v,len,epsilon2);
+  va,s = divandrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
   t2 = time_ns()
   time = (t2 - t1)/1e9
   RMS = rms(va,vi);
