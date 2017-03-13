@@ -57,7 +57,7 @@ type divand_struct
         neff = 0
         coeff = 1.
         moddim = []
-        iscyclic = []
+        iscyclic = falses(n)
         alpha = []
         yo = []
         R = []
