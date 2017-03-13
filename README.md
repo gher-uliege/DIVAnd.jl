@@ -30,12 +30,12 @@ The script should be run in a Julia session.
 Pkg.test("divand")
 ```
 
-All tests should pass without warning or error.
+All tests should pass without error.
 
 ```
 INFO: Testing divand
 Test Summary: | Pass  Total
-  divand      |   37     37
+  divand      |   100     100
 INFO: divand tests passed
 ```
 
@@ -88,6 +88,12 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
 Tools to help you are included ([divand_cv.jl](https://github.com/gher-ulg/divand.jl/blob/master/src/divand_cv.jl)).
+
+# Example data
+
+Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed throught git. This data can be downloaded from
+the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download . The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
+
 
 # Fun
 
