@@ -30,8 +30,7 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 
         for i=1:n
             if !isequal(size(mask),size(Labs[i]))
-                error("mask (%s) and correlation length (%s) have incompatible size",
-                      formatsize(size(mask)),formatsize(size(Labs[i])))
+                error("mask $(formatsize(size(mask))) and correlation length $(formatsize(size(Labs[i]))) have incompatible size")
             end
         end
     end
