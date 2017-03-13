@@ -31,7 +31,7 @@ where `A` is a symmetric positive defined matrix and `b` is a vector. The functi
 
 function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, maxit = min(size(b,1),20), 
                            minit = 0,
-                           progress = (iter,x,r,tol2) -> nothing
+                           progress = (iter,x,r,tol2,fun,b) -> nothing
                            )
     #, renorm = false)
 
@@ -122,7 +122,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
         zr_new = r ⋅ z;
 
-        progress(k,x,r,tol2)
+        progress(k,x,r,tol2,fun,b)
 
         if r ⋅ r < tol2 && k >= minit
             success = true
