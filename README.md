@@ -91,8 +91,7 @@ Tools to help you are included ([divand_cv.jl](https://github.com/gher-ulg/divan
 
 # Example data
 
-Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed throught git. This data can be downloaded from
-the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download . The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
+Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed throught git. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
 
 
 # Fun
