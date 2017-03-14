@@ -114,7 +114,7 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    alpha = [],
                    keepLanczosVectors = 0,
                    compPC = divand_pc_none,
-                   progress = (iter,x,r,tol2) -> nothing,
+                   progress = (iter,x,r,tol2,fun,b) -> nothing,
                    fi0 = zeros(size(mask)),
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},

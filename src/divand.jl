@@ -103,7 +103,7 @@ type divand_struct
 
 
         compPC(iB,R,H) = identity
-        progress(iter,x,r,tol2) = nothing
+        progress(iter,x,r,tol2,fun,b) = nothing
         preconditioner = identity
 
         new(n,
