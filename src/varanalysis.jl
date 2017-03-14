@@ -11,7 +11,22 @@ G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
 
 """
 
-function varanalysis(mask,pmn,xi,x,f,lenxy,epsilon2; tol = 1e-5)
+function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
+    n = ndims(mask)
+
+    if isa(len,Number)
+        len = ((fill(len,size(mask)) for i=1:n)...)
+    elseif isa(len,Tuple)
+        if isa(len[1],Number)
+            len = ([fill(len[i],size(mask)) for i = 1:n]...)
+        end
+
+        for i=1:n
+            if size(mask) != size(len[i])
+                error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
+            end
+        end
+    end
 
     R = divand_obscovar(epsilon2,length(f));
 
@@ -22,7 +37,7 @@ function varanalysis(mask,pmn,xi,x,f,lenxy,epsilon2; tol = 1e-5)
     yo = constrain.yo
     H = constrain.H
 
-    nu = ([L.^2 for L in lenxy]...)
+    nu = ([L.^2 for L in len]...)
 
     # D represents the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the 
     # correlation length-scale squared
@@ -32,7 +47,7 @@ function varanalysis(mask,pmn,xi,x,f,lenxy,epsilon2; tol = 1e-5)
     dx_min = 1/max([maximum(pm) for pm in pmn]...)
     nu_max = max([maximum(ν) for ν in nu]...)
     # need to proof this (currently this is just an analogy based on 2D)
-    α = dx_min^2/(2 * nu_max * s.n)
+    α = dx_min^2/(2 * nu_max * n)
 
     # 10% safety margin
     α = α / 1.1
@@ -58,7 +73,9 @@ function varanalysis(mask,pmn,xi,x,f,lenxy,epsilon2; tol = 1e-5)
 
     fun(x) = x + (B½ * (H' * (R \ (H * (B½ * x)))))
     b = B½ * (H' * (R \ yo))
-    #@show maximum(b)
+
+    # adjust tolerance
+    tol = tol * s.sv.n / length(yo)
 
     xp,success,niter = divand.conjugategradient(fun,b; tol = tol);
     xa = B½ * xp
