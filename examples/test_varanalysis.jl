@@ -5,7 +5,7 @@ using divand
 #using PyPlot
 
 # final grid
-gridsize = (101,101,21)
+gridsize = (101,101)
 
 ndims = length(gridsize)
 
@@ -44,54 +44,6 @@ tol = 1e-5
 
 # G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
 
-function varanalysis(mask,pmn,xi,x,f,lenxy,epsilon2; tol = 1e-5)
-
-    R = divand_obscovar(epsilon2,length(f));
-
-    s = divand.divand_struct(mask)
-
-    # observation constrain
-    constrain = divand.divand_obs(s,xi,x,f,R)
-    yo = constrain.yo
-    H = constrain.H
-
-    nu = ([L.^2 for L in lenxy]...)
-
-    # D represents the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the 
-    # correlation length-scale squared
-
-    D = divand_laplacian(Val{:MatFun},mask,pmn,nu,falses(4))
-
-    α = 0.001
-    α = 1/max([maximum(pm) for pm in pmn]...) / 25
-
-    @show α
-    nmax = round(Int,1/(2*α))
-
-    # the background error covariance matrix is    
-    # B = (I + α * D)^nmax;
-
-    # the square root of the background error covariance matrix:
-    # B^{1/2} = (I + α * D)^(nmax/2);
-
-
-    function funB½(x)
-        for n = 1:(nmax ÷ 2)
-            x += α * (D*x)
-        end
-        return x
-    end
-
-    # matrix-like type of 
-    B½ = MatFun(size(D),funB½,funB½)
-
-    fun(x) = x + (B½ * (H' * (R \ (H * (B½ * x)))))
-    b = B½ * (H' * (R \ yo))
-    xp,success,niter = divand.conjugategradient(fun,b; tol = tol);
-    xa = B½ * xp
-
-    return xa
-end
 
 @time xa = varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
 

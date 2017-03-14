@@ -3,7 +3,7 @@ using JSON
 
 
 method = "matfun"
-
+method = "varanalysis"
 
 for ndim = 2:4
 
