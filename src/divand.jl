@@ -4,6 +4,8 @@ using NetCDF
 import SpecialFunctions
 using Base.Test
 
+include("statevector.jl");
+
 type divand_constrain
     yo
     R
@@ -14,7 +16,7 @@ type divand_struct
     n
     neff
     coeff
-    sv
+    sv::statevector
     D
     mask
     WE
@@ -69,7 +71,6 @@ type divand_struct
 
         D = copy(sempty)
         WE = copy(sempty)
-        WE = copy(sempty)
         iB = copy(sempty)
         iB_ = Array{SparseMatrixCSC{Float64,Int64}}(3);
         P = []
@@ -106,11 +107,12 @@ type divand_struct
         progress(iter,x,r,tol2) = nothing
         preconditioner = identity
 
+
         new(n,
             neff,
             coeff,
-            D,
             sv,
+            D,
             mask,
             WE,
             isinterior,
@@ -244,7 +246,6 @@ include("localize_separable_grid.jl");
 
 include("special_matrices.jl");
 include("conjugategradient.jl");
-include("statevector.jl");
 include("divand_laplacian.jl");
 include("divand_operators.jl");
 include("divand_background_components.jl")
@@ -284,10 +285,12 @@ include("divand_bc_stretch.jl");
 
 include("divand_save.jl");
 
+include("varanalysis.jl");
+
 include("load_mask.jl");
 
 
-export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save
+export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save, varanalysis
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
 statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
