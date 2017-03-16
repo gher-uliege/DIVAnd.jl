@@ -82,6 +82,10 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions 
     to define the constrains.
 
+* `scale_len`: true (default) if the correlation length-scale should be scaled such that the analysical 
+    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance. The kernel behaves thus similar to 
+    the default kernel in two dimensions (alpha = [1,2,1]).
+
 # Output:
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
@@ -118,7 +122,8 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    fi0 = zeros(size(mask)),
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},
-                   alphabc = 1
+                   alphabc = 1,
+                   scale_len = true
                    )
 
 
@@ -128,12 +133,9 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
     end
 
     pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
-	
-	
-
-	#For testing this version of alphabc deactivate the other one
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[]);
-
+		
+    #For testing this version of alphabc deactivate the other one
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]);
 
     s.betap = 0;
     s.EOF_lambda = EOF_lambda;

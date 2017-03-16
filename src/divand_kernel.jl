@@ -8,14 +8,13 @@ coefficients `alpha` and normalization factor `mu`.
 Input
   n: number of dimensions
   alpha: coefficients
-  r (optional): distance from origin
 Output:
   K(r): kernel function (function of the normalized distance `r`)
   mu: normalization factor
+  len_scale: distance at which K(len_scale) = 0.6019072301972346 (which is besselk(1,1))
 """
 
-function divand_kernel(n,alpha #,r
-                       )
+function divand_kernel(n,alpha)
     # remove trailling zeros
     ind = maximum(find(!(alpha .== 0)))
     alpha = alpha[1:ind];
@@ -23,12 +22,14 @@ function divand_kernel(n,alpha #,r
     m = length(alpha)-1;
 
     K = [];
-    if [binomial(m,k) for k = 0:m] == alpha
+    alpha_binomial = [binomial(m,k) for k = 0:m]
+
+    if alpha_binomial == alpha
         # alpha are binomial coefficients
 
         mu,K = divand_kernel_binom(n,m);
     else
-        if [binomial(m,k) for k = 1:m] == alpha[2:ind]
+        if alpha_binomial[2:end] == alpha[2:end]
             # alpha are binomial coefficients except first one
             warn("Semi-norm used?, check scaling $alpha")
             mu,K = divand_kernel_binom(n,m);
@@ -52,19 +53,9 @@ function divand_kernel(n,alpha #,r
         end
     end
 
-    # if nargin == 3
-    #   # evaluate the kernel for the given values of r
-    #   K = K(r);
-    # end
+    len_scale = Roots.fzero(x -> K(x) - SpecialFunctions.besselk(1,1),1)
 
-    # if nargout == 3
-    #   # determine at which distance r K(r) = 1/2
-    #   rh = abs(fzero(@(r) K(abs(r))-.5,1));
-    # end
-
-
-    return mu,K #,rh
-
+    return mu,K,len_scale
 end
 
 

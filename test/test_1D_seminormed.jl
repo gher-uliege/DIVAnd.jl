@@ -70,7 +70,8 @@ fi3,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 
 @test 0.4 < maximum(fi1) < 0.6
-@test 0.4 < maximum(fi2) < 0.6
+# increase tolerance since scale_len is activated
+@test 0.4 < maximum(fi2) < 0.65
 @test 0.4 < maximum(fi3) < 0.6
 @test 0.4 < maximum(fi4) < 0.6
 @test 0.4 < maximum(firef) < 0.6

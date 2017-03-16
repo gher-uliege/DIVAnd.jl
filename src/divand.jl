@@ -1,6 +1,7 @@
 module divand
 using Interpolations
 using NetCDF
+using Roots
 import SpecialFunctions
 using Base.Test
 
