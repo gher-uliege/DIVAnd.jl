@@ -17,7 +17,7 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = [])
+function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = [];btrunc=[])
 
 
     # number of dimensions
@@ -300,7 +300,7 @@ s.coeff = coeff
 # number of dimensions
 s.n = n
 
-iB = divand_background_components(s,D,alpha)
+iB = divand_background_components(s,D,alpha,btrunc=btrunc)
 
 
 # inverse of background covariance matrix

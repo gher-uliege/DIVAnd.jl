@@ -116,7 +116,8 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    fi0 = zeros(size(mask)),
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},
-                   alphabc = 1.0
+                   alphabc = 1.0,
+				   btrunc=[],
                    )
 
 
@@ -138,7 +139,7 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
 	
 
 	#For testing this version of alphabc deactivate the other one
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[]);
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[];btrunc=btrunc);
 
 
     s.betap = 0;
@@ -225,7 +226,7 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
     divand_factorize!(s);
 
     #if !apply_EOF_contraint
-    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0);
+    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
     #else
     #    fi,s = divand_solve_eof(s,f);
     #end

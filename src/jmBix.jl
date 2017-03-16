@@ -1,59 +1,44 @@
 """
-Form the different components of the background error covariance matrix.
 
-iB = divand_background_components(s,D,alpha; kwargs...)
-
-Compute the components of the background error covariance matrix iB_ and
-their sum based on alpha (the a-dimensional coefficients for norm, gradient,
-laplacian,...).
 """
 
-function divand_background_components(s,D,alpha; kwargs...)
+function jmBix(s,x;btrunc=[])
 
+    iBx=s.iB*x
+	# @show btrunc
+	if btrunc==[]
+	  return iBx
+	end
+	
+	
     WE = s.WE;
     coeff = s.coeff;
     n = s.n;
-
-    kw = Dict((kwargs...))
-
-    # constrain of total norm
-
-    iB_ =  (1/coeff) * (WE'*WE);
-
-    if haskey(kw,:iB)
-        kw[:iB][1] = iB_
-    end
-	
-	# Truncate stored iB AFTER term btrunc, so alpha[btrunc] is the last one
-	btrunc=length(alpha)
-	if haskey(kw,:btrunc)
-        btruncv=kw[:btrunc]
-		if btruncv != Any[]
-		 btrunc=btruncv
-		end
-    end
-	@show btrunc
-    # sum all terms of iB
-    # iB is adimentional
-    iB = alpha[1] * iB_
-
-    # loop over all derivatives
-
-	    for j=2:btrunc
-
+    alpha=s.alpha
+	# incomplete Bi calculated before now complemented on the fly
+    
+	D=s.D
+    for j=btrunc+1:length(alpha)
         # exponent of laplacian
         k = Int(floor((j-2)/2))
-
-        iB_ = spzeros(size(D,1),size(D,1));
+       # @show size(iBx)
+	   # @show size(x)
+		# @show size(s.iB)
+        #iBx_ = spzeros(iBx);
+		iBx_=0.*iBx;
 
         if mod(j,2) == 0
             # constrain of derivative with uneven order (j-1)
             # (gradient, gradient*laplacian,...)
             # normalized by surface
-
+            Dk=D^k
+			Dkx=Dk*x
             for i=1:n
-                Dx = s.WEss[i] * s.Dx[i] * D^k;
-                iB_ = iB_ + Dx'*Dx;
+#                Dx = s.WEss[i] * (s.Dx[i] * Dk);
+#                iBx_ = iBx_ + Dx'*(Dx*x);
+                 Dx = s.WEss[i] * s.Dx[i];
+				 # maybe gain if Dk=Dk'?
+                 iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
             end
 
         else
@@ -66,21 +51,16 @@ function divand_background_components(s,D,alpha; kwargs...)
             # WD: units length^(n/2)
 
             WD = WE * D^(k+1);
-            iB_ = WD'*WD;
+            iBx_ = WD'*(WD*x);
         end
 
-        iB_ = iB_/coeff;
+        iBx_ = iBx_/coeff;
 
-        if haskey(kw,:iB)
-            kw[:iB][j] = iB_
-        end
+        
 
-        iB = iB + alpha[j] * iB_
+        iBx = iBx + alpha[j] * iBx_
     end
-
-    # iB is adimentional
-
-    return iB
+    return iBx
 end
 
 # LocalWords:  iB divand

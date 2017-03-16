@@ -56,7 +56,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     for i=1:n
         nsamp=Int(floor(Lpmnrange[i][1]/minimumpointsperlpc));
         if nsamp>1
-            csteps[i]=nsamp
+            csteps[i]=minimum([nsamp,3])
         end
     end
 @show csteps
@@ -95,7 +95,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
 
-    stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,moddim)
+    stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,csteps,moddim)
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows

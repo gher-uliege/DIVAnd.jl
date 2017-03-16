@@ -183,6 +183,9 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         if sum(csteps)>0
              fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
 			 if errormethod==:cpme
+			 s=0
+			 gc()
+			  # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
 			  errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
 			 end
 # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ? 

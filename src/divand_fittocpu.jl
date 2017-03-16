@@ -1,7 +1,7 @@
 """
 
 
-stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
+stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps csteps for the preconditionners
@@ -22,7 +22,7 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,moddim=[]);
 """
 
 
-function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
+function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
 
 
     #################################################################################
@@ -42,7 +42,8 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
     # How wide is the overlap in terms of number of length scales
     factoroverlap=3.3
 
-	biggestproblemitern=[500*500 500*500 50*50*50 55*55*10*12]
+	biggestproblemitern=[500*500 500*500 50*50*50 100*100*6*12]
+	biggestproblemitern=[500*500 500*500 50*50*50 80*80*6*12]
 	biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]
 	
 	biggestproblemiter=biggestproblemitern[minimum([n,4])]
@@ -81,10 +82,6 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
 
 
 
-
-    # Unfortunataly for the moment the problem is memory bound by the unsampled grid.
-
-    laterscales=ones(n)
 
     #####################################################################################
     # Define overlapping and stepsize
@@ -138,17 +135,18 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
         #
     end
 
-    problemsize=problemsize/prod(laterscales[1:2])
+    problemsize=problemsize/prod(latercsteps[1:2])
+	@show problemsize
 
 
     if nwd>0
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
     end
-    if epsilon<0
+    if epsilon<=0
         warn("SO what $epsilon $problemsize $nwd $overlapping")
         epsilon=1E-6
     end
-
+    @show epsilon
     for i=1:minimum([n,2])
         # if length scale is small compared to domain size
         if Lpmnrange[i][2]<   lfactor*gridsize[i]
@@ -175,7 +173,7 @@ function divand_fittocpu(Lpmnrange,gridsize,moddim=[])
     #Force direct solver if you want by uncommenting next line
     # isdirect=(0<1)
 
-
+@show stepsize
 
     return stepsize,overlapping,isdirect
 

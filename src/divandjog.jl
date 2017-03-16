@@ -115,7 +115,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 		# Then run with normal resolution and preconditionner
 
-			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPCa, fi0 =figuess)
+			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,operatortype=Val{:MatFun},compPC = compPCa, fi0 =figuess)
+			#fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPCa, fi0 =figuess)
 			return fi,si
 		end
 	end
@@ -156,9 +157,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 		# Test for better convergence making sure the expanded points are take in the preconditionner but then expande the grid only with alpha=0.5 since factor 2 typically applied later ?
 		# Alphabc should be an array to do this properly ...
 		
-		# =====================
-        # Possible (minor?) optimization: if nsteps are all one, just pass the original arrays to divandrun for the preconditionner. 
-		# =====================
+		
           		
         coarsegridpoints=([sort(unique(push!(collect(2:nsteps[i]:size(mask)[i]-1),size(mask)[i],size(mask)[i]-1,1))) for i in 1:n]...);
 
@@ -255,9 +254,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
         # Prepare run of the coarse grid problem
 
-		# Preconditionner with desactivated correlations in some directions
-
-        Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
+		
         
 		
 
@@ -282,9 +279,22 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 		end
 @show otherargsc
 @show alphapc
+
+# maybe try another norm using btrunc=3 or even btrunc=2 but full L here for the coarser version ?
  
+ # Preconditionner with desactivated correlations in some directions
+
+ # Hardcoded new test
+        
+
+        Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
+
+		Labsccut=Labsc
+		
+		
 		# Run coarse resolution model
-		fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc)
+#		fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
+		fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,btrunc=3)
 
 
 
@@ -319,12 +329,15 @@ defined by the coordinates `xi` and the scales factors `pmn`.
         tol = 2e-3
 		
         maxiter=10*Int(ceil(sqrt(size(HI)[1])))
+		maxiter=200
         pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 		# To compensate for the missing correlations in HI*scP*HI'
 		
-        diagshift=0.028*(sqrt(size(HI)[1]/size(HI)[2])-1);
-
+        diagshift=0.006*(sqrt(size(HI)[1]/size(HI)[2])-1);
+		diagshift=0.01*(sqrt(size(HI)[1]/size(HI)[2])-1);
+		#diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
+        #diagshift=0.01
 		#		 Z=randn(size(HI)[2],5);
 		#		 diagshift=mean(diagMtCM(scP,Z)./diag(Z'*Z))
 		#        diagshift=0.021*diagshift
@@ -343,7 +356,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 		# Then run with normal resolution and preconditionner
 
-		fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =figuess)
+		#fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,operatortype=Val{:MatFun},compPC = compPC, fi0 =figuess)
+		fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =figuess,btrunc=2)
 
 		
 # Some ideas for error calculations		
@@ -352,6 +366,10 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 #erri,=statevector_unpack(si.sv,errfield)
 # For error field based on coarse one, use divand_filter3 with ntimes=Int(ceil(mean(nsteps)))
 # First test
+
+# Possible optimization for a climatology production, for each tile return diagshift and niter with some random changes in diagshift and search
+# for optimum. In particular if several climatology runs are produced (slight changed parameters), the preliminary runs, without error calculations for example
+# could provide good estimates ?
 
 
 		return fi,si
