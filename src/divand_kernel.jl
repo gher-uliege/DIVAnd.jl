@@ -31,7 +31,8 @@ function divand_kernel(n,alpha)
     else
         if alpha_binomial[2:end] == alpha[2:end]
             # alpha are binomial coefficients except first one
-            warn("Semi-norm used?, check scaling $alpha")
+            #warn("Semi-norm used?, check scaling $alpha")
+
             mu,K = divand_kernel_binom(n,m);
             #   correction for missing term CHECK IF NOT THE INVERSE
             #  Added fudge factor 2 to mimic same behaviour in test case
@@ -44,7 +45,7 @@ function divand_kernel(n,alpha)
             # unsupported sequence of alpha
 
             mu,K = divand_kernel_binom(n,m);
-            warn("Unsupported norm used, check scaling $alpha")
+            #warn("Unsupported norm used, check scaling $alpha")
             #   Scaling is correct if all alphas are binomials times a common factor
 
             jmscale=(1.0/2^(m))*sum(alpha[:])

@@ -46,36 +46,33 @@ alpha = [binomial(m,k) for k = 0:m];
 
 firef,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;);
 
-
-fi4,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
-
-
-
 alpha = [binomial(m,k) for k = 0:m];
 alpha=2.*alpha
 # fi is the interpolated field
 fi1,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+@test 0.4 < maximum(fi1) < 0.6
 
 
 alpha = [binomial(m,k) for k = 0:m];
 alpha[1]=0;
 fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
-
+# increase tolerance since scale_len is activated
+@test 0.4 < maximum(fi2) < 0.65
 
 
 alpha = [binomial(m,k) for k = 0:m];
 alpha[2]=0;
 fi3,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
-
-
-
-@test 0.4 < maximum(fi1) < 0.6
-# increase tolerance since scale_len is activated
-@test 0.4 < maximum(fi2) < 0.65
 @test 0.4 < maximum(fi3) < 0.6
+
+
+alpha = [binomial(m,k) for k = 0:m];
+fi4,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 @test 0.4 < maximum(fi4) < 0.6
 @test 0.4 < maximum(firef) < 0.6
 @test maximum(fi4) ≈ maximum(firef)
+
+
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
