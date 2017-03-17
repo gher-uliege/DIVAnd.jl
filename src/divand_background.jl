@@ -22,6 +22,12 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     # number of dimensions
     n = ndims(mask)
+
+    # must handle the case when Labs is zero in some dimension
+    # thus reducing the effective dimension
+    neff = sum([mean(L) > 0 for L in Labs])
+
+
     sz = size(mask)
 
     if isempty(moddim)
@@ -52,7 +58,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
         # kernel should has be continuous derivative
 
         # highest derivative in cost function
-        m = Int(ceil(1+n/2))
+        m = Int(ceil(1+neff/2))
 
         # alpha is the (m+1)th row of the Pascal triangle:
         # m=0         1
@@ -65,10 +71,6 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     end
 	
 
-    # must handle the case when Labs is zero in some dimension
-    # thus reducing the effective dimension
-
-    neff = sum([mean(L) > 0 for L in Labs])
 
     # scale iB such that the diagonal of inv(iB) is 1 far from
     # the boundary

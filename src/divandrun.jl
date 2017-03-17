@@ -33,8 +33,9 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `alpha`: alpha is vector of coefficients multiplying various terms in the
        cost function. The first element multiplies the norm.
        The other i-th element of alpha multiplies the (i+1)-th derivative.
-       Per default, the highest derivative is m = ceil(1+n/2) where n is the
-       dimension of the problem.
+       Per default, the highest derivative is m = ceil(1+neff/2) where neff is the
+       effective dimension of the problem (the number of dimensions with a nonzero 
+       correlation length).
 
        The values of alpha is the (m+1)th row of the Pascal triangle:
           m=0         1
