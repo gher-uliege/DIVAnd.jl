@@ -97,6 +97,17 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
 		# pmn=pmnin	  
 	# end
 	# For the moment deactivate other versions
+	
+	# mean correlation length in every dimension
+    Ld = [mean(_) for _ in Labs]
+    neff = sum(Ld .> 0)
+
+    # geometric mean
+    geomean(v) = prod(v)^(1/length(v))
+    L = geomean(Ld[Ld .> 0])
+
+	
+	
 	alphabc=0
 	
 	
@@ -107,7 +118,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
         # kernel should has be continuous derivative
 
         # highest derivative in cost function
-        m = Int(ceil(1+n/2))
+        m = Int(ceil(1+neff/2))
 
         # alpha is the (m+1)th row of the Pascal triangle:
         # m=0         1
@@ -138,12 +149,12 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
     # thus reducing the effective dimension
 
     # mean correlation length in every dimension
-    Ld = [mean(_) for _ in Labs]
-    neff = sum(Ld .> 0)
+    # Ld = [mean(_) for _ in Labs]
+    # neff = sum(Ld .> 0)
 
-    # geometric mean
-    geomean(v) = prod(v)^(1/length(v))
-    L = geomean(Ld[Ld .> 0])
+    # # geometric mean
+    # geomean(v) = prod(v)^(1/length(v))
+    # L = geomean(Ld[Ld .> 0])
 
 
     # norm taking only dimension into account with non-zero correlation

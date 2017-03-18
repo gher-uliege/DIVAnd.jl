@@ -329,14 +329,14 @@ defined by the coordinates `xi` and the scales factors `pmn`.
         tol = 2e-3
 		
         maxiter=10*Int(ceil(sqrt(size(HI)[1])))
-		maxiter=200
+		maxiter=1000
         pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 		# To compensate for the missing correlations in HI*scP*HI'
 		
         diagshift=0.006*(sqrt(size(HI)[1]/size(HI)[2])-1);
-		diagshift=0.01*(sqrt(size(HI)[1]/size(HI)[2])-1);
-		#diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
+		diagshift=0.03*(sqrt(size(HI)[1]/size(HI)[2])-1);
+		diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
         #diagshift=0.01
 		#		 Z=randn(size(HI)[2],5);
 		#		 diagshift=mean(diagMtCM(scP,Z)./diag(Z'*Z))
