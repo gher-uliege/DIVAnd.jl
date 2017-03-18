@@ -14,11 +14,12 @@ function divand_cvestimator(s,residual)
 
     v1=(1-s.obsout).*(s.obsconstrain.R\ residual);
     v2=(1-s.obsout).*(s.obsconstrain.R\ ones(size(residual))) ;
-    if VERSION == v"0.5"
-        return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
-    else
-        return (residual'*v1) / (ones(size(residual))'*v2)
-    end
+    # if VERSION == v"0.5"
+        # return reshape( (residual'*v1)/ (ones(size(residual))'*v2),1)[1]
+    # else
+        # return (residual'*v1) / (ones(size(residual))'*v2)
+    # end
+	return dot(residual,v1) / dot(ones(size(residual)),v2)
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
