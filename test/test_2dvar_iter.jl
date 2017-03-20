@@ -73,7 +73,7 @@ va_dual,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
 function compPCdual(iB,H,R)
     B = CovarIS(iB)
     M = H * (B * full(H)') + sparse_diag(diag(R));
-    
+
     iM = CovarIS(M);
     factorize!(iM);
     @show typeof(M)

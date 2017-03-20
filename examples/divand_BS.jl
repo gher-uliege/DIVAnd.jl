@@ -88,7 +88,7 @@ lent = fill(1.,sz)
 
 # Prepare background as mean vertical profile and time evolution. Just call divand in two dimensions forgetting x and y ...
 #
- mask4=trues(size(mask3)[3],size(mask3)[4])
+mask4=trues(size(mask3)[3],size(mask3)[4])
 vm = mean(value)
 va = value - vm
 fm,sm=divandrun(mask4,(po[1,1,:,:],pp[1,1,:,:]),(zi[1,1,:,:],ti[1,1,:,:]),(depth,time2),va,(4*lenz[1,1,:,:],4*lent[1,1,:,:]),epsilon2)
@@ -99,9 +99,9 @@ vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
 fma=zeros(size(mask3))
 
 for i=1:size(mask3)[1]
-for ii=1:size(mask3)[2]
-fma[i,ii,:,:]=fm[:,:]
-end
+    for ii=1:size(mask3)[2]
+        fma[i,ii,:,:]=fm[:,:]
+    end
 end
 
 n=ndims(mask3)
@@ -109,13 +109,13 @@ n=ndims(mask3)
 toaverage=[true true false false]
 
 dimstokeep=[]
-	for i=1:n
-		if !toaverage[i]
-		  dimstokeep=vcat(dimstokeep,[i])
-		end
-	end
-    @show dimstokeep	
-	
+for i=1:n
+    if !toaverage[i]
+        dimstokeep=vcat(dimstokeep,[i])
+    end
+end
+@show dimstokeep
+
 
 reshapeshape =([(toaverage[i] ? (1) : (size(mask3)[i])) for i = 1:n]...)
 copyshape =([(toaverage[i] ? (size(mask3)[i]) : (1)) for i = 1:n]...)
@@ -140,7 +140,7 @@ fmaa=repeat(reshape(fm,reshapeshape), inner=copyshape)
 
 pcolor(zi[1,1,:,:],ti[1,1,:,:],fm+vm)
 
-#Todo: define new anomalies based on this profiles using sm.H of course. 
+#Todo: define new anomalies based on this profiles using sm.H of course.
 # Maybe an even better solution is to make a general averaging function
 
 

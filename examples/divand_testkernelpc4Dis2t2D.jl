@@ -47,20 +47,20 @@ xg2=statevector_pack(s.sv,(fi2,))
 s=0
 gc()
 
-   xguess=(xg1.+xg2)/2.;     
-   
+xguess=(xg1.+xg2)/2.;
+
 #   @show var((fi1+fi2+fi3)/3-fi)/var(fi)
-   
-        tol = 1e-4
+
+tol = 1e-4
 
 
-        maxiter=1000
+maxiter=1000
 
-        pcargs = [(:tol, tol),(:maxit,maxiter)]
+pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 
 
-        diagshift=0.00004;
+diagshift=0.00004;
 
 #PC=(PC1+PC2+PC3)/3.
 #PC=PC*PC
@@ -69,21 +69,21 @@ scalef=xr'*(PC1*(PC2*(((PC2*(PC1*xr))))))./(xr'*xr)
 @show scalef
 
 function compPC(iB,H,R)
-#            return x -> diagshift*x+PC*x;
-#            return x -> diagshift*x+1./9.*PC1*(PC1*x+PC2*x+PC3*x)+1./9.*PC2*(PC1*x+PC2*x+PC3*x)+1./9.*PC3*(PC1*x+PC2*x+PC3*x)			    
-#return x -> diagshift*x+1./9.*(PC1*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))   	
-#return x -> diagshift*x+1./3.*(PC1*(PC1*x)+(PC2*(PC2*x)+(PC3*(PC3*x))))#+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))   	
-      return x -> diagshift*x+1./scalef[1]*(PC1*(PC2*(((PC2*(PC1*x))))))
+    #            return x -> diagshift*x+PC*x;
+    #            return x -> diagshift*x+1./9.*PC1*(PC1*x+PC2*x+PC3*x)+1./9.*PC2*(PC1*x+PC2*x+PC3*x)+1./9.*PC3*(PC1*x+PC2*x+PC3*x)
+    #return x -> diagshift*x+1./9.*(PC1*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))
+    #return x -> diagshift*x+1./3.*(PC1*(PC1*x)+(PC2*(PC2*x)+(PC3*(PC3*x))))#+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))
+    return x -> diagshift*x+1./scalef[1]*(PC1*(PC2*(((PC2*(PC1*x))))))
 
-			#return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
-			#return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
-			#return x -> diagshift*x+(PCA*x);
-            #     return jmPHI'*(jmPHI*x);
-            #   return x->x;
-        end
-        # First guess is the HI* coarse solution
+    #return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
+    #return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
+    #return x -> diagshift*x+(PCA*x);
+    #     return jmPHI'*(jmPHI*x);
+    #   return x->x;
+end
+# First guess is the HI* coarse solution
 
-        # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
+# HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?,ti
 
 

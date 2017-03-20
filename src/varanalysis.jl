@@ -4,7 +4,7 @@ Variational analysis similar to 3D-var
 Kernel is the solution of the n-dimensional diffusion equation
 
 ∂c/∂t = =  ∇ ⋅ (D ∇ c)
- 
+
 n-dimensional Green’s function
 
 G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
@@ -39,7 +39,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     nu = ([L.^2 for L in len]...)
 
-    # D represents the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the 
+    # D represents the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the
     # correlation length-scale squared
 
     D = divand_laplacian(Val{:MatFun},mask,pmn,nu,falses(4))
@@ -54,7 +54,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     nmax = round(Int,1/(2*α))
 
-    # the background error covariance matrix is    
+    # the background error covariance matrix is
     # B = (I + α * D)^nmax;
 
     # the square root of the background error covariance matrix:
@@ -68,7 +68,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
         return x
     end
 
-    # matrix-like type of 
+    # matrix-like type of
     B½ = MatFun(size(D),funB½,funB½)
 
     fun(x) = x + (B½ * (H' * (R \ (H * (B½ * x)))))

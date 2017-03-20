@@ -29,7 +29,7 @@ where `A` is a symmetric positive defined matrix and `b` is a vector. The functi
 
 # the columns of Q are the Lanczos vectors
 
-function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, maxit = min(size(b,1),20), 
+function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, maxit = min(size(b,1),20),
                            minit = 0,
                            progress = (iter,x,r,tol2,fun,b) -> nothing
                            )
@@ -66,7 +66,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
     # quick exit
     if r⋅r < tol2
-	    return x,true,0
+        return x,true,0
     end
 
 
@@ -124,13 +124,13 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
         progress(k,x,r,tol2,fun,b)
 
-if mod(k,10)==1
- @show k, r ⋅ r,tol2,size(r)
-end
-		
+        if mod(k,10)==1
+            @show k, r ⋅ r,tol2,size(r)
+        end
+
         if r ⋅ r < tol2 && k >= minit
             success = true
-			@show k
+            @show k
             break
         end
 
@@ -147,7 +147,7 @@ end
         p = z + beta[k+1]*p;
         zr_old = zr_new;
         r_old = r;
-        
+
     end
 
     return x,success,k

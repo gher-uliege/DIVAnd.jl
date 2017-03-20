@@ -58,5 +58,3 @@ end
 # this program; if not, see <http://www.gnu.org/licenses/>.
 
 # LocalWords:  fi divand pmn len diag CovarParam vel ceil moddim fracdim
-
-

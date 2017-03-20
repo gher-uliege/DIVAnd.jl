@@ -34,7 +34,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
        cost function. The first element multiplies the norm.
        The other i-th element of alpha multiplies the (i+1)-th derivative.
        Per default, the highest derivative is m = ceil(1+neff/2) where neff is the
-       effective dimension of the problem (the number of dimensions with a nonzero 
+       effective dimension of the problem (the number of dimensions with a nonzero
        correlation length).
 
        The values of alpha is the (m+1)th row of the Pascal triangle:
@@ -80,11 +80,11 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `f0`: starting field for iterative dual algorithm (same size as the observations `f`)
 
-* `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions 
+* `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions
     to define the constrains.
 
-* `scale_len`: true (default) if the correlation length-scale should be scaled such that the analysical 
-    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance. The kernel behaves thus similar to 
+* `scale_len`: true (default) if the correlation length-scale should be scaled such that the analysical
+    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance. The kernel behaves thus similar to
     the default kernel in two dimensions (alpha = [1,2,1]).
 
 # Output:
@@ -125,23 +125,23 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    operatortype = Val{:sparse},
                    alphabc = 1.0,
                    scale_len = true,
-		   btrunc=[]
+                   btrunc=[]
                    )
 
 
     # check inputs
     if !any(mask[:])
         warn("no sea points in mask, will return NaN");
-		
-	return     fill!(Array(Float64,size(mask)),NaN),0
+
+        return     fill!(Array(Float64,size(mask)),NaN),0
 
 
 
     end
 
-#	@show alphabc
-#	@show moddim
-	
+    #       @show alphabc
+    #       @show moddim
+
     pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
     #For testing this version of alphabc deactivate the other one

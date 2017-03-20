@@ -30,16 +30,16 @@ scalel=1.25715/0.69315
 
 @time fipca,spc = divandjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2 2 2 2],[scalel scalel scalel 0];alphabc=1);
 
-       tol = 2e-3
+tol = 2e-3
 
 
-        maxiter=10000
+maxiter=10000
 
-        pcargs = [(:tol, tol),(:maxit,maxiter)]
+pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 
 
-        diagshift=0.00004;
+diagshift=0.00004;
 
 
 

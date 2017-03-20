@@ -5,4 +5,4 @@ makedocs(
          sitename = "divand",
          pages = [
                   "index.md"]
-)
+         )

@@ -54,7 +54,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     # for coordinates tuples of the grid (xin,yin, .. )  and data (x,y)
     # in the direction, shift coordinates and apply modulo mod(x-x0+L/2,L)
     #
-    
+
 
 
 
@@ -68,9 +68,9 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
     # Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
     #fi=zeros(size(mask));
-    
-	fi=SharedArray(Float64,size(mask));
-	erri=SharedArray(Float64,size(mask));
+
+    fi=SharedArray(Float64,size(mask));
+    erri=SharedArray(Float64,size(mask));
     @sync @parallel for iwin=1:size(windowlist)[1]
 
         iw1=windowlist[iwin][1]
@@ -102,16 +102,16 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         end
 
 
-        
+
 
 
 
         if jfound>0
-		    warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
+            warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
             # modify the parameter
             otherargsw=deepcopy(otherargs)
             otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
-         else
+        else
             otherargsw=otherargs
         end
 
@@ -138,20 +138,20 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
         fw=0
         s=0
-		
-		xiw=deepcopy(([ x[windowpoints...] for x in xi ]...))
-		
-		
-		# NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
-		
-		Labsw=Labs
-		if !isa(Labs,Number)
-           if !isa(Labs[1],Number)
-             Labsw= ([ x[windowpoints...] for x in Labs ]...)
-           end
+
+        xiw=deepcopy(([ x[windowpoints...] for x in xi ]...))
+
+
+        # NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
+
+        Labsw=Labs
+        if !isa(Labs,Number)
+            if !isa(Labs[1],Number)
+                Labsw= ([ x[windowpoints...] for x in Labs ]...)
+            end
         end
-		
-		
+
+
         kfound=0
         for j=1:size(otherargs)[1]
             if otherargs[j][1]==:alphabc
@@ -161,106 +161,106 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         end
 
         if 3==2
-		if kfound>0
-            # modify the parameter only in the window model
-            if jfound>0
-				# Ok this is alreay a copy and you can change it
-				otherargsw[kfound]=(:alphabc,1)
-			  else
-				otherargsw=deepcopy(otherargs)
-				otherargsw[kfound]=(:alphabc,1)
-		    end
-		  else
-			warn("Need to expand")
-			otherargsw=vcat(otherargsw,(:alphabc,1))
-		end
-		end
-		
-		# If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
-        # Verify if a direct solver was requested from the demain decomposer
-		@show alphanormpc
-		@show csteps
-        if sum(csteps)>0
-             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
-			 if errormethod==:cpme
-			 s=0
-			 gc()
-			  # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
-			  errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
-			 end
-# for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ? 
-         else
-# Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
-             fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
-			 if errormethod==:cpme
-			  errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
-			 end
-         end
+            if kfound>0
+                # modify the parameter only in the window model
+                if jfound>0
+                    # Ok this is alreay a copy and you can change it
+                    otherargsw[kfound]=(:alphabc,1)
+                else
+                    otherargsw=deepcopy(otherargs)
+                    otherargsw[kfound]=(:alphabc,1)
+                end
+            else
+                warn("Need to expand")
+                otherargsw=vcat(otherargsw,(:alphabc,1))
+            end
+        end
 
-		 if errormethod==:none
-		  errw=fill!(Array(Float64,size(fw)),NaN)
-		 end
-		 
-    	 # Cpme: just run and take out same window
+        # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
+        # Verify if a direct solver was requested from the demain decomposer
+        @show alphanormpc
+        @show csteps
+        if sum(csteps)>0
+            fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
+            if errormethod==:cpme
+                s=0
+                gc()
+                # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
+                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
+            end
+            # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
+        else
+            # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
+            fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
+            if errormethod==:cpme
+                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
+            end
+        end
+
+        if errormethod==:none
+            errw=fill!(Array(Float64,size(fw)),NaN)
+        end
+
+        # Cpme: just run and take out same window
 
         # AEXERR: just run and() take out same window
 
-         if errormethod==:exact
-        # EXERR: P only to points on the inner grid, not the overlapping one !
-		# Initialize errw everywhere,
-					errw=0.*fw
-		# For packing, take the stavevector returned except when sum(csteps)>n 
-		# in this case recreate a statevector
-					if sum(csteps)==n
-						sverr=statevector_init((mask[windowpoints...],))
-			         else
-						sverr=s.sv   
-					end
-					svn=size(sverr)[1]
-					@show size(sverr)
-					errv=statevector_pack(sverr,(errw,))
-		# Loop over window points. From grid index to statevector index so that ve is 
-		# zero exect one at that index. Then calculate the error and store it in the the 
-		# sv representation of the error
-		            
-					@show windowpoints[1]
-					for gridindex in windowpoints
-					  @show gridindex
-					  ei=zeros(svn)
-					  ind = statevector_sub2ind(svn,gridindex)
-					  ei[ind]=1
-					#  HIP=HI'*ei
-					#  errv[ind]=diagMtCM(sc.P,HIP)
-					end
-					errw=statevector_unpack(svn,errv)
-        # Maybe better fill in first HIP = HI'*[ ... ei ...] 
-		# then something as errfield=diagMtCM(sc.P,HIP)
-        # at the end of the loop, unpack the sv error field into errw
-        # End error fields
-		 end
+        if errormethod==:exact
+            # EXERR: P only to points on the inner grid, not the overlapping one !
+            # Initialize errw everywhere,
+            errw=0.*fw
+            # For packing, take the stavevector returned except when sum(csteps)>n
+            # in this case recreate a statevector
+            if sum(csteps)==n
+                sverr=statevector_init((mask[windowpoints...],))
+            else
+                sverr=s.sv
+            end
+            svn=size(sverr)[1]
+            @show size(sverr)
+            errv=statevector_pack(sverr,(errw,))
+            # Loop over window points. From grid index to statevector index so that ve is
+            # zero exect one at that index. Then calculate the error and store it in the the
+            # sv representation of the error
+
+            @show windowpoints[1]
+            for gridindex in windowpoints
+                @show gridindex
+                ei=zeros(svn)
+                ind = statevector_sub2ind(svn,gridindex)
+                ei[ind]=1
+                #  HIP=HI'*ei
+                #  errv[ind]=diagMtCM(sc.P,HIP)
+            end
+            errw=statevector_unpack(svn,errv)
+            # Maybe better fill in first HIP = HI'*[ ... ei ...]
+            # then something as errfield=diagMtCM(sc.P,HIP)
+            # at the end of the loop, unpack the sv error field into errw
+            # End error fields
+        end
 
 
-        # copy, deepcopy or just = ???
+# copy, deepcopy or just = ???
 
 
 
-        windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
-        windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
+windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
+windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
-    
-        fi[windowpointsstore...]= fw[windowpointssol...];
-		erri[windowpointsstore...]=errw[windowpointssol...];
-		
 
-    end
+fi[windowpointsstore...]= fw[windowpointssol...];
+erri[windowpointsstore...]=errw[windowpointssol...];
 
-    # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
-    # it also makes the shared array possible to save in netCDF??
-	fi=divand_filter3(fi,NaN,2)
-	erri=divand_filter3(erri,NaN,3)
 
-	
-    return fi,erri
+end
+
+# When finished apply an nd filtering to smooth possible edges, particularly in error fields.
+# it also makes the shared array possible to save in netCDF??
+fi=divand_filter3(fi,NaN,2)
+erri=divand_filter3(erri,NaN,3)
+
+
+return fi,erri
 
 
 

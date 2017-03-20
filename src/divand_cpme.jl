@@ -39,24 +39,24 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
 
 
-@show otherargs
+    @show otherargs
     errorscale=1;
 
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
     # Could be a small improvement. Also used in divand_aexerr
-	
-	
-	if isa(Labs,Tuple)
-            len=([x./1.70766 for x in Labs]...);
-                    else
-            len=Labs./1.70766
+
+
+    if isa(Labs,Tuple)
+        len=([x./1.70766 for x in Labs]...);
+    else
+        len=Labs./1.70766
     end
-	
-	
-	if sum(csteps)>0
-	cpme,s =  divandjog(mask,pmn,xi,x,ones(size(f)),len,epsilon2,csteps,lmask; alphapc=alphapc, otherargs...);
-	        else
-    cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len,epsilon2; otherargs...);
+
+
+    if sum(csteps)>0
+        cpme,s =  divandjog(mask,pmn,xi,x,ones(size(f)),len,epsilon2,csteps,lmask; alphapc=alphapc, otherargs...);
+    else
+        cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len,epsilon2; otherargs...);
     end
     cpme=errorscale.*(-cpme.+1);
 
@@ -81,5 +81,3 @@ end
 # this program; if not, see <http://www.gnu.org/licenses/>.
 
 # LocalWords:  fi divand pmn len diag CovarParam vel ceil moddim fracdim
-
-

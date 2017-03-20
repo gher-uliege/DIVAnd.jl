@@ -42,40 +42,40 @@ fipc2=0
 for ii=1:itest
 
 
-lenfac=0.5+ii/itest*4.0
+    lenfac=0.5+ii/itest*4.0
 
-lenfac=4.1
-epsfacc=0.00005+(ii-1)/itest*0.02
+    lenfac=4.1
+    epsfacc=0.00005+(ii-1)/itest*0.02
 
-lenf[ii]=lenfac
+    lenf[ii]=lenfac
 
-lena=([x[1]*lenfac for x in len]...)
-@time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1 2 1]);
+    lena=([x[1]*lenfac for x in len]...)
+    @time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1 2 1]);
 
-@time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1 1]);
+    @time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1 1]);
 
-ampli=sum(fipc.*fi)/sum(fipc.*fipc)
-ampli2=sum(fipc2.*fi)/sum(fipc2.*fipc2)
+    ampli=sum(fipc.*fi)/sum(fipc.*fipc)
+    ampli2=sum(fipc2.*fi)/sum(fipc2.*fipc2)
 
-ffac[ii]=ampli
-ffac2[ii]=ampli2
+    ffac[ii]=ampli
+    ffac2[ii]=ampli2
 
-epsfac[ii]=epsilon2/(ampli*(1+epsilon2)-1)
-epsfac2[ii]=epsilon2/(ampli2*(1+epsilon2)-1)
+    epsfac[ii]=epsilon2/(ampli*(1+epsilon2)-1)
+    epsfac2[ii]=epsilon2/(ampli2*(1+epsilon2)-1)
 
-epsfac[ii]=epsfacc
-epsfac2[ii]=epsfacc
+    epsfac[ii]=epsfacc
+    epsfac2[ii]=epsfacc
 
 
-rms[ii]=sqrt(var(fi-ampli*fipc))
-rms2[ii]=sqrt(var(fi-ampli2*fipc2))
+    rms[ii]=sqrt(var(fi-ampli*fipc))
+    rms2[ii]=sqrt(var(fi-ampli2*fipc2))
 
-@time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 2 1]);
+    @time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 2 1]);
 
-@time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 1]);
+    @time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 1]);
 
-rmsb[ii]=sqrt(var(fi-fipc))
-rmsb2[ii]=sqrt(var(fi-fipc2))
+    rmsb[ii]=sqrt(var(fi-fipc))
+    rmsb2[ii]=sqrt(var(fi-fipc2))
 
 
 end

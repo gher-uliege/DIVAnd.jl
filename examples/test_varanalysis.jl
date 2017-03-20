@@ -38,9 +38,9 @@ tol = 1e-5
 # http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 # equation 60
 # n-dimensional Green’s function
-# ∂c  
+# ∂c
 # --  =  ∇ ⋅ (D ∇ c)
-# ∂t 
+# ∂t
 
 # G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
 

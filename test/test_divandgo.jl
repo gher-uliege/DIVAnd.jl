@@ -37,7 +37,7 @@ epsilon2 = 1;
 
 fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
 
-# to compare to the filtered version 
+# to compare to the filtered version
 fiexf=divand_filter3(fiex,NaN,2)
 
 fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);

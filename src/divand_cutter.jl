@@ -59,31 +59,31 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
             csteps[i]=minimum([nsamp,3])
         end
     end
-@show csteps
+    @show csteps
     #################################################################
     # Decide which directions are not coupled during preconditionning
     lmask=ones(n)
 
     # For the moment hardwired decoupling on z only
-	
-	
-    lmask=ones(n)
-	
-	
-	alphapc=[1 2 1]
 
-	if n==4	
-	 lmask[3]=0
-	 lmask=lmask*1.25715/0.69315
-	end
-    
-	
-	if n==3	
-	 lmask=lmask*1.25715/0.69315
-	end
-	
-	
-	
+
+    lmask=ones(n)
+
+
+    alphapc=[1 2 1]
+
+    if n==4
+        lmask[3]=0
+        lmask=lmask*1.25715/0.69315
+    end
+
+
+    if n==3
+        lmask=lmask*1.25715/0.69315
+    end
+
+
+
 
     #####################################################################################
     # Define overlapping and stepsize
@@ -100,7 +100,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows
         csteps=0*csteps
-		warn("Testing forced jog")
+        warn("Testing forced jog")
     end
 
 

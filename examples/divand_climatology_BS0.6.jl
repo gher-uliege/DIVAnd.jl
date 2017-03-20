@@ -104,7 +104,7 @@ fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(le
 
 
 fi=fi+fmb+vm
-# Why is this filter necessary; sharedArray not supported ?? 
+# Why is this filter necessary; sharedArray not supported ??
 #fi=divand_filter3(fi,NaN,2)
 #erri=divand_filter3(erri,NaN,2)
 

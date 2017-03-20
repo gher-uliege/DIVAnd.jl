@@ -30,23 +30,23 @@ iB2=spc.iB
 xguess=statevector_pack(spc.sv,(fipca,))
 
 
-        tol = 2e-3
+tol = 2e-3
 
 
-        maxiter=10000
+maxiter=10000
 
-        pcargs = [(:tol, tol),(:maxit,maxiter)]
+pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 
 
-        diagshift=0.0004;
+diagshift=0.0004;
 
 
 
 function compPC(iB,H,R)
-             
-			return x -> diagshift*x+  PCA*x .- 0.5.*(PCA*(iB*(PCA*x)-iB2*(PCA*x)));
-        end
+
+    return x -> diagshift*x+  PCA*x .- 0.5.*(PCA*(iB*(PCA*x)-iB2*(PCA*x)));
+end
 
 
 

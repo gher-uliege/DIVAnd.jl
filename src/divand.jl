@@ -232,16 +232,16 @@ end
 
 
 function dvmaskexpand(x)
-		z=deepcopy(x)
-		sz=size(z)[1]
-			for i=1:sz
-				if !z[i]
-					ip=min(i+1,sz)
-					im=max(i-1,1)
-					z[i]=(x[im] | x[ip])
-				end
-			end
-		return z
+    z=deepcopy(x)
+    sz=size(z)[1]
+    for i=1:sz
+        if !z[i]
+            ip=min(i+1,sz)
+            im=max(i-1,1)
+            z[i]=(x[im] | x[ip])
+        end
+    end
+    return z
 end
 
 

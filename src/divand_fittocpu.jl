@@ -42,13 +42,13 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
     # How wide is the overlap in terms of number of length scales
     factoroverlap=3.3
 
-	biggestproblemitern=[500*500 500*500 50*50*50 100*100*6*12]
-	biggestproblemitern=[500*500 500*500 50*50*50 80*80*6*12]
-	biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]
-	
-	biggestproblemiter=biggestproblemitern[minimum([n,4])]
-	biggestproblemdirect=biggestproblemdirectn[minimum([n,4])]
-	
+    biggestproblemitern=[500*500 500*500 50*50*50 100*100*6*12]
+    biggestproblemitern=[500*500 500*500 50*50*50 80*80*6*12]
+    biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]
+
+    biggestproblemiter=biggestproblemitern[minimum([n,4])]
+    biggestproblemdirect=biggestproblemdirectn[minimum([n,4])]
+
     #if n<3
     #    biggestproblemiter=500*500
     #    biggestproblemdirect=200*200
@@ -99,7 +99,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
     higherdims=1
 
     if n>2
-	    stepsize[3]=2;
+        stepsize[3]=2;
         overlapping[3]=2;
         higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
     end
@@ -136,7 +136,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
     end
 
     problemsize=problemsize/prod(latercsteps[1:2])
-	@show problemsize
+    @show problemsize
 
 
     if nwd>0
@@ -173,7 +173,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
     #Force direct solver if you want by uncommenting next line
     # isdirect=(0<1)
 
-@show stepsize
+    @show stepsize
 
     return stepsize,overlapping,isdirect
 

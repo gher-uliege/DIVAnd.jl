@@ -56,30 +56,30 @@ lena=([x[1]*lenfac for x in len]...)
 @time fipc2,spc2 = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 1]);
 
 xguess=statevector_pack(spc2.sv,(fipc2,));
-        scP=spc2.P;
-
-  
-        tol = 2e-3
+scP=spc2.P;
 
 
-        maxiter=10000
-
-        pcargs = [(:tol, tol),(:maxit,maxiter)]
+tol = 2e-3
 
 
+maxiter=10000
 
-        diagshift=0.004;
+pcargs = [(:tol, tol),(:maxit,maxiter)]
+
+
+
+diagshift=0.004;
 
 
 
 function compPC(iB,H,R)
-            return x -> diagshift*x+(scP*x);
-            #     return jmPHI'*(jmPHI*x);
-            #   return x->x;
-        end
-        # First guess is the HI* coarse solution
+    return x -> diagshift*x+(scP*x);
+    #     return jmPHI'*(jmPHI*x);
+    #   return x->x;
+end
+# First guess is the HI* coarse solution
 
-        # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
+# HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?
 
 

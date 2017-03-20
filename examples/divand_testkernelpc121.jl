@@ -41,31 +41,31 @@ PCB=spc.P
 #@show mpca
 xguessb=statevector_pack(spc.sv,(fipcb,))
 xguess=(xguessa+0.0*xguessb)
-        tol = 2e-3
+tol = 2e-3
 
 
-        maxiter=10000
+maxiter=10000
 
-        pcargs = [(:tol, tol),(:maxit,maxiter)]
+pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 
 
-        diagshift=0.00004;
+diagshift=0.00004;
 
 
 
 function compPC(iB,H,R)
 
-			return x -> diagshift*x+(PCA*x);
-			#return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
-			#return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
-			#return x -> diagshift*x+(PCA*x);
-            #     return jmPHI'*(jmPHI*x);
-            #   return x->x;
-        end
-        # First guess is the HI* coarse solution
+    return x -> diagshift*x+(PCA*x);
+    #return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
+    #return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
+    #return x -> diagshift*x+(PCA*x);
+    #     return jmPHI'*(jmPHI*x);
+    #   return x->x;
+end
+# First guess is the HI* coarse solution
 
-        # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
+# HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?
 
 

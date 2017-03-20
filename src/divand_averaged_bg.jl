@@ -10,7 +10,7 @@
 # Presently NO optional arguments from divandrun supported except moddim
 
 # Output:
-# 
+#
 * fma: Analysis where in the directions where toaverage is true, the same value is found
 * faanom: Data anomalies when the analysis is subtracted from the input field.
 
@@ -19,106 +19,106 @@
 
 function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
-	n=ndims(mask)
+    n=ndims(mask)
 
-	if isempty(moddim)
+    if isempty(moddim)
         moddim = zeros(1,n)
-	end
+    end
 
 
-	if sum(toaverage)==n
-		vm=mean(f)
-		fma=fill(vm,size(mask));
-		faanom=f-vm
-		return fma,faanom
-	end
+    if sum(toaverage)==n
+        vm=mean(f)
+        fma=fill(vm,size(mask));
+        faanom=f-vm
+        return fma,faanom
+    end
 
-	if sum(toaverage)==0
-		warn("no averaging was asked in averaging routine")
-		fma,s=divandrun(mask,pmn,xi,x,f,len,epsilon2)
-		faanom=f-s.H*statevector_pack(s.sv,(fma,))
-		return fma,faanom
-	end
-
-
-
+    if sum(toaverage)==0
+        warn("no averaging was asked in averaging routine")
+        fma,s=divandrun(mask,pmn,xi,x,f,len,epsilon2)
+        faanom=f-s.H*statevector_pack(s.sv,(fma,))
+        return fma,faanom
+    end
 
 
 
-# if average in a direction, just take the point 1 in this direction
 
-#    @show toaverage
-	ind1 = [(toaverage[i] ? (1) : (:)) for i = 1:n]
-	
-#	@show ind1
 
-#	@show trues(3)
-#	@show size(mask)
-	
-	
+
+    # if average in a direction, just take the point 1 in this direction
+
+    #    @show toaverage
+    ind1 = [(toaverage[i] ? (1) : (:)) for i = 1:n]
+
+    #       @show ind1
+
+    #       @show trues(3)
+    #       @show size(mask)
+
+
 
     # In the following maybe there are better ways to extract the relevant fields
-	# instead of copying tuples and then extracting. Did look into things like
-	# ww=( [ (toaverage[i] ? z[i]:()) for i=1:4]...)
-	# but it left empty dimensions instead of taking them out
-	#
-	
-	dimstokeep=[]
-	for i=1:n
-		if !toaverage[i]
-		  dimstokeep=vcat(dimstokeep,[i])
-		end
-	end
-#   @show dimstokeep	
-	
-	xm=x[dimstokeep]
-	moddimm=moddim[dimstokeep]
-	
-	pmnmf=pmn[dimstokeep]
-	ximf=xi[dimstokeep]
-	
-	pmnm=([ x[ind1...] for x in pmnmf ]...)
-	xim=([ x[ind1...] for x in ximf ]...)
-	
-	
-	if isa(len,Number)
-       lenm=len
+    # instead of copying tuples and then extracting. Did look into things like
+    # ww=( [ (toaverage[i] ? z[i]:()) for i=1:4]...)
+    # but it left empty dimensions instead of taking them out
+    #
+
+    dimstokeep=[]
+    for i=1:n
+        if !toaverage[i]
+            dimstokeep=vcat(dimstokeep,[i])
+        end
+    end
+    #   @show dimstokeep
+
+    xm=x[dimstokeep]
+    moddimm=moddim[dimstokeep]
+
+    pmnmf=pmn[dimstokeep]
+    ximf=xi[dimstokeep]
+
+    pmnm=([ x[ind1...] for x in pmnmf ]...)
+    xim=([ x[ind1...] for x in ximf ]...)
+
+
+    if isa(len,Number)
+        lenm=len
     elseif isa(len,Tuple)
         if isa(len[1],Number)
             lenm=len[dimstokeep]
-           else
+        else
             lenmf=len[dimstokeep]
-			lenm=([ x[ind1...] for x in lenmf ]...)
-		end
+            lenm=([ x[ind1...] for x in lenmf ]...)
+        end
     end
-	
 
-	# For len need to check if nunber, tuple of numbers or tuples of tuples
 
-	
-	#maskmf=trues(mask)
-	
-	#@show typeof(maskmf)
-	
-	#maskm=maskmf[ind1]
-	
-	maskm=trues(xim[1])
-#	@show size(maskm)
-	
-	
+    # For len need to check if nunber, tuple of numbers or tuples of tuples
+
+
+    #maskmf=trues(mask)
+
+    #@show typeof(maskmf)
+
+    #maskm=maskmf[ind1]
+
+    maskm=trues(xim[1])
+    #       @show size(maskm)
+
+
     fm,sm=divandrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
-	vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
-	faanom=f-vaanalyzed
+    vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
+    faanom=f-vaanalyzed
 
-	reshapeshape =([(toaverage[i] ? (1) : (size(mask)[i])) for i = 1:n]...)
-	copyshape =([(toaverage[i] ? (size(mask)[i]) : (1)) for i = 1:n]...)
+    reshapeshape =([(toaverage[i] ? (1) : (size(mask)[i])) for i = 1:n]...)
+    copyshape =([(toaverage[i] ? (size(mask)[i]) : (1)) for i = 1:n]...)
 
-#	@show reshapeshape
-#	@show copyshape
-	fma=repeat(reshape(fm,reshapeshape), inner=copyshape)
+    #       @show reshapeshape
+    #       @show copyshape
+    fma=repeat(reshape(fm,reshapeshape), inner=copyshape)
 
 
-	return fma,faanom
+    return fma,faanom
 
 end
 

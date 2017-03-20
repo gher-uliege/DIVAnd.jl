@@ -75,13 +75,13 @@ varr=zeros(100)
 rms=zeros(100)
 al=zeros(100)
 for ii=1:100
-alen=0.25+ii/100*1.25
-fi,si = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alen);
-fbi,sbi = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,1E6;alphabc=alen);
-Bi=diag(sbi.P);
-varr[ii]=sqrt(var(Bi))/sqrt(var(Bold))
-rms[ii]=sqrt(var(firef-fi))/sqrt(var(fiold-firef))
-al[ii]=alen
+    alen=0.25+ii/100*1.25
+    fi,si = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alen);
+    fbi,sbi = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,1E6;alphabc=alen);
+    Bi=diag(sbi.P);
+    varr[ii]=sqrt(var(Bi))/sqrt(var(Bold))
+    rms[ii]=sqrt(var(firef-fi))/sqrt(var(fiold-firef))
+    al[ii]=alen
 
 end
 

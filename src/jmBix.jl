@@ -5,40 +5,40 @@
 function jmBix(s,x;btrunc=[])
 
     iBx=s.iB*x
-	# @show btrunc
-	if btrunc==[]
-	  return iBx
-	end
-	
-	
+    # @show btrunc
+    if btrunc==[]
+        return iBx
+    end
+
+
     WE = s.WE;
     coeff = s.coeff;
     n = s.n;
     alpha=s.alpha
-	# incomplete Bi calculated before now complemented on the fly
-    
-	D=s.D
+    # incomplete Bi calculated before now complemented on the fly
+
+    D=s.D
     for j=btrunc+1:length(alpha)
         # exponent of laplacian
         k = Int(floor((j-2)/2))
-       # @show size(iBx)
-	   # @show size(x)
-		# @show size(s.iB)
+        # @show size(iBx)
+        # @show size(x)
+        # @show size(s.iB)
         #iBx_ = spzeros(iBx);
-		iBx_=0.*iBx;
+        iBx_=0.*iBx;
 
         if mod(j,2) == 0
             # constrain of derivative with uneven order (j-1)
             # (gradient, gradient*laplacian,...)
             # normalized by surface
             Dk=D^k
-			Dkx=Dk*x
+            Dkx=Dk*x
             for i=1:n
-#                Dx = s.WEss[i] * (s.Dx[i] * Dk);
-#                iBx_ = iBx_ + Dx'*(Dx*x);
-                 Dx = s.WEss[i] * s.Dx[i];
-				 # maybe gain if Dk=Dk'?
-                 iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
+                #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
+                #                iBx_ = iBx_ + Dx'*(Dx*x);
+                Dx = s.WEss[i] * s.Dx[i];
+                # maybe gain if Dk=Dk'?
+                iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
             end
 
         else
@@ -56,7 +56,7 @@ function jmBix(s,x;btrunc=[])
 
         iBx_ = iBx_/coeff;
 
-        
+
 
         iBx = iBx + alpha[j] * iBx_
     end

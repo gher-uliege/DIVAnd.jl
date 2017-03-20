@@ -47,4 +47,3 @@ fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[2,4,2]);
 
 fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[1,0,1]);
 @test 0.4 <= maximum(fi) <= 0.6
-

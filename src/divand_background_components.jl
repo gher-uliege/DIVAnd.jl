@@ -23,23 +23,23 @@ function divand_background_components(s,D,alpha; kwargs...)
     if haskey(kw,:iB)
         kw[:iB][1] = iB_
     end
-	
-	# Truncate stored iB AFTER term btrunc, so alpha[btrunc] is the last one
-	btrunc=length(alpha)
-	if haskey(kw,:btrunc)
+
+    # Truncate stored iB AFTER term btrunc, so alpha[btrunc] is the last one
+    btrunc=length(alpha)
+    if haskey(kw,:btrunc)
         btruncv=kw[:btrunc]
-		if btruncv != Any[]
-		 btrunc=btruncv
-		end
+        if btruncv != Any[]
+            btrunc=btruncv
+        end
     end
-	@show btrunc
+    @show btrunc
     # sum all terms of iB
     # iB is adimentional
     iB = alpha[1] * iB_
 
     # loop over all derivatives
 
-	    for j=2:btrunc
+    for j=2:btrunc
 
         # exponent of laplacian
         k = Int(floor((j-2)/2))
