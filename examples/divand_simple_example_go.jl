@@ -41,7 +41,7 @@ vscale=0
 # fi is the interpolated field
 @time fiexOLD,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
-@time fiOLD,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
+@time fiOLD,errOLD = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
 
 
@@ -65,7 +65,7 @@ colorbar()
 
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
-@time fi,s = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+@time fi,erri = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
 figure("Pp")
 
@@ -86,7 +86,17 @@ plot(x,y,"k.");
 colorbar()
 
 
+figure("Pppp")
 
+subplot(1,2,1)
+title("cpme NEW version")
+pcolor(xi,yi,erri)
+clim(0,1)
+subplot(1,2,2)
+title("cpme OLD version")
+pcolor(xi,yi,errOLD)
+clim(0,1)
+colorbar()
 
 
 

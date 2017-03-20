@@ -1,38 +1,59 @@
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
-using Base.Test
 
 using divand
-srand(1)
-x=randn(100)
-y=randn(100)
-z=randn(100)
-t=randn(100)
-f=z
+using PyPlot
 
-mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5))
+
+x=[0]
+y=[0]
+z=[0]
+f=[1]
+
+x=randn(200)
+y=randn(200)
+z=randn(200)
+f=x+y+z
+
+mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,30),linspace(-1,1,30),linspace(-1,1,30))
 
 # correlation length
-len = 1
+len = 0.3
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 0.01;
+epsilon2 = 1;
 
-fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true false true]);
+@time fipca,spc = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,alpha=[1 2 1]);
+PCA=spc.P
+iB2=spc.iB
 
-@test -1.6 < fi[1,1,1,1] < -1.4
-
-fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true true true]);
-
-
-
-@test -0.15 < fi[1,1,1,1] < 0
-
-fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
+xguess=statevector_pack(spc.sv,(fipca,))
 
 
+        tol = 2e-3
 
-@test -1.2 < fi[1,1,1,1] < -1.1
+
+        maxiter=10000
+
+        pcargs = [(:tol, tol),(:maxit,maxiter)]
+
+
+
+        diagshift=0.0004;
+
+
+
+function compPC(iB,H,R)
+             
+			return x -> diagshift*x+  PCA*x .- 0.5.*(PCA*(iB*(PCA*x)-iB2*(PCA*x)));
+        end
+
+
+
+
+@time fiiter,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess);
+
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

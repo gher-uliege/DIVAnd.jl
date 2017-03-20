@@ -42,6 +42,12 @@ using Base.Test
 	
 	include("test_averaged_bg.jl");
 
+	
+	# test divand_filter3
+	A=zeros(5,5,5,5,5);A[3,3,3,3,3]=1
+	z=divand_filter3(A,9999,1)
+	
+	@test maximum(z)≈0.00411522633744856
 
     # test divand_metric
     lon,lat = ndgrid([0:10;],[0:5;])

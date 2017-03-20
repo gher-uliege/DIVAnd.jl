@@ -124,22 +124,28 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},
                    alphabc = 1.0,
-                   scale_len = true
+                   scale_len = true,
+		   btrunc=[]
                    )
 
 
     # check inputs
     if !any(mask[:])
-        error("no sea points in mask");
+        warn("no sea points in mask, will return NaN");
+		
+	return     fill!(Array(Float64,size(mask)),NaN),0
+
+
+
     end
 
 #	@show alphabc
 #	@show moddim
 	
     pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
-		
+
     #For testing this version of alphabc deactivate the other one
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]);
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
 
     s.betap = 0;
     s.EOF_lambda = EOF_lambda;
@@ -225,7 +231,7 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
     divand_factorize!(s);
 
     #if !apply_EOF_contraint
-    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0);
+    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
     #else
     #    fi,s = divand_solve_eof(s,f);
     #end

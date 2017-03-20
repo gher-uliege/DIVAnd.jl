@@ -66,7 +66,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
     # quick exit
     if r⋅r < tol2
-        return x,true,0
+	    return x,true,0
     end
 
 
@@ -124,8 +124,13 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
         progress(k,x,r,tol2,fun,b)
 
+if mod(k,10)==1
+ @show k, r ⋅ r,tol2,size(r)
+end
+		
         if r ⋅ r < tol2 && k >= minit
             success = true
+			@show k
             break
         end
 

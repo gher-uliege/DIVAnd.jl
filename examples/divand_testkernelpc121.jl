@@ -26,16 +26,16 @@ epsilon2 = 1;
 
 scalel=1.25715/0.69315
 
-#@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2);
+#@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1);
 
-@time fipca,spc = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(len*scalel,len*scalel,len*scalel,0*len*scalel),epsilon2;alphabc=2,alpha=[1 2 1]);
+@time fipca,spc = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(len*scalel,len*scalel,len*scalel,0*len*scalel),epsilon2;alphabc=1,alpha=[1 2 1]);
 PCA=spc.P
 #mpca=mean(diag(PCA))
 #@show mpca
 xguessa=statevector_pack(spc.sv,(fipca,))
 
 
-@time fipcb,spc = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,len*scalel,len*scalel,len*scalel),epsilon2;alphabc=2,alpha=[1 2 1]);
+@time fipcb,spc = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,len*scalel,len*scalel,len*scalel),epsilon2;alphabc=1,alpha=[1 2 1]);
 PCB=spc.P
 #mpca=mean(diag(PCA))
 #@show mpca
@@ -71,7 +71,7 @@ function compPC(iB,H,R)
 
 # Then run with normal resolution and preconditionner
 
-@time fiiter2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg, fi0 =xguess);
+@time fiiter2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg, fi0 =xguess);
 
 
 @time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess);

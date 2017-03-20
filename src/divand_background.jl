@@ -17,7 +17,7 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = true,mapindex = [])
+function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = true,mapindex = []; btrunc = [])
 
 
     # number of dimensions
@@ -144,12 +144,19 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 		# pmn=pmnin	  
 	# end
 	# For the moment deactivate other versions
+	
+	# mean correlation length in every dimension
+    Ld = [mean(_) for _ in Labs]
+    neff = sum(Ld .> 0)
+
+    # geometric mean
+    geomean(v) = prod(v)^(1/length(v))
+    L = geomean(Ld[Ld .> 0])
+
+	
+	
 	alphabc=0
-	
-	
-	
-	
-	
+		
 
     #if ~isequal([size(mask) n],size(pmn))
     #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
@@ -167,11 +174,10 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     #pmnp = permute(pmn,[n+1 1:n])
 
     # mean correlation length in every dimension
-    Ld = [mean(L) for L in Labs]
 
-    # geometric mean
-    geomean(v) = prod(v)^(1/length(v))
-    L = geomean(Ld[Ld .> 0])
+    # # geometric mean
+    # geomean(v) = prod(v)^(1/length(v))
+    # L = geomean(Ld[Ld .> 0])
 
 
     # norm taking only dimension into account with non-zero correlation
@@ -313,7 +319,7 @@ s.coeff = coeff
 # number of dimensions
 s.n = n
 
-iB = divand_background_components(s,D,alpha)
+iB = divand_background_components(s,D,alpha,btrunc=btrunc)
 
 
 # inverse of background covariance matrix

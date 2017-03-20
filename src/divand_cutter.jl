@@ -1,7 +1,7 @@
 """
 
 
-windowlist,csteps,lmask = divand_cutter(Lpmnrange,gridsize,moddim=[]);
+windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps csteps for the preconditionners
@@ -21,6 +21,9 @@ windowlist,csteps,lmask = divand_cutter(Lpmnrange,gridsize,moddim=[]);
 # Output:
 
 * `windowlist`: Array of tuples (iw1 iw2 ...)
+* `csteps` : Array of steps for the coarse grid preconditionner
+* `lmask` : Array of multiplication factors for length scale of preconditionner
+* `alphapc` : Norm defining coefficients for preconditionner
 
 """
 
@@ -47,24 +50,40 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     ######################################################
     # Calculate the sampling steps for the preconditionner
     #
-    # TODO: if you want a direct solver put csteps zero
+    # If you want a direct solver put csteps zero
     ######################################################
     csteps=ones(Int,n);
     for i=1:n
         nsamp=Int(floor(Lpmnrange[i][1]/minimumpointsperlpc));
         if nsamp>1
-            csteps[i]=nsamp
+            csteps[i]=minimum([nsamp,3])
         end
     end
-
+@show csteps
     #################################################################
     # Decide which directions are not coupled during preconditionning
     lmask=ones(n)
 
-    # For the moment hardwired decoupling on z and terms
-    lmask[3:end]=0
+    # For the moment hardwired decoupling on z only
+	
+	
+    lmask=ones(n)
+	
+	
+	alphapc=[1 2 1]
 
-
+	if n==4	
+	 lmask[3]=0
+	 lmask=lmask*1.25715/0.69315
+	end
+    
+	
+	if n==3	
+	 lmask=lmask*1.25715/0.69315
+	end
+	
+	
+	
 
     #####################################################################################
     # Define overlapping and stepsize
@@ -76,11 +95,12 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
 
-    stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,moddim)
+    stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,csteps,moddim)
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows
         csteps=0*csteps
+		warn("Testing forced jog")
     end
 
 
@@ -162,7 +182,8 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
         end
         # end loop over all dimensions
 
-        # Need a deepopy here otherwise last values everywhere as only memory adress would be used
+        # Need a deepcopy here otherwise last values everywhere as only memory adress would be used
+
         windowlist[iw]=deepcopy((iw1,iw2,isol1,isol2,istore1,istore2,))
 
     end
@@ -175,10 +196,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
 
 
 
-
-
-
-    return windowlist,csteps,lmask
+    return windowlist,csteps,lmask,alphapc
 
 
 
