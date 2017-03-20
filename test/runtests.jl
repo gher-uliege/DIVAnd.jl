@@ -18,6 +18,7 @@ using Base.Test
 
     include("test_2dvar_adv.jl");
     include("test_2dvar_iter.jl");
+    include("test_2dvar_jog.jl");
     include("test_2dvar_error.jl");
 
     # cross-validation
@@ -37,6 +38,9 @@ using Base.Test
 
     # test kernel
     include("test_kernel.jl");
+	
+	
+	include("test_averaged_bg.jl");
 
 
     # test divand_metric
