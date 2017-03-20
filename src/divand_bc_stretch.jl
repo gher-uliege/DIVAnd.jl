@@ -19,7 +19,7 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
     iscyclic = moddim .> 0
 	
     Labs=deepcopy(Lin)
-
+#@show Labs
     if isa(Labs,Number)
         Labs = ((Labs * ones(size(mask)) for i=1:n)...)
     elseif isa(Labs,Tuple)
@@ -40,7 +40,7 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 # 
 
     if alphabc==0
-#	    warn("divand_bc_stretch was just used to fill in Labs")
+	    warn("divand_bc_stretch was just used to fill in Labs")
 	    return pmnin,xiin,Labs
 	end
 	

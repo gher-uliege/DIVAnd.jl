@@ -17,11 +17,17 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = [])
+function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = true,mapindex = [])
 
 
     # number of dimensions
     n = ndims(mask)
+
+    # must handle the case when Labs is zero in some dimension
+    # thus reducing the effective dimension
+    neff = sum([mean(L) > 0 for L in Labs])
+
+
     sz = size(mask)
 
     if isempty(moddim)
@@ -48,7 +54,48 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
     end
 
 	
+    if isempty(alpha)
+        # kernel should has be continuous derivative
+
+        # highest derivative in cost function
+        m = Int(ceil(1+neff/2))
+
+        # alpha is the (m+1)th row of the Pascal triangle:
+        # m=0         1
+        # m=1       1   1
+        # m=1     1   2   1
+        # m=2   1   3   3   1
+        # ...
+
+        alpha = [binomial(m,k) for k = 0:m]
+    end
 	
+
+
+    # scale iB such that the diagonal of inv(iB) is 1 far from
+    # the boundary
+    # we use the effective dimension neff to take into account that the
+    # correlation length-scale might be zero in some directions
+
+
+    coeff = 1
+    len_scale = 1
+    try
+        coeff,K,len_scale = divand_kernel(neff,alpha)
+    catch err
+        if isa(err, DomainError)
+            warn("no scaling for alpha=$(alpha)")
+        else
+            rethrow(err)
+        end
+    end
+
+    if scale_len
+        # scale Labs by len_scale so that all kernels are similar
+        Labs = ([L/len_scale for L in Labs]...)
+    end
+    
+
 	
 	    # #JM add alphabc for the moment
 	# # New version, make a
@@ -103,21 +150,6 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
 	
 	
 	
-    if isempty(alpha)
-        # kernel should has be continuous derivative
-
-        # highest derivative in cost function
-        m = Int(ceil(1+n/2))
-
-        # alpha is the (m+1)th row of the Pascal triangle:
-        # m=0         1
-        # m=1       1   1
-        # m=1     1   2   1
-        # m=2   1   3   3   1
-        # ...
-
-        alpha = [binomial(m,k) for k = 0:m]
-    end
 
     #if ~isequal([size(mask) n],size(pmn))
     #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
@@ -134,12 +166,8 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
     #Labsp = permute(Labs,[n+1 1:n])
     #pmnp = permute(pmn,[n+1 1:n])
 
-    # must handle the case when Labs is zero in some dimension
-    # thus reducing the effective dimension
-
     # mean correlation length in every dimension
-    Ld = [mean(_) for _ in Labs]
-    neff = sum(Ld .> 0)
+    Ld = [mean(L) for L in Labs]
 
     # geometric mean
     geomean(v) = prod(v)^(1/length(v))
@@ -189,10 +217,6 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
     WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
 
 
-    # scale iB such that the diagonal of inv(iB) is 1 far from
-    # the boundary
-    # we use the effective dimension neff to take into account that the
-    # correlation length-scale might be zero in some directions
 
     Ln = prod(Ld[Ld .> 0])
 
@@ -201,18 +225,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,mapindex = []
     #   #Ln = Ln * prod(pmnd(Ld <= 0))
     #end
 
-
-    coeff = 1
-    try
-        coeff,K = divand_kernel(neff,alpha)
-        coeff = coeff * Ln # units length^n
-    catch err
-        if isa(err, DomainError)
-            warn("no scaling for alpha=$(alpha)")
-        else
-            rethrow(err)
-        end
-    end
+    coeff = coeff * Ln # units length^n
 
 
 	

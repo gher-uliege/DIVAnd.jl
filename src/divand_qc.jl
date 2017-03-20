@@ -69,7 +69,7 @@ function divand_qc(fi, s, method=0)
         qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)));
         return qcval
     end
-    warn("divand_qc not defined for methode  $method")
+    warn("divand_qc not defined for method  $method")
 
     return 0
 

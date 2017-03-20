@@ -175,11 +175,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         end
 
 
-        warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
+        
 
 
 
         if jfound>0
+		    warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
             # modify the parameter
             otherargsw=deepcopy(otherargs)
             otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
@@ -234,16 +235,75 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
         # end 
 		# end
 		
+		# NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
+		
+		Labsw=Labs
+		   
+		   if !isa(Labs,Number)
+           if !isa(Labs[1],Number)
+             Labsw= ([ x[windowpoints...] for x in Labs ]...)
+           end
+           end
+		
+		# @show mean(x[1])
+		# @show mean(x[2])
+		# @show mean(x[3])
+		# @show mean(x[4])
+		# @show csteps
+		# @show lmask
+		# @show mean(pmn[1])
+		# @show mean(pmn[2])
+		# @show mean(pmn[3])
+		# @show mean(pmn[4])
+		# @show mean(f)
+		# @show size(f)
+		# @show mean(xiw[1])
+		# @show mean(xiw[2])
+		# @show mean(xiw[3])
+		# @show mean(xiw[4])
+		# @show epsilon2
+		# @show windowpoints[1]
+		# @show windowpoints[2]
+		# @show windowpoints[3]
+		# @show windowpoints[4]
 		
 		
-        # Verify if a direct solver was requested from the demain decomposer
-         if sum(csteps)>0
-#          if 3==2		 
-             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2,csteps,lmask; otherargsw...,alphabc=0.5)
-         else
-             fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labs,epsilon2; otherargsw...)
-         end
+		#
+        kfound=0
+        for j=1:size(otherargs)[1]
+            if otherargs[j][1]==:alphabc
+                kfound=j
+                break
+            end
+        end
 
+        if 3==2
+		# Force alpha=1
+        if kfound>0
+            # modify the parameter only in the window model
+            
+			if jfound>0
+			# Ok this is alreay a copy and you can change it
+            otherargsw[kfound]=(:alphabc,1)
+			       else
+		    otherargsw=deepcopy(otherargs)
+			otherargsw[kfound]=(:alphabc,1)
+		    end
+			else
+			warn("Need to expand")
+			otherargsw=vcat(otherargsw,(:alphabc,1))
+		end
+		end
+		
+		# If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
+        # Verify if a direct solver was requested from the demain decomposer
+        if sum(csteps)>n
+#          if 3==2		 
+             fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask; otherargsw...)
+         else
+             fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
+         end
+#@show fw[1]
         # maskb=mask[windowpoints...]
         # pmnb=([ x[windowpoints...] for x in pmn ]...)
         # xib=([ x[windowpoints...] for x in xi ]...)
@@ -288,6 +348,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
 
     # For the moment s is not defined ?
+	# fi=divand_filter3(fi,9999,2)
+	
     return fi,s
 
 

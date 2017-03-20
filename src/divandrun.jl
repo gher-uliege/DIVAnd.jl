@@ -33,8 +33,9 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `alpha`: alpha is vector of coefficients multiplying various terms in the
        cost function. The first element multiplies the norm.
        The other i-th element of alpha multiplies the (i+1)-th derivative.
-       Per default, the highest derivative is m = ceil(1+n/2) where n is the
-       dimension of the problem.
+       Per default, the highest derivative is m = ceil(1+neff/2) where neff is the
+       effective dimension of the problem (the number of dimensions with a nonzero 
+       correlation length).
 
        The values of alpha is the (m+1)th row of the Pascal triangle:
           m=0         1
@@ -82,6 +83,10 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions 
     to define the constrains.
 
+* `scale_len`: true (default) if the correlation length-scale should be scaled such that the analysical 
+    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance. The kernel behaves thus similar to 
+    the default kernel in two dimensions (alpha = [1,2,1]).
+
 # Output:
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
@@ -118,7 +123,8 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
                    fi0 = zeros(size(mask)),
                    f0 = zeros(size(f)),
                    operatortype = Val{:sparse},
-                   alphabc = 1
+                   alphabc = 1.0,
+                   scale_len = true
                    )
 
 
@@ -127,13 +133,13 @@ function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
         error("no sea points in mask");
     end
 
+#	@show alphabc
+#	@show moddim
+	
     pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
-	
-	
-
-	#For testing this version of alphabc deactivate the other one
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,[]);
-
+		
+    #For testing this version of alphabc deactivate the other one
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]);
 
     s.betap = 0;
     s.EOF_lambda = EOF_lambda;
