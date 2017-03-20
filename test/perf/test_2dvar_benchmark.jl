@@ -65,7 +65,7 @@ function benchmark_nd_repeat(n,ng,ntimes; kwargs...)
     times[1],RMS[1] = benchmark_nd(n,ng; kwargs...)
 
     for i = 1:ntimes
-        times[i],RMS[1] = benchmark_nd(n,ng; kwargs...)
+        times[i],RMS[i] = benchmark_nd(n,ng; kwargs...)
     end
 
     mad(x) = median(abs(x - median(x)))
@@ -95,7 +95,8 @@ function benchmark_nd(n,ng; kwargs...)
   v = f([x[:] for x in xy]...);
 
   t1 = time_ns()
-  va,s = divandrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
+  va = varanalysis(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
+  #va,s = divandrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
   t2 = time_ns()
   time = (t2 - t1)/1e9
   RMS = rms(va,vi);
