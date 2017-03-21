@@ -32,14 +32,14 @@ epsilon2 = 1/4;
 
 
 epsilon2b=epsilon2*100
-@time fi1,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.4,0.4,0,0),epsilon2b;alphabc=1,btrunc=2);
+@time fi1,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.4/1.7,0.4/1.7,0,0),epsilon2b;alphabc=1,btrunc=2);
 
 PC1=s.P
 xg1=statevector_pack(s.sv,(fi1,))
 s=0
 gc()
 
-@time fi2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,0.4,0.4),epsilon2b;alphabc=1,btrunc=2);
+@time fi2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,0.4/1.7,0.4/1.7),epsilon2b;alphabc=1,btrunc=2);
 
 
 PC2=s.P
@@ -87,7 +87,7 @@ end
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?,ti
 
 
-@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC,btrunc=2)#, fi0 =xguess);
+@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC,btrunc=2, fi0 =xguess);
 
 @time fiiter2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,btrunc=2)#, fi0 =xguess);
 # Then run with normal resolution and preconditionner
