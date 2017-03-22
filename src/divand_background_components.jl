@@ -32,7 +32,7 @@ function divand_background_components(s,D,alpha; kwargs...)
             btrunc=btruncv
         end
     end
-    @show btrunc
+
     # sum all terms of iB
     # iB is adimentional
     iB = alpha[1] * iB_
