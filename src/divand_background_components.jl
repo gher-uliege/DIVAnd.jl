@@ -52,6 +52,8 @@ function divand_background_components(s,D,alpha; kwargs...)
             # normalized by surface
 
             for i=1:n
+			# POSSIBLE OPTIMIZATION: Do not calculate in directions where L is zero ???????
+			# TO CHECK but needs access to Ld. Also apply in jmBix
                 Dx = s.WEss[i] * s.Dx[i] * D^k;
                 iB_ = iB_ + Dx'*Dx;
             end
