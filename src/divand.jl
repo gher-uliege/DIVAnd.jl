@@ -32,6 +32,7 @@ type divand_struct
     alpha
     iB
     iB_
+    Ld::Array{Float64,1}
     moddim
     iscyclic
     applybc
@@ -74,6 +75,7 @@ type divand_struct
         WE = copy(sempty)
         iB = copy(sempty)
         iB_ = Array{SparseMatrixCSC{Float64,Int64}}(3);
+        Ld = []
         P = []
 
         isinterior = []
@@ -126,6 +128,7 @@ type divand_struct
             alpha,
             iB,
             iB_,
+            Ld,
             moddim,
             iscyclic,
             applybc,

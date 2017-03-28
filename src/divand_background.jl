@@ -325,7 +325,8 @@ iB = divand_background_components(s,D,alpha,btrunc=btrunc)
 # inverse of background covariance matrix
 s.iB = iB
 
-#s.L = L
+# mean correlation legth
+s.Ld = Ld
 #s.Ln = Ln
 
 s.moddim = moddim
