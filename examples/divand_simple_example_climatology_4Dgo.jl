@@ -3,7 +3,7 @@
 
 using divand
 using PyPlot
-include("../src/overrride_ssmult.jl")
+include("../src/override_ssmult.jl")
 # final grid
 #
 testsizex=300
