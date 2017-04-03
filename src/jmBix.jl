@@ -34,11 +34,13 @@ function jmBix(s,x;btrunc=[])
             Dk=D^k
             Dkx=Dk*x
             for i=1:n
+			    if s.Ld[i]>0
                 #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
                 #                iBx_ = iBx_ + Dx'*(Dx*x);
                 Dx = s.WEss[i] * s.Dx[i];
                 # maybe gain if Dk=Dk'?
                 iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
+				end
             end
 
         else

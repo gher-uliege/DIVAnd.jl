@@ -34,6 +34,14 @@ kwargs = [(:tol, tol),(:maxit,1000)]
 va_chol,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                       kwargs..., inversion=:chol)
 
+for jj=1:4
+@show jj
+# iterative (without preconditioner)
+va_iter,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                         kwargs..., inversion=:pcg,btrunc=jj)
+@test norm(va_chol[mask] - va_iter[mask]) < tolres
+end
+
 # iterative (without preconditioner)
 va_iter,s_np = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                          kwargs..., inversion=:pcg)

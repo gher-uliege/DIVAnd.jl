@@ -29,7 +29,9 @@ function divand_background_components(s,D,alpha; kwargs...)
     if haskey(kw,:btrunc)
         btruncv=kw[:btrunc]
         if btruncv != Any[]
-            btrunc=btruncv
+		    if btrunc>btruncv
+				btrunc=btruncv
+			end
         end
     end
     @show btrunc
@@ -54,8 +56,11 @@ function divand_background_components(s,D,alpha; kwargs...)
             for i=1:n
 			# POSSIBLE OPTIMIZATION: Do not calculate in directions where L is zero ???????
 			# TO CHECK but needs access to Ld. Also apply in jmBix
+			#show size(s.Ld)
+			   if s.Ld[i]>0
                 Dx = s.WEss[i] * s.Dx[i] * D^k;
                 iB_ = iB_ + Dx'*Dx;
+			   end
             end
 
         else

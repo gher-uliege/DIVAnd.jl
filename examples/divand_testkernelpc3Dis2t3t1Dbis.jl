@@ -11,14 +11,17 @@ z=[0]
 f=[1]
 
 srand(1)
-nobs=4
+nobs=400
 x=randn(nobs)
 y=randn(nobs)
 z=randn(nobs)
 f=x+y.*z
 
-jsize=50
-mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,jsize),linspace(-1,1,jsize),linspace(-1,1,jsize))
+jsize=250
+jsizet=20
+
+ffull=false
+mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,jsize),linspace(-1,1,jsize),linspace(-1,1,jsizet))
 
 # correlation length
 len = (0.4,0.4,0.4)
@@ -26,16 +29,21 @@ len = (0.4,0.4,0.4)
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
 
+if ffull
 @time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1);
-fis=reshape(fi,(50*50*50))
+else
+fi=zeros(jsize,jsize,jsize)
+end
 
-epsilon2b=100
+fis=reshape(fi,(jsize^3))
+
+epsilon2b=1000
 #epsilon2b=epsilon2
 
 alpha1D=[]
 
 #epsilon2b=epsilon2
-@time fi1,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.4/1.7,0,0),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi1,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.4/1.9,0,0),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC1=s.P
 H1=s.H
@@ -44,7 +52,7 @@ xg1=statevector_pack(s.sv,(fi1,))
 
 
 
-@time fi2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0, 0.4/1.7,0),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0, 0.4/1.9,0),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC2=s.P
 H2=s.H
@@ -52,7 +60,7 @@ H2=s.H
 xg2=statevector_pack(s.sv,(fi2,))
 
 
-@time fi3,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,0.4*1),epsilon2;alphabc=1,alpha=alpha1D);
+@time fi3,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,0.4/1.3),epsilon2;alphabc=1,alpha=alpha1D);
 
 @show extrema(s.H-H1)
 @show extrema(s.H-H2)
@@ -100,13 +108,14 @@ vv=var(scalef2*xgs2-xgs)/var(xgs)
 tol = 1e-4
 
 
-maxiter=1000
+maxiter=10*150*12
 
 pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 
 
 diagshift=0.00004;
+diagshift=0.00001
 
 #PC=(PC1+PC2+PC3)/3.
 #PC=PC*PC
@@ -115,8 +124,8 @@ scalef=xr'*(PC1*(PC2*(PC3*((PC2*(PC1*xr))))))./(xr'*xr)
 @show scalef
 scalef2=1/scalef[1]
 @show scalef2
-scalef2=scalef2/nobs
-@show scalef2,al2
+scalef2=2*scalef2/sqrt(nobs)*sqrt(epsilon2)
+@show al2,scalef2,1/epsilon2b^4/nobs,1/scalef[1]/nobs
 function compPC(iB,H,R)
     #            return x -> diagshift*x+PC*x;
     #            return x -> diagshift*x+1./9.*PC1*(PC1*x+PC2*x+PC3*x)+1./9.*PC2*(PC1*x+PC2*x+PC3*x)+1./9.*PC3*(PC1*x+PC2*x+PC3*x)
@@ -138,7 +147,7 @@ end
 s=0
 gc()
 
-@time fiiter,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC, fi0 =scalef2*xgs2,btrunc=1);
+@time fiiter,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC, fi0 =scalef2*xgs2,btrunc=2);
 
 #@time fiiter2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,btrunc=1)#, fi0 =xguess);
 # Then run with normal resolution and preconditionner

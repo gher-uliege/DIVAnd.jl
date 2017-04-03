@@ -153,6 +153,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     geomean(v) = prod(v)^(1/length(v))
     L = geomean(Ld[Ld .> 0])
 
+#	@show L,Ld
 
 
     alphabc=0
@@ -319,14 +320,17 @@ s.coeff = coeff
 # number of dimensions
 s.n = n
 
+# mean correlation legth
+#@show Ld
+s.Ld = Ld
+
 iB = divand_background_components(s,D,alpha,btrunc=btrunc)
 
 
 # inverse of background covariance matrix
 s.iB = iB
 
-# mean correlation legth
-s.Ld = Ld
+
 #s.Ln = Ln
 
 s.moddim = moddim
