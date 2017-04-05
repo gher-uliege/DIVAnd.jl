@@ -130,7 +130,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
         if r ⋅ r < tol2 && k >= minit
             success = true
-            @show k
+            @show k, r ⋅ r, tol2
             break
         end
 

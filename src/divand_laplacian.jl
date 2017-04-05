@@ -106,7 +106,82 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
 
 end
 
-# Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
+
+
+#----------------------------------------------------------
+
+for N = 1:6
+@eval begin
+function divand_laplacian_prepare{T}(mask::BitArray{$N},
+                      pmn::NTuple{$N,Array{T,$N}},
+                      nu::NTuple{$N,Array{T,$N}})
+    const sz = size(mask)
+    const ivol = .*(pmn...)
+
+    const nus = ntuple(i -> zeros(sz),$N)::NTuple{$N,Array{T,$N}}
+
+    # This heavily uses macros to generate fast code 
+    # In e.g. 3 dimensions
+    # (@nref $N tmp i) corresponds to tmp[i_1,i_2,i_3]
+    # (@nref $N nu_i l->(l==j?i_l+1:i_l)  corresponds to nu_i[i_1+1,i_2,i_3] if j==1
+
+    @nexprs $N j->begin
+    tmp = nus[j]
+
+    @nloops $N i k->(k == j ? (1:sz[k]-1) : (1:sz[k]))  begin
+        nu_i = nu[j]
+        # stagger nu
+        # e.g. 0.5 * (nu[1][2:end,:] + nu[1][1:end-1,:])
+        (@nref $N tmp i) = 0.5 * ((@nref $N nu_i l->(l==j?i_l+1:i_l)) + (@nref $N nu_i i) )
+        # e.g. (pmn[2][2:end,:]+pmn[2][1:end-1,:]) ./ (pmn[1][2:end,:]+pmn[1][1:end-1,:])
+        @nexprs $N m->begin
+        pm_i = pmn[m]
+        if (m .== j)
+           (@nref $N tmp i) *= ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+        else
+           (@nref $N tmp i) /= ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+        end
+
+        if !(@nref $N mask i) || !(@nref $N mask l->(l==j?i_l+1:i_l))
+            (@nref $N tmp i) = 0
+        end
+        end
+    end
+    end
+
+    return ivol,nus
+end
+
+function divand_laplacian_apply{T}(ivol,nus,x::Array{T,$N})::Array{T,$N}
+    sz = size(x)
+    Lx = zeros(sz)
+
+    @inbounds @nloops $N i d->1:sz[d]  begin
+        (@nref $N Lx i) = 0
+        @nexprs $N d1->begin      
+            tmp2 = nus[d1]
+            
+            if i_d1 < sz[d1]
+                (@nref $N Lx i) += (@nref $N tmp2 i) * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+            end
+            
+            if i_d1 > 1
+                (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1?i_d2-1:i_d2)) * ((@nref $N x i) -  (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+            end
+        end
+        (@nref $N Lx i) *= (@nref $N ivol i)
+    end
+    
+    return Lx
+end
+
+end # begin eval
+end # for N = 1:6
+
+
+
+
+# Copyright (C) 2014,2016,2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

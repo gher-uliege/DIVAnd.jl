@@ -2,10 +2,12 @@
 # with observations from an analytical function.
 
 using divand
+using Base.Test
 #using PyPlot
 
 # final grid
 gridsize = (101,101)
+#gridsize = (101,101,101)
 
 ndims = length(gridsize)
 
@@ -25,7 +27,8 @@ mask,pmn,xyi = divand_rectdom([linspace(0,1,s) for s in gridsize]...)
 sv = statevector((mask,))
 
 # correlation length
-lenxy = ntuple(i -> 0.2,ndims)
+#lenxy = ntuple(i -> 1.,ndims)
+lenxy = ntuple(i -> .1,ndims)
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;
@@ -35,18 +38,12 @@ epsilon2 = 1;
 tol = 1e-1
 tol = 1e-5
 
-# http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
-# equation 60
-# n-dimensional Green’s function
-# ∂c
-# --  =  ∇ ⋅ (D ∇ c)
-# ∂t
-
-# G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
 
 
 @time xa = varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
+@show maximum(xa) 
 
+@test_approx_eq_eps maximum(xa) 0.5 1e-3
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>

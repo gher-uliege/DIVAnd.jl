@@ -36,8 +36,8 @@ using Base.Test
     # test kernel
     include("test_kernel.jl");
 
-    # test kernel
-    include("test_kernel.jl");
+    # test 3D-var analysis
+    include("test_varanalysis.jl");
 
 
     include("test_averaged_bg.jl");

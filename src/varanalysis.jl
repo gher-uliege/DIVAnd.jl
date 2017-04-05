@@ -1,13 +1,15 @@
+
 """
 Variational analysis similar to 3D-var
 
 Kernel is the solution of the n-dimensional diffusion equation
 
-∂c/∂t = =  ∇ ⋅ (D ∇ c)
+∂c/∂t =  ∇ ⋅ (D ∇ c)
 
 n-dimensional Green’s function
 
 G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
+http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """
 
@@ -30,6 +32,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     R = divand_obscovar(epsilon2,length(f));
 
+    @show R
     s = divand.divand_struct(mask)
 
     # observation constrain
@@ -37,6 +40,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     yo = constrain.yo
     H = constrain.H
 
+    Ld = [mean(L) for L in len]
     nu = ([L.^2 for L in len]...)
 
     # D represents the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the
@@ -55,20 +59,28 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     nmax = round(Int,1/(2*α))
 
     # the background error covariance matrix is
-    # B = (I + α * D)^nmax;
+    # B =  (4π α nmax)^(n/2) prod(Ld) (I + α * D)^nmax;
 
-    # the square root of the background error covariance matrix:
-    # B^{1/2} = (I + α * D)^(nmax/2);
+    # x^T B x is the integral which takes also the volumn of each grid cell into account 
 
+    sqrtivol = pack(s.sv, (sqrt(.*(pmn...)),))
+
+    ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
 
     function funB½(x)
-        for n = 1:(nmax ÷ 2)
-            x += α * (D*x)
+        xup = unpack(s.sv,x)[1]
+
+        for niter = 1:(nmax ÷ 2)
+            xup += α * divand_laplacian_apply(ivol,nus,xup)
         end
-        return x
+
+        xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
+
+        return pack(s.sv,(xup,))[:,1]
     end
 
-    # matrix-like type of
+
+    # matrix-like type
     B½ = MatFun(size(D),funB½,funB½)
 
     fun(x) = x + (B½ * (H' * (R \ (H * (B½ * x)))))

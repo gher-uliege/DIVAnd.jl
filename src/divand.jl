@@ -1,9 +1,11 @@
 module divand
+
 using Interpolations
 using NetCDF
 using Roots
-import SpecialFunctions
 using Base.Test
+using Base.Cartesian
+import SpecialFunctions
 
 include("statevector.jl");
 
@@ -305,6 +307,7 @@ include("varanalysis.jl");
 
 include("load_mask.jl");
 
+export divand_laplacian_prepare, divand_laplacian_apply
 
 export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save, varanalysis, dvmaskexpand, jmBix
 
