@@ -83,8 +83,10 @@ zi = reshape(zi,gridsize)
 
 xi,yi = xyi
 
+
+
 ri = [ sqrt((xi[i,j]-xi[50,50])^2 / Ld[1]^2  + (yi[i,j]-yi[50,50])^2 / Ld[2]^2)  for i=1:gridsize[1], j=1:gridsize[2]]
-zit = exp(-ri.^2/(4 * nmax2 * α)) ./ ((4 * π * nmax2 * α) * prod(Ld) * ivol[50,50])
+zit = exp(-ri.^2/(4 * nmax2 * α)) ./ ((4 * π * nmax2 * α)^(ndims/2) * prod(Ld) * ivol[50,50])
 
 @show maximum(abs(zit-zi))
 @test_approx_eq_eps zit zi 1e-4
