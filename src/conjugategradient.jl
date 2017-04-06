@@ -124,13 +124,13 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
         progress(k,x,r,tol2,fun,b)
 
-        if mod(k,10)==1
-            @show k, r ⋅ r,tol2,size(r)
-        end
+        #if mod(k,10)==1
+        #    @show k, r ⋅ r,tol2,size(r)
+        #end
 
         if r ⋅ r < tol2 && k >= minit
             success = true
-            @show k, r ⋅ r, tol2
+            #@show k, r ⋅ r, tol2
             break
         end
 

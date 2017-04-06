@@ -32,7 +32,6 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     R = divand_obscovar(epsilon2,length(f));
 
-    @show R
     s = divand.divand_struct(mask)
 
     # observation constrain
