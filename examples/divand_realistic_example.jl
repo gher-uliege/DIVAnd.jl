@@ -29,8 +29,9 @@ end
 
 include("../src/override_ssmult.jl")
 
-fname = joinpath(ENV["HOME"],"Data/Salinity.bigfile")
-bath_name = joinpath(ENV["HOME"],"Data/DivaData/Global/gebco_30sec_16.nc")
+datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data")
+fname = joinpath(datadir,"BlackSea","Salinity.bigfile")
+bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc")
 isglobal = true
 
 if !isdefined(:value)
@@ -38,12 +39,12 @@ if !isdefined(:value)
 end
 
 dx = dy = 0.1
-dx = dy = 0.2
+dx = dy = 0.25
 lonr = 27:dx:42
 latr = 40:dy:47
-depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
+#depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
 #depthr = [0, 10, 20, 30, 50, 75, 100];
-#depthr = 0:10.:30.;
+depthr = 0:10.:30.;
 
 
 timer = 1:1.:12
@@ -54,8 +55,7 @@ epsilon2 = 0.1
 
 time2 = Dates.month.(time)
 
-mxi,myi,mask2 = load_mask(bath_name,isglobal,minimum(lonr),maximum(lonr),dx,minimum(latr),maximum(latr),dy,depthr)
-
+mxi,myi,mask2 = load_mask(bathname,isglobal,lonr,latr,depthr)
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 
 
