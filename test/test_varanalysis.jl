@@ -40,7 +40,7 @@ tol = 1e-5
 
 
 
-@time xa = varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
+@time xa,s = varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
 @show maximum(xa) 
 
 @test_approx_eq_eps maximum(xa) 0.5 1e-3

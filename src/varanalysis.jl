@@ -1,3 +1,18 @@
+function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1})
+    @show @code_warntype unpack(sv,x)
+    
+
+    xup = unpack(sv,x)[1]
+
+    for niter = 1:(nmax ÷ 2)
+        xup += α * divand_laplacian_apply(ivol,nus,xup)
+    end
+
+    xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
+
+    return pack(sv,(xup,))[:,1]::Array{T,1}
+end
+
 
 """
 Variational analysis similar to 3D-var
@@ -66,6 +81,16 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
 
+    function funB½_orig(x)
+        for niter = 1:(nmax ÷ 2)
+            x += α * (D*x)
+        end
+
+        x = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrtivol .* x)
+
+        return x
+    end
+
     function funB½(x)
         xup = unpack(s.sv,x)[1]
 
@@ -80,16 +105,35 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
 
     # matrix-like type
-    B½ = MatFun(size(D),funB½,funB½)
+    #B½ = MatFun(size(D),funB½_orig,funB½_orig)
+    #B½ = MatFun(size(D),funB½,funB½)
 
-    fun(x) = x + (B½ * (H' * (R \ (H * (B½ * x)))))
-    b = B½ * (H' * (R \ yo))
+    #fun(x) = x + (B½ * (H' * (R \ (H * (B½ * x)))))
+    #b = B½ * (H' * (R \ yo))
+
+
+    #fun(x) = x + funB½(H' * (R \ (H * (funB½(x)))))
+    #b = funB½(H' * (R \ yo))
+
+#    @show "here"
+    @show @code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
+    #@show code_warntype(Bsqrt,(n,s.sv,ivol,nus,Ld,nmax,α,x))
+
+    #fB(x) = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
+    #fun(x) = x + fB(H' * (R \ (H * (fB(x)))))
+    #b = fB(H' * (R \ yo))
+
+
+    fun(x) = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)))))
+    b = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo))
 
     # adjust tolerance
     tol = tol * s.sv.n / length(yo)
 
     xp,success,niter = divand.conjugategradient(fun,b; tol = tol);
-    xa = B½ * xp
+    #xa = B½ * xp
+    #xa = funB½(xp)
+    xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp)
 
-    return unpack(s.sv,xa)[1]
+    return unpack(s.sv,xa,NaN)[1],s
 end
