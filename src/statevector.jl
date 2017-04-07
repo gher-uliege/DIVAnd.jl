@@ -1,14 +1,15 @@
 # Functions to manage a statevector which is a concatenation of
 # several variables under the control of a mask
 
-type statevector
-    mask
-    nvar
-    numels
-    numels_all
+# N is the dimension of all variables
+type statevector{N}
+    mask::Vector{BitArray{N}}
+    nvar::Int64
+    numels::Vector{Int64}
+    numels_all::Vector{Int64}
     size
-    ind
-    n
+    ind::Vector{Int64}
+    n::Int64
     packed2unpacked
     unpacked2packed
 end
@@ -44,7 +45,7 @@ License: GPL 2 or later
 function statevector(masks::Tuple)
 
     numels = [sum(mask)    for mask in masks]
-    ind = [0 cumsum(numels)...]
+    ind = [0, cumsum(numels)...]
 
     # vector mapping packed indices to unpacked indices
     packed2unpacked = [(1:length(mask))[mask[:]] for mask in masks]
@@ -89,10 +90,11 @@ to represent the different ensemble members. In this case x is a matrix and its 
 is the number of ensemble members.
 """
 
-function pack(sv::statevector,vars::Tuple)
+function pack{n,m,T}(sv::statevector,vars::NTuple{n,Array{T,m}})::Array{T,2}
 
     k = size(vars[1],ndims(sv.mask[1])+1)
-    x = zeros(sv.n,k)
+    x = zeros(sv.n,k)::Array{T,2}
+    #x = zeros(T,(sv.n,k))
 
     for i=1:sv.nvar
         tmp = reshape(vars[i],sv.numels_all[i],k)
@@ -102,6 +104,7 @@ function pack(sv::statevector,vars::Tuple)
 
     return x
 end
+
 
 """
 Unpack a vector into different variables under the control of a mask.
