@@ -306,6 +306,12 @@ include("divand_save.jl");
 include("varanalysis.jl");
 
 include("load_mask.jl");
+include("load_obs.jl");
+export loadbigfile
+
+# high-level interface
+include("diva.jl");
+export diva
 
 export divand_laplacian_prepare, divand_laplacian_apply
 
