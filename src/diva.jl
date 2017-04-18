@@ -1,4 +1,4 @@
-function diva(dimnames,grid,obscoord,obsvalue,epsilon2,lens,timeaggregation2,
+function diva(dimnames,grid,obscoord,obsvalue,epsilon2,lens,timeaggregation2;
               datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data"),
               bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc"),
               bathisglobal = true,
