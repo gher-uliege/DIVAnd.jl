@@ -65,14 +65,15 @@ timer = 1:1.:12
 mask,(pm,pn,po,pp),(xi,yi,zi,ti) = divand_rectdom(lonr,latr,depthr,timer)
 @show size(mask)     ()
 
-epsilon2 = 1
+epsilon2 = 0.5
 
 time2 = Dates.month.(time)
 
 mxi,myi,mask2 = load_mask(bath_name,isglobal,minimum(lonr),maximum(lonr),dx,minimum(latr),maximum(latr),dy,depthr)
 
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
-
+#only see points
+#mask3 = mask
 
 sz = size(mask)
 @show sz
@@ -83,6 +84,7 @@ lenx = fill(.6,sz)
 leny = fill(.6,sz)
 # correlation length in meters
 lenz = (10 + zi/5)/3
+@show mean(lenz)
 # correlation time-scale in month
 lent = fill(1.,sz)
 
@@ -100,7 +102,7 @@ toaverage=[true true false false]
 
 vaa=va-ffb
 
-fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,z,lent),epsilon2;moddim=moddim)
+fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;moddim=moddim)
 
 
 fi=fi+fmb+vm

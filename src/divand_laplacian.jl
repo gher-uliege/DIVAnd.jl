@@ -13,7 +13,7 @@
 #      field of the size mask or cell arrays of fields
 #
 # Output:
-#   Lap: sparce matrix represeting a Laplaciant
+#   Lap: sparce matrix representing a Laplacian
 #
 #
 
@@ -43,9 +43,11 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
 
     # extraction operator of sea points
     H = oper_pack(operatortype,mask)
+	
     sz = size(mask)
-
-    DD = spzeros(prod(sz),prod(sz))
+	# Already include final operation *H' on DD to reduce problem size so resized the matrix
+    # DD = spzeros(prod(sz),prod(sz))
+	DD = spzeros(size(H)[2],size(H)[1])
 
     for i=1:n
         # operator for staggering in dimension i
@@ -73,8 +75,10 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
         # Flux operators D
         # zero at "coastline"
 
-        D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
-
+        #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
+		# Already include final operation to reduce problem size in real problems with land mask
+        D = oper_diag(operatortype,d) * (oper_diff(operatortype,sz,i,iscyclic[i])*H')
+		
         if !iscyclic[i]
             # extx: extension operator
             szt = sz
@@ -83,8 +87,12 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
             szt = (tmp_szt...)
 
             extx = oper_trim(operatortype,szt,i)'
-            D = extx * D
-            DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
+			# Tried to save an explicitely created intermediate matrix D
+            #D = extx * D
+            #DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
+			#@show size(extx),size(D),typeof(extx),typeof(D)
+			#@show extx
+			DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * (extx * D)
         else
             # shift back one grid cell along dimension i
             D = oper_shift(operatortype,sz,i,iscyclic[i])' * D
@@ -101,12 +109,17 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
 
 
     # Laplacian on grid with on sea points Lap
-    Lap = H * DD * H'
-
+    #Lap = H * DD * H'
+	# *H' already done before
+	Lap = H * DD
+#@show Lap
+# Possible test to force symmetric Laplacian
+#    Lap=0.5*(Lap+Lap')
 
 end
 
-# Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014,2017 Alexander Barth 		<a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

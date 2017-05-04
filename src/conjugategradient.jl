@@ -35,12 +35,18 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
                            )
     #, renorm = false)
 
+	
+#	gc_enable(false)
+
+	
     success = false
     n = length(b);
 
     bb = b ⋅ b
 
     if bb == 0
+	    
+        gc_enable(true)
         return zeros(size(b)),true,0
     end
 
@@ -59,20 +65,26 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
 
     # initial guess
-    x = x0;
+    x = x0::Array{Float64,1};
 
     # gradient at initial guess
-    r = b - fun(x);
+	
+	#@code_warntype fun(x)
+    Ap=fun(x)::Array{Float64,1}
+    r = b - Ap::Array{Float64,1};
 
     # quick exit
     if r⋅r < tol2
+	   
+        gc_enable(true)
+
         return x,true,0
     end
 
 
 
     # apply preconditioner
-    z = pc(r);
+    z = pc(r)::Array{Float64,1};
 
     # first search direction == gradient
     p = z;
@@ -86,19 +98,21 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
     # r_old: residual at previous iteration
     r_old = r;
 
-    alpha = zeros(maxit)
-    beta = zeros(maxit+1)
+    alpha = zeros(Float64,maxit)
+    beta = zeros(Float64,maxit+1)
 
     k = 0
 
     for k=1:maxit
+	
+# try axpy! ?
         # if k <= n && nargout > 1
         #     # keep at most n vectors
         #     Q(:,k) = r/sqrt(zr_old);
         # end
 
         # compute A*p
-        Ap = fun(p);
+        Ap = fun(p)::Array{Float64,1};
 
         # how far do we need to go in direction p?
         # alpha is determined by linesearch
@@ -106,21 +120,24 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
         alpha[k] = zr_old / (p ⋅ Ap);
 
         # get new estimate of x
-        x = x + alpha[k]*p;
+        #x = x + alpha[k]*p;
+		#@show size(x)[1]
+		#x=BLAS.axpy!(size(x)[1],alpha[k],p,1,x,1)
+		x=BLAS.axpy!(alpha[k],p,x)
 
         # recompute gradient at new x. Could be done by
         # r = b-fun(x);
         # but this does require an new call to fun
-        r = r - alpha[k]*Ap;
-
+		#
+        #r = r - alpha[k]*Ap;
+		alphak=-alpha[k]
+        #r=BLAS.axpy!(size(r)[1],-alpha[k],Ap,1,r,1)
+		r=BLAS.axpy!(alphak,Ap,r)
         #if renorm
         #    r = r - Q(:,1:k) * Q(:,1:k)' * r ;
         #end
 
-        # apply pre-conditionner
-        z = pc(r);
-
-        zr_new = r ⋅ z;
+        
 
         progress(k,x,r,tol2,fun,b)
 
@@ -133,7 +150,12 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
             @show k
             break
         end
+#JMB moved after the test, no need to calculate further values if r is small enough
+# apply pre-conditionner
+        z = pc(r)::Array{Float64,1};
 
+        zr_new = r ⋅ z;
+		
         #Fletcher-Reeves
         beta[k+1] = zr_new / zr_old;
         #Polak-Ribiere
@@ -149,6 +171,8 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
         r_old = r;
 
     end
+
+    gc_enable(true)
 
     return x,success,k
 
@@ -180,7 +204,8 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
 end
 
-# Copyright (C) 2004 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2004 Alexander Barth 			<a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

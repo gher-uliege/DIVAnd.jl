@@ -83,17 +83,18 @@ function divand_background_components(s,D,alpha; kwargs...)
         end
 
         iB = iB + alpha[j] * iB_
+		
     end
 
-    # iB is adimentional
+    # iB is adimensional
 
     return iB
 end
 
 # LocalWords:  iB divand
 
-# Copyright (C) 2014 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+# Copyright (C) 2014-2017 Alexander Barth	 <a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 #
 # This program is free software; you can redistribute it and/or modify it under

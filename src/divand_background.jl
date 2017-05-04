@@ -97,53 +97,9 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 
 
-    # #JM add alphabc for the moment
-    # # New version, make a
-
-    # if alphabcin>0
-    # alphabc=deepcopy(alphabcin)
-    # pmn=deepcopy(pmnin)
-    # for i=1:n
-    # wjmb=pmn[i]
-    # # For the moment, hardcoded for 1D and 2D
-
-    # #         @show alphabc
-    # if n==1
-    # #              @show wjmb[1], pmn[1][1],wjmb[2],2*alphabc.*Labs[1][1]
-    # if ~iscyclic[1]
-    # wjmb[1]=1.0./max((2*alphabc.*Labs[1][1].-1.0./wjmb[2]),1/wjmb[2])
-    # wjmb[end]=1.0/max((2*alphabc.*Labs[1][end].-1.0./wjmb[end-1]),1/wjmb[end-1])
-    # end
-    # #               @show wjmb[1], pmn[1][1],wjmb[2]
-    # end
-
-    # if n==2
-    # if i==1
-    # if ~iscyclic[1]
-    # #                 wjmb[1,:]=1.0./(alphabc.*Labs[1][1,:])
-    # #            wjmb[end,:]=1.0./(alphabc.*Labs[1][end,:])
-    # wjmb[1,:]=1.0./max((2*alphabc.*Labs[1][1,:].-1.0./wjmb[2,:]),1.0./wjmb[2,:])
-    # wjmb[end,:]=1.0./max((2*alphabc.*Labs[1][end,:].-1.0./wjmb[end-1,:]),1.0./wjmb[end-1,:])
 
 
-    # end
-    # end
-    # if i==2
-    # if ~iscyclic[2]
-    # #            wjmb[:,1]=1.0./(alphabc.*Labs[2][:,1])
-    # #            wjmb[:,end]=1.0./(alphabc.*Labs[2][:,end])
-    # wjmb[:,1]=1.0./max((2*alphabc.*Labs[2][:,1].-1.0./wjmb[:,2]),1.0./wjmb[:,2])
-    # wjmb[:,end]=1.0./max((2*alphabc.*Labs[2][:,end].-1.0./wjmb[:,end-1]),1.0./wjmb[:,end-1])
-    # end
-    # end
-    # end
-    # end
-
-
-    # else
-    # pmn=pmnin
-    # end
-    # For the moment deactivate other versions
+ 
 
     # mean correlation length in every dimension
     Ld = [mean(_) for _ in Labs]
@@ -153,23 +109,20 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     geomean(v) = prod(v)^(1/length(v))
     L = geomean(Ld[Ld .> 0])
 
-#	@show L,Ld
+	
 
 
     alphabc=0
 
 
-    #if ~isequal([size(mask) n],size(pmn))
-    #  error('mask (#s) and metric (#s) have incompatible size',formatsize(size(mask)),formatsize(size(pmn)))
-    #end
-
+ 
     s,D = divand_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...),iscyclic,mapindex,Labs)
 
     # D is laplacian (a dimensional, since nu = Labs.^2)
     sv = s.sv
     n = s.n
 
-
+    
     # Labsp: 1st index represents the dimensions
     #Labsp = permute(Labs,[n+1 1:n])
     #pmnp = permute(pmn,[n+1 1:n])
@@ -187,84 +140,27 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     d = .*(pmn[Ld .> 0]...)
 
-    #JMB This is probably the place to increase weight on anomaly constrained near borders.
-    # d is 1/volume of each grid box and an n dimensional array ?
-    # Use of CartesianRange to get boundaries of the n-dimensional box ?
-    # Or slicedime exploiting use by reference ??? in which the matrix from where the slice is "taken"
-    # is also updated ? Check in simplecase Nope does not work as reshape ...
-    # view works ! view(A,2,1)[1,1]=1000
+  
 
-    # For the moment hardcoded in 2D
-    # Local scale IS available Labs
-    # TODO: for n dimensions
-    # d=d./(alphabc.*pmn.*l)
-    # Dimension 1
-    #alphabc=0
-    # if alphabc>0
-    # @show alphabc
-# if n==1
-# if ~iscyclic[1]
-# d[1]=d[1]./(alphabc.*pmn[1][1].*Labs[1][1])
-# d[end]=d[end]./(alphabc.*pmn[1][end].*Labs[1][end])
-# end
-# end
-
-# if n==2
-# if ~iscyclic[1]
-# d[1,:]=d[1,:]./(alphabc.*pmn[1][1,:].*Labs[1][1,:])
-# d[end,:]=d[end,:]./(alphabc.*pmn[1][end,:].*Labs[1][end,:])
-# end
-# if ~iscyclic[2]
-# d[:,1]=d[:,1]./(alphabc.*pmn[2][:,1].*Labs[2][:,1])
-# d[:,end]=d[:,end]./(alphabc.*pmn[2][:,end].*Labs[2][:,end])
-# end
-# end
-# end
-
-WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
+	WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
 
 
 
-Ln = prod(Ld[Ld .> 0])
+	Ln = prod(Ld[Ld .> 0])
+
+
 
 #if any(Ld <= 0)
 #   pmnd = mean(reshape(pmnp,[n sv.numels_all]),2)
 #   #Ln = Ln * prod(pmnd(Ld <= 0))
 #end
 
-coeff = coeff * Ln # units length^n
+	coeff = coeff * Ln # units length^n
 
 
 
 
-pmnv = cat(2,[_[:] for _ in pmn]...)
-
-#JM now just an access as ndimensional array
-#       wjmb=reshape(pmnv,tuple(size(pmn[1])...,n))
-# and exploit that changes there will change pmnv
-# if alphabc>0
-# @show alphabc
-# if n==1
-# if ~iscyclic[1]
-# wjmb[1]=1.0/(alphabc.*Labs[1][1])
-# wjmb[end]=1.0/(alphabc.*Labs[1][end])
-# end
-# end
-
-# if n==2
-# if ~iscyclic[1]
-# wjmb[1,:,1]=1.0./(alphabc.*Labs[1][1,:])
-# wjmb[end,:,1]=1.0./(alphabc.*Labs[1][end,:])
-# end
-# if ~iscyclic[2]
-# wjmb[:,1,2]=1.0./(alphabc.*Labs[2][:,1])
-# wjmb[:,end,2]=1.0./(alphabc.*Labs[2][:,end])
-# end
-# end
-# end
-
-# How to do this nicely in ND ? also replace Ld with Len
-#/JM
+	pmnv = cat(2,[_[:] for _ in pmn]...)
 
 
 
@@ -272,78 +168,82 @@ pmnv = cat(2,[_[:] for _ in pmn]...)
 
 
 
-pmnv[:,find(Ld == 0)] = 1
+	pmnv[:,find(Ld == 0)] = 1
 
 # staggered version of norm
 
-for i=1:n
-    S = sparse_stagger(sz,i,iscyclic[i])
-
-    ma = (S * mask[:]) .== 1
-    d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
-    d = 1./d
-    s.WEs[i] = oper_diag(operatortype,sqrt.(d))
-end
+	for i=1:n
+		S = sparse_stagger(sz,i,iscyclic[i])
+		ma = (S * mask[:]) .== 1
+		d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
+		d = 1./d
+		s.WEs[i] = oper_diag(operatortype,sqrt.(d))
+	end
 
 # staggered version of norm scaled by length-scale
 
 #s.Dxs = []
-for i=1:n
-    Li2 = Labs[i][:].^2
+	for i=1:n
+		Li2 = Labs[i][:].^2
 
-    S = sparse_stagger(sz,i,iscyclic[i])
+		S = sparse_stagger(sz,i,iscyclic[i])
 
-    # mask for staggered variable
-    m = (S * mask[:]) .== 1
+		# mask for staggered variable
+		m = (S * mask[:]) .== 1
 
-    tmp = sparse_pack(m) * sqrt.(S*Li2[:])
-    s.WEss[i] = oper_diag(operatortype,tmp) * s.WEs[i]
-    #  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
-end
+		tmp = sparse_pack(m) * sqrt.(S*Li2[:])
+		s.WEss[i] = oper_diag(operatortype,tmp) * s.WEs[i]
+		#  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
+	end
 
 # adjust weight of halo points
-if !isempty(mapindex)
-    # ignore halo points at the center of the cell
+	if !isempty(mapindex)
+		# ignore halo points at the center of the cell
 
-    WE = oper_diag(operatortype,s.isinterior) * WE
+		WE = oper_diag(operatortype,s.isinterior) * WE
 
     # divide weight be two at the edged of halo-interior cell
     # weight of the grid points between halo and interior points
     # are 1/2 (as there are two) and interior points are 1
-    for i=1:n
-        s.WEs[i] = oper_diag(operatortype,sqrt.(s.isinterior_stag[i])) * s.WEs[i]
-    end
+		for i=1:n
+			s.WEs[i] = oper_diag(operatortype,sqrt.(s.isinterior_stag[i])) * s.WEs[i]
+		end
+	end
+
+	s.WE = WE
+	s.coeff = coeff
+	# number of dimensions
+	s.n = n
+
+	# mean correlation legth
+
+	
+	s.Ld = Ld
+
+
+
+	iB = divand_background_components(s,D,alpha,btrunc=btrunc)
+
+
+
+	# inverse of background covariance matrix
+	s.iB = iB
+
+
+	#s.Ln = Ln
+
+	s.moddim = moddim
+	s.iscyclic = iscyclic
+
+	s.alpha = alpha
+	s.neff = neff
+	s.WE = WE # units length^(n/2)
+
+	return s
 end
 
-s.WE = WE
-s.coeff = coeff
-# number of dimensions
-s.n = n
-
-# mean correlation legth
-#@show Ld
-s.Ld = Ld
-
-iB = divand_background_components(s,D,alpha,btrunc=btrunc)
-
-
-# inverse of background covariance matrix
-s.iB = iB
-
-
-#s.Ln = Ln
-
-s.moddim = moddim
-s.iscyclic = iscyclic
-
-s.alpha = alpha
-s.neff = neff
-s.WE = WE # units length^(n/2)
-
-return s
-end
-
-# Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2017 Alexander Barth 		<a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

@@ -44,7 +44,7 @@ epsilon2b=1000
 alpha1D=[]
 
 #epsilon2b=epsilon2
-@time fi1,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,len[3]/1.7),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi1,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,len[3]/1.414),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC1=s.P
 H1=s.H

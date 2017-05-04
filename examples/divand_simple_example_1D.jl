@@ -32,7 +32,7 @@ len = 0.1;
 epsilon2 = 1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=0);
 
 plot(xi,fi,".")
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

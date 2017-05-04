@@ -86,6 +86,12 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `scale_len`: true (default) if the correlation length-scale should be scaled such that the analysical
     kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance. The kernel behaves thus similar to
     the default kernel in two dimensions (alpha = [1,2,1]).
+	
+* `alphabc` : numerical value defining how the last grid points are stretched outward. 1, the default value mimics an infinite domain.
+	To have previous behaviour of finite domain use alphabc=0
+	
+* `btrunc` : if provided defines where to truncate the calculation of the covariance matrix B. Only values up and including alpha[btrunc] will be calculated. IF the 
+				iterative solution is calculated, the missing terms will be calculated on the fly during the conjugate gradient calulcations. Default value is none and full covariance calculation.
 
 # Output:
 *  `fi`: the analysed field

@@ -21,7 +21,7 @@ f=x+y.*z+t.*t.*x
 @show var(f)
 
 jsize=200
-jsizez=6
+jsizez=7
 jsizet=12
 
 # jsize=40
@@ -32,15 +32,15 @@ mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,jsize),linspace(
 # correlation length
 #len = (0.4,0.4,0.2,0.2)
 
-len = (0.2,0.2,0.1,0.1)
+len = (0.3,0.2,0.1,0.1)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 0.3;
 
 
 
 epsilon2b=1000
-@time fi1,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,len[3]/1.7,len[4]/1.7),epsilon2b;alphabc=1);
+@time fi1,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,len[3]/1.42,len[4]/1.42),epsilon2b;alphabc=1);
 
 PC1=s.P
 xg1=statevector_pack(s.sv,(fi1,))
@@ -73,8 +73,8 @@ maxiter=10*Int(ceil(sqrt(size(xg2)[1])))
 pcargs = [(:tol, tol),(:maxit,maxiter)]
 
 
-
 diagshift=0.00004;
+diagshift=0.00001;
 
 #PC=(PC1+PC2+PC3)/3.
 #PC=PC*PC

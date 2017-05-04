@@ -14,7 +14,7 @@
 # Output:
 #   s: stucture containing
 #   s.Dx: cell array of the gradient
-#   s.D: Laplaciant
+#   s.D: Laplacian
 #   s.sv: structure describing the state vector
 #   s.mask: land-sea mask
 #   s.WE: diagonal matrix where each element is the surface

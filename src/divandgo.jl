@@ -59,18 +59,24 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
     # Analyse rations l/dx etc
+	@show mean(Labs[3])
     Lpmnrange = divand_Lpmnrange(pmn,Labs)
-
+    @show mean(Labs[3])
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
     windowlist,csteps,lmask,alphanormpc = divand_cutter(Lpmnrange,size(mask),moddim)
-
+    
+	@show size(mask),size(windowlist)
 
     # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
     # Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
     #fi=zeros(size(mask));
 
-    fi=SharedArray(Float64,size(mask));
-    erri=SharedArray(Float64,size(mask));
+    #fi=SharedArray(Float64,size(mask));
+    #erri=SharedArray(Float64,size(mask));
+	fi=SharedArray(Float32,size(mask));
+    erri=SharedArray(Float32,size(mask));
+	
+	
     @sync @parallel for iwin=1:size(windowlist)[1]
 
         iw1=windowlist[iwin][1]
@@ -80,12 +86,18 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         istore1=windowlist[iwin][5]
         istore2=windowlist[iwin][6]
 
+		
+		windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
+		windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
+
+		
+		
         warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
 
         windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
 
-
+        @show size(windowpoints[1])
 
         #################################################
         # Need to check how to work with aditional constraints...
@@ -143,15 +155,14 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
         # NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
-
+        
         Labsw=Labs
         if !isa(Labs,Number)
             if !isa(Labs[1],Number)
                 Labsw= ([ x[windowpoints...] for x in Labs ]...)
             end
         end
-
-
+        
         kfound=0
         for j=1:size(otherargs)[1]
             if otherargs[j][1]==:alphabc
@@ -178,11 +189,11 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
         # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
         # Verify if a direct solver was requested from the demain decomposer
-        @show alphanormpc
-        @show csteps
         if sum(csteps)>0
-            fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
-            if errormethod==:cpme
+		    fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
+            fi[windowpointsstore...]= fw[windowpointssol...];
+			if errormethod==:cpme
+			    fw=0
                 s=0
                 gc()
                 # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
@@ -192,6 +203,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         else
             # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
             fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
+			fi[windowpointsstore...]= fw[windowpointssol...];
             if errormethod==:cpme
                 errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
             end
@@ -244,11 +256,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
 
-windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
-windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
 
-fi[windowpointsstore...]= fw[windowpointssol...];
 erri[windowpointsstore...]=errw[windowpointssol...];
 
 
