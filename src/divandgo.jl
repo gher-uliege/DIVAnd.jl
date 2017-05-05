@@ -59,9 +59,9 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
     # Analyse rations l/dx etc
-	@show mean(Labs[3])
+	
     Lpmnrange = divand_Lpmnrange(pmn,Labs)
-    @show mean(Labs[3])
+    
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
     windowlist,csteps,lmask,alphanormpc = divand_cutter(Lpmnrange,size(mask),moddim)
     

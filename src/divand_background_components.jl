@@ -6,6 +6,9 @@ iB = divand_background_components(s,D,alpha; kwargs...)
 Compute the components of the background error covariance matrix iB_ and
 their sum based on alpha (the a-dimensional coefficients for norm, gradient,
 laplacian,...).
+
+If the optional arguments contains btrunc, the calculation of iB is limited to the term up and including alpha[btrunc]
+
 """
 
 function divand_background_components(s,D,alpha; kwargs...)
@@ -34,7 +37,7 @@ function divand_background_components(s,D,alpha; kwargs...)
 			end
         end
     end
-    @show btrunc
+    
     # sum all terms of iB
     # iB is adimentional
     iB = alpha[1] * iB_
@@ -54,9 +57,7 @@ function divand_background_components(s,D,alpha; kwargs...)
             # normalized by surface
 
             for i=1:n
-			# POSSIBLE OPTIMIZATION: Do not calculate in directions where L is zero ???????
-			# TO CHECK but needs access to Ld. Also apply in jmBix
-			#show size(s.Ld)
+			# OPTIMIZATION: Do not calculate in directions where L is zero 
 			   if s.Ld[i]>0
                 Dx = s.WEss[i] * s.Dx[i] * D^k;
                 iB_ = iB_ + Dx'*Dx;

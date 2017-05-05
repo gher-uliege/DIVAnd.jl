@@ -17,7 +17,11 @@ where `A` is a symmetric positive defined matrix and `b` is a vector. The functi
 * `success`: true if the interation converged (otherwise false)
 * `niter`: the number of iterations
 """
-
+# JMB: I added some explicit type definition hoping it would speed up things by 
+# helping the compiler. Not sure it is worth doing
+# But the routine is still a very good candidate for optimisation:
+# In large problems most of the time is spend in it and garbage collection is
+# responsible for 40-60 percent of the cpu time !
 
 # It provides also an approximation of A:
 # A \sim Q*T*Q'
@@ -141,7 +145,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
         progress(k,x,r,tol2,fun,b)
 
-        if mod(k,10)==1
+        if mod(k,20)==1
             @show k, r ⋅ r,tol2,size(r)
         end
 
@@ -204,7 +208,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
 
 end
 
-# Copyright (C) 2004 Alexander Barth 			<a.barth@ulg.ac.be>
+# Copyright (C) 2004 2017 Alexander Barth 		<a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -39,7 +39,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
 
 
-    @show otherargs
+    
     errorscale=1;
 
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions

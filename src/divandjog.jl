@@ -51,23 +51,20 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
     # Capture here the case sum(csteps)==n
     if sum(nsteps)==n
 
-        # In this case, can I just define HI=eye(), or something as sparse
-        @show sum(nsteps)
-        # HI=speye(prod(size(mask)))
-        # But in reality not needed if tests on sum(ntests) done so maybe better really separate the two cases
-        # Would also simplify the preconditionner calculations !
-
-        # Normally the case with no subsampling is only usefull if alphapc is defined explicitely
-        # or lmask decouples some directions
-        # (and different values of alpha from the normally used one are defined but this is not tested here)
         
-        if ((alphapc==[]) & (prod(lmask)>0))
-            warn("divajog called with no coarsening and normal alpha")
-            warn("pcg without preconditionner will be used")
-            warn("to force use of direct solver put csteps to zero")
-			# Maybe this is the place to use the new preconditionner ?
-            fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,inversion=:pcg)
+        
+        if ( (pcmethod==0) & ((alphapc==[]) & (prod(lmask)>0)) )
+		
+		 
+            warn("divajog called with no coarsening and no alphapc defined")
+            #warn("pcg without preconditionner will be used")
+            #warn("to force use of direct solver put csteps to zero")
+		    tol = 2e-3
+			maxiter=100*Int(ceil(sqrt(prod(size(mask)))))
+			pcargs = [(:tol, tol),(:maxit,maxiter)]
+            fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg)
             return fi,si
+		 
         else
 		
 		
@@ -75,8 +72,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			maxiter=10*Int(ceil(sqrt(prod(size(mask)))))
 			pcargs = [(:tol, tol),(:maxit,maxiter)]
 
-            diagshift=0.000001;
-	diagshift=0.0000001;	
+            
+			diagshift=0.0000001;	
 		
             # Case where the grid is not subsampled but different norms used for preconditionning
             
@@ -92,7 +89,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             fi=0
 			si=0
 			
-			if methodpc==2
+			if methodpc==1
 			diagshift=0.0001;
 				Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 				# Run model with simplified norm
@@ -124,17 +121,11 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 				#fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,operatortype=Val{:MatFun},compPC = compPCa, fi0 =figuess)
 				fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPCa, fi0 =figuess,btrunc=2)
-				fs=statevector_pack(si.sv,(fi,));
-			xguess=statevector_pack(si.sv,(figuess,));
-			 al=dot(fs,xguess)/dot(xguess,xguess)
-			 vv=var(al*xguess-fs)/var(fs)
-			 @show vv,al
-			 vv=var(xguess-fs)/var(fs)
-			 @show vv,dot(xguess-fs,xguess-fs)/dot(fs,fs),dot(al*xguess-fs,al*xguess-fs)/dot(fs,fs)
+				
 			end
 
 			
-			if methodpc==3
+			if methodpc==2
 				lmask1=0.*lmask;
 				lmask1[1:2]=1;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
@@ -157,9 +148,13 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				gc()
 				lmask1=0.*lmask;
 				lmask1[3:end]=1/1.42;
+					
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
-				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
 				PC1=1
+				sc=0
+				if size(lmask)[2]>2
+					fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
+				end
 				if !(sc==0)
 				# TEST makes sure there are values in the coarse resolution solution
 				# Take the fc coarse solution, pack to to statevector form
@@ -192,8 +187,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			scalef2=scalefter[1]/scalef[1]
 			
-			alphascale=0.33569883687351487*1.17
-			scalef2=scalef2*alphascale
+			
 			xguess=xguess*scalef2
 			svf = statevector_init((mask,))
 			figuess,=statevector_unpack(svf,xguess)
@@ -203,18 +197,13 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
 			
 			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4, fi0 =figuess,btrunc=2)
-			 fs=statevector_pack(si.sv,(fi,));
-			 al=dot(fs,xguess)/dot(xguess,xguess)
-			 vv=var(al*xguess-fs)/var(fs)
-			 @show vv,al
-			 vv=var(xguess-fs)/var(fs)
-			 @show vv,dot(xguess-fs,xguess-fs)/dot(fs,fs),dot(al*xguess-fs,al*xguess-fs)/dot(fs,fs)   
+			 
 				
 			end
 			
 
 			
-			if methodpc==4
+			if methodpc==3
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.*lmask;
 				lmask1[1:2]=1;
@@ -236,11 +225,16 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				sc=0
 				fc=0
 				gc()
-				lmask1=0.*lmask;
-				lmask1[3:end]=1;
+				lmask1=0.0.*lmask;
+				lmask1[3:end]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
-				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
 				PC1=1
+				sc=0
+				
+				if size(lmask)[2]>2
+					fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
+				end
+				
 				if !(sc==0)
 				# TEST makes sure there are values in the coarse resolution solution
 				# Take the fc coarse solution, pack to to statevector form
@@ -266,17 +260,20 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			xguess=(PC1*xguess);
 			xr=randn(size(xguess)[1],1)
-			scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
+			#scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
+			if PC1==1
+			scalef=(xr'*((PC2*(xr))))./(xr'*xr)
+			         else
 			scalef=(xr'*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\xr))))./(xr'*xr)
+			end
 			scalefter=(xr'*(PC2*xr))./(xr'*xr)
 			
 			
 			
 			scalef2=scalefter[1]/scalef[1]
-			@show scalef2
 			
-			alphascale=1
-			scalef2=scalef2*alphascale
+			
+			
 			xguess=xguess*scalef2
 			svf = statevector_init((mask,))
 			figuess,=statevector_unpack(svf,xguess)
@@ -285,21 +282,22 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				#return x -> diagshift*x+scalef2*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\x)))
 				return x -> diagshift*x+scalef2*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\x)))
 			end
-			
+			function compPC4bisb(iB,H,R)
+				#return x -> diagshift*x+scalef2*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\x)))
+				return x -> diagshift*x+scalef2*((PC2*(x)))
+			end
+			if PC1==1
+			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4bisb, fi0 =figuess,btrunc=2)
+			 else
 			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4bis, fi0 =figuess,btrunc=2)
-			 fs=statevector_pack(si.sv,(fi,));
-			 al=dot(fs,xguess)/dot(xguess,xguess)
-			 vv=var(al*xguess-fs)/var(fs)
-			 @show vv,al
-			 vv=var(xguess-fs)/var(fs)
-			 @show vv,dot(xguess-fs,xguess-fs)/dot(fs,fs),dot(al*xguess-fs,al*xguess-fs)/dot(fs,fs)   
-				
+			end	
+			
 			end
 			
 			
 			
 			
-			if methodpc==5
+			if methodpc==4
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.*lmask;
 				lmask1[1:2]=1;
@@ -328,7 +326,12 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				maxiterb=1
      			pcargsb = [(:tol, tol),(:maxit,maxiterb)]
 
-				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,pcargsb...,inversion=:pcg)
+				PC1=1
+				sc=0
+				
+				if size(lmask)[2]>2
+								fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,pcargsb...,inversion=:pcg)
+				end
 				PC1=1
 				if !(sc==0)
 				# TEST makes sure there are values in the coarse resolution solution
@@ -359,7 +362,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			
 			
-			scalef2=0.01/(1+1.001*scalef[1])
+			scalef2=0.03/(1+1.001*scalef[1])
 			
 			
 			svf = statevector_init((mask,))
@@ -370,16 +373,11 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
 			
 			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4ter, fi0 =figuess,btrunc=2)
-			 fs=statevector_pack(si.sv,(fi,));
-			 al=dot(fs,xguess)/dot(xguess,xguess)
-			 vv=var(al*xguess-fs)/var(fs)
-			 @show vv,al
-			 vv=var(xguess-fs)/var(fs)
-			 @show vv,dot(xguess-fs,xguess-fs)/dot(fs,fs),dot(al*xguess-fs,al*xguess-fs)/dot(fs,fs)   
+			 
 				
 			end
 			
-			if methodpc==6
+			if methodpc==5
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.*lmask;
 				lmask1[1:2]=1;
@@ -412,7 +410,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			
 			scalef2=1.013
-			@show scalef2
+			
 			xguess=scalef2*xguess
 			svf = statevector_init((mask,))
 			figuess,=statevector_unpack(svf,xguess)
@@ -422,15 +420,15 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
 			
 			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4quad, fi0 =figuess,btrunc=2)
-			 fs=statevector_pack(si.sv,(fi,));
-			 al=dot(fs,xguess)/dot(xguess,xguess)
-			 vv=var(al*xguess-fs)/var(fs)
-			 @show vv,al
-			 vv=var(xguess-fs)/var(fs)
-			 @show vv,dot(xguess-fs,xguess-fs)/dot(fs,fs),dot(al*xguess-fs,al*xguess-fs)/dot(fs,fs)   
+			 
 				
 			end
             
+			
+			fs=statevector_pack(si.sv,(fi,));
+			fgs=statevector_pack(si.sv,(figuess,));
+			al=dot(fs,fgs)/dot(fgs,fgs)
+			@show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
             return fi,si
         end
     end
@@ -599,8 +597,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             #       warn("Need to expand")
             otherargsc=vcat(otherargsc,(:alphabc,0.25))
         end
-        @show otherargsc
-        @show alphapc
+        
 
         # maybe try another norm using btrunc=3 or even btrunc=2 but full L here for the coarser version ?
 
@@ -611,9 +608,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		
 		methodpccoarse=pcmethod
 		
-		tol=2e-3
+		tol=1e-3
 		maxiter=10*Int(ceil(sqrt(size(HI)[1])))
-		maxiter=minimum([1400,maxiter])
+		maxiter=minimum([2000,maxiter])
     	pcargs = [(:tol, tol),(:maxit,maxiter)]
         diagshift=0.000001
 		
@@ -667,7 +664,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			diagshift=0.006*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			diagshift=0.03*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
-			diagshift=0.008*(sqrt(size(HI)[1]/size(HI)[2])-1);
+			diagshift=0.02*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			
 			function compPC(iB,H,R)
     				return x -> diagshift*x+scalef2*HI*(scP*(HI'*x));
@@ -858,13 +855,22 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			
 			#Now B2D on fine resolution model !
+			Labsf=Labs
+			if isa(Labs,Tuple)
+                Labsf=Labs
+            else
+                Labsf=(Labs*ones(n)...);
+            end
 			
-			lmask1=0.*lmask;
-			lmask1[1]=1/1.42;
-			Labsccut=([Labs[i]*lmask1[i] for i=1:n]...)
+			
+			lmask1=0.0.*lmask;
+			
+			lmask1[1]=1.0/1.42;
+			
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1a=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargsc...,btrunc=3)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,btrunc=3)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -879,12 +885,13 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			fc=0
 			gc()
 
-			lmask1=0.*lmask;
-			lmask1[2]=1/1.42;
-			Labsccut=([Labs[i]*lmask1[i] for i=1:n]...)
+			lmask1=0.0.*lmask;
+			
+			lmask1[2]=1.0/1.42;
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1b=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargsc...,btrunc=3)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,btrunc=3)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -927,7 +934,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			scalef2=scalef2*0.16*1.1
 			xguess=xguess*scalef2
 			figuess,=statevector_unpack(svf,xguess)
-			@show size(PC2), size(PC1a), scalef2, diagshift, size(HI),size(xguess),var(xguess)
+			
 			
 			function compPC4b(iB,H,R)
 				#return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
@@ -945,8 +952,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		end
 
 	if methodpccoarse==5
-			lmask1=0.*lmask;
-			lmask1[1:2]=1;
+			lmask1=0.0.*lmask;
+			lmask1[1:2]=1.0;
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 			
 			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
@@ -966,12 +973,16 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			sc=0
 			fc=0
 			gc()
-			lmask1=0.*lmask;
-            lmask1[3:end]=1/1.42;
+			lmask1=0.0.*lmask;
+            lmask1[3:end]=1.0/1.42;
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
-			@show lmask,lmask1,mean(Labsccut[1]),mean(Labsc[1]),mean(Labsccut[3]),mean(Labsc[3])
-			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000; otherargsc...)
 			PC1=1
+			sc=0
+			@show size(lmask)
+			if size(lmask)[2]> 2
+						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000; otherargsc...)
+			end
+			
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -987,13 +998,17 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			gc()
 
 #Now B2D on fine resolution model !
-			
-			lmask1=0.*lmask;
-			lmask1[1]=1/1.42;
-			Labsccut=([Labs[i]*lmask1[i] for i=1:n]...)
+			if isa(Labs,Tuple)
+                Labsf=Labs
+            else
+                Labsf=(Labs*ones(n)...);
+            end
+			lmask1=0.0.*lmask;
+			lmask1[1]=1.0/1.42;
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1a=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargsc...)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -1008,12 +1023,12 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			fc=0
 			gc()
 
-			lmask1=0.*lmask;
-			lmask1[2]=1/1.42;
-			Labsccut=([Labs[i]*lmask1[i] for i=1:n]...)
+			lmask1=0.0.*lmask;
+			lmask1[2]=1.0/1.42;
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1b=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargsc...)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -1084,10 +1099,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			fs=statevector_pack(si.sv,(fi,));
 			fgs=statevector_pack(si.sv,(figuess,));
 			al=dot(fs,fgs)/dot(fgs,fgs)
-			vv=var(al*fgs-fs)/var(fs)
-			@show vv,al
-			vv=var(fgs-fs)/var(fs)
-			@show vv,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
+			@show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
 		
 
 
