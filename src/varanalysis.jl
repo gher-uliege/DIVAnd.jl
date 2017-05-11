@@ -1,5 +1,5 @@
 function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1})
-    @show @code_warntype unpack(sv,x)
+    #@show @code_warntype unpack(sv,x)
     
 
     xup = unpack(sv,x)[1]
@@ -115,8 +115,8 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     #fun(x) = x + funB½(H' * (R \ (H * (funB½(x)))))
     #b = funB½(H' * (R \ yo))
 
-#    @show "here"
-    @show @code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
+    #    @show "here"
+    #@show @code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
     #@show code_warntype(Bsqrt,(n,s.sv,ivol,nus,Ld,nmax,α,x))
 
     #fB(x) = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
@@ -124,13 +124,16 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     #b = fB(H' * (R \ yo))
 
 
-    fun(x) = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)))))
+    function fun!(x,fx)
+        fx[:] = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)))))
+    end
+
     b = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo))
 
     # adjust tolerance
     tol = tol * s.sv.n / length(yo)
 
-    xp,success,niter = divand.conjugategradient(fun,b; tol = tol);
+    xp,success,niter = divand.conjugategradient(fun!,b; tol = tol);
     #xa = B½ * xp
     #xa = funB½(xp)
     xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp)

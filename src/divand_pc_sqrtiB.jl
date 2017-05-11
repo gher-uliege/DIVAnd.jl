@@ -6,15 +6,13 @@ Compute a preconditioner using the Cholesky decomposition.
 Compute preconditioner matrices M1 and M2 based on
 the Cholesky decomposition of iB. The matrices H and R are not used.
 M2 is the transpose of M1 for this preconditioner.
-
-See also:
-chol, divand_pc_michol
 """
 function divand_pc_sqrtiB(iB,H,R)
-
     F = cholfact(iB);
-
-    return x -> F \ x
+    function fun!(x,fx)
+        fx[:] = F \ x
+    end
+    return fun!
 end
 
 # LocalWords:  preconditioner diavnd pc michol iB Cholesky chol divand sqrtiB

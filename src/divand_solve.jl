@@ -32,7 +32,11 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             #try to define sparse matrix
             #HtRH=H'*(R \ H) so save some time ??
             #fun(x) = s.iB*x + H'*(R \ (H * x));
-            fun(x) = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x));
+
+            function fun!(x,fx)
+                fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
+            end
+
             # Compared to a general problem Ax=b we know that here we have a lot of zeros in b
             # so we scale the tolerance here
             # jmnorm1=var(R \ yo[:])
@@ -44,11 +48,11 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             # square root since tolance is squared before comparing b2 and r2
             jmtol=s.tol*sqrt(size(H)[2]/size(H)[1])
             @show jmtol
-            @time fpi,success,s.niter = conjugategradient(fun,HiRyo,tol = jmtol,
+            @time fpi,success,s.niter = conjugategradient(fun!,HiRyo,tol = jmtol,
                                                           maxit = s.maxit,
                                                           minit = s.minit,
                                                           x0 = fi0,
-                                                          pc = s.preconditioner,
+                                                          pc! = s.preconditioner,
                                                           progress = s.progress
                                                           )
 
@@ -61,14 +65,16 @@ function divand_solve!(s,fi0,f0;btrunc=[])
     else # dual
         B = CovarIS(s.iB);
 
-        # fun(x) computes (H B H' + R)*x
-        fundual(x) = H * (B * (H'*x)) + R*x;
+        # fundual computes (H B H' + R)*x
+        function fundual!(x,fx)
+            fx[:] = H * (B * (H'*x)) + R*x
+        end
 
-        tmp,success,s.niter = conjugategradient(fundual,yo,tol = s.tol,
+        tmp,success,s.niter = conjugategradient(fundual!,yo,tol = s.tol,
                                                 maxit = s.maxit,
                                                 minit = s.minit,
                                                 x0 = f0,
-                                                pc = s.preconditioner,
+                                                pc! = s.preconditioner,
                                                 progress = s.progress
                                                 )
         if !success

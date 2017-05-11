@@ -71,7 +71,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
     where iB is the inverse background error covariance, H the observation
     operator and R the error covariance of the observation. The function `compPC` returns the
-    preconditioner `fun(x)` representing `M \ x` (the inverse of M times x)
+    preconditioner `fun(x,fx)` computing fx = `M \ x` (the inverse of M times x)
     where `M` is a positive defined symmetric matrix [1].
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.

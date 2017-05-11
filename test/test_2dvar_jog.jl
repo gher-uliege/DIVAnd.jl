@@ -1,3 +1,4 @@
+using Base.Test
 # Testing divand in 2 dimensions with advection.
 
 # grid of background field

@@ -106,12 +106,11 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask; alphapc=[],othera
 
             # Preconditionner function
             function compPCa(iB,H,R)
-                return x -> diagshift*x+scP*x;
+                function fun!(x,fx)
+                    fx[:] = diagshift*x+scP*x;
+                end
+                return fun!
             end
-
-
-
-
 
             # Then run with normal resolution and preconditionner
 
@@ -344,10 +343,10 @@ diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
 
 # Preconditionner function
 function compPC(iB,H,R)
-    #   return x -> diagshift*x-diagshift*(HI*(HI'*x))+HI*(scP*(HI'*x));
-    return x -> diagshift*x+HI*(scP*(HI'*x));
-    #   return jmPHI'*(jmPHI*x);
-    #   return x->x;
+    function fun!(x,fx)
+        fx[:] = diagshift*x+HI*(scP*(HI'*x))
+    end
+    return fun!
 end
 
 

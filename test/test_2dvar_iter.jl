@@ -56,7 +56,10 @@ va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
 
 # iterative (with custom preconditioner)
 function compPC(iB,H,R)
-    return x -> iB \ x;
+    function fun!(x,fx)
+        fx[:] = iB \ x
+    end
+    return fun!
 end
 va_iter,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                          kwargs..., inversion=:pcg,compPC = compPC);
@@ -79,7 +82,10 @@ function compPCdual(iB,H,R)
     @show typeof(M)
     @show typeof(iM)
 
-    return x -> iM * x;
+    function fun!(x,fx)
+        fx[:] = iM * x
+    end
+    return fun!
 end
 va_dual,s_wp = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                          kwargs..., primal=false,compPC = compPCdual);

@@ -1,16 +1,32 @@
 
 """
-x,success,niter = conjugategradient(fun,b,x0,tol,maxit,pc);
+x,success,niter = conjugategradient(fun!,b,x0,tol,maxit,pc);
 
 Solve a linear system with the preconditioned conjugated-gradient method:
 A x = b
-where `A` is a symmetric positive defined matrix and `b` is a vector. The function `fun(x)` represents `A*x`.
+where `A` is a symmetric positive defined matrix and `b` is a vector. The function `fun!(x,fx)` computes fx which is equal to  `A*x`.
+For example:
+
+```
+function fun!(x,fx)
+    fx[:] = A*x
+end
+```
+
+Note that the following code would NOT work, because a new array `fx` would be created and it would not be passed back to the caller.
+
+```
+function fun!(x,fx)
+    fx = A*x # bug!
+end
+```
+The function `fun!` works in-place to reduce the amount of memory allocations.
 
 # Optional input arguments
 * `x0`: starting vector for the interations
 * `tol`: tolerance on  |Ax-b| / |b|
 * `maxit`: maximum of interations
-* `pc`: the preconditioner. The functions `pc(x)` should return M⁻¹ x (the inverse of M times x) where `M` is a symmetric positive defined matrix. Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M. Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
+* `pc!`: the preconditioner. The functions `pc(x,fx)` computes fx = M⁻¹ x (the inverse of M times x) where `M` is a symmetric positive defined matrix. Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M. Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix. The function `pc!` should be implemented in a similar way than `fun!` (see above).
 
 # Output
 * `x`: the solution
@@ -28,8 +44,12 @@ where `A` is a symmetric positive defined matrix and `b` is a vector. The functi
 # b = ∇ J(0)
 
 # the columns of Q are the Lanczos vectors
+function pc_none!(x,fx)
+  fx[:] = x
+end
 
-function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, maxit = min(size(b,1),20),
+
+function conjugategradient(fun!,b; pc! = pc_none!, x0 = zeros(size(b)), tol = 1e-6, maxit = min(size(b,1),20),
                            minit = 0,
                            progress = (iter,x,r,tol2,fun,b) -> nothing
                            )
@@ -61,18 +81,21 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
     # initial guess
     x = x0;
 
+    # allocate the result for the function call
+    Ap = similar(x)
+    fun!(x,Ap)
+
     # gradient at initial guess
-    r = b - fun(x);
+    r = b - Ap;
 
     # quick exit
     if r⋅r < tol2
         return x,true,0
     end
 
-
-
     # apply preconditioner
-    z = pc(r);
+    z = similar(x)
+    pc!(r,z);
 
     # first search direction == gradient
     p = z;
@@ -98,7 +121,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
         # end
 
         # compute A*p
-        Ap = fun(p);
+        fun!(p,Ap)
 
         # how far do we need to go in direction p?
         # alpha is determined by linesearch
@@ -118,11 +141,11 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
         #end
 
         # apply pre-conditionner
-        z = pc(r);
+        pc!(r,z)
 
         zr_new = r ⋅ z;
 
-        progress(k,x,r,tol2,fun,b)
+        progress(k,x,r,tol2,fun!,b)
 
         #if mod(k,10)==1
         #    @show k, r ⋅ r,tol2,size(r)
