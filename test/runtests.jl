@@ -5,6 +5,10 @@ using Base.Test
 @testset "divand" begin
     include("test_covaris.jl");
 
+#    @testset "CG" begin
+    # conjugate gradient
+#    include("test_conjugategradient.jl");
+#    end
 
     include("test_sparse_diff.jl");
     include("test_localize_separable_grid.jl");

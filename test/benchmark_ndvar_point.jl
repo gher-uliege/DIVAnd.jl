@@ -8,10 +8,10 @@ using Base.Test
 #gridsize = (101,101)
 gridsize = (21,21,21)
 
-ndims = length(gridsize)
+n = length(gridsize)
 
 # observations
-xy = ntuple(i -> [0.],ndims)
+xy = ntuple(i -> [0.],n)
 f = [2.]
 
 
@@ -25,7 +25,7 @@ mask,pmn,xyi = divand_rectdom([linspace(-1,1,s) for s in gridsize]...)
 sv = statevector((mask,))
 
 # correlation length
-len = ntuple(i -> 0.2,ndims)
+len = ntuple(i -> 0.2,n)
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1;

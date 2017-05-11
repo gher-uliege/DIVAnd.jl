@@ -1,6 +1,9 @@
 # adapted from Julia
 
 
+# See also
+# https://github.com/PetterS/SuiteSparse/blob/27e5a8516464a6ac40bd3fa0e5b46e51b11f4765/CHOLMOD/MatrixOps/cholmod_ssmult.c#L239
+
 """compute non-zero values of A*B"""
 function myspmatmul_nnz{Tv,Ti}(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti})
 
