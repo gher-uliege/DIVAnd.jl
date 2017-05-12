@@ -91,7 +91,7 @@ function conjugategradient(fun,b; pc = x -> x, x0 = zeros(size(b)), tol = 1e-6, 
     z = pc(r)::Array{Float64,1};
 
     # first search direction == gradient
-    p = z;
+    p = copy(z)
 
     # compute: r' * inv(M) * z (we will need this product at several
     # occasions)
