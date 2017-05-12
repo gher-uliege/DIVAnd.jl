@@ -4,9 +4,9 @@ using Base.Test
 # grid of background field
 xi,yi = ndgrid(linspace(-1,1,30),linspace(-1,1,30));
 
-x = .4;
-y = .4;
-f = 1;
+x = [.4]
+y = [.4]
+f = [1.]
 
 mask = trues(xi);
 pm = ones(xi) / (xi[2,1]-xi[1,1]);
