@@ -1,6 +1,6 @@
 
 """
-x,success,niter = conjugategradient(fun!,b,x0,tol,maxit,pc);
+x,success,niter = conjugategradient(fun!,b)
 
 Solve a linear system with the preconditioned conjugated-gradient method:
 A x = b
@@ -13,7 +13,7 @@ function fun!(x,fx)
 end
 ```
 
-Note that the following code would NOT work, because a new array `fx` would be created and it would not be passed back to the caller.
+Note that the following code will NOT work, because a new array `fx` would be created and it would not be passed back to the caller.
 
 ```
 function fun!(x,fx)
@@ -34,7 +34,6 @@ The function `fun!` works in-place to reduce the amount of memory allocations.
 * `niter`: the number of iterations
 """
 
-
 # It provides also an approximation of A:
 # A \sim Q*T*Q'
 
@@ -44,23 +43,27 @@ The function `fun!` works in-place to reduce the amount of memory allocations.
 # b = ∇ J(0)
 
 # the columns of Q are the Lanczos vectors
+
 function pc_none!(x,fx)
   fx[:] = x
 end
 
-
-function conjugategradient(fun!,b; pc! = pc_none!, x0 = zeros(size(b)), tol = 1e-6, maxit = min(size(b,1),20),
-                           minit = 0,
-                           progress = (iter,x,r,tol2,fun,b) -> nothing
-                           )
-    #, renorm = false)
+function conjugategradient{T}(fun!, b::Vector{T};
+                              x0::Vector{T} = zeros(size(b)),
+                              tol::T = 1e-6,
+                              maxit::Int = min(size(b,1),20),
+                              minit::Int = 0,
+                              pc! = pc_none!,
+                              progress = (iter,x,r,tol2,fun!,b) -> nothing
+                              )
 
     success = false
-    n = length(b);
+    n = length(b)
 
     bb = b ⋅ b
 
     if bb == 0
+        gc_enable(true)
         return zeros(size(b)),true,0
     end
 
@@ -70,140 +73,99 @@ function conjugategradient(fun!,b; pc! = pc_none!, x0 = zeros(size(b)), tol = 1e
     # absolute tolerance
     tol2 = tol2 * bb
 
-    # delta = [];
-    # gamma = [];
-    # q = NaN*zeros(n,1);
-
-    #M = inv(invM);
-    #E = chol(M);
-
-
     # initial guess
-    x = x0;
+    x = x0
 
-    # allocate the result for the function call
+    # memory allocation
     Ap = similar(x)
-    fun!(x,Ap)
+    z = similar(x)
 
     # gradient at initial guess
-    r = b - Ap;
+    fun!(x,Ap)
+    r = b - Ap
 
     # quick exit
     if r⋅r < tol2
+        gc_enable(true)
         return x,true,0
     end
 
     # apply preconditioner
-    z = similar(x)
-    pc!(r,z);
+    pc!(r,z)
 
     # first search direction == gradient
-    p = copy(z);
+    p = copy(z)
 
     # compute: r' * inv(M) * z (we will need this product at several
     # occasions)
 
     # ⋅ is the dot vector product and returns a scalar
-    zr_old = r ⋅ z;
+    zr_old = r ⋅ z
 
-    # r_old: residual at previous iteration
-    r_old = r;
-
-    alpha = zeros(maxit)
-    beta = zeros(maxit+1)
+    alpha = zeros(T,maxit)
+    beta = zeros(T,maxit+1)
 
     k = 0
 
     for k=1:maxit
-        # if k <= n && nargout > 1
-        #     # keep at most n vectors
-        #     Q(:,k) = r/sqrt(zr_old);
-        # end
-
         # compute A*p
         fun!(p,Ap)
 
         # how far do we need to go in direction p?
         # alpha is determined by linesearch
-
-        alpha[k] = zr_old / (p ⋅ Ap);
+        alpha[k] = zr_old / (p ⋅ Ap)
 
         # get new estimate of x
-        x = x + alpha[k]*p;
+        # x = x + alpha[k]*p
+	x=BLAS.axpy!(alpha[k],p,x)
 
         # recompute gradient at new x. Could be done by
-        # r = b-fun(x);
+        # r = b-fun(x)
         # but this does require an new call to fun
-        r = r - alpha[k]*Ap;
+        # r = r - alpha[k]*Ap
+	r = BLAS.axpy!(-alpha[k],Ap,r)
 
-        #if renorm
-        #    r = r - Q(:,1:k) * Q(:,1:k)' * r ;
-        #end
+        progress(k,x,r,tol2,fun!,b)
+
+        # if mod(k,10)==1
+        #     @show k, r ⋅ r,tol2,size(r)
+        # end
+
+        if r ⋅ r < tol2 && k >= minit
+            success = true
+            #@show k
+            break
+        end
 
         # apply pre-conditionner
         pc!(r,z)
 
-        zr_new = r ⋅ z;
+        zr_new = r ⋅ z
 
-        progress(k,x,r,tol2,fun!,b)
+        # Fletcher-Reeves
+        beta[k+1] = zr_new / zr_old
+        # Polak-Ribiere
+        # beta[k+1] = r'*(r-r_old) / zr_old
+        # Hestenes-Stiefel
+        # beta[k+1] = r'*(r-r_old) / (p'*(r-r_old))
+        # beta[k+1] = r'*(r-r_old) / (r_old'*r_old)
 
-        #if mod(k,10)==1
-        #    @show k, r ⋅ r,tol2,size(r)
-        #end
-
-        if r ⋅ r < tol2 && k >= minit
-            success = true
-            #@show k, r ⋅ r, tol2
-            break
+        # p = z + beta[k+1]*p
+        for i = 1:n
+            p[i] = z[i] + beta[k+1]*p[i]
         end
 
-        #Fletcher-Reeves
-        beta[k+1] = zr_new / zr_old;
-        #Polak-Ribiere
-        #beta[k+1] = r'*(r-r_old) / zr_old;
-        #Hestenes-Stiefel
-        #beta[k+1] = r'*(r-r_old) / (p'*(r-r_old));
-        #beta[k+1] = r'*(r-r_old) / (r_old'*r_old);
-
-
-        # norm(p)
-        p = z + beta[k+1]*p;
-        zr_old = zr_new;
-        r_old = r;
-
+        zr_old = zr_new
     end
+
+    gc_enable(true)
 
     return x,success,k
 
-    #disp('alpha and beta')
-    #figure,plot(beta(2:end))
-    #rg(alpha)
-    #rg(beta(2:end))
-
-    # if nargout > 1
-    #     kmax = size(Q,2);
-
-    #     delta[1] = 1/alpha[1];
-
-    #     #delta[1] - Q[:,1]'*invM*A*invM*Q[:,1]
-
-
-    #     for k=1:kmax-1
-    #         delta[k+1] = 1/alpha[k+1] + beta[k+1]/alpha[k];
-    #         gamma[k] = -sqrt(beta[k+1])/alpha[k];
-    #     end
-
-    #     T = sparse([1:kmax   1:kmax-1 2:kmax  ],...
-    #         [1:kmax   2:kmax   1:kmax-1],...
-    #         [delta    gamma    gamma]);
-
-    #     diag.iter = k;
-    #     diag.relres = sqrt(r'*r);
-    # end
-
 end
 
-# Copyright (C) 2004 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2004,2017  Alexander Barth 		<a.barth@ulg.ac.be>
+#                          Jean-Marie Beckers		<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
