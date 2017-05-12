@@ -135,7 +135,7 @@ Base.:transpose{T}(MF:: MatFun{T}) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
 
 Base.Ac_mul_B{T,S}(MF:: MatFun{T}, x::AbstractVector{S}) = MF.funt(x)
 Base.Ac_mul_B{T}(MF1:: MatFun{T}, MF2:: MatFun{T}) = A_mul_B(MF1',MF2)
-
+Base.A_mul_Bc{T}(MF1:: MatFun{T}, MF2:: MatFun{T}) = A_mul_B(MF1,MF2')
 
 MatFun(S::AbstractSparseMatrix) = MatFun(size(S), x -> S*x, x -> S'*x)
 

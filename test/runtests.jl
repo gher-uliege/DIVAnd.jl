@@ -1,6 +1,6 @@
 using divand
 using Base.Test
-
+import Base.LinAlg.BLAS
 
 @testset "divand" begin
     include("test_covaris.jl");
