@@ -98,7 +98,7 @@ function conjugategradient(fun!,b; pc! = pc_none!, x0 = zeros(size(b)), tol = 1e
     pc!(r,z);
 
     # first search direction == gradient
-    p = z;
+    p = copy(z);
 
     # compute: r' * inv(M) * z (we will need this product at several
     # occasions)
