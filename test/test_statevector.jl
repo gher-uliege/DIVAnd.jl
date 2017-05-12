@@ -10,7 +10,7 @@ mask_u[4,6] = true
 mask_v[5,7] = true
 
 
-sv = statevector_init((mask,mask_u,mask_v));
+sv = statevector((mask,mask_u,mask_v));
 var = rand(10,10);
 var[mask.==0] = 0;
 
@@ -20,8 +20,8 @@ var_u[mask_u.==0] = 0;
 var_v = rand(10,9);
 var_v[mask_v.==0] = 0;
 
-E = statevector_pack(sv,(var,var_u,var_v));
-Ezeta2,Eu2,Ev2 = statevector_unpack(sv,E);
+E = pack(sv,(var,var_u,var_v));
+Ezeta2,Eu2,Ev2 = unpack(sv,E);
 
 
 #@show all(Ezeta2 .== var)
@@ -31,18 +31,18 @@ Ezeta2,Eu2,Ev2 = statevector_unpack(sv,E);
 @test Eu2 ≈ var_u
 @test Ev2 ≈ var_v
 
-ind = statevector_sub2ind(sv,(1,3,5))
+ind = sub2ind(sv,(1,3,5))
 @test var[3,5] ≈ E[ind]
-@test statevector_ind2sub(sv,ind) == (1,3,5)
+@test ind2sub(sv,ind) == (1,3,5)
 
 
-ind = statevector_sub2ind(sv,(2,4,6))
+ind = sub2ind(sv,(2,4,6))
 @test var_u[4,6] ≈ E[ind]
-@test statevector_ind2sub(sv,ind) == (2,4,6)
+@test ind2sub(sv,ind) == (2,4,6)
 
-ind = statevector_sub2ind(sv,(3,5,7))
+ind = sub2ind(sv,(3,5,7))
 @test var_v[5,7] ≈ E[ind]
-@test statevector_ind2sub(sv,ind) == (3,5,7)
+@test ind2sub(sv,ind) == (3,5,7)
 
 
 
