@@ -36,5 +36,6 @@ x,success,niter3 = divand.conjugategradient(fun!,b; kwargs..., pc! = pc_jacobi!)
 @test norm(A*x - b)/norm(b) < tol
 @test niter3 <= niter1
 
-
+# check type-stability
+@inferred divand.conjugategradient(fun!,zeros(b); kwargs..., pc! = pc_jacobi!)
 
