@@ -24,28 +24,69 @@ mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,jsize),linspace(-1,1,j
 len = (0.4,0.4,0.4)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1/4;
+epsilon2 = 0.010;
 
 #@time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1);
 
-epsilon2b=epsilon2*100
-@time fi1,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.4/3,0,0),epsilon2b;alphabc=1);
+epsilon2b=(1+epsilon2)^0.2-1
+#epsilon2b=epsilon2
+
+alpha1D=[]
+
+#epsilon2b=epsilon2
+@time fi1,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.4*1,0,0),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC1=s.P
+H1=s.H
 xg1=statevector_pack(s.sv,(fi1,))
 
-@time fi2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0, 0.4/3,0),epsilon2b;alphabc=1);
+
+
+
+@time fi2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0, 0.4*1,0),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC2=s.P
+H2=s.H
+
 xg2=statevector_pack(s.sv,(fi2,))
 
 
-@time fi3,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,0.4/3),epsilon2b;alphabc=1);
+@time fi3,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,0.4*1),epsilon2b;alphabc=1,alpha=alpha1D);
+
+@show extrema(s.H-H1)
+@show extrema(s.H-H2)
+@show extrema(H2-H1)
+
+
 
 PC3=s.P
 xg3=statevector_pack(s.sv,(fi3,))
 
-xguess=(xg1.+xg2.+xg3)/3.;
+
+# try the real R ?
+zzz=(s.H'* (s.R \ s.yo[:]))
+
+#(s.H'* (s.R \(s.H*(
+
+@show size(zzz)
+
+xgs=PC1*(s.H'* (s.R \(s.H*(PC2*(s.H'* (s.R \(s.H*(PC3*(s.H'* (s.R \(s.H*(PC2*(s.H'* (s.R \(s.H*(PC1*zzz))))))))))))))))
+
+
+xgs=PC1*(s.H'* (s.R \(s.H*(PC2*(s.H'* (s.R \(s.H*(PC3*(s.H'* (s.R \(s.H*(PC3*(s.H'* (s.R \(s.H*(PC2*(s.H'* (s.R \(s.H*(PC1*zzz))))))))))))))))))))
+
+xguess=statevector_unpack(s.sv,xgs)
+xgs2=PC1*(PC2*(PC3*(PC3*(PC2*(PC1*zzz)))))*epsilon2b^5
+
+xgs3=statevector_pack(s.sv,((fi1+fi2+fi3)/3,))
+
+scalef2=dot(xgs,xgs2)/dot(xgs2,xgs2)
+@show scalef2
+@show epsilon2^4
+scalef2=0.0005
+
+vv=var(scalef2*xgs2-xgs)/var(xgs)
+@show vv
 
 #   @show var((fi1+fi2+fi3)/3-fi)/var(fi)
 
@@ -65,13 +106,13 @@ diagshift=0.00004;
 xr=randn(jsize^3,1)
 scalef=xr'*(PC1*(PC2*(PC3*(PC3*(PC2*(PC1*xr))))))./(xr'*xr)
 @show scalef
-
+scalef2=1/scalef[1]
 function compPC(iB,H,R)
     #            return x -> diagshift*x+PC*x;
     #            return x -> diagshift*x+1./9.*PC1*(PC1*x+PC2*x+PC3*x)+1./9.*PC2*(PC1*x+PC2*x+PC3*x)+1./9.*PC3*(PC1*x+PC2*x+PC3*x)
     #return x -> diagshift*x+1./9.*(PC1*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))
     #return x -> diagshift*x+1./3.*(PC1*(PC1*x)+(PC2*(PC2*x)+(PC3*(PC3*x))))#+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))
-    return x -> diagshift*x+1./scalef[1]*(PC1*(PC2*(PC3*(PC3*(PC2*(PC1*x))))))
+    return x -> diagshift*x+scalef2*(PC1*(PC2*(PC3*(PC3*(PC2*(PC1*x))))))
 
     #return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
     #return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
@@ -84,13 +125,15 @@ end
 # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?
 
+s=0
+gc()
 
-@time fiiter,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC)#, fi0 =xguess);
+@time fiiter,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xgs,btrunc=1);
 
-@time fiiter2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg)#, fi0 =xguess);
+#@time fiiter2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,btrunc=1)#, fi0 =xguess);
 # Then run with normal resolution and preconditionner
 
-var(fi-fiiter)/var(fi)
+#var(fi-fiiter)/var(fi)
 
 
 

@@ -2,22 +2,22 @@
 
 """
 
-function jmBix(s,x;btrunc=[])
+function jmBix(s,x::Array{Float64,1};btrunc=[])
 
-    iBx=s.iB*x
-    # @show btrunc
+    iBx=s.iB*x   ::Array{Float64,1}
+    
     if btrunc==[]
         return iBx
     end
 
-
-    WE = s.WE;
+    
+    #WE = s.WE;
     coeff = s.coeff;
     n = s.n;
     alpha=s.alpha
     # incomplete Bi calculated before now complemented on the fly
 
-    D=s.D
+    #D=s.D
     for j=btrunc+1:length(alpha)
         # exponent of laplacian
         k = Int(floor((j-2)/2))
@@ -25,22 +25,35 @@ function jmBix(s,x;btrunc=[])
         # @show size(x)
         # @show size(s.iB)
         #iBx_ = spzeros(iBx);
-        iBx_=0.*iBx;
-
+        iBx_=0.*iBx ::Array{Float64,1};
+# Certainly a gain to make; not recompute D^(k+1) but Dk*D if k+1 is one larger than already calculated value if it exists
+# But only for n larger than 5 probably, so not an urgent thing
+        
         if mod(j,2) == 0
             # constrain of derivative with uneven order (j-1)
             # (gradient, gradient*laplacian,...)
             # normalized by surface
-            Dk=D^k
-            Dkx=Dk*x
+			
+			Dk=s.D^k
+			Dkx=Dk*x ::Array{Float64,1}
+			
             for i=1:n
+			#? Not take up ?
+			    if s.Ld[i]>0
                 #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
                 #                iBx_ = iBx_ + Dx'*(Dx*x);
-                Dx = s.WEss[i] * s.Dx[i];
-                # maybe gain if Dk=Dk'?
-                iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
-            end
-
+				#@show i
+                #@time Dx = s.WEss[i] * s.Dx[i];
+                # maybe gain if Dk=Dk'? Check with alex if s.Wess is diagonal
+                #iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
+				#iBx_ = iBx_ + (s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i]*Dkx))));
+				iBx_ = iBx_ + (s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i]*Dkx))));
+				#iBx_ = iBx_ + (Dx'*(Dx*Dkx));
+				end
+			end
+			if k>0
+				iBx_=Dk'*iBx_
+			end
         else
             # constrain of derivative with even order (j-1)
             # (laplacian, biharmonic,...)
@@ -49,24 +62,31 @@ function jmBix(s,x;btrunc=[])
             # such that inner produces (i.e. WE'*WE)
             # become integrals
             # WD: units length^(n/2)
-
-            WD = WE * D^(k+1);
-            iBx_ = WD'*(WD*x);
+           #@show k 
+           #@time WD = s.WE * s.D^(k+1);
+		    sDkp=s.D^(k+1)
+			#iBx_ = WD'*(WD*x);
+			
+			iBx_ = sDkp'*(s.WE*(s.WE*(sDkp*x)))
+			
+			#Dk=s.WE * s.D^(k+1)
+            #Dkx=Dk*x
+            #iBx_ = Dk'*Dkx
         end
+        asurc=alpha[j]/coeff
+        #iBx_ = iBx_/coeff;
+		#iBx = iBx + alpha[j] * iBx_
 
-        iBx_ = iBx_/coeff;
-
-
-
-        iBx = iBx + alpha[j] * iBx_
+        iBx=BLAS.axpy!(asurc,iBx_,iBx)
+        
     end
     return iBx
 end
 
 # LocalWords:  iB divand
 
-# Copyright (C) 2014 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+# Copyright (C) 2014-2017 Alexander Barth	  	 <a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers 	 <JM.Beckers@ulg.ac.be>
 #
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -18,10 +18,23 @@ v = -a*xi;
 epsilon2 = 1/200
 len = 0.2
 
-fi,s = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[2 2],[1 1];velocity = (u,v),alphabc=0);
+for i=1:5
+@show i
+fi,s = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[2 2],[1 1],i;velocity = (u,v),alphabc=0);
+
 
 @test abs(fi[18,24] - 0.8993529043140029) < 1.4e-2
 
+end
+
+for ii=0:5
+@show ii
+fi,s = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[1 1],[1 1],ii;velocity = (u,v),alphabc=0);
+
+
+@test abs(fi[18,24] - 0.8993529043140029) < 1.4e-2
+
+end
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

@@ -10,6 +10,8 @@ Input:
   s: structure created by divand_factorize
   fi0: starting point for iterative primal methods
   f0: starting point for the iterative dual method
+  
+  btrunc: the value at which the stored value of s.iB was truncated and needs to be completed on the fly using jmBix
 
 Output:
   fi: analyzed field
@@ -34,20 +36,15 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             #fun(x) = s.iB*x + H'*(R \ (H * x));
 
             function fun!(x,fx)
+		#HtRH=H'*(R \ H) leads to memory overflow
+                #fun(x) = jmBix(s,x;btrunc=btrunc) + HtRH*x;
                 fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
             end
 
             # Compared to a general problem Ax=b we know that here we have a lot of zeros in b
             # so we scale the tolerance here
-            # jmnorm1=var(R \ yo[:])
-            # jmnorm2=var(HiRyo)
-            # jmnorm4=size(H)
-            # @show jmnorm1/jmnorm2
-            # @show jmnorm4[2]/jmnorm4[1]
-            # jmtol=s.tol*jmnorm1/jmnorm2
             # square root since tolance is squared before comparing b2 and r2
             jmtol=s.tol*sqrt(size(H)[2]/size(H)[1])
-            @show jmtol
             @time fpi,success,s.niter = conjugategradient(fun!,HiRyo,tol = jmtol,
                                                           maxit = s.maxit,
                                                           minit = s.minit,
@@ -92,8 +89,9 @@ function divand_solve!(s,fi0,f0;btrunc=[])
     return fi
 end
 
-# Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>
-#
+# Copyright (C) 2014,2017 Alexander Barth 		<a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
+#						
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at your option) any later

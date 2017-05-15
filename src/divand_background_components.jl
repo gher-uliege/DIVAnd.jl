@@ -6,6 +6,9 @@ iB = divand_background_components(s,D,alpha; kwargs...)
 Compute the components of the background error covariance matrix iB_ and
 their sum based on alpha (the a-dimensional coefficients for norm, gradient,
 laplacian,...).
+
+If the optional arguments contains btrunc, the calculation of iB is limited to the term up and including alpha[btrunc]
+
 """
 
 function divand_background_components(s,D,alpha; kwargs...)
@@ -29,7 +32,9 @@ function divand_background_components(s,D,alpha; kwargs...)
     if haskey(kw,:btrunc)
         btruncv=kw[:btrunc]
         if btruncv != Any[]
-            btrunc=btruncv
+		    if btrunc>btruncv
+				btrunc=btruncv
+			end
         end
     end
 
@@ -52,8 +57,11 @@ function divand_background_components(s,D,alpha; kwargs...)
             # normalized by surface
 
             for i=1:n
+			# OPTIMIZATION: Do not calculate in directions where L is zero 
+			   if s.Ld[i]>0
                 Dx = s.WEss[i] * s.Dx[i] * D^k;
                 iB_ = iB_ + Dx'*Dx;
+			   end
             end
 
         else
@@ -76,17 +84,18 @@ function divand_background_components(s,D,alpha; kwargs...)
         end
 
         iB = iB + alpha[j] * iB_
+		
     end
 
-    # iB is adimentional
+    # iB is adimensional
 
     return iB
 end
 
 # LocalWords:  iB divand
 
-# Copyright (C) 2014 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+# Copyright (C) 2014-2017 Alexander Barth	 <a.barth@ulg.ac.be>
+#                         Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -36,7 +36,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     # Some tweaking parameters #####
 
     # Minimum number of points per length scale for the preconditionner can be fractional
-    minimumpointsperlpc=3.0
+    minimumpointsperlpc=5.0
 
 
 
@@ -57,6 +57,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
         nsamp=Int(floor(Lpmnrange[i][1]/minimumpointsperlpc));
         if nsamp>1
             csteps[i]=minimum([nsamp,3])
+			#csteps[i]=minimum([nsamp,1])
         end
     end
     @show csteps
@@ -74,13 +75,9 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
 
     if n==4
         lmask[3]=0
-        lmask=lmask*1.25715/0.69315
     end
 
 
-    if n==3
-        lmask=lmask*1.25715/0.69315
-    end
 
 
 
