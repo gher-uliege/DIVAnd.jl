@@ -7,11 +7,7 @@ dataresidual = divand_residualobs(s,fi);
 
 
 function divand_residualobs(s,fi)
-
-
-
-    return squeeze(s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,)),2)
-
+    return s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,))
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

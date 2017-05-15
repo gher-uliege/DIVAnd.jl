@@ -23,13 +23,20 @@ var_v[mask_v.==0] = 0;
 E = pack(sv,(var,var_u,var_v));
 Ezeta2,Eu2,Ev2 = unpack(sv,E);
 
-
 #@show all(Ezeta2 .== var)
 #@show maximum(abs(Ezeta2 - var))
 
 @test Ezeta2 ≈ var
 @test Eu2 ≈ var_u
 @test Ev2 ≈ var_v
+
+
+data = randn(sv.n,5)
+Ezeta2,Eu2,Ev2 = unpackens(sv,data)
+data2 = packens(sv,(Ezeta2,Eu2,Ev2))
+@test size(Ezeta2,3) == 5
+@test data ≈ data2
+
 
 ind = sub2ind(sv,(1,3,5))
 @test var[3,5] ≈ E[ind]

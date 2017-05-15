@@ -2,22 +2,22 @@
 # several variables under the control of a mask
 
 # N is the dimension of all variables
-type statevector{N}
-    mask::Vector{BitArray{N}}
+type statevector{nvar_,N}
+    mask::NTuple{nvar_,BitArray{N}}
     nvar::Int64
     numels::Vector{Int64}
     numels_all::Vector{Int64}
-    size
+    size::Vector{NTuple{N,Int64}}
     ind::Vector{Int64}
     n::Int64
-    packed2unpacked
-    unpacked2packed
+    packed2unpacked::Vector{Vector{Int64}}
+    unpacked2packed::Vector{Vector{Int64}}
 end
 
 function unpack_(v,mask)
     tmp = zeros(eltype(v),size(mask));
     tmp[mask] = v;
-    return tmp;
+    return tmp[:]
 end
 
 
@@ -42,7 +42,7 @@ see also statevector_pack, statevector_unpack
 Author: Alexander Barth, 2009,2017 <a.barth@ulg.ac.be>
 License: GPL 2 or later
 """
-function statevector(masks::Tuple)
+function statevector{nvar_,N}(masks::NTuple{nvar_,BitArray{N}})
 
     numels = [sum(mask)    for mask in masks]
     ind = [0, cumsum(numels)...]
@@ -53,8 +53,8 @@ function statevector(masks::Tuple)
     # vector mapping unpacked indices packed indices
     unpacked2packed = [unpack_(1:sum(mask),mask) for mask in masks]
 
-    sv = statevector(
-                     [mask for mask in masks],
+    sv = statevector{nvar_,N}(
+                     masks,
                      length(masks),
                      numels,
                      [length(mask) for mask in masks],
@@ -90,11 +90,28 @@ to represent the different ensemble members. In this case x is a matrix and its 
 is the number of ensemble members.
 """
 
-function pack{n,m,T}(sv::statevector,vars::NTuple{n,Array{T,m}})::Array{T,2}
+function pack{nvar_,N,T}(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T}
 
     k = size(vars[1],ndims(sv.mask[1])+1)
-    x = zeros(sv.n,k)::Array{T,2}
-    #x = zeros(T,(sv.n,k))
+    
+    x = Vector{T}(sv.n)
+
+    for i=1:sv.nvar
+        tmp = reshape(vars[i],sv.numels_all[i],k)
+        ind = find(sv.mask[i])
+        x[sv.ind[i]+1:sv.ind[i+1]] = tmp[ind]
+    end
+
+    return x
+end
+
+
+
+function packens{nvar_,N,T,Np}(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Array{T,2}
+
+    k = size(vars[1],ndims(sv.mask[1])+1)
+    
+    x = Array{T,2}(sv.n,k)
 
     for i=1:sv.nvar
         tmp = reshape(vars[i],sv.numels_all[i],k)
@@ -132,42 +149,36 @@ to represent the different ensemble members. In this case,
 var1, var2, ... have also an additional trailing dimension.
 """
 
-function unpack(sv::statevector,x,fillvalue = 0)
+function unpack{nvar_,N,T}(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0)
+    out = ntuple(i -> begin
+                v = Array{T,N}(sv.size[i]);
+                v[:] = fillvalue
+                v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
+                
+                return v
+                end,Val{nvar_})
 
-    out = []
+    return out
+end
 
-    if ndims(x) == 1
+# output is Tuple{_<:Array{Float64,N}} (not completely type-stable)
 
-        for i=1:sv.nvar
-            v = zeros(sv.numels_all[i])
-            v[:] = fillvalue
+function unpackens{nvar_,N,T}(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0)
 
-            ind = find(sv.mask[i])
+    const k = size(x,2)
 
-            v[ind] = x[sv.ind[i]+1:sv.ind[i+1]]
+    out = ntuple(i -> begin
+                v = Array{T,N+1}((sv.size[i]...,k));
+                v[:] = fillvalue
+                ind = find(sv.mask[i])
 
-            #push!(out,reshape(v,([sv.size[i]...]...)))
-            push!(out,reshape(v,sv.size[i]))
-        end
-    else
-        k = size(x,2)
+                tmp = reshape(v,sv.numels_all[i],k)
+                tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
+                
+                return v
+                end,Val{nvar_})::NTuple{nvar_,Array{T,N+1}}
 
-        out = []
-
-        for i=1:sv.nvar
-            v = zeros(sv.numels_all[i],k)
-            v[:] = fillvalue
-
-            ind = find(sv.mask[i])
-
-            v[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
-
-            push!(out,reshape(v,([sv.size[i]... k]...)))
-        end
-    end
-
-
-    return (out...)
+    return out
 end
 
 
