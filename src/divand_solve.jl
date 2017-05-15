@@ -38,7 +38,8 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             function fun!(x,fx)
 		#HtRH=H'*(R \ H) leads to memory overflow
                 #fun(x) = jmBix(s,x;btrunc=btrunc) + HtRH*x;
-                fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
+              #  fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
+			  fx[:] = jmBix!(s,x,fx;btrunc=btrunc) #+ H'*(R \ (H * x))
             end
 
             # Compared to a general problem Ax=b we know that here we have a lot of zeros in b
