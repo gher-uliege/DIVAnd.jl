@@ -15,6 +15,8 @@ type divand_constrain
     H
 end
 
+# T is the type of floats and 
+# Ti the type of integers
 type divand_struct
     n
     neff

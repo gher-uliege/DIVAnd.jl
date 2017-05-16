@@ -109,8 +109,8 @@ function conjugategradient{T}(fun!, b::Vector{T};
 
     for k=1:maxit
         # compute A*p
-		@show k
-        @time fun!(p,Ap)
+		#@show k
+        fun!(p,Ap)
 
         # how far do we need to go in direction p?
         # alpha is determined by linesearch
@@ -140,7 +140,7 @@ function conjugategradient{T}(fun!, b::Vector{T};
 
         # apply pre-conditionner
 		
-        @time pc!(r,z)
+        pc!(r,z)
 
         zr_new = r ⋅ z
 

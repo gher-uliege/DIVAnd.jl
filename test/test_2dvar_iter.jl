@@ -87,8 +87,6 @@ function compPCdual(iB,H,R)
 
     iM = CovarIS(M);
     factorize!(iM);
-    @show typeof(M)
-    @show typeof(iM)
 
     function fun!(x,fx)
         fx[:] = iM * x
