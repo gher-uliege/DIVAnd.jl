@@ -125,7 +125,7 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
     # Make an analysis with those fake points and very low snr to get B at those locations
 
 
-    epsilon2fake=10_000;
+    epsilon2fake=10_000.
     f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
 
 
@@ -146,6 +146,8 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
     # Now do the same with normal snr to get real error at the "data" points
     # incidentally fa and sa are almost the real analysis
+    @show typeof(Rfake)
+    @show issubtype(typeof(Rfake),Union{AbstractArray{Float64,1},AbstractArray{Float64,2}})
     fa,sa=divandrun(mask,pmn,xi,xfake,ffake,len,Rfake; otherargs...);
     Errdatapoints=divand_erroratdatapoints(sa);
 

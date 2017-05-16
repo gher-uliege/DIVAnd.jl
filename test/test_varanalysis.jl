@@ -13,7 +13,7 @@ n = length(gridsize)
 
 # observations
 xy = ntuple(i -> [0.5],n)
-f = [1]
+f = [1.]
 
 
 # mask: all points are valid points
@@ -31,7 +31,7 @@ sv = statevector((mask,))
 lenxy = ntuple(i -> .1,n)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 
 # tolerance on the gradient A x - b

@@ -9,10 +9,10 @@ import SpecialFunctions
 
 include("statevector.jl")
 
-type divand_constrain
-    yo
-    R
-    H
+type divand_constrain{T <: AbstractFloat}
+    yo::Vector{T}
+    R::AbstractMatrix{T}
+    H::AbstractMatrix{T}
 end
 
 # T is the type of floats and 
@@ -56,14 +56,13 @@ type divand_struct{T <: AbstractFloat,Ti <: Int,N}
     compPC
     progress
     preconditioner
-    keepLanczosVectors
-    yo
-    R
-    H
-    P
-    obsout
-    obsconstrain
-
+    keepLanczosVectors::Bool
+    yo::Vector{T}
+    R::AbstractMatrix{T}
+    H::AbstractMatrix{T}
+    P::AbstractMatrix{T}
+    obsout::BitArray{1}
+    obsconstrain::divand_constrain{T}
 end
 
 
@@ -75,8 +74,8 @@ end
         iscyclic = convert(Vector{Bool},falses(n))
         alpha = Float64[]
         yo = Float64[]
-        R = []
-        H = []
+        R = Matrix{Float64}()
+        H = Matrix{Float64}()
 
         sv = statevector_init((mask,))
         sz = size(mask)
@@ -87,7 +86,7 @@ end
         iB = copy(sempty)
         iB_ = Vector{SparseMatrixCSC{Float64,Int64}}()
         Ld = Float64[]
-        P = []
+        P = Matrix{Float64}()
 
         isinterior = Bool[]
         isinterior_stag = [Bool[] for i in 1:n]
@@ -111,8 +110,9 @@ end
         niter = 0
         keepLanczosVectors = false
 
-        obsout = Array{Bool,1}()
-        obsconstrain = divand_constrain([],[],[])
+        #obsout = Array{Bool,1}()
+        obsout = BitArray{1}()
+        obsconstrain = divand_constrain(Float64[],Matrix{Float64}(),Matrix{Float64}())
 
         WEs = Array{Any,1}(n)
         WEss = Array{Any,1}(n)

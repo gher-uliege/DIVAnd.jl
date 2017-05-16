@@ -17,7 +17,7 @@ v = sin(x*6) .* cos(y*6)
 lenx = .15;
 leny = .15;
 
-epsilon2 = 1;
+epsilon2 = 1.
 
 # tolerance on the gradient A x - b
 tol = 1e-4

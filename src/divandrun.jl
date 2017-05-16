@@ -108,7 +108,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 # References
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
-
+# ::Union{T,AbstractVector{T},AbstractMatrix{T}}
 function divandrun{T}(mask,pmnin,xiin,x,f,lin,epsilon2;
                    velocity = (),
                    EOF = [],

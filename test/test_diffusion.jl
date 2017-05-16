@@ -31,7 +31,7 @@ lenxy = ntuple(i -> .1,n)
 lenxy = (0.1,0.15)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 
 # tolerance on the gradient A x - b

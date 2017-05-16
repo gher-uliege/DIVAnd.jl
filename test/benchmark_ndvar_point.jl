@@ -28,7 +28,7 @@ sv = statevector((mask,))
 len = ntuple(i -> 0.2,n)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 
 @time fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2)

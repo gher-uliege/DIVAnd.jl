@@ -36,7 +36,7 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.1;
 
 # obs. error variance normalized by the background error variance (first guess)
-epsilon2 = 2;
+epsilon2 = 2.
 
 # loop over all methods
 for imeth=0:3

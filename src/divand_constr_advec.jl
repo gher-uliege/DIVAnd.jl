@@ -42,8 +42,8 @@ function divand_constr_advec(s,velocity)
     l = size(A,1);
 
     H = A;
-    yo = spzeros(l,1);
-    R = Diagonal(ones(l));
+    yo = zeros(l)
+    R = Diagonal(ones(l))
     #R = speye(size(H,1));
 
     return divand_constrain(yo,R,H)

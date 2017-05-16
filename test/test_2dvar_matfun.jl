@@ -20,7 +20,7 @@ v = fun([x[:] for x in xy]...);
 # correlation length
 len = .15;
 
-epsilon2 = 1;
+epsilon2 = 1.
 
 # tolerance on the gradient A x - b
 tol = 1e-4

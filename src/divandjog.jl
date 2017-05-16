@@ -156,7 +156,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				PC1=1
 				sc=0
 				if size(lmask)[2]>2
-					fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
+					fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...)
 				end
 				if !(sc==0)
 				# TEST makes sure there are values in the coarse resolution solution
@@ -238,7 +238,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				sc=0
 				
 				if size(lmask)[2]>2
-					fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
+					fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...)
 				end
 				
 				if !(sc==0)
@@ -340,7 +340,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				sc=0
 				
 				if size(lmask)[2]>2
-								fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,pcargsb...,inversion=:pcg)
+								fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,pcargsb...,inversion=:pcg)
 				end
 				PC1=1
 				if !(sc==0)
@@ -786,7 +786,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 						lmask1[3]=1/1.42;
 						Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 						@show lmask,lmask1,mean(Labsccut[1]),mean(Labsc[1]),mean(Labsccut[3]),mean(Labsc[3])
-						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000; otherargsc...)
+						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000.; otherargsc...)
 			
 			
 						if !(sc==0)
@@ -894,7 +894,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1a=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,btrunc=3)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,btrunc=3)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -915,7 +915,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1b=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...,btrunc=3)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,btrunc=3)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -1006,7 +1006,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			sc=0
 			@show size(lmask)
 			if size(lmask)[2]> 2
-						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000; otherargsc...)
+						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000.; otherargsc...)
 			end
 			
 			if !(sc==0)
@@ -1034,7 +1034,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1a=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
@@ -1054,7 +1054,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
 			sc=0
 			PC1b=1
-			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000; otherargs...)
+			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...)
 			if !(sc==0)
             # TEST makes sure there are values in the coarse resolution solution
             # Take the fc coarse solution, pack to to statevector form
