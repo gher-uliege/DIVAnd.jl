@@ -31,7 +31,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     sz = size(mask)
 
     if isempty(moddim)
-        moddim = zeros(1,n)
+        moddim = zeros(n)
     end
 
     iscyclic = moddim .> 0

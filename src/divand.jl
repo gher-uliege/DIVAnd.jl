@@ -32,25 +32,27 @@ type divand_struct{T <: AbstractFloat,Ti <: Int,N}
     isinterior_unpacked::Vector{Bool}
     mapindex_packed::Vector{Ti}
     mask_stag::Vector{BitArray{N}}
-    WEs
-    WEss
-    Dx
-    alpha
-    iB
+    #WEs:: Vector{AbstractMatrix{T}} # does not work
+    WEs::Vector{Any}
+    WEss::Vector{Any}
+    Dx::NTuple{N,AbstractMatrix{T}}
+    alpha::Vector{T}
+    iB::AbstractMatrix{T}
+    #iB_::Vector{Any}
     iB_
     Ld::Array{T,1}
-    moddim
-    iscyclic
-    applybc
-    betap
-    EOF_lambda
-    primal
-    factorize
-    tol
-    maxit
-    minit
-    inversion
-    niter
+    moddim::Vector{T}
+    iscyclic::Vector{Bool}
+    applybc::AbstractMatrix{T}
+    betap::T
+    EOF_lambda::Vector{T}
+    primal::Bool
+    factorize::Bool
+    tol::T
+    maxit::Ti
+    minit::Ti
+    inversion::Symbol
+    niter::Ti
     compPC
     progress
     preconditioner
@@ -68,11 +70,11 @@ end
     function divand_struct(mask)
         n = ndims(mask)
         neff = 0
-        coeff = 1.::Float64
-        moddim = []
-        iscyclic = falses(n)
-        alpha = []
-        yo = []
+        coeff = 1.
+        moddim = Float64[]
+        iscyclic = convert(Vector{Bool},falses(n))
+        alpha = Float64[]
+        yo = Float64[]
         R = []
         H = []
 
@@ -83,7 +85,7 @@ end
         D = copy(sempty)
         WE = copy(sempty)
         iB = copy(sempty)
-        iB_ = Array{SparseMatrixCSC{Float64,Int64}}(3);
+        iB_ = Vector{SparseMatrixCSC{Float64,Int64}}()
         Ld = Float64[]
         P = []
 
@@ -93,13 +95,13 @@ end
         mapindex_packed = Int[]
         #mask_stag = [Array{Bool,1}() for i in 1:n]
         mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
-        WEs = [copy(sempty) for i in 1:n]
+        WEs = Vector{SparseMatrixCSC{Float64,Int64}}()
         WEss = [sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]
-        Dx = [copy(sempty) for i in 1:n]
+        Dx = ([sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]...)
         applybc = copy(sempty)
 
-        betap = 0
-        EOF_lambda = 0
+        betap = 0.
+        EOF_lambda = Float64[]
         primal = true
         factorize = true
         tol = 1e-6
