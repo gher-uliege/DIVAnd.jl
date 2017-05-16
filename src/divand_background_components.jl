@@ -88,7 +88,15 @@ function divand_background_components(s,D,alpha; kwargs...)
     end
 
     # iB is adimensional
-
+#
+# JMB Dirty hack 15/05: now s.WEss[1] contains the sum of all terms
+    s.WEss[1]=s.Dx[1]'*(s.WEss[1] *(s.WEss[1] *(s.Dx[1])))
+    for i=2:n
+	  if s.Ld[i]>0
+		s.WEss[1]=s.WEss[1]+s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i])))
+	  end
+	end
+	
     return iB
 end
 

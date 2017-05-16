@@ -106,7 +106,7 @@ function conjugategradient{T}(fun!, b::Vector{T};
     beta = zeros(T,maxit+1)
 
     k = 0
-
+    gc()
     for k=1:maxit
         # compute A*p
 		#@show k
@@ -128,9 +128,9 @@ function conjugategradient{T}(fun!, b::Vector{T};
 
         progress(k,x,r,tol2,fun!,b)
 
-        # if mod(k,10)==1
-        #     @show k, r ⋅ r,tol2,size(r)
-        # end
+         if mod(k,20)==1
+             @show k, r ⋅ r,tol2,size(r)
+         end
 
         if r ⋅ r < tol2 && k >= minit
             success = true

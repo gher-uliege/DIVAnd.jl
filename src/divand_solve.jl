@@ -36,10 +36,20 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             #fun(x) = s.iB*x + H'*(R \ (H * x));
 
             function fun!(x,fx)
-		#HtRH=H'*(R \ H) leads to memory overflow
-                #fun(x) = jmBix(s,x;btrunc=btrunc) + HtRH*x;
-              #  fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
-			  fx[:] = jmBix!(s,x,fx;btrunc=btrunc) #+ H'*(R \ (H * x))
+				
+                
+			#Probably not a good way to change function definition depending on types	
+				if isa(s.iB,divand.MatFun{Int64})
+				    
+					fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
+				  else
+				    
+					workstate1=zeros(Float64,size(x))
+					workstate2=zeros(Float64,size(x))
+					workobs1=zeros(Float64,size(R)[1])
+					iBx_=zeros(Float64,size(x))
+					fx[:] = divand_iBpHtiRHx!(s,x,fx,workobs1,workstate1,workstate2,iBx_;btrunc=btrunc) 
+			    end
             end
 
             # Compared to a general problem Ax=b we know that here we have a lot of zeros in b
