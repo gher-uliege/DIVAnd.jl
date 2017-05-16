@@ -635,6 +635,9 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		
 		#Method 1
 		if methodpccoarse==1
+		
+		@show methodpccoarse
+		
 			Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 			# try classic 2D
 			lmask1=0.*lmask;
@@ -682,10 +685,41 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			diagshift=0.02*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			
+			@show size(xguess)
+			#work1=0.*xguess # ::Array{Float64,1}
+			#work2=0.*xguess # ::Array{Float64,1}
+			#work3=0.*(HI'*xguess) # ::Array{Float64,1}
+			work3=zeros(Float64,size(HI)[2])
+			work3b=zeros(Float64,size(HI)[2])
 			function compPC(iB,H,R)
-                            function fun!(x,fx)
-                                fx[:] = diagshift*x+scalef2*HI*(scP*(HI'*x));
+			#work1=zeros(Float64,size(HI)[1])
+			#work2=zeros(Float64,size(HI)[1])
+			
+                            function fun!(x::Array{Float64,1},fx::Array{Float64,1})
+							    #@show size(x),typeof(HI),typeof(scP)
+							    #work1[:]=diagshift*x ::Array{Float64,1}
+							    At_mul_B!(work3::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int64},x::Array{Float64,1})
+								#work3[:]=HI'*x  ::Array{Float64,1}
+								if scP==1
+    								work3b=work3
+									else
+									work3b[:]=scP*work3 ::Array{Float64,1}
+								  # not yet defined for covariance
+								  #A_mul_B!(work3b::Array{Float64,1},scP,work3::Array{Float64,1})
+								end
+								
+								#
+								
+								A_mul_B!(fx::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int64},work3b::Array{Float64,1})
+								#fx[:]=HI*work3b ::Array{Float64,1}
+								fx[:]=scalef2*fx ::Array{Float64,1}
+								#fx[:]=work1+work2 ::Array{Float64,1}
+								#A_mul_B!(fx,scalef2,fx)
+								fx[:]=BLAS.axpy!(diagshift,x,fx)
+                                #fx[:] = diagshift*x+scalef2*HI*(scP*(HI'*x));
                             end
+							@show size(work3)
+							#@time gc()
                             return fun!
                         end
 			fi,si=divandrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =figuess,btrunc=2)
