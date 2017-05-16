@@ -116,7 +116,10 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				# Preconditionner function
                                 function compPCa(iB,H,R)
                                     function fun!(x,fx)
-                                        fx[:] = diagshift*x+scP*x;
+									    #fx[:] = diagshift*x+scP*x;
+									    fx[:]=scP*x
+										fx[:]=BLAS.axpy!(diagshift,x,fx)
+                                        
                                     end
                                     return fun!
                                 end

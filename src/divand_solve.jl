@@ -38,17 +38,17 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             function fun!(x,fx)
 				
                 
-				@show typeof(s.iB)
+			#Probably not a good way to change function definition depending on types	
 				if isa(s.iB,divand.MatFun{Int64})
-				    @show 1
+				    
 					fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
 				  else
-				    @show 2
+				    
 					workstate1=zeros(Float64,size(x))
 					workstate2=zeros(Float64,size(x))
 					workobs1=zeros(Float64,size(R)[1])
 					iBx_=zeros(Float64,size(x))
-					fx[:] = divand_iBpHtiRHx!(s,x,fx,workobs1,workstate1,workstate2,iBx_;btrunc=btrunc) #+ H'*(R \ (H * x))
+					fx[:] = divand_iBpHtiRHx!(s,x,fx,workobs1,workstate1,workstate2,iBx_;btrunc=btrunc) 
 			    end
             end
 
