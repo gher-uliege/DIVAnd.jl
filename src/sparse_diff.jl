@@ -62,7 +62,7 @@ function sparse_diff(sz1,m,cyclic = false)
     IJ[m] = IJ[m] + 1
 
     if cyclic
-        IJ[m] = mod(IJ[m]-1,sz1[m])+1
+        IJ[m] = mod.(IJ[m]-1,sz1[m])+1
     end
 
     L2o = sub2ind(sz1,IJ...)::Array{Int64,1}

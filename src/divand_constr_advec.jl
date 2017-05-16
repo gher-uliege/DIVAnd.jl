@@ -16,7 +16,7 @@
 function divand_constr_advec(s,velocity)
 
     # check for NaNs
-    nancount = sum([sum(isnan(_)) for _ in velocity])
+    nancount = sum([sum(isnan.(v)) for v in velocity])
     if nancount > 0
         error("$(nancount) velocity values are equal to NaN");
     end

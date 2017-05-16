@@ -64,7 +64,7 @@ end
 
 function diagMtCM{T}(C::CovarIS{T}, M::AbstractMatrix{Float64})
     if C.factors != nothing
-        return squeeze(sum((abs(C.factors[:PtL]\M)).^2,1),1)
+        return squeeze(sum((abs.(C.factors[:PtL]\M)).^2,1),1)
     else
         return diag(M'*(C.IS \ M))
     end
