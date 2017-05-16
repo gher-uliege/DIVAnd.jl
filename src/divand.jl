@@ -16,27 +16,29 @@ type divand_constrain
 end
 
 # T is the type of floats and 
-# Ti the type of integers
-type divand_struct
-    n
-    neff
-    coeff
+# Ti: the type of integers
+# N: the number of dimensions 
+type divand_struct{T <: AbstractFloat,Ti <: Int,N}
+    n::Ti
+    neff::Ti
+    coeff::T
     sv::statevector
-    D
-    mask
-    WE
-    isinterior
-    isinterior_stag
-    isinterior_unpacked
-    mapindex_packed
-    mask_stag
+#    D::SparseMatrixCSC{T,Ti}
+    D::AbstractMatrix{T}
+    mask::BitArray{N}
+    WE::AbstractMatrix{T}
+    isinterior::Vector{Bool}
+    isinterior_stag::Vector{Vector{Bool}}
+    isinterior_unpacked::Vector{Bool}
+    mapindex_packed::Vector{Ti}
+    mask_stag::Vector{BitArray{N}}
     WEs
     WEss
     Dx
     alpha
     iB
     iB_
-    Ld::Array{Float64,1}
+    Ld::Array{T,1}
     moddim
     iscyclic
     applybc
@@ -60,10 +62,13 @@ type divand_struct
     obsout
     obsconstrain
 
+end
+
+
     function divand_struct(mask)
         n = ndims(mask)
         neff = 0
-        coeff = 1.
+        coeff = 1.::Float64
         moddim = []
         iscyclic = falses(n)
         alpha = []
@@ -79,14 +84,15 @@ type divand_struct
         WE = copy(sempty)
         iB = copy(sempty)
         iB_ = Array{SparseMatrixCSC{Float64,Int64}}(3);
-        Ld = []
+        Ld = Float64[]
         P = []
 
-        isinterior = []
-        isinterior_stag = [[] for i in 1:n]
-        isinterior_unpacked = []
-        mapindex_packed = []
-        mask_stag = [Array{Bool,1}() for i in 1:n]
+        isinterior = Bool[]
+        isinterior_stag = [Bool[] for i in 1:n]
+        isinterior_unpacked = Bool[]
+        mapindex_packed = Int[]
+        #mask_stag = [Array{Bool,1}() for i in 1:n]
+        mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
         WEs = [copy(sempty) for i in 1:n]
         WEss = [sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]
         Dx = [copy(sempty) for i in 1:n]
@@ -114,7 +120,7 @@ type divand_struct
         progress(iter,x,r,tol2,fun,b) = nothing
         preconditioner = identity
 
-        new(n,
+        return divand_struct(n,
             neff,
             coeff,
             sv,
@@ -157,7 +163,6 @@ type divand_struct
             obsconstrain
             )
     end
-end
 
 function ndgrid_fill(a, v, s, snext)
     for j = 1:length(a)
