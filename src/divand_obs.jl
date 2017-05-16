@@ -1,71 +1,61 @@
-# Include the constrain from the observations.
-#
-# s = divand_obs(s,xi,x,lambda,I)
-#
-# Set observations of variational problem.
-# It is assumed that the each coordinate depends only on one
-# index. If this is not the case, then matrix I must be provided.
-#
-# Input:
-#   s: structure created by divand_background
-#   xi: coordinates of observations*
-#   x: coordinates of grid*
-#   lambda: signal-to-noise ratio of observations
-#   I (optional): fractional indexes of location of observation
-#     within the grid
-#
-# Output:
-#   s: structure to be used by divand_factorize
-#
-# Note:
-#   *these parameters can either be specified as a cell
-#   array of all dimenions:
-#   xi = {Xi,Yi,Zi}
-#   or as n+1 dimensional array
+"""
+Include the constrain from the observations.
 
-function divand_obs(s,xi,x,yo,lambda; I = [])
+s = divand_obs(s,xi,x,R,I)
 
+Set observations of variational problem.
+It is assumed that the each coordinate depends only on one
+index. If this is not the case, then matrix I must be provided.
 
-#xi = cat_cell_array(xi);
-#x = cat_cell_array(x);
+Input:
+  s: structure created by divand_background
+  xi: coordinates of observations*
+  x: coordinates of grid*
+  R: obs. error covariance matrix (normalized)
+  I (optional): fractional indexes of location of observation
+    within the grid
 
-mask = s.mask;
-iscyclic = s.iscyclic;
-moddim = s.moddim;
+Output:
+  s: structure to be used by divand_factorize
+
+Note:
+  *these parameters can either be specified as a cell
+  array of all dimenions:
+  xi = {Xi,Yi,Zi}
+  or as n+1 dimensional array
+"""
+function divand_obs(s,xi,x,yo,R; I = [])
 
 
-if isempty(I)
-  I = localize_separable_grid(x,mask,xi);
-end
+    #xi = cat_cell_array(xi);
+    #x = cat_cell_array(x);
 
-H,out,outbbox = sparse_interp(mask,I,iscyclic);
-
-nout = sum(out);
-if nout != 0
-    noutbbox = sum(outbbox);
-    #    fprintf(1,'Observations out of bounding box: %d and touching land %d\n',...
-    #  noutbbox,nout-noutbbox);
-end
+    mask = s.mask;
+    iscyclic = s.iscyclic;
+    moddim = s.moddim;
 
 
-H = H * sparse_pack(mask)';
+    if isempty(I)
+        I = localize_separable_grid(x,mask,xi);
+    end
 
-# iB is scaled such that diag(inv(iB)) is 1 far from the
-# boundary
+    H,out,outbbox = sparse_interp(mask,I,iscyclic);
 
-#if isscalar(lambda)
-#  R = Diagonal([1/lambda for i in 1:size(H,1)]);
-  R = speye(size(H,1)) / lambda;
+    nout = sum(out);
+    if nout != 0
+        noutbbox = sum(outbbox);
+        #    fprintf(1,'Observations out of bounding box: %d and touching land %d\n',...
+        #  noutbbox,nout-noutbbox);
+    end
 
-#elseif isvector(lambda)
-#  R = sparse_diag(lambda);
-#else
-#  R = lambda;
-#end
 
-#s.out = out;
+    H = H * sparse_pack(mask)';
 
-return divand_constrain(yo,R,H)
+
+    s.obsout = out;
+    s.obsconstrain = divand_constrain(yo,R,H)
+
+    return s.obsconstrain
 end
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

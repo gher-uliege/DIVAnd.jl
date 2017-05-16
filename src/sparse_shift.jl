@@ -13,34 +13,36 @@
 
 function sparse_shift(sz1,m,cyclic = false)
 
-n1 = prod(sz1)
-sz2 = collect(sz1)
+    n1 = prod(sz1)
+    sz2 = collect(sz1)
 
-if !cyclic
-    sz2[m] = sz2[m]-1
+    if !cyclic
+        sz2[m] = sz2[m]-1
+    end
+
+    n2 = prod(sz2)
+    n = length(sz1)
+
+    vi = [collect(1:sz2[i]) for i = 1:n]
+    IJ = [_[:] for _ in ndgrid(vi...)]
+
+    L1 = 1:n2
+    one = ones(size(L1))
+
+    IJ[m] = IJ[m] + 1
+
+    if cyclic
+        IJ[m] = mod(IJ[m]-1,sz1[m])+1
+    end
+
+    L2 = sub2ind(sz1,IJ...)
+    S = sparse(L1,L2,one,n2,n1)
+
+    return S
+
 end
 
-n2 = prod(sz2)
-n = length(sz1)
-
-vi = [collect(1:sz2[i]) for i = 1:n]
-IJ = [_[:] for _ in ndgrid(vi...)]
-
-L1 = 1:n2
-one = ones(size(L1))
-
-IJ[m] = IJ[m] + 1
-
-if cyclic
-    IJ[m] = mod(IJ[m]-1,sz1[m])+1
-end
-
-L2 = sub2ind(sz1,IJ...)
-sparse(L1,L2,one,n2,n1)
-
-end
-
-# Copyright (C) 2012,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2012-2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,4 +56,3 @@ end
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; If not, see <http://www.gnu.org/licenses/>.
-

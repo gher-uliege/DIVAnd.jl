@@ -1,52 +1,82 @@
 # Testing divand in 2 dimensions with independent verification.
 
 using Base.Test
-#using divand
 
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,10),linspace(0,1,10))
 
-mask = trues(size(xi))
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
+# mask (all points are valid)
+mask = trues(xi)
 
+# metric (inverse of the resolution)
+pm = ones(xi) / (xi[2,1]-xi[1,1])
+pn = ones(xi) / (yi[1,2]-yi[1,1])
+
+# make sure that observations are strictly inside the domain
+# defined by xi and yi
 epsilon = 1e-10;
 
 # grid of observations
 x,y = ndgrid(linspace(epsilon,1-epsilon,10),linspace(epsilon,1-epsilon,10))
 x = x[:]
 y = y[:]
-v = sin( x*6 ) .* cos( y*6)
+v = sin.(6x) .* cos.(6y)
 
-
+# correlation length
 lenx = .15;
 leny = .15;
 
-lambda = 20;
+"""naive analysis using full matrices"""
+function naive_analysis(s,v)
+    iR = inv(full(s.R));
+    iB = full(s.iB);
+    H = full(s.H);
+    iP = iB + H'*iR*H;
+    P = inv(iP);
+    xa = P* (H'*iR*v[:]);
+    return (statevector_unpack(s.sv,xa)[1], statevector_unpack(s.sv,diag(P))[1])
+end
 
-#,err,s
-va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),lambda,diagnostics=true,primal=true)
+# diagonal R with constant diagonal elements
 
-err = diag(s.P)
-iR = inv(full(s.R));
-iB = full(s.iB);
-H = full(s.H);
-sv = s.sv;
+epsilon2 = 0.05;
+xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+diagP, = statevector_unpack(s.sv,diag(s.P))
+xa_check, diagP_check = naive_analysis(s,v)
+@test xa ≈ xa_check
+@test diagP ≈ diagP_check
 
-iP = iB + H'*iR*H;
+# diagonal R with varying diagonal elements
 
-P = inv(iP);
-
-xa2 = P* (H'*iR*v[:]);
-
-fi2, = statevector_unpack(sv,xa2);
-fi2[~s.mask] = NaN;
-
-@test va ≈ fi2
-@test diag(P) ≈ err[:]
+diagR = sin(4x) + 2
+xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),diagR,primal=true)
+diagP, = statevector_unpack(s.sv,diag(s.P))
+xa_check, diagP_check = naive_analysis(s,v)
+@test xa ≈ xa_check
+@test diagP ≈ diagP_check
 
 
-# Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
+# diagonal R with varying diagonal elements (2)
+
+R = Diagonal(sin(4x) + 2)
+xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
+diagP, = statevector_unpack(s.sv,diag(s.P))
+xa_check, diagP_check = naive_analysis(s,v)
+@test xa ≈ xa_check
+@test diagP ≈ diagP_check
+
+# non-diagonal R
+m = length(x)
+
+R = spdiagm((ones(m-1),4*ones(m),ones(m-1)),(-1,0,1))
+
+xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
+diagP, = statevector_unpack(s.sv,diag(s.P))
+xa_check, diagP_check = naive_analysis(s,v)
+@test xa ≈ xa_check
+@test diagP ≈ diagP_check
+
+# Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

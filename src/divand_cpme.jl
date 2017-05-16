@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error
 
-cpme = divand_cpme(mask,pmn,xi,x,f,len,lambda,...);
+cpme = divand_cpme(mask,pmn,xi,x,f,len,epsilon2,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `cpme` represent the error field at the grid
@@ -25,33 +25,47 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `lambda`: signal-to-noise ratio of observations (if lambda is a scalar).
-    The larger this value is, the closer is the field `fi` to the
-    observation. If lambda is a scalar, then R is 1/lambda I, where R is the observation error covariance matrix). If lambda is a vector, then R is diag(lambda) or if lambda is a matrix (a matrix-like project), then R is equal to lambda.
-
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
 # Optional input arguments specified as keyword arguments also as for divand
+
+
+# Output:
+
+* `cpme`: the clever poor mans error
 """
 
 
-function divand_cpme(mask,pmn,xi,x,f,len,lambda; otherargs...)
+function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
 
-# check inputs
 
-if !any(mask[:])
-  error("no sea points in mask");
-end
+    
+    errorscale=1;
 
-errorscale=1;
+    # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
+    # Could be a small improvement. Also used in divand_aexerr
 
-cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len./1.70766,lambda; otherargs...);
-cpme=errorscale.*(-cpme.+1);
 
-return cpme
+    if isa(Labs,Tuple)
+        len=([x./1.70766 for x in Labs]...);
+    else
+        len=Labs./1.70766
+    end
+
+
+    if sum(csteps)>0
+        cpme,s =  divandjog(mask,pmn,xi,x,ones(size(f)),len,epsilon2,csteps,lmask; alphapc=alphapc, otherargs...);
+    else
+        cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len,epsilon2; otherargs...);
+    end
+    cpme=errorscale.*(-cpme.+1);
+
+    return cpme
 
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -67,5 +81,3 @@ end
 # this program; if not, see <http://www.gnu.org/licenses/>.
 
 # LocalWords:  fi divand pmn len diag CovarParam vel ceil moddim fracdim
-
-

@@ -1,7 +1,5 @@
 """
-Compute a variational analysis of arbitrarily located observations.
-
-fi,s = divandrun(mask,pmn,xi,x,f,len,lambda,...);
+    divandrun(mask,pmn,xi,x,f,len,epsilon2; <keyword arguments>)
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -25,10 +23,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `lambda`: signal-to-noise ratio of observations (if lambda is a scalar).
-    The larger this value is, the closer is the field `fi` to the
-    observation. If lambda is a scalar, then R is 1/lambda I, where R is the observation error covariance matrix). If lambda is a vector, then R is diag(lambda) or if lambda is a matrix (a matrix-like project), then R is equal to lambda.
-
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
 # Optional input arguments specified as keyword arguments
 
@@ -38,8 +33,9 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `alpha`: alpha is vector of coefficients multiplying various terms in the
        cost function. The first element multiplies the norm.
        The other i-th element of alpha multiplies the (i+1)-th derivative.
-       Per default, the highest derivative is m = ceil(1+n/2) where n is the
-       dimension of the problem.
+       Per default, the highest derivative is m = ceil(1+neff/2) where neff is the
+       effective dimension of the problem (the number of dimensions with a nonzero
+       correlation length).
 
        The values of alpha is the (m+1)th row of the Pascal triangle:
           m=0         1
@@ -48,16 +44,12 @@ defined by the coordinates `xi` and the scales factors `pmn`.
           m=2   1   3   3   1   (n=3,4)
           ...
 
-* `diagnostics`: 0 or 1 turns diagnostic and debugging information on (1) or
-       off (0, default). If on, they will be returned as the last output
-       argument
-
 * `EOF`, EOF: sub-space constraint. Orthogonal (EOF' WE^2 EOF = I) (units of
        EOF: m^(-n/2))
 
 * `EOF_scaling`, EOF_scaling: (dimensional)
 
-* `constraint`: a structure with user specified constrain
+* `constraints`: a structure with user specified constrain
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. Halo points should
@@ -65,23 +57,41 @@ defined by the coordinates `xi` and the scales factors `pmn`.
      is cyclic, then the grid point corresponding to mask(1,j) should be
      between mask(end,1) (left neighbor) and mask(2,j) (right neighbor)
 
-* `fracdim`: fractional indices (n-by-m array). If this array is specified,
+* `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
 
-* `inversion`: direct solver ('chol' for Cholesky factorization) or a
-     interative solver ('pcg' for preconditioned conjugate gradient) can be
+* `inversion`: direct solver (:chol for Cholesky factorization) or a
+     interative solver (:pcg for preconditioned conjugate gradient) can be
      used.
 
 * `compPC`: function that returns a preconditioner for the primal formulation
      if inversion is set to 'pcg'. The function has the following arguments:
 
-           [M1,M2] = compPC(iB,H,R)
+           fun = compPC(iB,H,R)
 
     where iB is the inverse background error covariance, H the observation
-    operator and R the error covariance of the observation. The used
-    preconditioner M will be M = M1 * M2 (or just M = M1 if M2 is empty).
-    Per default a modified incomplete Cholesky factorization will be used a
-    preconditioner.
+    operator and R the error covariance of the observation. The function `compPC` returns the
+    preconditioner `fun(x,fx)` computing fx = `M \ x` (the inverse of M times x)
+    where `M` is a positive defined symmetric matrix [1].
+    Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
+    Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
+
+* `fi0`: starting field for iterative primal algorithm (same size as `mask`)
+
+* `f0`: starting field for iterative dual algorithm (same size as the observations `f`)
+
+* `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions
+    to define the constrains.
+
+* `scale_len`: true (default) if the correlation length-scale should be scaled such that the analysical
+    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance. The kernel behaves thus similar to
+    the default kernel in two dimensions (alpha = [1,2,1]).
+	
+* `alphabc` : numerical value defining how the last grid points are stretched outward. 1, the default value mimics an infinite domain.
+	To have previous behaviour of finite domain use alphabc=0
+	
+* `btrunc` : if provided defines where to truncate the calculation of the covariance matrix B. Only values up and including alpha[btrunc] will be calculated. IF the 
+				iterative solution is calculated, the missing terms will be calculated on the fly during the conjugate gradient calulcations. Default value is none and full covariance calculation.
 
 # Output:
 *  `fi`: the analysed field
@@ -94,117 +104,146 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Example:
   see divand_simple_example.jl
+
+# References
+[1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 
-function divandrun(mask,pmn,xi,x,f,len,lambda;
-                velocity = (),
-                EOF = [],
-                diagnostics = 0,
-                EOF_lambda = 0,
-                primal = 1,
-                factorize = true,
-                tol = 1e-6,
-                maxit = 100,
-                minit = 10,
-                constraints = (),
-                inversion = "chol",
-                moddim = [],
-                fracindex = [],
-                alpha = [],
-                keepLanczosVectors = 0
-#,
-#                compPC = divand_pc_sqrtiB
-                )
+function divandrun(mask,pmnin,xiin,x,f,lin,epsilon2;
+                   velocity = (),
+                   EOF = [],
+                   EOF_lambda = 0,
+                   primal = true,
+                   factorize = true,
+                   tol = 1e-6,
+                   maxit = 100,
+                   minit = 0,
+                   constraints = (),
+                   inversion = :chol,
+                   moddim = [],
+                   fracindex = [],
+                   alpha = [],
+                   keepLanczosVectors = 0,
+                   compPC = divand_pc_none,
+                   progress = (iter,x,r,tol2,fun,b) -> nothing,
+                   fi0 = zeros(size(mask)),
+                   f0 = zeros(size(f)),
+                   operatortype = Val{:sparse},
+                   alphabc = 1.0,
+                   scale_len = true,
+                   btrunc=[]
+                   )
 
 
-# check inputs
+    # check inputs
+    if !any(mask[:])
+        warn("no sea points in mask, will return NaN");
 
-if !any(mask[:])
-  error("no sea points in mask");
-end
+        return     fill!(Array(Float64,size(mask)),NaN),0
 
-s = divand_background(mask,pmn,len,alpha,moddim);
-s.betap = 0;
-s.EOF_lambda = EOF_lambda;
-s.primal = primal;
-s.factorize = factorize;
-s.tol = tol;
-s.maxit = maxit;
-s.minit = minit;
-s.inversion = inversion;
-s.keepLanczosVectors = keepLanczosVectors;
-#s.compPC = compPC;
 
-# # remove non-finite elements from observations
-# f = f[:];
-# valid = isfinite(f);
-# x = cat_cell_array(x);
 
-# if !all(valid)
-#   fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
-#   x = reshape(x,[length(f) s.n]);
-#   f = f[valid];
-#   x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
+    end
 
-#   if !isempty(fracindex)
-#     fracindex = fracindex[:,valid];
-#   end
+    #       @show alphabc
+    #       @show moddim
 
-#   if isscalar(lambda)
-#     # do nothing
-#   elseif isvector(lambda)
-#     lambda = lambda[valid];
-#   elseif ismatrix(lambda)
-#     lambda = lambda[valid,valid];
-#   end
-# end
+    pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
-# apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
+    #For testing this version of alphabc deactivate the other one
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
 
-# s.mode = 1;
+    s.betap = 0;
+    s.EOF_lambda = EOF_lambda;
+    s.primal = primal;
+    s.factorize = factorize;
+    s.tol = tol;
+    s.maxit = maxit;
+    s.minit = minit;
+    s.inversion = inversion;
+    s.keepLanczosVectors = keepLanczosVectors;
+    s.compPC = compPC;
+    s.progress = progress
 
-# if !apply_EOF_contraint
-#     s.betap = 0;
-# else
-#     if s.mode==0
-#         s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
-#     elseif s.mode==1
-#         s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
-#     end
-# end
+    # # remove non-finite elements from observations
+    # f = f[:];
+    # valid = isfinite(f);
+    # x = cat_cell_array(x);
 
-# increase contraint on total enegery to ensure system is still positive defined
-#s.betap
-#s.iB = s.iB + s.betap * s.WE'*s.WE;
+    # if !all(valid)
+    #   fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
+    #   x = reshape(x,[length(f) s.n]);
+    #   f = f[valid];
+    #   x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
 
-# add observation constrain to cost function
-s = divand_addc(s,divand_obs(s,xi,x,f,lambda,I = fracindex));
+    #   if !isempty(fracindex)
+    #     fracindex = fracindex[:,valid];
+    #   end
 
-# add advection constraint to cost function
-if !isempty(velocity)
-    s = divand_addc(s,divand_constr_advec(s,velocity));
-end
+    #   if isscalar(epsilon2)
+    #     # do nothing
+    #   elseif isvector(epsilon2)
+    #     epsilon2 = epsilon2[valid];
+    #   elseif ismatrix(epsilon2)
+    #     epsilon2 = epsilon2[valid,valid];
+    #   end
+    # end
 
-# add all additional constrains
-for i=1:length(constraints)
-    s = divand_addc(s,constraints[i]);
-end
+    # apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
 
-#if apply_EOF_contraint
-#    s = divand_eof_contraint(s,EOF_lambda,EOF);
-#end
+    # s.mode = 1;
 
-# factorize a posteori error covariance matrix
-# or compute preconditioner
-divand_factorize!(s);
+    # if !apply_EOF_contraint
+    #     s.betap = 0;
+    # else
+    #     if s.mode==0
+    #         s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
+    #     elseif s.mode==1
+    #         s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
+    #     end
+    # end
 
-#if !apply_EOF_contraint
-    fi = divand_solve!(s);
-#else
-#    fi,s = divand_solve_eof(s,f);
-#end
+    # increase contraint on total enegery to ensure system is still positive defined
+    #s.betap
+    #s.iB = s.iB + s.betap * s.WE'*s.WE;
 
-return fi,s
+    # observation error covariance (scaled)
+    # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
+    # boundary
+
+    R = divand_obscovar(epsilon2,length(f));
+
+    # add observation constrain to cost function
+    s = divand_addc(s,divand_obs(s,xi,x,f,R,I = fracindex));
+
+    # add advection constraint to cost function
+    if !isempty(velocity)
+        s = divand_addc(s,divand_constr_advec(s,velocity));
+    end
+
+    # add all additional constrains
+    for i=1:length(constraints)
+        s = divand_addc(s,constraints[i]);
+    end
+
+    #if apply_EOF_contraint
+    #    s = divand_eof_contraint(s,EOF_lambda,EOF);
+    #end
+
+    # factorize a posteori error covariance matrix
+    # or compute preconditioner
+
+
+    divand_factorize!(s);
+
+    #if !apply_EOF_contraint
+    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
+    #else
+    #    fi,s = divand_solve_eof(s,f);
+    #end
+
+    return fi,s
+
 
 end
 

@@ -6,11 +6,11 @@ using PyPlot
 # using ndgrid
 
 # observations
-x = rand(75,1);
-y = rand(75,1);
+x = rand(75);
+y = rand(75);
 
-x = rand(10,1);
-y = rand(10,1);
+x = rand(10);
+y = rand(10);
 
 jmsize=120
 
@@ -23,27 +23,27 @@ xi,yi = ndgrid(linspace(0,1,jmsize),linspace(0,1,jmsize));
 fref = sin(xi*6) .* cos(yi*6);
 
 # all points are valid points
-mask = trues(size(xi));
+mask = trues(xi);
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+pm = ones(xi) / (xi[2,1]-xi[1,1]);
+pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 0.1;
 
-# signal-to-noise ratio
-lambda = 5;
+# obs. error variance normalized by the background error variance
+epsilon2 = 0.2;
 # Error scale to made comparable to the one used by divandrun in case it is not normalized
-#errorscale=1 
+#errorscale=1
 # fi is the interpolated field
-cpme=  divand_cpme(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+cpme=  divand_cpme(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 #cpme=errorscale.*(-cpme.+1);
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,lambda);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 exerr=reshape(diag(s.P),jmsize,jmsize);
 # plotting of results
 
@@ -61,7 +61,7 @@ colorbar()
 clim(-0.5,1.5)
 title("Exact error");
 
-savefig("divand_simple_example-wpmefb.png")
+savefig("divand_simple_example-wcpme.png")
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

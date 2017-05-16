@@ -14,92 +14,72 @@
 # Output:
 #   s: stucture containing
 #   s.Dx: cell array of the gradient
-#   s.D: Laplaciant
+#   s.D: Laplacian
 #   s.sv: structure describing the state vector
 #   s.mask: land-sea mask
 #   s.WE: diagonal matrix where each element is the surface
 #     of a grid cell
 
 
-function divand_operators(mask,pmn,nu,iscyclic,mapindex)
+function divand_operators(operatortype,mask,pmn,nu,iscyclic,mapindex,Labs)
 
-s = divand_struct(mask)
+    s = divand_struct(mask)
 
-# number of dimensions
-n = ndims(mask)
-sz = size(mask)
+    # number of dimensions
+    n = ndims(mask)
+    sz = size(mask)
 
-sv = statevector_init((mask,))
+    sv = statevector_init((mask,))
 
-if !isempty(mapindex)
-  # mapindex is unpacked and referers to unpacked indices
+    if !isempty(mapindex)
+        # mapindex is unpacked and referers to unpacked indices
 
-  # range of packed indices
-  # land point map to 1, but those points are remove by statevector_pack
-  i2 = statevector_unpack(sv,collect(1:sv.n),1)
-  mapindex_packed = statevector_pack(sv,(i2[mapindex],))
+        # range of packed indices
+        # land point map to 1, but those points are remove by statevector_pack
+        i2 = statevector_unpack(sv,collect(1:sv.n),1)
+        mapindex_packed = statevector_pack(sv,(i2[mapindex],))
 
-  # applybc*x applies the boundary conditions to x
-  i = 1:sv.n
-  applybc = sparse(collect(i),mapindex_packed[i],ones(sv.n),sv.n,sv.n)
+        # applybc*x applies the boundary conditions to x
+        i = 1:sv.n
+        applybc = sparse(collect(i),mapindex_packed[i],ones(sv.n),sv.n,sv.n)
 
-  # a halo point is points which maps to a (different) interior point
-  # a interior point maps to itself
-  s.isinterior = i .== mapindex_packed[i]
-  s.isinterior_unpacked = statevector_unpack(sv,s.isinterior)
+        # a halo point is points which maps to a (different) interior point
+        # a interior point maps to itself
+        s.isinterior = i .== mapindex_packed[i]
+        s.isinterior_unpacked = statevector_unpack(sv,s.isinterior)
 
-  s.mapindex_packed = mapindex_packed
-end
+        s.mapindex_packed = mapindex_packed
+    end
 
-D = divand_laplacian(mask,pmn,nu,iscyclic)
+    D = divand_laplacian(operatortype,mask,pmn,nu,iscyclic)
 
-# XXX remove this WE
+    s.Dx = sparse_gradient(operatortype,mask,pmn,iscyclic)
 
-d = statevector_pack(sv,(1./( .*(pmn...)),))
-d = d[:,1]
-WE = sparse_diag(sqrt(d))
+    if !isempty(mapindex)
+        D = applybc * D * applybc
+        WE = oper_diag(operatortype,s.isinterior) * WE
 
-for i=1:n
-  S = sparse_stagger(sz,i,iscyclic[i])
+        for i=1:n
+            S = sparse_stagger(sz,i,iscyclic[i])
+            s.isinterior_stag[i] =  oper_pack(operatortype,s.mask_stag[i]) * S * s.isinterior_unpacked(:)
 
-  # mask on staggered grid
-  ma = (S * mask[:]) .== 1
-  s.mask_stag[i] = ma
+            # the results of 's.Dx[i] * field' satisfies the bc is field does
+            # there is need to reapply the bc on the result
+            s.Dx[i] = s.Dx[i] * applybc
+        end
 
-  #d = sparse_pack(ma) * prod(S * reshape(pmn,length(mask),n),2)
-  d = sparse_pack(ma) *  (.*([S*_[:]  for _ in pmn]...))
-  d = 1./d
-  s.WEs[i] = sparse_diag(sqrt(d))
-end
+        s.applybc = applybc
+    end
 
-s.Dx = sparse_gradient(mask,pmn,iscyclic)
+    s.D = D
+    s.sv = sv
+    s.mask = mask
+    s.n = n
 
-if !isempty(mapindex)
-  D = applybc * D * applybc
-  WE = sparse_diag(s.isinterior) * WE
-
-  for i=1:n
-    S = sparse_stagger(sz,i,iscyclic[i])
-    s.isinterior_stag[i] =  sparse_pack(s.mask_stag[i]) * S * s.isinterior_unpacked(:)
-
-    # the results of 's.Dx[i] * field' satisfies the bc is field does
-    # there is need to reapply the bc on the result
-    s.Dx[i] = s.Dx[i] * applybc
-  end
-
-  s.applybc = applybc
-end
-
-s.D = D
-s.sv = sv
-s.mask = mask
-s.WE = WE
-s.n = n
-
-s
+    return s,D
 
 end
-# Copyright (C) 2014,2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014,2016,2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

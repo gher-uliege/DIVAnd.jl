@@ -1,49 +1,62 @@
-# Return the analytical kernel and normalization factor.
-#
-# [mu,K] = divand_kernel(n,alpha)
-# [mu,K] = divand_kernel(n,alpha,r)
-#
-# Analytical (normalized) kernels for infinite domain in dimension n and for
-# coefficients alpha
-# Input
-#   n: number of dimensions
-#   alpha: coefficients
-#   r (optional): distance from origin
-# Output:
-#   K: kernel function evaluate at the values of r if present or a function handle
-#   mu: normalization factor
+"""
+Return the analytical kernel and normalization factor.
 
-function divand_kernel(n,alpha #,r
-                       )
+mu,K = divand_kernel(n,alpha)
 
+Analytical (normalized) kernels `K` for infinite domain in dimension `n` and for
+coefficients `alpha` and normalization factor `mu`.
+Input
+  n: number of dimensions
+  alpha: coefficients
+Output:
+  K(r): kernel function (function of the normalized distance `r`)
+  mu: normalization factor
+  len_scale: distance at which K(len_scale) = 0.6019072301972346 (which is besselk(1,1))
+"""
 
-# remove trailling zeros
-ind = maximum(find(!(alpha .== 0)))
-alpha = alpha[1:ind];
+function divand_kernel(n,alpha)
+    # remove trailling zeros
+    ind = maximum(find(!(alpha .== 0)))
+    alpha = alpha[1:ind];
 
-m = length(alpha)-1;
-K = [];
-if [binomial(m,k) for k = 0:m] == alpha
-  # alpha are binomial coefficients
+    m = length(alpha)-1;
 
-  mu,K = divand_kernel_binom(n,m);
-else
-  error("divand:divand_kernel:unsupported_alpha" * "unsupported sequence of alpha")
-end
+    K = [];
+    alpha_binomial = [binomial(m,k) for k = 0:m]
 
-# if nargin == 3
-#   # evaluate the kernel for the given values of r
-#   K = K(r);
-# end
+    if alpha_binomial == alpha
+        # alpha are binomial coefficients
 
-# if nargout == 3
-#   # determine at which distance r K(r) = 1/2
-#   rh = abs(fzero(@(r) K(abs(r))-.5,1));
-# end
+        mu,K = divand_kernel_binom(n,m);
+    else
+        if alpha_binomial[2:end] == alpha[2:end]
+            # alpha are binomial coefficients except first one
+            #warn("Semi-norm used?, check scaling $alpha")
+
+            mu,K = divand_kernel_binom(n,m);
+            #   correction for missing term CHECK IF NOT THE INVERSE
+            #  Added fudge factor 2 to mimic same behaviour in test case
+            jmscale=(1.0/2^(m))*sum(alpha[:])/2
 
 
-return mu,K #,rh
+            mu = mu*jmscale;
 
+        else
+            # unsupported sequence of alpha
+
+            mu,K = divand_kernel_binom(n,m);
+            #warn("Unsupported norm used, check scaling $alpha")
+            #   Scaling is correct if all alphas are binomials times a common factor
+
+            jmscale=(1.0/2^(m))*sum(alpha[:])
+
+            mu = mu*jmscale;
+        end
+    end
+
+    len_scale = Roots.fzero(x -> K(x) - SpecialFunctions.besselk(1,1),1)
+
+    return mu,K,len_scale
 end
 
 
@@ -51,31 +64,31 @@ end
 function divand_kernel_binom(n,m)
 
 
-# #if isequal(alpha,1)
+    # #if isequal(alpha,1)
 
-nu = m-n/2;
-mu = (4*pi)^(n/2) * gamma(m) / gamma(nu);
-K(x) = divand_rbesselk(nu,x);
+    nu = m-n/2;
+    mu = (4*pi)^(n/2) * gamma(m) / gamma(nu);
+    K(x) = divand_rbesselk(nu,x);
 
-if nu <= 0
-  warn("divand:nonorm","No normalization possible. Extend parameter alpha.");
-  mu = 1;
-end
+    if nu <= 0
+        warn("divand:nonorm ","No normalization possible. Extend parameter alpha.");
+        mu = 1;
+    end
 
-return mu,K
+    return mu,K
 end
 
 
 function divand_rbesselk(nu,r)
-r = abs(r);
+    r = abs(r);
 
-if r == 0
-    K = 1.
-else
-    K = 2/gamma(nu) * ((r/2).^nu .* besselk(nu,r));
-end
+    if r == 0
+        K = 1.
+    else
+        K = 2/gamma(nu) * ((r/2).^nu .* SpecialFunctions.besselk.(nu,r));
+    end
 
-return K
+    return K
 end
 
 

@@ -1,11 +1,13 @@
 # Testing divand in 3 dimensions.
 
-using divand
 using Base.Test
+
+# function to interpolate
+fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)
 
 # grid of background field
 xi,yi,zi = ndgrid(linspace(0,1.,15),linspace(0,1.,15),linspace(0,1.,15));
-fi_ref = sin(6*xi) .* cos(6*yi) .* sin(6*zi);
+fi_ref = fun.(xi,yi,zi)
 
 ϵ = eps()
 # grid of observations
@@ -14,28 +16,28 @@ x = x[:];
 y = y[:];
 z = z[:];
 
-# reference field
-f = sin(6*x) .* cos(6*y) .* sin(6*z);
+# observations
+f = fun.(x,y,z)
 
 # all points are valid points
-mask = trues(size(xi));
+mask = trues(xi);
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 # po is the inverse of the resolution along the 3rd dimension
-pm = ones(size(xi)) / (xi[2,1,1]-xi[1,1,1]);
-pn = ones(size(xi)) / (yi[1,2,1]-yi[1,1,1]);
-po = ones(size(xi)) / (zi[1,1,2]-zi[1,1,1]);
+pm = ones(xi) / (xi[2,1,1]-xi[1,1,1]);
+pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
+po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
 
 # correlation length
 len = 0.1;
 
-# signal-to-noise ratio
-lambda = 100;
+# obs. error variance normalized by the background error variance
+epsilon2 = 0.01;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,lambda);
+fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=0);
 
 # compute RMS to background field
 rms = sqrt(mean((fi_ref[:] - fi[:]).^2));

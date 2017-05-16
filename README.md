@@ -30,12 +30,12 @@ The script should be run in a Julia session.
 Pkg.test("divand")
 ```
 
-All tests should pass without warning or error.
+All tests should pass without error.
 
 ```
 INFO: Testing divand
 Test Summary: | Pass  Total
-  divand      |   37     37
+  divand      |   100     100
 INFO: divand tests passed
 ```
 
@@ -78,7 +78,7 @@ See the file [divand_simple_example.jl](https://github.com/gher-ulg/divand.jl/bl
 
 ## Determining the parameters
 
-The parameter `lambda` and parameter `len` are crucial for the analysis. `lambda` corresponds to the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio) (variance of background error over variance of observation error). Therefore, its value depends on how accurate and how representative the observations are. `len` corresponds to the correlation length and its value of `len` can sometimes be determined by physical arguments.
+The parameter `epsilon2` and parameter `len` are crucial for the analysis. `epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalizd variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are. `len` corresponds to the correlation length and its value of `len` can sometimes be determined by physical arguments.
 One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
 
 1. choose, at random, a relatively small subset of observations (about 5%). This is the validation data set.
@@ -87,6 +87,12 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
+Tools to help you are included ([divand_cv.jl](https://github.com/gher-ulg/divand.jl/blob/master/src/divand_cv.jl)).
+
+# Example data
+
+Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed throught git. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
+
 
 # Fun
 

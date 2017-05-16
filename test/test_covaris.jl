@@ -1,5 +1,39 @@
 using Base.Test
 
+function testprod(C,C2)
+
+    n = size(C,2)
+
+    # C times a matrix
+    b = randn(n,2);
+    a = C*b;
+    a2 = C2*b;
+    @test a ≈ a2
+
+    # C times a matrix tranposed
+    b = randn(2,n);
+    a = C*b.';
+    a2 = C2*b.';
+    @test a ≈ a2
+
+    # C times a matrix conjugate tranposed
+    b = randn(2,n);
+    a = C*b';
+    a2 = C2*b';
+    @test a ≈ a2
+
+    # C times a vector
+    v = randn(n);
+    a = C*v;
+    a2 = C2*v;
+    @test a ≈ a2
+
+
+    # diagonal
+    @test diag(C) ≈ diag(C2)
+end
+
+
 IS = sparse([2. 0.1; 0.1 2.])
 #IS = [2. 0; 0. 2.]
 
@@ -15,29 +49,7 @@ C2 = inv(full(IS));
 iC = inv(C);
 @test iC ≈ IS
 
-# C times a matrix
-b = randn(n,2);
-a = C*b;
-a2 = C2*b;
-@test a ≈ a2
-
-# C times a matrix tranposed
-b = randn(n,2);
-a = C*b.';
-a2 = C2*b.';
-@test a ≈ a2
-
-# C times a matrix conjugate tranposed
-b = randn(n,2);
-a = C*b';
-a2 = C2*b';
-@test a ≈ a2
-
-# C times a vector
-v = randn(n);
-a = C*v;
-a2 = C2*v;
-@test a ≈ a2
+testprod(C,C2)
 
 # inverse of C times a matrix
 b = randn(n,2);
@@ -63,7 +75,6 @@ a2 = C2\b;
 
 @test C[1,1] ≈ C2[1,1]
 
-@test diag(C) ≈ diag(C2)
 
 
 
@@ -71,6 +82,9 @@ a2 = C2\b;
 
 M = randn(10,10)
 MF = MatFun(size(M),x -> M*x,x -> M'*x)
+
+M2 = randn(10,10)
+MF2 = MatFun(size(M2),x -> M2*x,x -> M2'*x)
 
 x = randn(size(M,2))
 A = randn(size(M,2),3)
@@ -80,3 +94,28 @@ A = randn(size(M,2),3)
 @test M'*x ≈ MF'*x
 @test M*A ≈ MF*A
 
+
+MP = M * M2
+MPF = MF * MF2
+@test MP*x ≈ MPF*x
+
+MP = M + M2
+MPF = MF + MF2
+@test MP*x ≈ MPF*x
+
+MP = M - M2
+MPF = MF - MF2
+@test MP*x ≈ MPF*x
+
+
+
+# CovarHPHt
+
+
+P = randn(10,10); P = P*P';
+H = randn(10,10)
+
+A = CovarHPHt(P,H)
+A2 = H*P*H'
+
+testprod(A,A2)

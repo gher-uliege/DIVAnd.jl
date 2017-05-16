@@ -11,26 +11,28 @@
 
 function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
 
-n1 = prod(sz1)
-sz2 = collect(sz1)
-sz2[m] = sz2[m]-2
-n2 = prod(sz2)
-n = length(sz1)
+    n1 = prod(sz1)
+    sz2 = collect(sz1)
+    sz2[m] = sz2[m]-2
+    n2 = prod(sz2)
+    n = length(sz1)
 
-# L1
+    # L1
 
-vi = [collect(1:sz2[i]) for i = 1:n]
-IJ = [_[:] for _ in ndgrid(vi...)]
+    vi = [collect(1:sz2[i]) for i = 1:n]
+    IJ = [_[:] for _ in ndgrid(vi...)]
 
-L1 = sub2ind((sz2...),IJ...)
+    L1 = sub2ind((sz2...),IJ...)
 
-IJ[m]=IJ[m]+1
+    IJ[m]=IJ[m]+1
 
-L2 = sub2ind(sz1,IJ...)
+    L2 = sub2ind(sz1,IJ...)
 
-one = ones(size(L1))
+    one = ones(size(L1))
 
-sparse(L1, L2, one, n2, n1)
+    S = sparse(L1, L2, one, n2, n1)
+
+    return S
 
 end
 
@@ -48,4 +50,3 @@ end
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; If not, see <http://www.gnu.org/licenses/>.
-

@@ -1,6 +1,13 @@
 module divand
+
 using Interpolations
+using NetCDF
+using Roots
 using Base.Test
+using Base.Cartesian
+import SpecialFunctions
+
+include("statevector.jl")
 
 type divand_constrain
     yo
@@ -8,11 +15,13 @@ type divand_constrain
     H
 end
 
+# T is the type of floats and 
+# Ti the type of integers
 type divand_struct
     n
     neff
     coeff
-    sv
+    sv::statevector
     D
     mask
     WE
@@ -27,6 +36,7 @@ type divand_struct
     alpha
     iB
     iB_
+    Ld::Array{Float64,1}
     moddim
     iscyclic
     applybc
@@ -38,18 +48,24 @@ type divand_struct
     maxit
     minit
     inversion
+    niter
+    compPC
+    progress
+    preconditioner
     keepLanczosVectors
     yo
     R
     H
     P
+    obsout
+    obsconstrain
 
     function divand_struct(mask)
         n = ndims(mask)
         neff = 0
         coeff = 1.
         moddim = []
-        iscyclic = []
+        iscyclic = falses(n)
         alpha = []
         yo = []
         R = []
@@ -61,9 +77,9 @@ type divand_struct
 
         D = copy(sempty)
         WE = copy(sempty)
-        WE = copy(sempty)
         iB = copy(sempty)
         iB_ = Array{SparseMatrixCSC{Float64,Int64}}(3);
+        Ld = []
         P = []
 
         isinterior = []
@@ -84,14 +100,25 @@ type divand_struct
         maxit = 100
         minit = 10
         inversion = :chol
+        niter = 0
         keepLanczosVectors = false
 
+        obsout = Array{Bool,1}()
+        obsconstrain = divand_constrain([],[],[])
+
+        WEs = Array{Any,1}(n)
+        WEss = Array{Any,1}(n)
+
+
+        compPC(iB,R,H) = identity
+        progress(iter,x,r,tol2,fun,b) = nothing
+        preconditioner = identity
 
         new(n,
             neff,
             coeff,
-            D,
             sv,
+            D,
             mask,
             WE,
             isinterior,
@@ -105,6 +132,7 @@ type divand_struct
             alpha,
             iB,
             iB_,
+            Ld,
             moddim,
             iscyclic,
             applybc,
@@ -116,11 +144,17 @@ type divand_struct
             maxit,
             minit,
             inversion,
+            niter,
+            compPC,
+            progress,
+            preconditioner,
             keepLanczosVectors,
             yo,
             R,
             H,
-            P
+            P,
+            obsout,
+            obsconstrain
             )
     end
 end
@@ -154,19 +188,72 @@ function ndgrid{T}(vs::AbstractVector{T}...)
 end
 
 
-sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
-
-
-function sparse_pack(mask)
-
-    j = find(mask)
-    m = length(j)
-    i = collect(1:m)
-    s = ones(m)
-    n = length(mask)
-    H = sparse(i,j,s,m,n)
-
+"""concatenate diagonal matrices"""
+function blkdiag(X::Diagonal...)
+    Diagonal(cat(1,[diag(x) for x in X]...))
 end
+
+"""display size as a string """
+formatsize(sz) = join(sz,"×")
+
+"""
+mask,xyi,pmn = divand_squaredom(n,coord)
+
+Create a "square" domain in `n` dimensions with the coordinates `coord`
+assuming a Catersian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
+
+# Example
+
+mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))
+"""
+function divand_squaredom(n,coord)
+    coords = ([coord for i = 1:n]...)
+    return divand_rectdom(coords...)
+end
+
+
+"""
+mask,xyi,pmn = divand_squaredom(n,coord)
+
+Create a "square" domain in `n` dimensions with the coordinates `coord`
+assuming a Catersian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
+
+# Example
+
+mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
+"""
+function divand_rectdom(coords...)
+    # grid of background field
+    xyi = ndgrid(coords...)
+
+    # mask (all points are valid)
+    mask = trues(xyi[1])
+
+    # metric (inverse of the resolution)
+    pmn = ([ones(size(mask)) / (coords[i][2]-coords[i][1]) for i = 1:length(coords)]...)
+
+    return mask,pmn,xyi
+end
+
+
+function dvmaskexpand(x)
+    z=deepcopy(x)
+    sz=size(z)[1]
+    for i=1:sz
+        if !z[i]
+            ip=min(i+1,sz)
+            im=max(i-1,1)
+            z[i]=(x[im] | x[ip])
+        end
+    end
+    return z
+end
+
+
+include("sparse_operator.jl");
+include("function_operator.jl");
 
 include("sparse_stagger.jl");
 include("sparse_diff.jl");
@@ -174,32 +261,73 @@ include("sparse_interp.jl");
 include("sparse_trim.jl");
 include("sparse_shift.jl");
 include("sparse_gradient.jl");
+
+
 include("localize_separable_grid.jl");
 
 include("special_matrices.jl");
-
-include("statevector_init.jl");
-include("statevector_pack.jl");
-include("statevector_unpack.jl");
-include("statevector_sub2ind.jl");
-include("statevector_ind2sub.jl");
-
+include("conjugategradient.jl");
 include("divand_laplacian.jl");
 include("divand_operators.jl");
 include("divand_background_components.jl")
 include("divand_background.jl");
 include("divand_addc.jl");
 include("divand_kernel.jl");
+include("divand_obscovar.jl");
 include("divand_obs.jl");
+include("divand_pc_none.jl");
+include("divand_pc_sqrtiB.jl");
 include("divand_factorize.jl");
 include("divand_solve.jl");
 include("divand_metric.jl");
 include("divand_constr_advec.jl");
+include("divandjog.jl");
 include("divandrun.jl");
+include("divandgo.jl");
 include("divand_cpme.jl");
+include("divand_aexerr.jl");
+include("divand_GCVKii.jl");
+include("divand_diagHK.jl");
+include("divand_GCVKiiobs.jl");
+include("divand_diagHKobs.jl");
+include("divand_residual.jl");
+include("divand_residualobs.jl");
+include("divand_cvestimator.jl");
+include("divand_erroratdatapoints.jl");
+include("divand_cv.jl");
+include("divand_qc.jl");
+include("divand_sampler.jl");
+include("divand_cutter.jl");
+include("divand_fittocpu.jl");
+include("divand_adaptedeps2.jl");
+include("divand_filter3.jl");
+include("divand_Lpmnrange.jl");
+include("divand_bc_stretch.jl");
+include("divand_averaged_bg.jl")
+include("jmBix.jl");
+include("jmBix!.jl");
+
+include("divand_save.jl");
+
+include("varanalysis.jl");
+
+include("load_mask.jl");
+include("load_obs.jl");
+export loadbigfile
+
+# high-level interface
+include("diva.jl");
+export diva
+
+export divand_laplacian_prepare, divand_laplacian_apply
+
+# statevector
+export packens, unpackens
+
+export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save, varanalysis, dvmaskexpand, jmBix, jmBix!
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
-   statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, 
-   divandrun, divand_metric, distance, CovarIS, MatFun, factorize!, divand_kernel, divand_cpme
+statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
+divand_cvestimator, divand_erroratdatapoints, divand_cv, divand_qc, divand_adaptedeps2, divandgo, divandjog, divand_sampler, divand_filter3, divand_Lpmnrange, divand_cutter, divand_fittocpu, divand_bc_stretch, divand_averaged_bg
 
 end
