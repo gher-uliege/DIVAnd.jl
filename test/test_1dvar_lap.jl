@@ -17,12 +17,14 @@ fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
 
 
 D = divand_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
-Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
-# note s.Dx is not equal to Dx at the boundary
 Dsym = +([s.Dx[i]'*(s.WEs[i] *(s.WEs[i] *(s.Dx[i]))) for i in 1:ndims(mask)]...)
 
+# only the same if pm = 1
 display(full(D))
 display(full(Dsym))
+
+Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
+# note s.Dx is not equal to Dx at the boundary
 
 pmn = (pm,)
 S = [sparse_stagger(size(mask),i)  for i in 1:ndims(mask)];
@@ -30,12 +32,14 @@ pmn_staggerd = [S[i] * pmn[i] for i in 1:ndims(mask)];
 mask_staggerd = [(S[i] * mask[:]) .== 1 for i in 1:ndims(mask)];
 
 Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)
+
+# works!
 display(full(Dsym2))
 
 @show Dsym2 * xi[:].^2
 @show D * xi[:].^2
 
-nothing
+
 # variable resolution
 
 pm = [Float64(i)+1 for i in linspace(0,1,11)]
@@ -55,9 +59,12 @@ D = divand_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
 Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
 
 Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)
+
+# small differences
 display(full(D))
 display(full(Dsym2))
 
+# Dsym2 is not as precise
 @show Dsym2 * xi[:].^2
 @show D * xi[:].^2
 
