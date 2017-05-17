@@ -9,6 +9,7 @@ import Base.LinAlg.BLAS
     include("test_conjugategradient.jl");
 
     include("test_sparse_diff.jl");
+    include("test_laplacian.jl");
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
 
