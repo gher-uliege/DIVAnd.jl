@@ -17,6 +17,8 @@ fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
 
 
 D = divand_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
+Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
+# note s.Dx is not equal to Dx at the boundary
 Dsym = +([s.Dx[i]'*(s.WEs[i] *(s.WEs[i] *(s.Dx[i]))) for i in 1:ndims(mask)]...)
 
 display(full(D))
@@ -27,7 +29,7 @@ S = [sparse_stagger(size(mask),i)  for i in 1:ndims(mask)];
 pmn_staggerd = [S[i] * pmn[i] for i in 1:ndims(mask)];
 mask_staggerd = [(S[i] * mask[:]) .== 1 for i in 1:ndims(mask)];
 
-Dsym2 = +([s.Dx[i]' * s.Dx[i] for i in 1:ndims(mask)]...)
+Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)
 display(full(Dsym2))
 
 @show Dsym2 * xi[:].^2
@@ -50,8 +52,10 @@ fimax = maximum(fi[2:end-1])
 #@test xi[fi .== fimax][1] == x[2]
 
 D = divand_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
+Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
 
-Dsym2 = +([s.Dx[i]' * s.Dx[i] for i in 1:ndims(mask)]...)
+Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)
+display(full(D))
 display(full(Dsym2))
 
 @show Dsym2 * xi[:].^2
