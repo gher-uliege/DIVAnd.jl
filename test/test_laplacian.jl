@@ -1,5 +1,4 @@
 using Base.Cartesian
-using BenchmarkTools
 using Base.Test
 using divand
 
