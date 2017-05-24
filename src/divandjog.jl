@@ -70,6 +70,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		
 			tol = 2e-3
 			maxiter=10*Int(ceil(sqrt(prod(size(mask)))))
+			
 			pcargs = [(:tol, tol),(:maxit,maxiter)]
 
             
@@ -107,7 +108,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 
 				# To compensate for the missing correlations in scP
 				# tolerance on the gradient A x - b
@@ -151,7 +152,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 				lmask1=0.*lmask;
 				lmask1[3:end]=1/1.42;
 					
@@ -173,7 +174,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 
 
 			
@@ -233,7 +234,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 				lmask1=0.0.*lmask;
 				lmask1[3:end]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
@@ -256,7 +257,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 
 
 			
@@ -331,7 +332,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 				lmask1=0.*lmask;
 				lmask1[3:end]=1;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
@@ -358,7 +359,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 
 
 			
@@ -414,7 +415,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
 				
 
 			
@@ -630,6 +631,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		tol=1e-3
 		maxiter=10*Int(ceil(sqrt(size(HI)[1])))
 		maxiter=minimum([2000,maxiter])
+		maxiter=0
     	pcargs = [(:tol, tol),(:maxit,maxiter)]
         diagshift=0.000001
 		
@@ -667,7 +669,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 
 
 
@@ -698,6 +700,12 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			#work1=zeros(Float64,size(HI)[1])
 			#work2=zeros(Float64,size(HI)[1])
 			
+			#Possible improvement, instead of linear interpolation vi HI:
+			# HI' : unpack state vector, from the fine grid get grid points [coarsegridpoints...]
+			#  pack the coarse grid, apply scP, unpack to coarse grid, initialize a fine grid solution with this coarse grid solution
+			#  use divand_fill to fill the fine grid and finally pack the array
+			# maybe even accept a filtering filling ?
+			# But then with this approach the operator is not symmetric ?
                             function fun!(x::Array{Float64,1},fx::Array{Float64,1})
 							    #@show size(x),typeof(HI),typeof(scP)
 							    #work1[:]=diagshift*x ::Array{Float64,1}
@@ -759,7 +767,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 			
             xr=randn(size(HI)[1],1)
 			
@@ -813,7 +821,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 			
 			PC1=1
 			lmask1=0.*lmask;
@@ -838,7 +846,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 				sc=0
 				fc=0
-				gc()
+				#gc()
             end
 
 			
@@ -911,7 +919,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 			
 			
 			
@@ -944,7 +952,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 
 			lmask1=0.0.*lmask;
 			
@@ -965,7 +973,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 
 
 			
@@ -1035,7 +1043,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 			lmask1=0.0.*lmask;
             lmask1[3:end]=1.0/1.42;
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
@@ -1058,7 +1066,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 
 #Now B2D on fine resolution model !
 			if isa(Labs,Tuple)
@@ -1084,7 +1092,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 
 			lmask1=0.0.*lmask;
 			lmask1[2]=1.0/1.42;
@@ -1104,7 +1112,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# Try to clean up some memory here
 			sc=0
 			fc=0
-			gc()
+			#gc()
 
 			
 

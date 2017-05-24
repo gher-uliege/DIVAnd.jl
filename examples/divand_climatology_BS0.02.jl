@@ -49,8 +49,8 @@ end
 dx = dy = 0.1
 dx = dy = 0.2
 dx = dy = 0.07
-dx = dy = 0.04
-dx = dy = 0.03
+#dx = dy = 0.04
+#dx = dy = 0.03
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
 

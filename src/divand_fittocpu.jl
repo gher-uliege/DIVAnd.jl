@@ -42,7 +42,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
     # How wide is the overlap in terms of number of length scales
     factoroverlap=3.3
 
-    biggestproblemitern=[500*500 500*500 50*50*50 190*190*6*12]
+    biggestproblemitern=[500*500 500*500 50*50*50 170*170*6*12]
     #biggestproblemitern=[500*500 500*500 50*50*50 50*50*6*12]
     biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]
 
