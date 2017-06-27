@@ -56,7 +56,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     for i=1:n
         nsamp=Int(floor(Lpmnrange[i][1]/minimumpointsperlpc));
         if nsamp>1
-            csteps[i]=minimum([nsamp,3])
+            csteps[i]=minimum([nsamp,1])
 			#csteps[i]=minimum([nsamp,1])
         end
     end
