@@ -63,12 +63,12 @@ import Base.LinAlg.BLAS
     @test mu ≈ 4π
     @test K(0) ≈ 1
     @test K(1) ≈ SpecialFunctions.besselk(1,1)
-    @test_approx_eq_eps K(len_scale) SpecialFunctions.besselk(1,1) 1e-6
+    @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
     mu,K,len_scale = divand_kernel(2,[1,3,3,1])
-    @test_approx_eq_eps K(len_scale) SpecialFunctions.besselk(1,1) 1e-6
+    @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
     mu,K,len_scale = divand_kernel(2,[0,3,3,1])
-    @test_approx_eq_eps K(len_scale) SpecialFunctions.besselk(1,1) 1e-6
+    @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
 end

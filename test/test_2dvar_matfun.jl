@@ -45,7 +45,7 @@ vamf,s_np = divandrun(mask,pmn,xyi,xy,v,len,epsilon2;
 
 #@show s_np.niter
 
-@test_approx_eq_eps vas vamf 1e-4
+@test vas ≈ vamf atol=2e-4
 
 
 # Copyright (C) 2017 Alexander Barth <a.barth@ulg.ac.be>

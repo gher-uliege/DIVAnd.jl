@@ -43,7 +43,7 @@ tol = 1e-5
 @time xa,s = varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
 @show maximum(xa) 
 
-@test_approx_eq_eps maximum(xa) 0.5 1e-3
+@test maximum(xa) ≈ 0.5 atol=1e-3
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
