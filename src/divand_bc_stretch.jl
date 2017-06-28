@@ -3,11 +3,6 @@
 """
 function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 
-
-
-
-
-
     # number of dimensions
     n = ndims(mask)
     sz = size(mask)

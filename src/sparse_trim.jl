@@ -20,7 +20,7 @@ function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int64}
     # L1
 
     vi = [collect(1:sz2[i]) for i = 1:n]
-    IJ = [_[:] for _ in ndgrid(vi...)]
+    IJ = [vii[:] for vii in ndgrid(vi...)]
 
     L1 = sub2ind((sz2...),IJ...)
 

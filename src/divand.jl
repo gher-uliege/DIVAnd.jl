@@ -86,7 +86,7 @@ end
         iB = copy(sempty)
         iB_ = Vector{SparseMatrixCSC{Float64,Int64}}()
         Ld = Float64[]
-        P = Matrix{Float64}()
+        P = Matrix{Float64}(0,0)
 
         isinterior = Bool[]
         isinterior_stag = [Bool[] for i in 1:n]

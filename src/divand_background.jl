@@ -102,7 +102,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
  
 
     # mean correlation length in every dimension
-    Ld = [mean(_) for _ in Labs]
+    Ld = [mean(L) for L in Labs]
     neff = sum(Ld .> 0)
 
     # geometric mean
@@ -157,16 +157,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 	coeff = coeff * Ln # units length^n
 
-
-
-
-	pmnv = cat(2,[_[:] for _ in pmn]...)
-
-
-
-
-
-
+	pmnv = cat(2,[pm[:] for pm in pmn]...)
 
 	pmnv[:,find(Ld == 0)] = 1
 

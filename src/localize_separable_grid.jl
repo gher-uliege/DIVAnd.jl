@@ -45,7 +45,7 @@ function localize_separable_grid(xi,mask,x)
 
         # loop over all point
         for j = 1:mi
-            I[i,j] = itp[[_[j] for _ in xi]...]
+            I[i,j] = itp[[x[j] for x in xi]...]
         end
     end
 

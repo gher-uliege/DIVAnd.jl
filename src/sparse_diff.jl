@@ -39,7 +39,7 @@ function sparse_diff(sz1,m,cyclic = false)
 
 
     vi = [collect(1:sz2[i]) for i = 1:n]
-    #IJ = [_[:] for _ in ndgrid(vi...)]
+    #IJ = [vii[:] for vii in ndgrid(vi...)]
 
     #IJ = [Array{Int64,1}(n2) for i = 1:n]
     IJ = [zeros(Int64,Int(n2)) for i = 1:n]

@@ -24,7 +24,7 @@ function sparse_shift(sz1,m,cyclic = false)
     n = length(sz1)
 
     vi = [collect(1:sz2[i]) for i = 1:n]
-    IJ = [_[:] for _ in ndgrid(vi...)]
+    IJ = [vii[:] for vii in ndgrid(vi...)]
 
     L1 = 1:n2
     one = ones(size(L1))

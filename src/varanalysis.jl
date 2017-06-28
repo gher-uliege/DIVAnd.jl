@@ -77,7 +77,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     # x^T B x is the integral which takes also the volumn of each grid cell into account 
 
-    sqrtivol = pack(s.sv, (sqrt(.*(pmn...)),))
+    sqrtivol = pack(s.sv, (sqrt.(.*(pmn...)),))
 
     ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
 
