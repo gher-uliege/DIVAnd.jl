@@ -16,7 +16,7 @@ Output:
 
 function divand_kernel(n,alpha)
     # remove trailling zeros
-    ind = maximum(find(!(alpha .== 0)))
+    ind = maximum(find(.!(alpha .== 0)))
     alpha = alpha[1:ind];
 
     m = length(alpha)-1;

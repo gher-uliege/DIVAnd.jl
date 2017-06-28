@@ -42,14 +42,13 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     scale = strides(mask)
 
     # integer index
-    #ind = floor.(Int64,I) for julia 0.6
-    ind = floor(Int64,I)
+    ind = floor.(Int64,I)
     inside = trues(mi)
 
     for i = 1:n
         if !iscyclic[i]
             # make a range check only for non-cyclic dimension
-            inside = inside & (1 .<= I[i,:] .<= sz[i])
+            inside = inside .& (1 .<= I[i,:] .<= sz[i])
 
             # handle border cases
             p = find(I[i,:] == sz[i])
@@ -57,7 +56,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
         end
     end
 
-    outbbox = !inside
+    outbbox = .!inside
 
     # interpolation coefficient
     coeff = zeros(size(ind,1),size(ind,2),2)
@@ -100,13 +99,13 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     # sj must refer to a valid point or its interpolation coefficient
     # must be zero
 
-    insidesea = all(mask[sj] | (ss .== 0), 1)
+    insidesea = all(mask[sj] .| (ss .== 0), 1)
     inside[iind] = insidesea
     H = sparse(iind[si[:]],sj[:],ss[:],mi,m)
 
-    out = !inside
+    out = .!inside
 
-    H,out,outbbox
+    return H,out,outbbox
 
 end
 

@@ -74,7 +74,7 @@ D = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,[false,false]);
 
 vol = 1./.*(pmn...);
 D2 = sparse_diag(vol[mask]) * D;
-@test maximum(abs(D2 - D2')) < 1e-10
+@test maximum(abs.(D2 - D2')) < 1e-10
 
 
 
