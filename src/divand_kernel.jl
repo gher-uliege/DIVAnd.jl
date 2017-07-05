@@ -1,7 +1,7 @@
 """
 Return the analytical kernel and normalization factor.
 
-mu,K = divand_kernel(n,alpha)
+mu,K,len_scale = divand_kernel(n,alpha)
 
 Analytical (normalized) kernels `K` for infinite domain in dimension `n` and for
 coefficients `alpha` and normalization factor `mu`.
@@ -92,6 +92,42 @@ function divand_rbesselk(nu,r)
 end
 
 
+"""
+fzero(f,x0,x1,eps; maxiter = Inf)
+find the zero of the function f between x0 and x1 assuming x0 < x1 at a precision eps."""
+
+function fzero(f,x0,x1,eps; maxiter = 1000)
+
+    if x0 > x1
+        x0,x1 = x1,x0
+    end
+
+    fx0 = f(x0);
+    fx1 = f(x1);
+    xc = (x0+x1)/2.;
+    fxc = f(xc);
+    niter = 0
+
+    if fx0*fx1 > 0
+        error("function at x0 and x1 should have a different sign")
+    end
+
+    while (x1-x0 > eps) && fxc != 0 && niter < maxiter
+        if fx0*fxc > 0
+            x0 = xc
+            fx0 = fxc
+        else
+            x1 = xc
+            fx1 = fxc
+        end
+
+        xc = (x0+x1)/2.
+        fxc = f(xc)
+        niter += 1
+    end
+
+    return xc,niter
+end
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
