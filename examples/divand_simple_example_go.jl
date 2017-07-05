@@ -34,7 +34,7 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.03;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 vscale=0.001
 vscale=0
 

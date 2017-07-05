@@ -21,7 +21,7 @@ mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,30),linspace(-1,1,30),
 len = 0.3
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 @time fipca,spc = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,alpha=[1 2 1]);
 PCA=spc.P

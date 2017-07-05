@@ -22,7 +22,7 @@ mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,15),linspace(-1,
 len = 0.3
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 scalel=1.25715/0.69315
 

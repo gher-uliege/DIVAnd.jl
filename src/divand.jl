@@ -15,9 +15,9 @@ type divand_constrain{T <: AbstractFloat}
     H::AbstractMatrix{T}
 end
 
-# T is the type of floats and 
+# T is the type of floats and
 # Ti: the type of integers
-# N: the number of dimensions 
+# N: the number of dimensions
 type divand_struct{T <: AbstractFloat,Ti <: Int,N}
     n::Ti
     neff::Ti
@@ -112,7 +112,7 @@ end
 
         #obsout = Array{Bool,1}()
         obsout = BitArray{1}()
-        obsconstrain = divand_constrain(Float64[],Matrix{Float64}(),Matrix{Float64}())
+        obsconstrain = divand_constrain(Float64[],Matrix{Float64}(0,0),Matrix{Float64}(0,0))
 
         WEs = Array{Any,1}(n)
         WEss = Array{Any,1}(n)
@@ -328,7 +328,7 @@ export loadbigfile
 include("diva.jl");
 export diva
 
-export divand_laplacian_prepare, divand_laplacian_apply
+export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 
 # statevector
 export packens, unpackens

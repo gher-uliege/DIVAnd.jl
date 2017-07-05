@@ -40,7 +40,7 @@ pq = ones(xi) / (ti[1,1,1,2]-ti[1,1,1,1]);
 len = (8, 8, 1, 1);
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 # fi is the interpolated field
 

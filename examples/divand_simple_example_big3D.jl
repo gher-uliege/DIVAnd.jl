@@ -34,7 +34,7 @@ po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
 len = 0.5;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 # fi is the interpolated field
 @time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);

@@ -26,7 +26,7 @@ len = 1/4.1*8/9.75;
 @show 2/len
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 maskfin = trues(xifin);
 # fi is the interpolated field
@@ -53,7 +53,7 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=1.09);

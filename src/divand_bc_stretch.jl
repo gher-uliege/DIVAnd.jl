@@ -14,7 +14,7 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
     iscyclic = moddim .> 0
 
     Labs=deepcopy(Lin)
-    
+
     if isa(Labs,Number)
         Labs = ((Labs * ones(size(mask)) for i=1:n)...)
     elseif isa(Labs,Tuple)
@@ -50,43 +50,43 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 
 
 
-           
+
 
 
             if ~iscyclic[i]
                 ind1 = [(j == i ? (1) : (:)) for j = 1:n]
                 ind2 = [(j == i ? (2) : (:)) for j = 1:n]
 
-                xi[i][ind1...]=xi[i][ind1...].+(xi[i][ind1...]-xi[i][ind2...]).*max( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...].-1.0).*pmnin[i][ind1...].-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
-                
-				
+                xi[i][ind1...]=xi[i][ind1...].+(xi[i][ind1...]-xi[i][ind2...]).*max.( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...].-1.0).*pmnin[i][ind1...].-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
+
+
 				ind1 = [(j == i ? (sz[i]) : (:)) for j = 1:n]
                 ind2 = [(j == i ? (sz[i]-1) : (:)) for j = 1:n]
 
-                xi[i][ind1...]=xi[i][ind1...]+(xi[i][ind1...]-xi[i][ind2...]).*max( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...]-1.0).*pmnin[i][ind1...]-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
-                
+                xi[i][ind1...]=xi[i][ind1...]+(xi[i][ind1...]-xi[i][ind2...]).*max.( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...]-1.0).*pmnin[i][ind1...]-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
+
             end
 
 
 
-           
+
 
             # UPDATE BY REFERENCE
             wjmb=pmn[i]
-            
+
             if ~iscyclic[i]
                 ind1 = [(j == i ? (1) : (:)) for j = 1:n]
                 ind2 = [(j == i ? (2) : (:)) for j = 1:n]
 
-                wjmb[ind1...]=1.0./max((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
+                wjmb[ind1...]=1.0./max.((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
 
-				
+
                 ind1 = [(j == i ? (sz[i]) : (:)) for j = 1:n]
                 ind2 = [(j == i ? (sz[i]-1) : (:)) for j = 1:n]
-            
-				wjmb[ind1...]=1.0./max((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
+
+				wjmb[ind1...]=1.0./max.((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
             end
-           
+
 
         end
 

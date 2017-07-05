@@ -35,7 +35,7 @@ fref = fun.(xi,yi,zi,ti)
 len = (0.1,0.1,0.1,0.1);
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 # fi is the interpolated field
 @time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);

@@ -29,7 +29,7 @@ pm = ones(size(xi)) / (xi[2]-xi[1]);
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=0);

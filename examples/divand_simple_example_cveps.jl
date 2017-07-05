@@ -32,7 +32,7 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.2;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 # fi is the interpolated field
 bestfactore=1

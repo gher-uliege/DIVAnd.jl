@@ -18,7 +18,7 @@ mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,40),linspace(-2,2,45),
 len = (0.1,0.2,0.15)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1;
+epsilon2 = 1.;
 
 @time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=2);
 
