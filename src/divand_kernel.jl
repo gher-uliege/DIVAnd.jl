@@ -15,6 +15,9 @@ Output:
 """
 
 function divand_kernel(n,alpha)
+    # precision on len_scale
+    eps = 1e-8
+
     # remove trailling zeros
     ind = maximum(find(.!(alpha .== 0)))
     alpha = alpha[1:ind];
@@ -54,7 +57,7 @@ function divand_kernel(n,alpha)
         end
     end
 
-    len_scale = Roots.fzero(x -> K(x) - SpecialFunctions.besselk(1,1),1)
+    len_scale,maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1,1),1.,100.,eps)
 
     return mu,K,len_scale
 end

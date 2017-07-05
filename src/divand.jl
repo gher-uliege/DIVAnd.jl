@@ -2,7 +2,6 @@ module divand
 
 using Interpolations
 using NetCDF
-using Roots
 using Base.Test
 using Base.Cartesian
 import SpecialFunctions
