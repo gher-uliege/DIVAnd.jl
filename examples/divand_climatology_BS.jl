@@ -65,7 +65,7 @@ timer = 1:1.:12
 mask,(pm,pn,po,pp),(xi,yi,zi,ti) = divand_rectdom(lonr,latr,depthr,timer)
 @show size(mask)     ()
 
-epsilon2 = 1
+epsilon2 = 1.
 
 time2 = Dates.month.(time)
 
