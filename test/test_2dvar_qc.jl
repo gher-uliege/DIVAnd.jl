@@ -19,7 +19,7 @@ x[2]=0.75
 y[2]=0.25
 
 
-f = sin(x*2*pi) .* sin(y*2*pi);
+f = sin.(x*2*pi) .* sin.(y*2*pi);
 
 
 f=f+0.25*randn(150);

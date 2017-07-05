@@ -27,7 +27,7 @@ function divand_Lpmnrange(pmn,len)
 
 
     n = ndims(pmn[1])
-    Lpmnrange=Array(Tuple, n)
+    Lpmnrange=Array{Tuple}(n)
 
     for i=1:n
         if isa(len,Number)

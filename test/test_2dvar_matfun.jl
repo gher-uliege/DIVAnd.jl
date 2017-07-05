@@ -6,7 +6,7 @@ using Base.Test
 n = 2
 
 # function to interpolate
-fun(xy...) = .*([cos(6*x) for x in xy]...)
+fun(xy...) = .*([cos.(6*x) for x in xy]...)
 
 # grid of background field
 mask,pmn,xyi = divand_squaredom(2,linspace(0,1,20))

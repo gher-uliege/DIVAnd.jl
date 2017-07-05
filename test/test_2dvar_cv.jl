@@ -14,7 +14,7 @@ y = rand(nobs);
 
 # true length-scale
 len_true = 0.5
-f = sin(π * x/len_true) .* cos(π * y/len_true);
+f = sin.(π * x/len_true) .* cos.(π * y/len_true);
 
 # add noise
 f = f+sqrt(epsilon2_true) * randn(nobs);

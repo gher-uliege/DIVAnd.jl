@@ -11,7 +11,7 @@ epsilon = 1e-10;
 x,y = ndgrid(linspace(epsilon,1-epsilon,5),linspace(epsilon,1-epsilon,5))
 x = x[:]
 y = y[:]
-v = sin(x*6) .* cos(y*6)
+v = sin.(x*6) .* cos.(y*6)
 
 # correlation length
 lenx = .15;

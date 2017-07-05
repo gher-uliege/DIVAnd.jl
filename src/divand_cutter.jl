@@ -131,7 +131,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     ntiles=prod(subsz)
 
 
-    windowlist=Array(Tuple,ntiles)
+    windowlist=Array{Tuple}(ntiles)
 
     iw=0
     for cr in CartesianRange(subsz)

@@ -59,12 +59,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
     # Analyse rations l/dx etc
-	
+
     Lpmnrange = divand_Lpmnrange(pmn,Labs)
-    
+
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
     windowlist,csteps,lmask,alphanormpc = divand_cutter(Lpmnrange,size(mask),moddim)
-    
+
 	@show size(mask),size(windowlist)
 
     # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
@@ -73,10 +73,10 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
     #fi=SharedArray(Float64,size(mask));
     #erri=SharedArray(Float64,size(mask));
-	fi=SharedArray(Float32,size(mask));
-    erri=SharedArray(Float32,size(mask));
-	
-	
+    fi=SharedArray{Float32}(size(mask));
+    erri=SharedArray{Float32}(size(mask));
+
+
     @sync @parallel for iwin=1:size(windowlist)[1]
 
         iw1=windowlist[iwin][1]
@@ -86,12 +86,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         istore1=windowlist[iwin][5]
         istore2=windowlist[iwin][6]
 
-		
+
 		windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
 		windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
-		
-		
+
+
         warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
 
@@ -155,14 +155,14 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
         # NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
-        
+
         Labsw=Labs
         if !isa(Labs,Number)
             if !isa(Labs[1],Number)
                 Labsw= ([ x[windowpoints...] for x in Labs ]...)
             end
         end
-        
+
         kfound=0
         for j=1:size(otherargs)[1]
             if otherargs[j][1]==:alphabc
