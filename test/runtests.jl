@@ -39,6 +39,8 @@ import Base.LinAlg.BLAS
     # test kernel
     include("test_kernel.jl");
 
+    include("test_fzero.jl");
+
     # test 3D-var analysis
     include("test_varanalysis.jl");
 
