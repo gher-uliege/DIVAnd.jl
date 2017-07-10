@@ -6,11 +6,11 @@ using PyPlot
 
 srand(1234)
 # observations
-nobs=99
+nobs = 99
 x = rand(nobs);
 y = rand(nobs);
-f = sin(x*6) .* cos(y*6);
-f=f+randn(nobs);
+f = sin.(x*6) .* cos.(y*6);
+f = f+randn(nobs);
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100));
@@ -29,12 +29,11 @@ pn = ones(xi) / (yi[1,2]-yi[1,1]);
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 2;
+epsilon2 = 2.;
 
 # fi is the interpolated field
 
 for imeth=0:3
-
 
     bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth);
 
@@ -44,10 +43,10 @@ for imeth=0:3
     xlabel("Log10 scale factor L")
     ylabel("Log10 scale factor e2")
     plot(x2Ddata,y2Ddata,".")
-    plot(log10(bestfactorl), log10(bestfactore),"o")
+    plot(log10.(bestfactorl), log10.(bestfactore),"o")
     title("Method $imeth")
-
 end
+
 # Copyright (C) 2014, 2017 Alexander Barth    <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #

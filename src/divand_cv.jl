@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations to calculate an estimate of the optimal value of epsilon2
 
- = divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,...);
+bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The output `factors` represent multipliction factors applied to epsilon2 which have been tested and the cvvalues the corresponding cross validation values.

@@ -6,17 +6,17 @@ using PyPlot
 
 srand(1234)
 # observations
-nobs=90
+nobs = 90
 x = rand(nobs);
 y = rand(nobs);
-f = sin(x*6) .* cos(y*6);
-f=f+randn(nobs);
+f = sin.(x*6) .* cos.(y*6);
+f = f + randn(nobs);
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,70),linspace(0,1,70));
 
 # reference field
-fref = sin(6xi) .* cos(6yi);
+fref = sin.(6xi) .* cos.(6yi);
 
 # all points are valid points
 mask = trues(xi);
@@ -35,20 +35,18 @@ len = 0.2;
 epsilon2 = 1.;
 
 # fi is the interpolated field
-bestfactore=1
-cvval=99999
+bestfactore = 1
+cvval = 99999
+
 for imeth=0:3
-
-
     bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,4,imeth);
 
     subplot(2,2,imeth+1)
     plot(xi2D,cvinter,"-")
     xlabel("Log10 scale factor e2")
     plot(x2Ddata,cvvalues,".")
-    plot(log10(bestfactore), cvval,"o")
+    plot(log10.(bestfactore), cvval,"o")
     title("Method $imeth")
-
 end
 
 # De Rosier type of approach
@@ -61,13 +59,12 @@ cvbest1=cvval
 
 cvbest2=zeros(20);
 eps2=zeros(20)
-for i=1:20
 
+for i=1:20
     cvval,factor=divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,3);
     eps2[i]=epsilon2;
     cvbest2[i]=cvval;
     epsilon2=epsilon2*factor
-
 end
 
 epsilon2
@@ -76,7 +73,8 @@ cvbest1
 cvbest2
 eps2
 
-plot(log10(eps2),cvbest2,".",log10(epsbest1),cvbest1,"o",log10(eps2[end]),cvbest2[end],"+")
+plot(log10.(eps2),cvbest2,".",log10.(epsbest1),cvbest1,"o",log10.(eps2[end]),cvbest2[end],"+")
+
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
