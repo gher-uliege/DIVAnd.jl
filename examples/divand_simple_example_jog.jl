@@ -7,13 +7,13 @@ using PyPlot
 # observations
 x = rand(75);
 y = rand(75);
-f = sin(x*6) .* cos(y*6);
+f = sin.(x*6) .* cos.(y*6);
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,401),linspace(0,1,401));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = sin.(xi*6) .* cos.(yi*6);
 
 # all points are valid points
 mask = trues(xi);
@@ -32,7 +32,7 @@ len = 0.10;
 epsilon2 = 1.;
 
 # fi is the interpolated field
-@time fi,s,figuess,fifine,sf ,erri= divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,ones(2),ones(2));
+@time fi,s,figuess,fifine,sf,erri = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,ones(2),ones(2));
 
 # fi is the interpolated field
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);

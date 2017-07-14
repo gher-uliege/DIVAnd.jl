@@ -16,13 +16,13 @@ x = rand(nobs)*testsizex;
 y = rand(nobs)*testsizey;
 z = rand(nobs)*testsizez;
 t = rand(nobs)*testsizet;
-f = sin(x*pi/180) .* cos(y*pi/180.)+sin(z*6/50) .* cos(x*6*pi/180) .* sin(t*2*pi/12);
+f = sin.(x*pi/180) .* cos.(y*pi/180.)+sin.(z*6/50) .* cos.(x*6*pi/180) .* sin.(t*2*pi/12);
 
 
 xi,yi,zi,ti = ndgrid(linspace(1,testsizex,testsizex),linspace(1,testsizey,testsizey),linspace(1,testsizez,testsizez),linspace(1,testsizet,testsizet));
 
 # reference field
-fref = sin(xi*pi/180) .* cos(yi*pi/180.)+sin(zi*6/50) .* cos(xi*6*pi/180) .* sin(ti*2*pi/12);
+fref = sin.(xi*pi/180) .* cos.(yi*pi/180.)+sin.(zi*6/50) .* cos.(xi*6*pi/180) .* sin.(ti*2*pi/12);
 
 # all points are valid points
 mask = trues(xi);

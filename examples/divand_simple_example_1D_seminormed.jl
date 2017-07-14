@@ -6,14 +6,14 @@ using PyPlot
 
 # observations with points outside
 x = collect(linspace(0,1,7))
-f = sin(3*pi*x) ;
+f = sin.(3*pi*x) ;
 
 # final grid
 
 xi=collect(linspace(-0.1,1.1,220));
 
 # reference field
-fref = sin(xi*6*pi) ;
+fref = sin.(xi*6*pi) ;
 
 # all points are valid points
 mask = trues(size(xi));

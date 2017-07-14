@@ -8,7 +8,7 @@ using PyPlot
 nobs=100
 x = 0.01+0.98*rand(nobs);
 y = 0.01+0.98*rand(nobs);
-f = sin(x*6) .* cos(y*6);
+f = sin.(x*6) .* cos.(y*6);
 # x=[0.5,0.75]
 # y=[0.5,0.75]
 # f=[1,1]
@@ -17,7 +17,7 @@ f = sin(x*6) .* cos(y*6);
 xi,yi = ndgrid(linspace(0,1,950),linspace(0,1,830));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = sin.(xi*6) .* cos.(yi*6);
 
 # all points are valid points
 mask = trues(xi);

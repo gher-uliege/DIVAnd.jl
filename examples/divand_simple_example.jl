@@ -5,7 +5,7 @@ using divand
 using PyPlot
 
 # function to interpolate
-fun(x,y) = sin(6x) * cos(6y)
+fun(x,y) = sin.(6x) * cos.(6y)
 
 # observations
 

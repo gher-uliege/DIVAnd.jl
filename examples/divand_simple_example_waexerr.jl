@@ -14,13 +14,13 @@ y = rand(75);
 
 jmsize=120
 
-f = sin(6x) .* cos(6y);
+f = sin.(6x) .* cos.(6y);
 
 # final grid
 xi,yi = ndgrid(linspace(0,1,jmsize),linspace(0,1,jmsize));
 
 # reference field
-fref = sin(xi*6) .* cos(yi*6);
+fref = sin.(xi*6) .* cos.(yi*6);
 
 # all points are valid points
 mask = trues(xi);
