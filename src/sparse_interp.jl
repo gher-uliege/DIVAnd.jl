@@ -35,7 +35,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
             # bring I(i,:) inside the interval [1 sz(i)+1[
             # since the i-th dimension is cyclic
 
-            I[i,:] = mod(I[i,:]-1,sz[i])+1
+            I[i,:] = mod.(I[i,:]-1,sz[i])+1
         end
     end
 

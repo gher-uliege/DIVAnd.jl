@@ -37,8 +37,8 @@ function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,level::Number)
 
     if isglobal
         #if false
-        i2 = mod(i-1,size(nc["bat"] ,1))+1;
-        jumps = [0; find(abs(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
+        i2 = mod.(i-1,size(nc["bat"] ,1))+1;
+        jumps = [0; find(abs.(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
 
 
 
@@ -122,8 +122,8 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     b = zeros(length(i),length(j));
 
     if isglobal
-        i2 = mod(i-1,size(nc["bat"] ,1))+1;
-        jumps = [0; find(abs(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
+        i2 = mod.(i-1,size(nc["bat"] ,1))+1;
+        jumps = [0; find(abs.(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
 
 
 

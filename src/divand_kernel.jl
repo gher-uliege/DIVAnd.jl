@@ -57,7 +57,7 @@ function divand_kernel(n,alpha)
         end
     end
 
-    len_scale,maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1,1),1.,100.,eps)
+    len_scale,maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1,1),0.,100.,eps)
 
     return mu,K,len_scale
 end
@@ -112,7 +112,7 @@ function fzero(f,x0,x1,eps; maxiter = 1000)
     niter = 0
 
     if fx0*fx1 > 0
-        error("function at x0 and x1 should have a different sign")
+        error("function at x0 (f($x0)=$(fx0)) and x1 (f($x1)=$(fx1)) should have a different sign")
     end
 
     while (x1-x0 > eps) && fxc != 0 && niter < maxiter

@@ -30,13 +30,8 @@ end
 
 include("../src/override_ssmult.jl")
 
-
-fname = joinpath(homedir(),"Data/Salinity.bigfile")
-#fname = joinpath("C:/JMB/BlackSea/","Salinity.bigfile")
-#fname = "C:/JMB/BlackSea/Salinity.bigfile"
-bath_name = joinpath(homedir(),"Data/DivaData/Global/gebco_30sec_16.nc")
-#bath_name = joinpath("C:/JMB/BlackSea/","diva_bath.nc")
-#bath_name = joinpath("C:/JMB/BlackSea/","gebco_30sec_16.nc")
+fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
+bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 
 isglobal = true
 
@@ -72,7 +67,7 @@ epsilon2 = 0.5
 
 time2 = Dates.month.(time)
 
-mxi,myi,mask2 = load_mask(bath_name,isglobal,minimum(lonr),maximum(lonr),dx,minimum(latr),maximum(latr),dy,depthr)
+mxi,myi,mask2 = load_mask(bathname,isglobal,minimum(lonr),maximum(lonr),dx,minimum(latr),maximum(latr),dy,depthr)
 
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 #only see points
