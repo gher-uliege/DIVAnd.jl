@@ -134,7 +134,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			if methodpc==2
 				lmask1=0.*lmask;
-				lmask1[1:2]=1;
+				lmask1[1:2]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -153,8 +153,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				sc=0
 				fc=0
 				#gc()
-				lmask1=0.*lmask;
-				lmask1[3:end]=1/1.42;
+				lmask1=0.0.*lmask;
+				lmask1[3:end]=1.0./1.42;
 					
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				PC1=1
@@ -215,8 +215,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			if methodpc==3
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
-				lmask1=0.*lmask;
-				lmask1[1:2]=1;
+				lmask1=0.0.*lmask;
+				lmask1[1:2]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -270,11 +270,15 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			xguess=(PC1*xguess);
 			xr=randn(size(xguess)[1],1)
+			newsc=[1]
 			#scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
 			if PC1==1
 			scalef=(xr'*((PC2*(xr))))./(xr'*xr)
 			         else
-			scalef=(xr'*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\xr))))./(xr'*xr)
+#			scalef=(xr'*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\xr))))./(xr'*xr)
+  			scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
+			newsc=(xr'*(PC1.factors[:UP]\((PC1.factors[:PtL]\xr))))./(xr'*xr)
+
 			end
 			scalefter=(xr'*(PC2*xr))./(xr'*xr)
 			
@@ -282,7 +286,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			scalef2=scalefter[1]/scalef[1]
 			
-			
+			scalef2=1.0./newsc[1]
 			
 			xguess=xguess*scalef2
 			svf = statevector_init((mask,))
@@ -290,7 +294,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			function compPC4bis(iB,H,R)
                             function fun!(x,fx)
-                                fx[:] = diagshift*x+scalef2*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\x)))
+                                #fx[:] = diagshift*x+scalef2*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\x)))
+                                fx[:] = diagshift*x+scalef2*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\x)))
                             end
                             return fun!
 			end
@@ -313,8 +318,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			if methodpc==4
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
-				lmask1=0.*lmask;
-				lmask1[1:2]=1;
+				lmask1=0.0.*lmask;
+				lmask1[1:2]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -333,8 +338,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				sc=0
 				fc=0
 				#gc()
-				lmask1=0.*lmask;
-				lmask1[3:end]=1;
+				lmask1=0.0.*lmask;
+				lmask1[3:end]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				# Try to get iB by using iterative solved stopped at one
 				maxiterb=1
@@ -396,8 +401,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			if methodpc==5
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
-				lmask1=0.*lmask;
-				lmask1[1:2]=1;
+				lmask1=0.0.*lmask;
+				lmask1[1:2]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -631,7 +636,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		tol=1e-3
 		maxiter=10*Int(ceil(sqrt(size(HI)[1])))
 		maxiter=minimum([2000,maxiter])
-		maxiter=0
+		#maxiter=0
     	pcargs = [(:tol, tol),(:maxit,maxiter)]
         diagshift=0.000001
 		
@@ -645,8 +650,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		
 			Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 			# try classic 2D
-			lmask1=0.*lmask;
-				lmask1[1:2]=1;
+			lmask1=0.0.*lmask;
+				lmask1[1:2]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 				
 			#fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
@@ -743,7 +748,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		if methodpccoarse==2
 			
 			Labsccut=Labsc
-			lmask1=0.*lmask
+			lmask1=0.0.*lmask
 			lmask1[1:end]=1.0;
 			if n>3
 				lmask1[3]=0.0;
@@ -798,8 +803,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		
 		#Method 3
 		if methodpccoarse==3
-			lmask1=0.*lmask;
-			lmask1[1:end]=1;
+			lmask1=0.0.*lmask;
+			lmask1[1:end]=1.0;
 			if n>3		
 				lmask1[3]=0;
 			end
@@ -824,7 +829,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			#gc()
 			
 			PC1=1
-			lmask1=0.*lmask;
+			lmask1=0.0.*lmask;
 			#lmask1[3:end]=1/1.42;
             #Try 3D
 			if n>3
@@ -894,7 +899,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		if methodpccoarse==4
 
 			Labsccut=Labsc
-			lmask1=0.*lmask
+			lmask1=0.0.*lmask
 			lmask1[1:end]=1.0;
 			if n>3
 				lmask1[3]=0.0;

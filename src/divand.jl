@@ -112,7 +112,7 @@ end
 
         #obsout = Array{Bool,1}()
         obsout = BitArray{1}()
-        obsconstrain = divand_constrain(Float64[],Matrix{Float64}(),Matrix{Float64}())
+        obsconstrain = divand_constrain(Float64[],Matrix{Float64}(0,0),Matrix{Float64}(0,0))
 
         WEs = Array{Any,1}(n)
         WEss = Array{Any,1}(n)
