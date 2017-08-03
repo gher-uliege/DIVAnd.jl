@@ -109,7 +109,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 # ::Union{T,AbstractVector{T},AbstractMatrix{T}}
-function divandrun{T}(mask,pmnin,xiin,x,f,lin,epsilon2;
+function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    velocity = (),
                    EOF = [],
                    EOF_lambda::Vector{T} = Float64[],
@@ -246,6 +246,9 @@ function divandrun{T}(mask,pmnin,xiin,x,f,lin,epsilon2;
 
 
 end
+
+
+divandrun{N}(mask::Array{Bool,N},args...) = divandrun(convert(BitArray{N},mask),args...)
 
 
 # the same as divandrun, but just return the field fi
