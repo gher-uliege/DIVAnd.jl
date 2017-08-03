@@ -52,6 +52,10 @@ ind = sub2ind(sv,(3,5,7))
 @test ind2sub(sv,ind) == (3,5,7)
 
 
+# mask as Array{Bool,1} instead of BitArray
+sv = statevector(([true,false],))
+@test sv.n == 1
+
 
 # Copyright (C) 2009 Alexander Barth <a.barth@ulg.ac.be>
 #

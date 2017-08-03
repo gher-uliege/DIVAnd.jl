@@ -42,6 +42,7 @@ see also statevector_pack, statevector_unpack
 Author: Alexander Barth, 2009,2017 <a.barth@ulg.ac.be>
 License: GPL 2 or later
 """
+
 function statevector{nvar_,N}(masks::NTuple{nvar_,BitArray{N}})
 
     numels = [sum(mask)    for mask in masks]
@@ -69,6 +70,10 @@ function statevector{nvar_,N}(masks::NTuple{nvar_,BitArray{N}})
 end
 
 
+function statevector{nvar_,N}(masks::NTuple{nvar_,Array{Bool,N}})
+    return statevector(([convert(BitArray{N},mask) for mask in masks]...))
+end
+
 """
 Pack a series of variables into a vector under the control of a mask.
 
@@ -93,7 +98,7 @@ is the number of ensemble members.
 function pack{nvar_,N,T}(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T}
 
     k = size(vars[1],ndims(sv.mask[1])+1)
-    
+
     x = Vector{T}(sv.n)
 
     for i=1:sv.nvar
@@ -110,7 +115,7 @@ end
 function packens{nvar_,N,T,Np}(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Array{T,2}
 
     k = size(vars[1],ndims(sv.mask[1])+1)
-    
+
     x = Array{T,2}(sv.n,k)
 
     for i=1:sv.nvar
@@ -154,7 +159,7 @@ function unpack{nvar_,N,T}(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0)
                 v = Array{T,N}(sv.size[i]);
                 v[:] = fillvalue
                 v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
-                
+
                 return v
                 end,Val{nvar_})
 
@@ -174,7 +179,7 @@ function unpackens{nvar_,N,T}(sv::statevector{nvar_,N},x::Array{T,2},fillvalue =
 
                 tmp = reshape(v,sv.numels_all[i],k)
                 tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
-                
+
                 return v
                 end,Val{nvar_})::NTuple{nvar_,Array{T,N+1}}
 
