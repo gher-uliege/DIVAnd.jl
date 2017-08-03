@@ -249,7 +249,7 @@ end
 
 
 # the same as divandrun, but just return the field fi
-divandrunfi(args...) = divandrun2(args...)[1]
+divandrunfi(args...) = divandrun(args...)[1]
 
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
