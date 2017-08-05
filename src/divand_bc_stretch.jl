@@ -58,13 +58,13 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
                 ind2 = [(j == i ? (2) : (:)) for j = 1:n]
 
                 xi[i][ind1...]=xi[i][ind1...].+(xi[i][ind1...]-xi[i][ind2...]).*max.( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...].-1.0).*pmnin[i][ind1...].-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
-
-
+                
+				
 				ind1 = [(j == i ? (sz[i]) : (:)) for j = 1:n]
                 ind2 = [(j == i ? (sz[i]-1) : (:)) for j = 1:n]
 
                 xi[i][ind1...]=xi[i][ind1...]+(xi[i][ind1...]-xi[i][ind2...]).*max.( ((2.0.*alphabc.*Labs[i][ind1...].*pmnin[i][ind2...]-1.0).*pmnin[i][ind1...]-pmnin[i][ind2...])./(pmnin[i][ind1...]+pmnin[i][ind2...])    ,0.)
-
+                
             end
 
 
@@ -80,10 +80,9 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 
                 wjmb[ind1...]=1.0./max.((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
 
-
                 ind1 = [(j == i ? (sz[i]) : (:)) for j = 1:n]
                 ind2 = [(j == i ? (sz[i]-1) : (:)) for j = 1:n]
-
+            
 				wjmb[ind1...]=1.0./max.((2*alphabc.*Labs[i][ind1...].-1.0./wjmb[ind2...]),1.0./wjmb[ind2...])
             end
 
