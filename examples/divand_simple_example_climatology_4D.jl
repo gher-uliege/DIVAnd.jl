@@ -43,7 +43,7 @@ len = (8, 8, 0, 0);
 epsilon2 = 1.;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12]);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12]);
 
 PP=s.P
 x0=statevector_pack(s.sv,(fi,))
@@ -79,7 +79,7 @@ end
 
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 12], pcargs..., inversion=:pcg,compPC = compPC, fi0 =x0);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12], pcargs..., inversion=:pcg,compPC = compPC, fi0 =x0);
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

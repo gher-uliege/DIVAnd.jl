@@ -86,7 +86,7 @@ lenz = (10 + zi/5)/3
 # correlation time-scale in month
 lent = fill(1.,sz)
 
-moddim=[0 0 0 12]
+moddim=[0,0,0,12]
 
 # Prepare background as mean vertical profile and time evolution. Just call divand in two dimensions forgetting x and y ...
 
