@@ -27,7 +27,7 @@ epsilon2 = 1.;
 PCA=spc.P
 iB2=spc.iB
 
-xguess=statevector_pack(spc.sv,(fipca,))
+xguess=fipca
 
 
 tol = 2e-3
@@ -44,8 +44,10 @@ diagshift=0.0004;
 
 
 function compPC(iB,H,R)
-
-    return x -> diagshift*x+  PCA*x .- 0.5.*(PCA*(iB*(PCA*x)-iB2*(PCA*x)));
+    function fun!(x,fx)
+        fx[:] = diagshift*x+  PCA*x .- 0.5.*(PCA*(iB*(PCA*x)-iB2*(PCA*x)));
+    end
+    return fun!
 end
 
 
