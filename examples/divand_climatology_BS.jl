@@ -30,12 +30,10 @@ end
 
 include("../src/override_ssmult.jl")
 
-#fname = joinpath(ENV["HOME"],"Data/Salinity.bigfile")
-fname = joinpath("C:/JMB/BlackSea/","Salinity.bigfile")
-#fname = "C:/JMB/BlackSea/Salinity.bigfile"
-#bathname = joinpath(ENV["HOME"],"Data/DivaData/Global/gebco_30sec_16.nc")
-bathname = joinpath("C:/JMB/BlackSea/","diva_bath.nc")
-bathname = joinpath("C:/JMB/BlackSea/","gebco_30sec_16.nc")
+# if this script is in /some/path/divand.jl/examples, the data should be in
+# /some/path/divand-example-data (for Linux, Mac) and likewise for Windows.
+fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
+bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 isglobal = true
 
 if !isdefined(:value)

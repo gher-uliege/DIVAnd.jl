@@ -30,6 +30,8 @@ end
 
 include("../src/override_ssmult.jl")
 
+# if this script is in /some/path/divand.jl/examples, the data should be in
+# /some/path/divand-example-data (for Linux, Mac) and likewise for Windows.
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 
