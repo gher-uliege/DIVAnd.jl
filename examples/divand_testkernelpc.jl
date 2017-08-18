@@ -5,10 +5,10 @@ using divand
 using PyPlot
 
 
-x=[0]
-y=[0]
-z=[0]
-f=[1]
+x=[0.]
+y=[0.]
+z=[0.]
+f=[1.]
 
 x=randn(200)
 y=randn(200)
@@ -21,7 +21,7 @@ mask,(pm,pn,po),(xi,yi,zi) = divand_rectdom(linspace(-1,1,40),linspace(-1,1,40),
 len = (0.2,0.2,0.2)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 2;
+epsilon2 = 2.;
 
 @time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=2);
 
@@ -53,7 +53,7 @@ epsfacc=0.00005+(ii-1)/itest*0.02
 
 lena=([x[1]*lenfac for x in len]...)
 
-@time fipc2,spc2 = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 1]);
+@time fipc2,spc2 = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1,1]);
 
 xguess=statevector_pack(spc2.sv,(fipc2,));
 scP=spc2.P;

@@ -7,7 +7,7 @@ using PyPlot
 # observations
 x = [-0.7,0.7,0.7,-0.7];
 y = [0.,-.7,0.7,0.7];
-f = [1,-1,1,-1];
+f = [1.,-1.,1.,-1.];
 
 # final grid
 xi,yi = ndgrid(linspace(-1,1,81),linspace(-1,1,81));

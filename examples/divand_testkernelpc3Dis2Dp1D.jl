@@ -38,7 +38,7 @@ end
 
 fis=reshape(fi,(jsizex*jsizey*jsizet))
 
-epsilon2b=1000
+epsilon2b=1000.
 #epsilon2b=epsilon2
 
 alpha1D=[]

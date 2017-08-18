@@ -38,7 +38,7 @@ len = (0.1,0.1,0.1,0.1);
 epsilon2 = 1.;
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0 0 0 1]);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,1]);
 
 # plotting of results
 subplot(1,2,1);

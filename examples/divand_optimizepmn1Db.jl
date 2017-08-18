@@ -12,25 +12,25 @@ vj=zeros(300)
 # Calculate reference solution on a very wide domain
 
 xiref = collect(linspace(-100.0,100.0,2001));
-len=2
-x = [-3.0, 8];
-f = [1,  1];
+len=2.
+x = [-3.0, 8.];
+f = [1.,  1.];
 pmref = ones(xiref) / (xiref[2]-xiref[1]);
 maskref = trues(xiref);
-epsilon2=1
+epsilon2=1.
 firef,sref = divandrun(maskref,(pmref,),(xiref,),(x,),f,len,epsilon2,alphabc=0);
 
-epsilon2large = 10000;
+epsilon2large = 10000.;
 firefb,s = divandrun(maskref,(pmref,),(xiref,),(x,),f,len,epsilon2large,alphabc=0);
 bref=diag(s.P)
 
 xirefl = collect(linspace(-10.0,10.0,201));
 len=2
-x = [-3.0, 8];
-f = [1,  1];
+x = [-3.0, 8.];
+f = [1.,  1.];
 pmrefl = ones(xirefl) / (xirefl[2]-xirefl[1]);
 maskrefl = trues(xirefl);
-epsilon2=1
+epsilon2=1.
 firefl,srefl = divandrun(maskrefl,(pmrefl,),(xirefl,),(x,),f,len,epsilon2,alphabc=0);
 
 firefbb,s = divandrun(maskrefl,(pmrefl,),(xirefl,),(x,),f,len,epsilon2large,alphabc=0);
@@ -38,7 +38,7 @@ brefl=diag(s.P)
 
 figure("Reference")
 rmsdiff=sqrt(var(firef[901:1101]-firefl))
-title("Solution in infinite domain and finite domain, rms= $rmsdiff")
+title("Solution in infinite domain and finite domain, rms= $(rmsdiff)")
 plot(xiref[801:1201],firef[801:1201],"-",xirefl,firefl,".")
 
 
@@ -49,9 +49,9 @@ aj=zeros(500)
 vj=zeros(500)
 rj=zeros(500)
 
-xi=0
-pm=0
-mask=0
+xi=0.
+pm=0.
+mask=0.
 
 
 
@@ -141,7 +141,7 @@ rmsdiff=sqrt(var(firef[901:1101]-fi2))
 fi2b,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
 
 subplot(2,1,1)
-title("Solution in infinite domain and modified finite domain, Bversion , rms= $rmsdiff")
+title("Solution in infinite domain and modified finite domain, Bversion , rms= $(rmsdiff)")
 plot(xiref[801:1201],firef[801:1201],"-",xi,fi2,".")
 
 subplot(2,1,2)
@@ -164,7 +164,7 @@ fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2,alphabc=alen);
 rmsdiff=sqrt(var(firef[901:1101]-fi2))
 fi2b,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
 subplot(2,1,1)
-title("Solution in infinite domain and modified finite domain, rmsversion , rms= $rmsdiff")
+title("Solution in infinite domain and modified finite domain, rmsversion , rms= $(rmsdiff)")
 plot(xiref[801:1201],firef[801:1201],"-",xi,fi2,".")
 subplot(2,1,2)
 

@@ -23,7 +23,7 @@ len = 0.3
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
 
-@time fipca,spc = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,alpha=[1 2 1]);
+@time fipca,spc = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,alpha=[1,2,1]);
 PCA=spc.P
 iB2=spc.iB
 

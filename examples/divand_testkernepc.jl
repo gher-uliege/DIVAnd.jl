@@ -5,10 +5,10 @@ using divand
 using PyPlot
 
 
-x=[0]
-y=[0]
-z=[0]
-f=[1]
+x=[0.]
+y=[0.]
+z=[0.]
+f=[1.]
 
 
 
@@ -50,9 +50,9 @@ for ii=1:itest
     lenf[ii]=lenfac
 
     lena=([x[1]*lenfac for x in len]...)
-    @time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1 2 1]);
+    @time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1,2,1]);
 
-    @time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1 1]);
+    @time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1,1]);
 
     ampli=sum(fipc.*fi)/sum(fipc.*fipc)
     ampli2=sum(fipc2.*fi)/sum(fipc2.*fipc2)
@@ -70,9 +70,9 @@ for ii=1:itest
     rms[ii]=sqrt(var(fi-ampli*fipc))
     rms2[ii]=sqrt(var(fi-ampli2*fipc2))
 
-    @time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 2 1]);
+    @time fipc,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1,2,1]);
 
-    @time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1 1]);
+    @time fipc2,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1,1]);
 
     rmsb[ii]=sqrt(var(fi-fipc))
     rmsb2[ii]=sqrt(var(fi-fipc2))
