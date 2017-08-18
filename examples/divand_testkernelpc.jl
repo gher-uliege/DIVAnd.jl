@@ -55,7 +55,7 @@ lena=([x[1]*lenfac for x in len]...)
 
 @time fipc2,spc2 = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1,1]);
 
-xguess=statevector_pack(spc2.sv,(fipc2,));
+xguess=fipc2;
 scP=spc2.P;
 
 
@@ -73,9 +73,10 @@ diagshift=0.004;
 
 
 function compPC(iB,H,R)
-    return x -> diagshift*x+(scP*x);
-    #     return jmPHI'*(jmPHI*x);
-    #   return x->x;
+    function fun!(x,fx)
+        fx[:] = diagshift*x+(scP*x)
+    end
+    return fun!
 end
 # First guess is the HI* coarse solution
 

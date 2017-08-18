@@ -32,15 +32,15 @@ scalel=1.25715/0.69315
 PCA=spc.P
 #mpca=mean(diag(PCA))
 #@show mpca
-xguessa=statevector_pack(spc.sv,(fipca,))
+xguessa = fipca
 
 
 @time fipcb,spc = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,len*scalel,len*scalel,len*scalel),epsilon2;alphabc=1,alpha=[1,2,1]);
 PCB=spc.P
 #mpca=mean(diag(PCA))
 #@show mpca
-xguessb=statevector_pack(spc.sv,(fipcb,))
-xguess=(xguessa+0.0*xguessb)
+xguessb = fipcb
+xguess = (xguessa+0.0*xguessb)
 tol = 2e-3
 
 
@@ -55,14 +55,13 @@ diagshift=0.00004;
 
 
 function compPC(iB,H,R)
+    function fun!(x,fx)
+        fx[:] = diagshift*x+(PCA*x)
+    end
 
-    return x -> diagshift*x+(PCA*x);
-    #return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
-    #return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
-    #return x -> diagshift*x+(PCA*x);
-    #     return jmPHI'*(jmPHI*x);
-    #   return x->x;
+    return fun!
 end
+
 # First guess is the HI* coarse solution
 
 # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
@@ -76,7 +75,7 @@ end
 
 @time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess);
 
-var(fi-fiiter)/var(fi)
+#var(fi-fiiter)/var(fi)
 
 
 
