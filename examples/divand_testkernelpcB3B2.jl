@@ -5,10 +5,10 @@ using divand
 using PyPlot
 
 
-x=[0]
-y=[0]
-z=[0]
-f=[1]
+x=[0.]
+y=[0.]
+z=[0.]
+f=[1.]
 
 x=randn(200)
 y=randn(200)
