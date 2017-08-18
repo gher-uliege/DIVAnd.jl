@@ -14,9 +14,9 @@ using divand
 using PyPlot
 
 # observations
-x = [150];
-y = [150];
-f = [1];
+x = [150.];
+y = [150.];
+f = [1.];
 
 # final grid
 xi,yi = ndgrid(linspace(1,299,299),linspace(1,299,299));
@@ -48,9 +48,9 @@ fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 
 # observations
-x = [30];
-y = [30];
-f = [1];
+x = [30.];
+y = [30.];
+f = [1.];
 
 # final grid
 xi,yi = ndgrid(linspace(1,59,59),linspace(1,59,59));
@@ -91,9 +91,9 @@ colorbar()
 @show fi2[30,30]
 @show fi2[30,59]
 
-x = [30];
+x = [30.];
 y = [58.95];
-f = [1];
+f = [1.];
 
 # final grid
 xi,yi = ndgrid(linspace(1,59,59),linspace(1,59,59));

@@ -32,33 +32,23 @@ len = 0.10;
 epsilon2 = 1.;
 
 # fi is the interpolated field
-@time fi,s,figuess,fifine,sf,erri = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,ones(2),ones(2));
+#@time fi,s,figuess,fifine,sf,erri = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,ones(2),ones(2));
+@time fi,s = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,ones(2),ones(2));
 
 # fi is the interpolated field
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-# plotting of results
-subplot(2,2,1);
-pcolor(xi,yi,fifine);
-colorbar()
-clim(-1,1)
-plot(x,y,"k.");
-
-subplot(2,2,2);
-pcolor(fi');
+subplot(1,2,1);
+pcolor(xi,yi,fi);
 clim(-1,1)
 colorbar()
+title("result of divandjog")
 
-
-subplot(2,2,3);
-pcolor(xi,yi,figuess);
-colorbar()
-clim(-1,1)
-
-subplot(2,2,4);
+subplot(1,2,2);
 pcolor(xi,yi,fiex);
 colorbar()
 clim(-1,1)
+title("result of divandrun")
 
 
 

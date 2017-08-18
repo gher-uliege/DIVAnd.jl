@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations.
 
-fi,s = divandjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask; alphapc=[1 2 1], otherargs...);
+fi,s = divandjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask; alphapc=[1,2,1], otherargs...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid

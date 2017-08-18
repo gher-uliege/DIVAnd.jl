@@ -68,7 +68,7 @@ for iround=1:2
 
                 # observations
                 x = [0.5];
-                f = [1];
+                f = [1.];
 
                 xi = collect(linspace(0,1,isize));
 
@@ -83,7 +83,7 @@ for iround=1:2
 
                 pm = ones(xi) / (xi[2]-xi[1]);
                 # obs. error variance normalized by the background error variance
-                epsilon2 = 10000;
+                epsilon2 = 10000.;
 
                 #Test to push boundary to wider distance:
 
@@ -119,7 +119,7 @@ for iround=1:2
             # now reference var
             pm = ones(xi) / (xi[2]-xi[1]);
             # obs. error variance normalized by the background error variance
-            epsilon2 = 10000;
+            epsilon2 = 10000.;
 
             #Test to push boundary to wider distance:
 

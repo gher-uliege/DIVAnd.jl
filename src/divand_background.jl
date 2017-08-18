@@ -9,7 +9,7 @@ finite-difference operators on a curvilinear grid
 * pmn: scale factor of the grid.
 * Labs: correlation length
 * alpha: a dimensional coefficients for norm, gradient, laplacian,...
-     alpha is usually [1 2 1] in 2 dimensions.
+     alpha is usually [1,2,1] in 2 dimensions.
 # Output:
 *  s: stucture containing
     * s.iB: inverse of the background error covariance

@@ -20,9 +20,9 @@ for j=1:1000
     alen=j/100
 
     # observations
-    x = [10];
-    y = [10];
-    f = [1];
+    x = [10.];
+    y = [10.];
+    f = [1.];
 
     idim=59
     # final grid
@@ -53,7 +53,7 @@ for j=1:1000
 
 
     # obs. error variance normalized by the background error variance
-    epsilon2 = 10000;
+    epsilon2 = 10000.;
 
     # fi is the interpolated field
     fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);

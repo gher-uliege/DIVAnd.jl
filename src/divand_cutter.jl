@@ -71,7 +71,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     lmask=ones(n)
 
 
-    alphapc=[1 2 1]
+    alphapc=[1,2,1]
 
     if n==4
         lmask[3]=0
