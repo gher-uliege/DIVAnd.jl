@@ -1,9 +1,7 @@
-function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1})
+function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1},Lx)
     #@show @code_warntype unpack(sv,x)
     
-
     xup = unpack(sv,x)[1]
-    Lx = similar(xup)
     
     for niter = 1:(nmax ÷ 2)
         divand_laplacian_apply!(ivol,nus,xup,Lx)
@@ -63,7 +61,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     # D represents the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the
     # correlation length-scale squared
 
-    D = divand_laplacian(Val{:MatFun},mask,pmn,nu,falses(4))
+    # D = divand_laplacian(Val{:MatFun},mask,pmn,nu,falses(4))
 
     dx_min = 1/max([maximum(pm) for pm in pmn]...)
     nu_max = max([maximum(ν) for ν in nu]...)
@@ -126,12 +124,13 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     #fun(x) = x + fB(H' * (R \ (H * (fB(x)))))
     #b = fB(H' * (R \ yo))
 
-
+    Lx = zeros(size(mask))
+    
     function fun!(x,fx)
-        fx[:] = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)))))
+        fx[:] = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x,Lx)))),Lx)
     end
 
-    b = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo))
+    b = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo),Lx)
 
     # adjust tolerance
     tol = tol * s.sv.n / length(yo)
@@ -139,7 +138,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     xp,success,s.niter = divand.conjugategradient(fun!,b; tol = tol);
     #xa = B½ * xp
     #xa = funB½(xp)
-    xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp)
+    xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp,Lx)
 
     return unpack(s.sv,xa,NaN)[1],s
 end
