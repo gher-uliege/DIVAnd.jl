@@ -189,7 +189,7 @@ end
 
 #function divand_laplacian_apply{T}(ivol,nus,x::Array{T,$N})::Array{T,$N}
 function divand_laplacian_apply{T}(ivol,nus,x::AbstractArray{T,$N})::AbstractArray{T,$N}
-    Lx = simular(x)    
+    Lx = similar(x)
     divand_laplacian_apply!(ivol,nus,x,Lx)
     return Lx
 end
