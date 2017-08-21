@@ -106,7 +106,7 @@ function conjugategradient{T}(fun!, b::Vector{T};
     beta = zeros(T,maxit+1)
 
     k = 0
-    gc()
+    #gc()
     for k=1:maxit
         # compute A*p
 		#@show k
@@ -118,19 +118,19 @@ function conjugategradient{T}(fun!, b::Vector{T};
 
         # get new estimate of x
         # x = x + alpha[k]*p
-	x=BLAS.axpy!(alpha[k],p,x)
+        x=BLAS.axpy!(alpha[k],p,x)
 
         # recompute gradient at new x. Could be done by
         # r = b-fun(x)
         # but this does require an new call to fun
         # r = r - alpha[k]*Ap
-	r = BLAS.axpy!(-alpha[k],Ap,r)
+        r = BLAS.axpy!(-alpha[k],Ap,r)
 
         progress(k,x,r,tol2,fun!,b)
 
-         if mod(k,20)==1
-             @show k, r ⋅ r,tol2,size(r)
-         end
+        if mod(k,20)==1
+            @show k, r ⋅ r,tol2,size(r)
+        end
 
         if r ⋅ r < tol2 && k >= minit
             success = true

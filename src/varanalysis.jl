@@ -3,9 +3,12 @@ function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1})
     
 
     xup = unpack(sv,x)[1]
-
+    Lx = similar(xup)
+    
     for niter = 1:(nmax ÷ 2)
-        xup += α * divand_laplacian_apply(ivol,nus,xup)
+        divand_laplacian_apply!(ivol,nus,xup,Lx)
+        #xup += α * Lx
+        BLAS.axpy!(α,Lx,xup)
     end
 
     xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
@@ -81,27 +84,27 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
 
     ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
 
-    function funB½_orig(x)
-        for niter = 1:(nmax ÷ 2)
-            x += α * (D*x)
-        end
+    # function funB½_orig(x)
+    #     for niter = 1:(nmax ÷ 2)
+    #         x += α * (D*x)
+    #     end
 
-        x = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrtivol .* x)
+    #     x = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrtivol .* x)
 
-        return x
-    end
+    #     return x
+    # end
 
-    function funB½(x)
-        xup = unpack(s.sv,x)[1]
+    # function funB½(x)
+    #     xup = unpack(s.sv,x)[1]
 
-        for niter = 1:(nmax ÷ 2)
-            xup += α * divand_laplacian_apply(ivol,nus,xup)
-        end
+    #     for niter = 1:(nmax ÷ 2)
+    #         xup += α * divand_laplacian_apply(ivol,nus,xup)
+    #     end
 
-        xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
+    #     xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
 
-        return pack(s.sv,(xup,))[:,1]
-    end
+    #     return pack(s.sv,(xup,))[:,1]
+    # end
 
 
     # matrix-like type
@@ -133,7 +136,7 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     # adjust tolerance
     tol = tol * s.sv.n / length(yo)
 
-    xp,success,niter = divand.conjugategradient(fun!,b; tol = tol);
+    xp,success,s.niter = divand.conjugategradient(fun!,b; tol = tol);
     #xa = B½ * xp
     #xa = funB½(xp)
     xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp)

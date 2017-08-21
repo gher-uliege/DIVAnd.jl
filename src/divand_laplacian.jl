@@ -164,11 +164,10 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
     return ivol,nus
 end
 
-#function divand_laplacian_apply{T}(ivol,nus,x::Array{T,$N})::Array{T,$N}
-function divand_laplacian_apply{T}(ivol,nus,x::AbstractArray{T,$N})::AbstractArray{T,$N}
+
+function divand_laplacian_apply!{T}(ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N})
     sz = size(x)
-    #Lx = zeros(sz)
-    Lx = zeros(x)
+    Lx[:] = 0
 
     @inbounds @nloops $N i d->1:sz[d]  begin
         (@nref $N Lx i) = 0
@@ -185,10 +184,18 @@ function divand_laplacian_apply{T}(ivol,nus,x::AbstractArray{T,$N})::AbstractArr
         end
         (@nref $N Lx i) *= (@nref $N ivol i)
     end
-    
+end
+
+
+#function divand_laplacian_apply{T}(ivol,nus,x::Array{T,$N})::Array{T,$N}
+function divand_laplacian_apply{T}(ivol,nus,x::AbstractArray{T,$N})::AbstractArray{T,$N}
+    Lx = simular(x)    
+    divand_laplacian_apply!(ivol,nus,x,Lx)
     return Lx
 end
 
+
+    
 end # begin eval
 end # for N = 1:6
 
