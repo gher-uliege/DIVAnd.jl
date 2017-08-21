@@ -1,3 +1,6 @@
+#SBATCH --mem-per-cpu=8000
+
+
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
 
@@ -55,7 +58,10 @@ diagshift=0.004;
 
 
 function compPC(iB,H,R)
-    return x -> diagshift*x+((PCA*x)+(PCB*x))/2;
+    function fun!(x,fx)
+        fx[:] = diagshift*x+((PCA*x)+(PCB*x))/2;
+    end
+    return fun!
     #return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
     #return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
     #return x -> diagshift*x+(PCA*x);

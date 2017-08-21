@@ -1,3 +1,6 @@
+#SBATCH --mem-per-cpu=16000
+
+
 using divand
 using PyPlot
 using NetCDF

@@ -1,3 +1,6 @@
+#SBATCH --mem-per-cpu=16000
+
+
 # A simple example of divand in 4 dimensions
 # with observations from an analytical function.
 
@@ -46,8 +49,6 @@ epsilon2 = 1.;
 @time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12]);
 
 PP=s.P
-x0=statevector_pack(s.sv,(fi,))
-
 s=0
 fi=0
 
@@ -72,14 +73,15 @@ diagshift=0.001;
 @show diagshift
 
 function compPC(iB,H,R)
-    return x -> diagshift*x+PP*x;
-    #     return jmPHI'*(jmPHI*x);
-    #   return x->x;
+    function fun!(x,fx)
+        fx[:] = diagshift*x+PP*x;
+    end
+    return fun!
 end
 
 
 # fi is the interpolated field
-@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12], pcargs..., inversion=:pcg,compPC = compPC, fi0 =x0);
+@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12], pcargs..., inversion=:pcg,compPC = compPC, fi0 = fi);
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

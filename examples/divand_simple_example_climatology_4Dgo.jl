@@ -1,3 +1,6 @@
+#SBATCH --mem-per-cpu=20000
+
+
 # A simple example of divand in 4 dimensions
 # with observations from an analytical function.
 

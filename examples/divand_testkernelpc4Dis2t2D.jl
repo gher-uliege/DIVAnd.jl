@@ -1,3 +1,6 @@
+#SBATCH --mem-per-cpu=8000
+
+
 # A simple example of divand in 2 dimensions
 # with observations from an analytical function.
 
@@ -39,7 +42,7 @@ epsilon2 = 0.3;
 
 
 
-epsilon2b=1000
+epsilon2b=1000.
 @time fi1,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,len[3]/1.42,len[4]/1.42),epsilon2b;alphabc=1);
 
 PC1=s.P
