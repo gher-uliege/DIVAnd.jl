@@ -5,10 +5,10 @@ using divand
 using PyPlot
 
 
-x=[0]
-y=[0]
-z=[0]
-f=[1]
+x=[0.]
+y=[0.]
+z=[0.]
+f=[1.]
 
 srand(876)
 nobs=5000
@@ -101,7 +101,10 @@ function compPC(iB,H,R)
     #            return x -> diagshift*x+1./9.*PC1*(PC1*x+PC2*x+PC3*x)+1./9.*PC2*(PC1*x+PC2*x+PC3*x)+1./9.*PC3*(PC1*x+PC2*x+PC3*x)
     #return x -> diagshift*x+1./9.*(PC1*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))
     #return x -> diagshift*x+1./3.*(PC1*(PC1*x)+(PC2*(PC2*x)+(PC3*(PC3*x))))#+1./9.*(PC2*(PC1*x+(PC2*x+(PC3*x))))+1./9.*(PC3*(PC1*x+(PC2*x+(PC3*x))))
-    return x -> diagshift*x+scalef2*(PC1*(PC2*((((PC1*x))))))
+    function fun!(x,fx)
+        fx[:] = diagshift*x+scalef2*(PC1*(PC2*((((PC1*x))))))
+    end
+    return fun!
 
     #return x -> diagshift*x+0.30698675.*(PCA*(PCB*x));
     #return x -> diagshift*x+(PCA*(x-PCB*x)+PCB*(x-PCA*x));
@@ -114,8 +117,10 @@ end
 # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?,ti
 
+sv = s.sv
 
-@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC,btrunc=2, fi0 =xguess);
+@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,
+                           inversion=:pcg,compPC = compPC,btrunc=2, fi0 = unpack(sv,xguess)[1]);
 
 #@time fiiter2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,btrunc=2)#, fi0 =xguess);
 # Then run with normal resolution and preconditionner

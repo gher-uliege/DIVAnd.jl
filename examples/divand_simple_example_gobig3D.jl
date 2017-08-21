@@ -36,9 +36,9 @@ len = 0.05;
 epsilon2 = 1.;
 
 # fi is the interpolated field
-@ time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
+@time fi,s = divandrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
 
-@ time fiw= divandgo(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
+@time fiw,erri = divandgo(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2);
 
 # plotting of results
 subplot(1,2,1);

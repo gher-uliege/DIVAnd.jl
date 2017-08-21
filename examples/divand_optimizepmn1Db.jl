@@ -38,7 +38,7 @@ brefl=diag(s.P)
 
 figure("Reference")
 rmsdiff=sqrt(var(firef[901:1101]-firefl))
-title("Solution in infinite domain and finite domain, rms= $(rmsdiff)")
+title("Solution in infinite domain and finite domain, rms = $rmsdiff")
 plot(xiref[801:1201],firef[801:1201],"-",xirefl,firefl,".")
 
 
@@ -141,7 +141,7 @@ rmsdiff=sqrt(var(firef[901:1101]-fi2))
 fi2b,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
 
 subplot(2,1,1)
-title("Solution in infinite domain and modified finite domain, Bversion , rms= $(rmsdiff)")
+title("Solution in infinite domain and modified finite domain, Bversion , rms = $rmsdiff")
 plot(xiref[801:1201],firef[801:1201],"-",xi,fi2,".")
 
 subplot(2,1,2)
@@ -164,7 +164,7 @@ fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2,alphabc=alen);
 rmsdiff=sqrt(var(firef[901:1101]-fi2))
 fi2b,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
 subplot(2,1,1)
-title("Solution in infinite domain and modified finite domain, rmsversion , rms= $(rmsdiff)")
+title("Solution in infinite domain and modified finite domain, rmsversion, rms = $rmsdiff")
 plot(xiref[801:1201],firef[801:1201],"-",xi,fi2,".")
 subplot(2,1,2)
 
