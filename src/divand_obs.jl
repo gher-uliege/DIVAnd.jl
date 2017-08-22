@@ -53,9 +53,10 @@ function divand_obs(s,xi,x,yo,R; I = [])
 
 
     s.obsout = out;
-    s.obsconstrain = divand_constrain(yo,R,H)
+    constrain = divand_constrain(yo,R,H)
+    s.obsconstrain = constrain
 
-    return s.obsconstrain
+    return constrain
 end
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

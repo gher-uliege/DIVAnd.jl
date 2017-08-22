@@ -8,15 +8,7 @@ If epsilon2 is a vector, then R = diag(epsilon2)
 If epsilon2 is a matrix, then R = epsilon2
 """
 
-function divand_obscovar(epsilon2,m)
+divand_obscovar(epsilon2::Number,m) = Diagonal([epsilon2 for i=1:m])
+divand_obscovar(epsilon2::Vector,m) = Diagonal(epsilon2)
+divand_obscovar(epsilon2::AbstractMatrix,m) = epsilon2
 
-    if ndims(epsilon2) == 0
-        R = Diagonal([epsilon2 for i=1:m]);
-    elseif ndims(epsilon2) == 1
-        R = Diagonal(epsilon2)
-    else
-        R = epsilon2
-    end
-
-    return R
-end
