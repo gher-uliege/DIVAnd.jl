@@ -258,6 +258,24 @@ function dvmaskexpand(x)
 end
 
 
+"""
+Len = len_harmonise(len,mask)
+Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
+a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
+"""
+len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len,size(mask)) for i=1:N)...)
+len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len[i],size(mask)) for i=1:N)...)
+function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    for i=1:N
+        if size(mask) != size(len[i])
+            error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
+        end
+    end
+
+    return len
+end
+
+
 include("sparse_operator.jl");
 include("function_operator.jl");
 

@@ -1,33 +1,22 @@
-function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1},Lx)
-    #@code_warntype unpack(sv,x)
-    
-    xup = unpack(sv,x)[1]
+"""
+work1, work2: size of mask
+
+"""
+
+function Bsqrt!{T}(sv,coeff,ivol,nus,nmax,α,x::Array{T,1},work1,work2,Bsqrtx)
+    work2[:] = 0
+    work2[sv.mask[1]] = x
     
     for niter = 1:(nmax ÷ 2)
-        divand_laplacian_apply!(ivol,nus,xup,Lx)
-        #xup += α * Lx
-        BLAS.axpy!(α,Lx,xup)
+        divand_laplacian_apply!(ivol,nus,work2,work1)
+        #work2 += α * work1
+        BLAS.axpy!(α,work1,work2)
     end
 
-    xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
+    work2[:] = coeff .* work2
 
-    #return pack(sv,(xup,))[:,1]::Array{T,1}
-    return pack(sv,(xup,))
+    Bsqrtx[:] = pack(sv,(work2,))
 end
-
-len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len,size(mask)) for i=1:N)...)
-len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len[i],size(mask)) for i=1:N)...)
-function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
-    # for i=1:N
-    #     if size(mask) != size(len[i])
-    #         error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
-    #     end
-    # end
-
-    return len
-end
-
-
 
 
 """
@@ -81,24 +70,35 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     # x^T B x is the integral which takes also the volumn of each grid cell into account 
 
     ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
+    coeff = ((4π * α * nmax)^(n/4) * sqrt(prod(Ld))) * sqrt.(ivol)
 
-    Lx = zeros(size(mask))
-    
+    work1 = zeros(size(mask))
+    work2 = zeros(size(mask))
+    tmpx = zeros(s.sv.n)    
+    b = zeros(s.sv.n)
+                        
     function fun!(x,fx)
-        fx[:] = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x,Lx)))),Lx)
+        # B^1/2 x
+        Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,x,work1,work2,tmpx)        
+        # tmpx = B^1/2 * H' * (R \ (H * B^1/2 x ))
+        Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,H' * (R \ (H * tmpx)),work1,work2,tmpx)
+        # fx = x + B^1/2 * H' * (R \ (H * B^1/2 x ))
+        fx[:] = x + tmpx
     end
 
-    b = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,(H' * (R \ yo)),Lx)
+    # b = B^{1/2} * H' * (R \ yo)
+    Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,(H' * (R \ yo)),work1,work2,b)
 
-    #@code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo),Lx)
+    #@code_warntype Bsqrt(n,s.sv,coeff,ivol,nus,nmax,α,H' * (R \ yo),work1,work2)
 
     # adjust tolerance
     tol = tol * s.sv.n / length(yo)
 
+    # xp = (I + B^1/2 * H' * (R^{-1} * (H * B^1/2)))^{-1} b
     xp,success,s.niter = divand.conjugategradient(fun!,b; tol = tol);
-    #@code_warntype divand.conjugategradient(fun!,b; tol = tol);
 
-    xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp,Lx)
+    # tmpx = B^1/2 * xp
+    Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,xp,work1,work2,tmpx)
     
-    return unpack(s.sv,xa,NaN)[1],s
+    return unpack(s.sv,tmpx,NaN)[1],s
 end

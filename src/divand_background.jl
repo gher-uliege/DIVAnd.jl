@@ -25,8 +25,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     # must handle the case when Labs is zero in some dimension
     # thus reducing the effective dimension
-    neff = sum([mean(L) > 0 for L in Labs])
-
+    neff = sum([mean(L) > 0 for L in Labs])::Int
 
     sz = size(mask)
 
@@ -36,23 +35,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     iscyclic = moddim .> 0
 
-
-    if isa(Labs,Number)
-        Labs = ((fill(Labs,size(mask)) for i=1:n)...)
-    elseif isa(Labs,Tuple)
-
-        if isa(Labs[1],Number)
-            Labs = ([fill(Labs[i],size(mask)) for i = 1:n]...)
-        end
-
-        for i=1:n
-            if !isequal(size(mask),size(Labs[i]))
-                error("mask (%s) and correlation length (%s) have incompatible size",
-                      formatsize(size(mask)),formatsize(size(Labs[i])))
-            end
-        end
-    end
-
+    Labs = len_harmonize(Labs,mask)
 
     if isempty(alpha)
         # kernel should has be continuous derivative
