@@ -1,5 +1,5 @@
 function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1},Lx)
-    #@show @code_warntype unpack(sv,x)
+    #@code_warntype unpack(sv,x)
     
     xup = unpack(sv,x)[1]
     
@@ -11,8 +11,23 @@ function Bsqrt{T}(n,sv,ivol,nus,Ld,nmax,α,x::Array{T,1},Lx)
 
     xup = (4π * α * nmax)^(n/4) * sqrt(prod(Ld)) * (sqrt.(ivol) .* xup)
 
-    return pack(sv,(xup,))[:,1]::Array{T,1}
+    #return pack(sv,(xup,))[:,1]::Array{T,1}
+    return pack(sv,(xup,))
 end
+
+len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len,size(mask)) for i=1:N)...)
+len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len[i],size(mask)) for i=1:N)...)
+function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    # for i=1:N
+    #     if size(mask) != size(len[i])
+    #         error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
+    #     end
+    # end
+
+    return len
+end
+
+
 
 
 """
@@ -29,24 +44,12 @@ http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """
 
-function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
+function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector{T},len,epsilon2; tol::T = 1e-5)
     n = ndims(mask)
 
-    if isa(len,Number)
-        len = ((fill(len,size(mask)) for i=1:n)...)
-    elseif isa(len,Tuple)
-        if isa(len[1],Number)
-            len = ([fill(len[i],size(mask)) for i = 1:n]...)
-        end
+    len = len_harmonize(len,mask)
 
-        for i=1:n
-            if size(mask) != size(len[i])
-                error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
-            end
-        end
-    end
-
-    R = divand_obscovar(epsilon2,length(f));
+    R = divand.divand_obscovar(epsilon2,length(f));
 
     s = divand.divand_struct(mask)
 
@@ -66,21 +69,19 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     dx_min = 1/max([maximum(pm) for pm in pmn]...)
     nu_max = max([maximum(ν) for ν in nu]...)
     # need to proof this (currently this is just an analogy based on 2D)
-    α = dx_min^2/(2 * nu_max * n)
-
     # 10% safety margin
-    α = α / 1.1
+    const α = dx_min^2/(2 * nu_max * n)  / 1.1 :: T
 
-    nmax = round(Int,1/(2*α))
+    nmax = round(Int64,1/(2*α)) :: Int64
 
     # the background error covariance matrix is
     # B =  (4π α nmax)^(n/2) prod(Ld) (I + α * D)^nmax;
 
     # x^T B x is the integral which takes also the volumn of each grid cell into account 
 
-    sqrtivol = pack(s.sv, (sqrt.(.*(pmn...)),))
+    sqrtivol = divand.pack(s.sv, (sqrt.(.*(pmn...)),))
 
-    ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
+    ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
 
     # function funB½_orig(x)
     #     for niter = 1:(nmax ÷ 2)
@@ -117,7 +118,6 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     #b = funB½(H' * (R \ yo))
 
     #    @show "here"
-    #@show @code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
     #@show code_warntype(Bsqrt,(n,s.sv,ivol,nus,Ld,nmax,α,x))
 
     #fB(x) = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x)
@@ -125,20 +125,30 @@ function varanalysis(mask,pmn,xi,x,f,len,epsilon2; tol = 1e-5)
     #b = fB(H' * (R \ yo))
 
     Lx = zeros(size(mask))
+
+    #@code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,ivol[:],Lx)
+    #print(@code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x,Lx))
+    #@show code_warntype(Bsqrt,(n,s.sv,ivol,nus,Ld,nmax,α,x,Lx))
+    #@show code_warntype(sin,(Int,))
     
     function fun!(x,fx)
         fx[:] = x + Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ (H * (Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,x,Lx)))),Lx)
+        #fx[:] = x
     end
 
     b = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo),Lx)
+    #@code_warntype Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,H' * (R \ yo),Lx)
 
     # adjust tolerance
     tol = tol * s.sv.n / length(yo)
 
     xp,success,s.niter = divand.conjugategradient(fun!,b; tol = tol);
-    #xa = B½ * xp
-    #xa = funB½(xp)
-    xa = Bsqrt(n,s.sv,ivol,nus,Ld,nmax,α,xp,Lx)
+    #@code_warntype divand.conjugategradient(fun!,b; tol = tol);
+    sv = s.sv::statevector{1,N}
 
-    return unpack(s.sv,xa,NaN)[1],s
+    #xa = Bsqrt(n,sv,ivol,nus,Ld,nmax,α::T,xp::Vector{T},Lx)
+    xa = Bsqrt(n,sv,ivol,nus,Ld,nmax,α::T,xp::Vector{T},Lx)
+
+    
+    return unpack(sv,xa,NaN)[1],s
 end
