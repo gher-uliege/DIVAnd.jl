@@ -8,10 +8,10 @@ import SpecialFunctions
 
 include("statevector.jl")
 
-type divand_constrain{T <: AbstractFloat}
+type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{T}, TH <: AbstractMatrix{T}}
     yo::Vector{T}
-    R::AbstractMatrix{T}
-    H::AbstractMatrix{T}
+    R::TR
+    H::TH
 end
 
 # T is the type of floats and
@@ -21,7 +21,7 @@ type divand_struct{T <: AbstractFloat,Ti <: Int,N}
     n::Ti
     neff::Ti
     coeff::T
-    sv::statevector
+    sv::statevector{1,N}
 #    D::SparseMatrixCSC{T,Ti}
     D::AbstractMatrix{T}
     mask::BitArray{N}
