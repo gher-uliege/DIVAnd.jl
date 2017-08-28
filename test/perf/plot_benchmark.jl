@@ -42,7 +42,7 @@ for ndim = 2:4
     figure()
     subplot(2,1,1)
 
-    sel = (runtime .> 0) & (memory .> 0)
+    sel = (runtime .> 0) .& (memory .> 0)
     plot(sizes[sel],runtime[sel]/60,"-o")
     #xlabel("size of the $(ndim)D domain")
     ylabel("time [minutes]")

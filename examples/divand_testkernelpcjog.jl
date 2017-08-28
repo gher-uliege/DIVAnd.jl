@@ -8,10 +8,10 @@ using divand
 using PyPlot
 
 
-x=[0]
-y=[0]
-z=[0]
-f=[1]
+x=[0.]
+y=[0.]
+z=[0.]
+f=[1.]
 
 x=randn(200)
 y=randn(200)
@@ -31,7 +31,7 @@ scalel=1.25715/0.69315
 
 #@time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1);
 
-@time fipca,spc = divandjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2 2 2 2],[scalel scalel scalel 0];alphabc=1);
+@time fipca,spc = divandjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2,2,2,2],[scalel,scalel,scalel,0];alphabc=1);
 
 tol = 2e-3
 

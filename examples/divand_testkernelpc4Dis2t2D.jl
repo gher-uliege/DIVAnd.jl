@@ -1,4 +1,4 @@
-#SBATCH --mem-per-cpu=8000
+#SBATCH --mem-per-cpu=16000
 
 
 # A simple example of divand in 2 dimensions
@@ -45,6 +45,7 @@ epsilon2 = 0.3;
 epsilon2b=1000.
 @time fi1,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,len[3]/1.42,len[4]/1.42),epsilon2b;alphabc=1);
 
+sv = s.sv
 PC1=s.P
 xg1=statevector_pack(s.sv,(fi1,))
 s=0
@@ -119,8 +120,6 @@ end
 
 # HI*(sc.P*(HI'  *x ))  should be a good operator for the M-1 x operation in preconditionner ?
 # Why do I need to take sc.P\ ??? So better use components of P*HI' ?,ti
-
-sv = s.sv
 
 @time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,
                            inversion=:pcg,compPC = compPC,btrunc=2, fi0 = unpack(sv,xguess)[1]);

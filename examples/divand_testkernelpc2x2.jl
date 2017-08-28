@@ -75,9 +75,11 @@ end
 
 
 # Then run with normal resolution and preconditionner
-@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess);
+@time fiiter,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,
+                           inversion=:pcg,compPC = compPC, fi0 = unpack(spc.sv,xguess)[1]);
 
-@time fiiter2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,inversion=:pcg, fi0 =xguess);
+@time fiiter2,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2,pcargs...,
+                            inversion=:pcg, fi0 = unpack(spc.sv,xguess)[1]);
 
 var(fi-fiiter)/var(fi)
 

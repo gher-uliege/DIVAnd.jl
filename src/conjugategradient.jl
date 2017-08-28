@@ -128,9 +128,9 @@ function conjugategradient{T}(fun!, b::Vector{T};
 
         progress(k,x,r,tol2,fun!,b)
 
-        if mod(k,20)==1
-            @show k, r ⋅ r,tol2,size(r)
-        end
+        #if mod(k,20)==1
+        #    @show k, r ⋅ r,tol2,size(r)
+        #end
 
         if r ⋅ r < tol2 && k >= minit
             success = true

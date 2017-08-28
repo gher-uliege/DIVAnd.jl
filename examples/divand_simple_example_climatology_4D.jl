@@ -50,7 +50,6 @@ epsilon2 = 1.;
 
 PP=s.P
 s=0
-fi=0
 
 gc()
 

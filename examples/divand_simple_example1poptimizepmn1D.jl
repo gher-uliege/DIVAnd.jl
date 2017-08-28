@@ -44,7 +44,7 @@ for iround=1:2
 
             xi=0
             mask=0
-            epsilon2=0
+            epsilon2=0.
             x=0
             f=0
             pm=0

@@ -68,7 +68,7 @@ function benchmark_nd_repeat(n,ng,ntimes; kwargs...)
         times[i],RMS[i] = benchmark_nd(n,ng; kwargs...)
     end
 
-    mad(x) = median(abs(x - median(x)))
+    mad(x) = median(abs.(x - median(x)))
 
     stat = Dict{String,Any}([(string(f),f(times)) for f in [mean,std,median,mad,minimum,maximum]])
     stat["samples"] = length(times)
@@ -84,7 +84,7 @@ function benchmark_nd(n,ng; kwargs...)
 
     epsilon2 = 0.05;
 
-    f(xy...) = .*([cos(2*pi*ng*x/20) for x in xy]...)
+    f(xy...) = .*([cos.(2*pi*ng*x/20) for x in xy]...)
 
     # grid of background field
     mask,pmn,xyi =  divand_squaredom(n,linspace(0,1,ng))
@@ -95,7 +95,7 @@ function benchmark_nd(n,ng; kwargs...)
     v = f([x[:] for x in xy]...);
 
     t1 = time_ns()
-    va = varanalysis(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
+    va,s = varanalysis(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
     #va,s = divandrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
     t2 = time_ns()
     time = (t2 - t1)/1e9
@@ -109,7 +109,7 @@ function rms(x,y)
 
     d = x-y;
 
-    m = !isnan.(d);
+    m = .!isnan.(d);
     r = mean(d[m].^2);
 
     r = sqrt.(r);
