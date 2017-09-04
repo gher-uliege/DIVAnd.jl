@@ -130,16 +130,22 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
     const sz = size(mask)
     const ivol = .*(pmn...)
 
-    const nus = ntuple(i -> zeros(sz),$N)::NTuple{$N,Array{T,$N}}
+    const nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
 
     # This heavily uses macros to generate fast code 
     # In e.g. 3 dimensions
     # (@nref $N tmp i) corresponds to tmp[i_1,i_2,i_3]
     # (@nref $N nu_i l->(l==j?i_l+1:i_l)  corresponds to nu_i[i_1+1,i_2,i_3] if j==1
 
+    # loop over all dimensions to create
+    # nus[1] (nu stagger in the 1st dimension)
+    # nus[2] (nu stagger in the 2nd dimension)
+    # ...
+    
     @nexprs $N j->begin
     tmp = nus[j]
 
+    # loop over all spatio-temporal dimensions     
     @nloops $N i k->(k == j ? (1:sz[k]-1) : (1:sz[k]))  begin
         nu_i = nu[j]
         # stagger nu
