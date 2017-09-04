@@ -1,0 +1,26 @@
+//<Version>ODV Spreadsheet V4.0</Version>
+//<Creator>charles@gher13.phys.ulg.ac.be</Creator>
+//<CreateTime>2011-12-19T12:42:52</CreateTime>
+//<Software>Ocean Data View Version 4.2.1 - 2009</Software>
+//<Source>/home/charles/DIVA/BlackSea4diva/New_ODV4_Collection.odv</Source>
+//<SourceLastModified>2011-12-19T12:42:03</SourceLastModified>
+//<DataField>Ocean</DataField>
+//<DataType>Profiles</DataType>
+//<MissingValueIndicators>-99</MissingValueIndicators>
+//
+Cruise	Station	Type	yyyy-mm-ddThh:mm:ss.sss	Longitude [degrees_east]	Latitude [degrees_north]	Bot. Depth [m]:METAVAR:FLOAT:4	Originator's Cruise:METAVAR:TEXT:20	Originator's Station:METAVAR:TEXT:20	Depth [m]	QV:WOD	Temperature [C]	QV:WOD	Salinity [psu]	QV:WOD	QV:ODV:SAMPLE
+WOD05_BG000003	11570900	B	1991-09-03T16:25	28.3333	43.167	36		CoMSBlack91	0.0	0	22.208	0	15.7020	0	1
+									10.0	0	22.260	0	15.7380	0	1
+									20.0	0	22.346	0	15.9740	0	1
+									30.0	0	22.308	0	16.0270	0	1
+WOD05_BG000003	11570901	B	1991-09-03T21:10	28.8333	43.167	325		CoMSBlack91	0.0	0	21.946	0	17.5830	0	1
+									10.0	0	21.956	0	17.5830	0	1
+									20.0	0	21.969	0	17.5870	0	1
+									30.0	0	9.954	0	18.0420	0	1
+									50.0	0	7.447	0	18.1402	0	1
+									75.0	0	7.121	0	18.3111	0	1
+									100.0	0	7.248	0	18.8920	0	1
+									125.0	0	8.097	0	20.3090	0	1
+									150.0	0	8.359	0	20.7490	0	1
+									200.0	0	8.615	0	21.2030	0	1
+									250.0	0	8.741	0	21.4960	0	1
