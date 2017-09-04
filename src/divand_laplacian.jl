@@ -141,11 +141,11 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
     # nus[1] (nu stagger in the 1st dimension)
     # nus[2] (nu stagger in the 2nd dimension)
     # ...
-    
+
     @nexprs $N j->begin
     tmp = nus[j]
 
-    # loop over all spatio-temporal dimensions     
+    # loop over all spatio-temporal dimensions
     @nloops $N i k->(k == j ? (1:sz[k]-1) : (1:sz[k]))  begin
         nu_i = nu[j]
         # stagger nu
