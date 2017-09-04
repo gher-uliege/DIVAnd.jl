@@ -5,7 +5,25 @@ function diva(dimnames,grid,obscoord,obsvalue,epsilon2,lens,timeaggregation2;
               defaultdepth = 0
               )
 
+    # check parameters
+    if (length(dimnames) != length(grid)) &&
+        (length(dimnames) != length(obscoord))
+        
+        throw(ArgumentError("the tuples dimnames, grid and obscoord must have the same length"))
+    end        
+        
+    
+    for i = 1:length(grid)
+        if length(grid[i]) == 0
+            throw(ArgumentError("the element $(i) in grid has a length of zero"))
+        end
 
+        if length(obscoord[i]) != length(obscoord[1])
+            throw(ArgumentError("the element in obscoord must have the same length"))
+        end
+    end
+            
+    
     obscoord_aggregated = [obscoord...]
     
     #g = Dict{Symbol,Union{Array{eltype(grid[1]),1},FloatRange{eltype(grid[1])}}}();
@@ -51,7 +69,7 @@ function diva(dimnames,grid,obscoord,obsvalue,epsilon2,lens,timeaggregation2;
     # turns len into arrays (if necessary)
     lens = ([( isa(l,Number) ? fill(l,sz) : l)  for l in lens]...)
     
-    fi = SharedArray(eltype(grid[1]),sz)
+    fi = SharedArray{eltype(grid[1])}(sz)
     #s = SharedArray(divand.divand_struct,(sz[3],sz[4]))
 
     #@show size(mask)
@@ -68,6 +86,27 @@ function diva(dimnames,grid,obscoord,obsvalue,epsilon2,lens,timeaggregation2;
         lon,lat,depth,time = obscoord_aggregated
         lenx,leny,lenz,lent = lens
 
+
+        # begin
+        #     @sync @parallel for n = 1:sz[4]
+        #         #@show n
+        #         for k = 1:sz[3]
+        #             sel = (depth .== depthr[k]) & (time .== timer[n])
+        #             vm = mean(obsvalue[sel])
+        #             va = obsvalue[sel] - vm
+                    
+        #             #@show sum(sel)
+        #             #@show time[1:10]
+        #             #@show sum((time .== timer[n]))
+        #             #@show vm
+        #             #@show va
+                                        
+        #             fi[:,:,k,n],stmp = divandrun(mask[:,:,k,n],(pm,pn),(xi,yi),(lon[sel],lat[sel]),va,(lenx[:,:,k,n],leny[:,:,k,n]),epsilon2)
+        #             fi[:,:,k,n] = fi[:,:,k,n] + vm
+        #         end
+        #     end
+        # end
+                     
  
         begin
             @sync @parallel for n = 1:sz[4]
@@ -83,7 +122,7 @@ function diva(dimnames,grid,obscoord,obsvalue,epsilon2,lens,timeaggregation2;
                     #@show vm
                     #@show va
                                         
-                    fi[:,:,k,n],stmp = divandrun(mask[:,:,k,n],(pm,pn),(xi,yi),(lon[sel],lat[sel]),va,(lenx[:,:,k,n],leny[:,:,k,n]),epsilon2)
+                    fi[:,:,k,n],stmp = varanalysis(mask[:,:,:,n],(pm,pn),(xi,yi),(lon[sel],lat[sel]),va,(lenx[:,:,k,n],leny[:,:,k,n]),epsilon2)
                     fi[:,:,k,n] = fi[:,:,k,n] + vm
                 end
             end

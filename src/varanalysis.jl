@@ -33,7 +33,10 @@ http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """
 
-function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector{T},len,epsilon2; tol::T = 1e-5)
+function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector{T},len,epsilon2;
+                          tol::T = 1e-5,
+                          progress = (iter,x,r,tol2,fun!,b) -> nothing)
+    
     n = ndims(mask)
 
     len = len_harmonize(len,mask)
@@ -95,7 +98,10 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     tol = tol * s.sv.n / length(yo)
 
     # xp = (I + B^1/2 * H' * (R^{-1} * (H * B^1/2)))^{-1} b
-    xp,success,s.niter = divand.conjugategradient(fun!,b; tol = tol);
+
+    xp,success,s.niter = divand.conjugategradient(
+        fun!,b; tol = tol,
+        progress = progress);
 
     # tmpx = B^1/2 * xp
     Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,xp,work1,work2,tmpx)

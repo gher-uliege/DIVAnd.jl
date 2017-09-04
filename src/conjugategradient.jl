@@ -48,6 +48,13 @@ function pc_none!(x,fx)
   fx[:] = x
 end
 
+function cgprogress(iter,x,r,tol2,fun!,b)
+    print("iteration ")
+    print_with_color(:default,"$(iter)",bold=true)
+    print_with_color(:red,"$(r ⋅ r) ")
+    print("$(tol) \n")   
+end
+
 function conjugategradient{T}(fun!, b::Vector{T};
                               x0::Vector{T} = zeros(size(b)),
                               tol::T = 1e-6,
