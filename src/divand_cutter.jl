@@ -126,7 +126,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     # need to subtract two overlap regions from total size to determine the number of tiles
     #subsz = ([ceil(Int,sz[i] / stepsize[i]) for i = 1:ndims(mask)]...)
 
-    subsz = ([ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]) for i = 1:n]...)
+    subsz = ([max(ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]),1) for i = 1:n]...)
 
     ntiles=prod(subsz)
 
@@ -186,17 +186,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
     end
     # end loop over all windows
 
-
-
-
-
-
-
-
     return windowlist,csteps,lmask,alphapc
-
-
-
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
