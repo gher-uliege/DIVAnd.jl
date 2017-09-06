@@ -29,9 +29,7 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `len`: correlation length
 
-* `epsilon2`: signal-to-noise ratio of observations (if epsilon2 is a scalar).
-    The larger this value is, the closer is the field `fi` to the
-    observation. If epsilon2 is a scalar, then R is 1/epsilon2 I, where R is the observation error covariance matrix). If epsilon2 is a vector, then R is diag(epsilon2) or if epsilon2 is a matrix (a matrix-like project), then R is equal to epsilon2.
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
 * `nl`: number of testing points around the current value of l. One means an addition point on both sides of the current L. Zero is allowed and means the parameter is not optimised.
 

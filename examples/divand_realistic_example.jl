@@ -19,8 +19,8 @@ timer = 1:1.:12
 timer = [1]
 
 
-# signal-to-noise ratio
-epsilon2 = 0.1
+# error variance of the observations (normalized by the error variance of the background field)
+epsilon2 = 10.
 
 # size of the domain
 
