@@ -71,7 +71,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     #nmax = round(Int,1/(2*α))
     # number of iterations 1/(2*α) (round to the closest be even number)
     nmax = 2*round(Int,1/(4*α))
-    @show nmax
+    #@show nmax
 
     # the background error covariance matrix is
     # B =  (4π α nmax)^(n/2) prod(Ld) (I + α * D)^nmax;
@@ -95,7 +95,6 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     work2 = zeros(size(mask))
     tmpx = zeros(s.sv.n)    
     b = zeros(s.sv.n)
-    @show "here",@__LINE__
                         
     function fun!(x,fx)
         # tmpx = B^1/2 x
@@ -116,7 +115,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
 
     # xp = (I + B^1/2 * H' * (R^{-1} * (H * B^1/2)))^{-1} b
 
-    @show divand.checksym(s.sv.n,fun!)
+    #@show divand.checksym(s.sv.n,fun!)
           
     xp,success,s.niter = divand.conjugategradient(
         fun!,b; tol = tol, maxit = maxit,
