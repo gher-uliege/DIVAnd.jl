@@ -52,22 +52,23 @@ function pc_none!(x,fx)
   fx[:] = x
 end
 
-function cgprogress2(iter,x,r,tol2,fun!,b)
-    if iter == 1
-        print("|  Iteration | Norm of residual/√n | max. norm/√n |\n")
-        print("|------------|---------------------|--------------|\n")
-    end
+"""
+xAy, yATx = checksym(n,fun!)
+Check if the the function `fun!` represents a symmetric matrix when applied on 
+random vectors of size `n`. 
+"""
+function checksym(n,fun!)
+    x = randn(n)
+    y = randn(n)
+    Ax = zeros(n)
+    Ay = zeros(n)
 
-    n = length(r)
-    print("|")
-    print_with_color(:default,"$(@sprintf("%11d",iter))",bold=true)
-    print(" |")
-    print_with_color(:red,"$(@sprintf("%20f",sqrt((r ⋅ r)/n)))")
-    print(" |")
-    print("$(@sprintf("%13f",sqrt(tol2/n)))")
-    print(" |\n")
+    fun!(x,Ax)
+    fun!(y,Ay)
+
+    return (y ⋅ Ax),(x ⋅ Ay)
+
 end
-
 
 function cgprogress(iter,x,r,tol2,fun!,b)
     if iter == 1

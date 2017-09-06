@@ -116,23 +116,8 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
 
     # xp = (I + B^1/2 * H' * (R^{-1} * (H * B^1/2)))^{-1} b
 
-    b2 = randn(s.sv.n)
-    b3 = randn(s.sv.n)
-    fb2 = zeros(s.sv.n)
-    fb3 = zeros(s.sv.n)
-    Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,b2,work1,work2,fb2)
-    Bsqrt!(s.sv,coeff,ivol,nus,nmax,α,b3,work1,work2,fb3)
-    @show (b3 ⋅ fb2)
-    @show (b2 ⋅ fb3)
-
-    fun!(b2,fb2)
-    fun!(b3,fb3)
-    @show (b3 ⋅ fb2)
-    @show (b2 ⋅ fb3)
-
-    
-    
-    
+    @show divand.checksym(s.sv.n,fun!)
+          
     xp,success,s.niter = divand.conjugategradient(
         fun!,b; tol = tol, maxit = maxit,
         progress = progress);
