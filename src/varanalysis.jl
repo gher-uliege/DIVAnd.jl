@@ -71,7 +71,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     #nmax = round(Int,1/(2*α))
     # number of iterations 1/(2*α) (round to the closest be even number)
     nmax = 2*round(Int,1/(4*α))
-    #@show nmax
+    @show nmax
 
     # the background error covariance matrix is
     # B =  (4π α nmax)^(n/2) prod(Ld) (I + α * D)^nmax;

@@ -83,15 +83,15 @@ function cgprogress(iter,x,r,tol2,fun!,b)
     Ax = b-r
     J = (x ⋅ Ax)/2 - (b ⋅ x)
     n = length(r)
-    bold = rem(iter,2) == 1
+
     print("|")
-    print_with_color(:default,"$(@sprintf("%11d",iter))", bold=bold)
+    print_with_color(:default,"$(@sprintf("%11d",iter))", bold=true)
     print(" |")
-    print_with_color(:light_magenta,"$(@sprintf("%14.3f",J))", bold=bold)
+    print_with_color(:light_magenta,"$(@sprintf("%14.3f",J))")
     print(" |")
-    print_with_color(:red,"$(@sprintf("%20f",sqrt((r ⋅ r)/n)))", bold=bold)
+    print_with_color(:red,"$(@sprintf("%20f",sqrt((r ⋅ r)/n)))")
     print(" |")
-    print_with_color(:default,"$(@sprintf("%13f",sqrt(tol2/n)))", bold=bold)
+    print_with_color(:default,"$(@sprintf("%13f",sqrt(tol2/n)))")
     print(" |\n")
 end
 
