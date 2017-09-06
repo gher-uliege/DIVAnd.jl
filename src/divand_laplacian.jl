@@ -181,11 +181,11 @@ function divand_laplacian_apply!{T}(ivol,nus,x::AbstractArray{T,$N},Lx::Abstract
             tmp2 = nus[d1]
             
             if i_d1 < sz[d1]
-                (@nref $N Lx i) += (@nref $N tmp2 i) * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                @inbounds (@nref $N Lx i) += (@nref $N tmp2 i) * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
             end
             
             if i_d1 > 1
-                (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1?i_d2-1:i_d2)) * ((@nref $N x i) -  (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                @inbounds (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1?i_d2-1:i_d2)) * ((@nref $N x i) -  (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
             end
         end
         (@nref $N Lx i) *= (@nref $N ivol i)

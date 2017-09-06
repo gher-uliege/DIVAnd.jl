@@ -1,7 +1,7 @@
 # A simple example of divand in 4 dimensions
 # with observations from an analytical function.
 
-using divand
+import divand
 using Base.Test
 #using PyPlot
 
@@ -21,10 +21,10 @@ f = [1.]
 # pm is the inverse of the resolution along the 1st dimension,...
 
 
-mask,pmn,xyi = divand_rectdom([linspace(0,1,s) for s in gridsize]...)
+mask,pmn,xyi = divand.divand_rectdom([linspace(0,1,s) for s in gridsize]...)
 
 
-sv = statevector((mask,))
+sv = divand.statevector((mask,))
 
 # correlation length
 #lenxy = ntuple(i -> 1.,n)
@@ -40,7 +40,7 @@ tol = 1e-5
 
 
 
-@time xa,s = varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
+@time xa,s = divand.varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
 @show maximum(xa) 
 
 @test maximum(xa) ≈ 0.5 atol=1e-3

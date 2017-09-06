@@ -2,9 +2,9 @@ using Base.Cartesian
 using Base.Test
 using divand
 
-#sz = (1000,1000)
+sz = (1000,1000)
 #sz = (100,100)
-sz = (10,10)
+#sz = (10,10)
 
 x = randn(sz)
 
@@ -61,21 +61,42 @@ mask[3:4,3:4] = false
 Nmax = 1
 
 Lxsp = test_sp(mask,pmn,nu,x,Nmax)
-Lxsp2 = test_lap8(mask,pmn,nu,x,Nmax)
+Lx2 = test_lap8(mask,pmn,nu,x,Nmax)
 
 ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
 
 Lx = divand_laplacian_apply(ivol,nus,x)
 
-Lxsp ≈ divand_laplacian_apply(ivol,nus,x)
+@test Lxsp ≈ Lx2
 
 # check symmetry
 D = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,[false,false]);
 
 vol = 1./.*(pmn...);
 D2 = sparse_diag(vol[mask]) * D;
-@test maximum(abs.(D2 - D2')) < 1e-10
+@test maximum(abs.(D2 - D2')) < 1e-9
 
 
+# degenerated case
+sz = (10,1)
+mask = trues(sz)
+x = zeros(sz)
+pmn = (zeros(sz),zeros(sz))
+nu = (zeros(sz),zeros(sz))
+for j = 1:sz[2]
+    for i = 1:sz[1]
+        nu[1][i,j] = i + 2*j
+        nu[2][i,j] = j + 3*i
 
+        pmn[1][i,j] = i
+        pmn[2][i,j] = j+i/10
+
+        x[i,j] = i^2
+    end
+end
+
+Lxsp = test_sp(mask,pmn,nu,x,Nmax)
+ivol,nus = divand_laplacian_prepare(mask,pmn,nu)
+Lx = divand_laplacian_apply(ivol,nus,x)
+@test Lxsp ≈ Lx
 

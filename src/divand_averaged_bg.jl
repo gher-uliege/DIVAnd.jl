@@ -109,7 +109,8 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
     fm,sm=divandrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
     vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
     faanom=f-vaanalyzed
-
+    @show extrema(vaanalyzed), sum(sm.obsout), extrema(faanom)
+    
     reshapeshape =([(toaverage[i] ? (1) : (size(mask)[i])) for i = 1:n]...)
     copyshape =([(toaverage[i] ? (size(mask)[i]) : (1)) for i = 1:n]...)
 
