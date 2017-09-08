@@ -30,6 +30,10 @@ Kernel is the solution of the n-dimensional diffusion equation
 n-dimensional Green’s function
 
 G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
+
+
+G(x,x',t) = det(D)^(-1/2) (4π t)^(-n/2)  exp( - (x -x')ᵀ D⁻¹ (x -x')ᵀ / (4t))
+
 http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """

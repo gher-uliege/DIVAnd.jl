@@ -341,6 +341,9 @@ include("load_mask.jl");
 include("load_obs.jl");
 export loadbigfile
 
+include("domain.jl");
+export domain
+
 # high-level interface
 include("diva.jl");
 export diva
