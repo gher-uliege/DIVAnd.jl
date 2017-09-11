@@ -8,7 +8,7 @@ import SpecialFunctions
 
 include("statevector.jl")
 
-type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{T}, TH <: AbstractMatrix{T}}
+type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{<: Number}, TH <: AbstractMatrix{<: Number}}
     yo::Vector{T}
     R::TR
     H::TH
