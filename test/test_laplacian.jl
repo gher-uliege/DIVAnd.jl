@@ -2,7 +2,7 @@ using Base.Cartesian
 using Base.Test
 using divand
 
-#sz = (1000,1000)
+#sz = (1000,1000)  # too large for a 32-bit OS
 sz = (100,100)
 #sz = (10,10)
 

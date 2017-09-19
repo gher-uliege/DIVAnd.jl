@@ -6,8 +6,8 @@
 [![Coverage Status](https://coveralls.io/repos/gher-ulg/divand.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/gher-ulg/divand.jl?branch=master)
 [![codecov.io](http://codecov.io/github/gher-ulg/divand.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/divand.jl?branch=master)
 
-<!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://alexander-barth.github.io/divand.jl/stable/)-->
-[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://alexander-barth.github.io/divand.jl/latest/)
+<!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/divand.jl/stable/)-->
+[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/divand.jl/latest/)
 
 `divand` performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
 
