@@ -60,6 +60,6 @@ function myspmatmul{Tv,Ti}(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti};
 end
 
 
-Base.A_mul_Bc(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,Int64}) = myspmatmul(A,B')
-Base.Ac_mul_B(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,Int64}) = myspmatmul(A',B)
-Base.:*(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,Int64}) = myspmatmul(A,B)
+Base.A_mul_Bc(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int}) = myspmatmul(A,B')
+Base.Ac_mul_B(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int}) = myspmatmul(A',B)
+Base.:*(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int}) = myspmatmul(A,B)

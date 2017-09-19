@@ -42,7 +42,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     scale = strides(mask)
 
     # integer index
-    ind = floor.(Int64,I)
+    ind = floor.(Int,I)
     inside = trues(mi)
 
     for i = 1:n
@@ -71,7 +71,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     #si = repmat(collect(1:mip),2^n,1)
     si = [j for i in 1:2^n, j in 1:mip]
 
-    sj = ones(Int64,2^n, mip)
+    sj = ones(Int,2^n, mip)
     ss = ones(2^n, mip)
 
     # loop over all corner of hypercube

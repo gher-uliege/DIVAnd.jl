@@ -31,7 +31,7 @@ function sparse_diff(sz1,m,cyclic = false)
 
     strides1 = [1,cumprod(collect(sz1))[1:end-1]...]
 
-    L2 = Array{Int64,1}(n2)
+    L2 = Array{Int,1}(n2)
 
 
     # L2 = [i for i = 1:n1 if ind2sub(sz1,i)[m] != sz1[m] ]
@@ -41,8 +41,8 @@ function sparse_diff(sz1,m,cyclic = false)
     vi = [collect(1:sz2[i]) for i = 1:n]
     #IJ = [vii[:] for vii in ndgrid(vi...)]
 
-    #IJ = [Array{Int64,1}(n2) for i = 1:n]
-    IJ = [zeros(Int64,Int(n2)) for i = 1:n]
+    #IJ = [Array{Int,1}(n2) for i = 1:n]
+    IJ = [zeros(Int,Int(n2)) for i = 1:n]
 
     s = 1
     for i=1:n
@@ -56,7 +56,7 @@ function sparse_diff(sz1,m,cyclic = false)
 
     #L1 = [1:Int(n2);]
     L1 = [1:n2i;]
-    L2 = sub2ind(sz1,IJ...)::Array{Int64,1}
+    L2 = sub2ind(sz1,IJ...)::Array{Int,1}
     one = ones(size(L1))
 
     IJ[m] = IJ[m] + 1
@@ -65,7 +65,7 @@ function sparse_diff(sz1,m,cyclic = false)
         IJ[m] = mod.(IJ[m]-1,sz1[m])+1
     end
 
-    L2o = sub2ind(sz1,IJ...)::Array{Int64,1}
+    L2o = sub2ind(sz1,IJ...)::Array{Int,1}
 
     S = sparse(
                [L1;     L1;  ],

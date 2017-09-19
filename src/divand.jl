@@ -80,12 +80,12 @@ end
 
         sv = statevector_init((mask,))
         sz = size(mask)
-        sempty = sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([]),prod(sz),prod(sz))
+        sempty = sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([]),prod(sz),prod(sz))
 
         D = copy(sempty)
         WE = copy(sempty)
         iB = copy(sempty)
-        iB_ = Vector{SparseMatrixCSC{Float64,Int64}}()
+        iB_ = Vector{SparseMatrixCSC{Float64,Int}}()
         Ld = Float64[]
         P = Matrix{Float64}(0,0)
 
@@ -95,9 +95,9 @@ end
         mapindex_packed = Int[]
         #mask_stag = [Array{Bool,1}() for i in 1:n]
         mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
-        WEs = Vector{SparseMatrixCSC{Float64,Int64}}()
-        WEss = [sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]
-        Dx = ([sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]...)
+        WEs = Vector{SparseMatrixCSC{Float64,Int}}()
+        WEss = [sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]
+        Dx = ([sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]...)
         applybc = copy(sempty)
 
         betap = 0.

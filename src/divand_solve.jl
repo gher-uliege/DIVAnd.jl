@@ -39,7 +39,7 @@ function divand_solve!(s,fi0,f0;btrunc=[])
 				
                 
 			#Probably not a good way to change function definition depending on types	
-				if isa(s.iB,divand.MatFun{Int64})
+				if isa(s.iB,divand.MatFun{Int})
 				    
 					fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
 				  else
