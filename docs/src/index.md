@@ -2,10 +2,10 @@
 divand
 
 
-# Example.jl Documentation
+# divand.jl documentation
 
 ```@docs
-divandrun(mask,pmn,xi,x,f,len,epsilon2)
+divandrun
 ```
 
 
