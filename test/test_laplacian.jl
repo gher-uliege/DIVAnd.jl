@@ -2,8 +2,8 @@ using Base.Cartesian
 using Base.Test
 using divand
 
-sz = (1000,1000)
-#sz = (100,100)
+#sz = (1000,1000)
+sz = (100,100)
 #sz = (10,10)
 
 x = randn(sz)

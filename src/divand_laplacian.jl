@@ -78,6 +78,14 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
 
         #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
 		# Already include final operation to reduce problem size in real problems with land mask
+
+        @show typeof(H)
+
+        @show size(oper_diff(operatortype,sz,i,iscyclic[i]))
+        @show size(H)
+        @show size((oper_diff(operatortype,sz,i,iscyclic[i])*H'))
+        @show size(oper_diag(operatortype,d))
+        
         D = oper_diag(operatortype,d) * (oper_diff(operatortype,sz,i,iscyclic[i])*H')
 		
         if !iscyclic[i]
