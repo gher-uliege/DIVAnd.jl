@@ -1,7 +1,7 @@
 """
 
 
-windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim=[]);
+windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps csteps for the preconditionners
@@ -28,7 +28,7 @@ windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim=[]);
 """
 
 
-function divand_cutter(Lpmnrange,gridsize,moddim=[])
+function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
 
 
 
@@ -91,8 +91,9 @@ function divand_cutter(Lpmnrange,gridsize,moddim=[])
 
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
+	@show moddim,MEMTOFIT
 
-    stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,csteps,moddim)
+    stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,csteps,moddim,MEMTOFIT)
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows

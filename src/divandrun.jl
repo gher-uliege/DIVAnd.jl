@@ -131,7 +131,8 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    operatortype = Val{:sparse},
                    alphabc = 1.0,
                    scale_len = true,
-                   btrunc=[]
+                   btrunc=[],
+				   MEMTOFIT=16.
                    )
 
 

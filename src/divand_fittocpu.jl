@@ -22,21 +22,24 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,latercsteps,m
 """
 
 
-function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
+function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 
 
     #################################################################################
     # Number of dimensions
     n = size(Lpmnrange)[1]
 	
-	fudgefac=1
-	@show ENV["MEMTOFIT"]
-	myval=tryparse(Float64,ENV["MEMTOFIT"])
-	@show myval
-	 if ~isnull(myval)
+	@show moddim
+	@show MEMTOFIT
+	
+	fudgefac=MEMTOFIT/16.
+	#@show ENV["MEMTOFIT"]
+	#myval=tryparse(Float64,ENV["MEMTOFIT"])
+	#@show myval
+	# if ~isnull(myval)
 	 
-	  fudgefac=get(myval)/16.
-	 end
+	#  fudgefac=get(myval)/16.
+	# end
 
     if moddim==[]
         moddim=zeros[n]

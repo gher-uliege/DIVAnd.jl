@@ -1,6 +1,6 @@
 #SBATCH --mem-per-cpu=16000
 
-ENV["MEMTOFIT"]=10
+#ENV["MEMTOFIT"]=4.0
 
 using divand
 using PyPlot
@@ -52,8 +52,8 @@ dx = dy = 0.2
 dx = dy = 0.07
 #dx = dy = 0.04
 #dx = dy = 0.03
-dx=15.0/(50*8)
-dy=6.0/(15*8)
+dx=15.0/(50*16)
+dy=6.0/(15*16)
 
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
@@ -62,7 +62,9 @@ lonr = 27:dx:42
 latr = 40:dy:47
 
 
-depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
+#depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
+depthr = [0.,5, 10, 15, 20, 25, 30, 40, 50, 66, 75, 85, 100, 112, 125, 135, 150, 175, 200, 225, 250, 275, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1600, 1750, 1850, 2000];
+@show size(depthr)
 #depthr = [0, 10, 20, 30, 50, 75, 100];
 #depthr = 0:10.:30.;
 
@@ -104,19 +106,23 @@ va=value-vm
 
 toaverage=[true true false false]
 
-@time fmb,ffb=divand_averaged_bg(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,4*lenz,4*lent),epsilon2*10,toaverage;moddim=moddim)
+@time fi,ffb=divand_averaged_bg(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),va,(lenx,leny,4*lenz,4*lent),epsilon2*10,toaverage;moddim=moddim)
 
+# save background field
+divand_save(replace(@__FILE__,r".jl$","hr0.02SB.nc"),mask,"Salinity",fi+vm)
 
 vaa=va-ffb
 
-fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;moddim=moddim)
+fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2,:none;moddim=moddim,MEMTOFIT=3.0)
 
 
-fi=fi+fmb+vm
+#fi=fi+fmb+vm
 # Why is this filter necessary; sharedArray not supported ??
 #fi=divand_filter3(fi,NaN,2)
 #erri=divand_filter3(erri,NaN,2)
 
+# Save anomalies 
 divand_save(replace(@__FILE__,r".jl$","hr0.02S.nc"),mask,"Salinity",fi)
-divand_save(replace(@__FILE__,r".jl$","hr0.02E.nc"),mask,"Errorfield",erri)
+
+#divand_save(replace(@__FILE__,r".jl$","hr0.02E.nc"),mask,"Errorfield",erri)
 nothing
