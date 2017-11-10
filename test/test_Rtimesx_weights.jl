@@ -100,11 +100,12 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
     # Ok , now finally calculate covariances and application
 
     Rx[:] = 0
-
+    
     for i=1:ndata
         # Find grid indexes
         NG = gridindex[i,:]
-
+        NGt = (gridindex[i,:]...)
+        
         # Now all boxes around this one
 
         Rx[i] = 0
@@ -114,9 +115,15 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         #         ii=IP[i1,i2,i7]
 
         # loop over all indices between ng-1 and ng+1 (but still within bounds)
-        istart = CartesianIndex(max.(1,NG-1)...) :: CartesianIndex{ndim}
-        iend = CartesianIndex(min.(nx,NG+1)...)  :: CartesianIndex{ndim}
+        #istart = CartesianIndex(max.(1,NG-1)...) :: CartesianIndex{ndim}
+        #iend = CartesianIndex(min.(nx,NG+1)...)  :: CartesianIndex{ndim}
 
+        #istart = CartesianIndex(max.(1,NG-1)...):: CartesianIndex{ndim}
+        #iend = CartesianIndex(min.(nx,NG+1)...)  :: CartesianIndex{ndim}
+
+        istart = CartesianIndex( (max.( 1,NG-1)...) :: NTuple{ndim,Int} )
+        iend   = CartesianIndex( (min.(nx,NG+1)...) :: NTuple{ndim,Int} )
+        
         for ind in CartesianRange(istart,iend)
             #Now for each point in the box calculate contribution
             for i7=1:NP[ind]
