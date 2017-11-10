@@ -50,10 +50,12 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
 
     # Now number of grid points in each direction
     nx = round.(Int, (coordmax - coordmin) .* ilenmax)+1
-    #nxt = (nx...) :: NTuple{ndim,Int}
+    nxt = (nx...) :: NTuple{ndim,Int}
 
     # now allocate array
-    NP = zeros(Int,nx[1],nx[2])
+    #NP = zeros(Int,nx[1],nx[2])
+    NP = zeros(Int,nxt)
+    #NP2 = zeros(Int,nxt)
 
     NG = zeros(Int,ndim)
     gridindex = zeros(Int,ndata,ndim)
@@ -65,12 +67,11 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         for j = 1:ndim
             NG[j] = round(Int,(coord[j,i]-coordmin[j]) * ilenmax[j]) + 1
         end
-        #NG = ntuple(j -> round(Int,(coord[j,i]-coordmin[j])/(3*len[j]))+1, ndim) :: NTuple{ndim,Int}
-        NP[NG[1],NG[2]] += 1
+        NP[NG...] += 1
     end
 
     NPMAX = maximum(NP)
-
+    #@show maximum(NP),maximum(NP2)
     # Now we can allocate the array which indexes points that fall into the grid
 
     #ip_size = (nx...,NPMAX) :: NTuple{ndim+1,Int}
@@ -85,9 +86,11 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         
         #NG = ((round.(Int,(coord[:,i]-coordmin)./(3*len))+1)...) :: NTuple{ndim,Int}
         #@show NG2
-        NP[NG[1],NG[2]] += 1
-        NPP = NP[NG[1],NG[2]]
-        IP[NG[1],NG[2],NPP] = i
+        #NP[NG[1],NG[2]] += 1
+        NP[NG...] += 1
+        
+        NPP = NP[NG...]
+        IP[NG...,NPP] = i
 
         # For all points get index of grid bin where if falls
         gridindex[i,:] = NG
@@ -145,12 +148,12 @@ end
 
 
 # large
-ndata = 10000
-ndim = 4
+ndata = 20000
+ndim = 2
 coord = randn(ndata,ndim)'
 x = zeros(ndata)
 Rx = zeros(ndata)
-LS = ntuple(i -> 0.1,4)
+LS = ntuple(i -> 0.1,ndim)
 @time Rtimesx!(coord,LS,x,Rx)
 
 #=
