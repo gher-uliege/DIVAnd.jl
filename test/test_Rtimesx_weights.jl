@@ -34,15 +34,14 @@ end
 function Rtimesx!(coord,LS,x,Rx)
     nobs = size(coord,1) 
     len = [LS...]
-    cov = zeros(nobs,nobs)
 
     Rx[:] = 0
     for j = 1:nobs
         for i = 1:nobs
             d2 = dist2(coord[i,:],coord[j,:],len)
-            cov[i,j] = exp(-d2)
+            cov = exp(-d2)
 
-            Rx[i] += cov[i,j]*x[j]
+            Rx[i] += cov * x[j]
         end
     end
     
