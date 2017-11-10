@@ -31,6 +31,17 @@ function Rtimesx1!(coord,LS,x,Rx)
 end
 
 
+"""
+    Rtimesx!(coord,LS,x,Rx)
+
+Gaussian type R matix in ndim dimensions applied to vector x of length ndata
+Gaussian scale differs in each direction k : LS[k]
+Coordinates of point i are coord(i,1),coord(i,2),...,coord(i,ndim)
+To avoid an ndata^2 complexity a grid is set up first so as to allow only to calculate
+covarances when distances are smaller than 3*L
+
+Adapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90
+"""
 function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
     ndata = size(coord,2)
     len = [LS...]
@@ -49,106 +60,80 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
 
 
     # Now number of grid points in each direction
-    nx = round.(Int, (coordmax - coordmin) .* ilenmax)+1
-    nxt = (nx...) :: NTuple{ndim,Int}
+    sz = (round.(Int, (coordmax - coordmin) .* ilenmax) + 1 ...) :: NTuple{ndim,Int}
 
-    # now allocate array
-    #NP = zeros(Int,nx[1],nx[2])
-    NP = zeros(Int,nxt)
-    #NP2 = zeros(Int,nxt)
-
+    # now allocate the arrays
+    NP = zeros(Int,sz)
     NG = zeros(Int,ndim)
     gridindex = zeros(Int,ndata,ndim)
-    #gridindex2 = Vector{NTuple{ndim,Int}}(ndata)
 
-    # First dummy loop, identify the maximum number of points which fall into any bin of a regular grid
+    # First dummy loop, identify the number of points which fall into
+    # any bin of a regular grid
 
-    for i=1:ndata
+    for i = 1:ndata
         for j = 1:ndim
-            NG[j] = round(Int,(coord[j,i]-coordmin[j]) * ilenmax[j]) + 1
+            NG[j] = round(Int,(coord[j,i] - coordmin[j]) * ilenmax[j]) + 1
         end
         NP[NG...] += 1
     end
 
-    NPMAX = maximum(NP)
-    #@show maximum(NP),maximum(NP2)
     # Now we can allocate the array which indexes points that fall into the grid
 
-    #ip_size = (nx...,NPMAX) :: NTuple{ndim+1,Int}
-    IP = zeros(Int, nx[1] , nx[2], NPMAX )
+    IP = Array{Vector{Int},ndim}(sz)
 
-    IP2 = Array{Vector{Int},ndim}(nxt)
-    for i in eachindex(IP2)
-        IP2[i] = Vector{Int}(NP[i])
+    for i in eachindex(IP)
+        IP[i] = Vector{Int}(NP[i])
     end
+
     # For each grid point collect index all points which fall into bin
 
     NP[:] = 0
+
     for i = 1:ndata
         for j = 1:ndim
-            NG[j] = round(Int,(coord[j,i]-coordmin[j]) * ilenmax[j]) + 1
+            NG[j] = round(Int,(coord[j,i] - coordmin[j]) * ilenmax[j]) + 1
         end
         
-        #NG = ((round.(Int,(coord[:,i]-coordmin)./(3*len))+1)...) :: NTuple{ndim,Int}
-        #@show NG2
-        #NP[NG[1],NG[2]] += 1
-        NP[NG...] += 1
-        
+        NP[NG...] += 1        
         NPP = NP[NG...]
-        IP[NG...,NPP] = i
-        IP2[NG...][NPP] = i
+        
+        IP[NG...][NPP] = i
 
         # For all points get index of grid bin where if falls
         gridindex[i,:] = NG
-        #gridindex2[i] = NG2
     end
 
-    # Ok , now finally calculate covariances and application
-
+    # Ok, now finally calculate covariances and application
     Rx[:] = 0
     
-    for i=1:ndata
+    for i = 1:ndata
         # Find grid indexes
         NG = gridindex[i,:]
         
         # Now all boxes around this one
-
         Rx[i] = 0
-        # for i1 = max(1,NG[1]-1):min(nx[1],NG[1]+1)
-        #     for i2 = max(1,NG[2]-1):min(nx[2],NG[2]+1)
-        #     for i7=1:NP[i1,i2]
-        #         ii=IP[i1,i2,i7]
-
-        # loop over all indices between ng-1 and ng+1 (but still within bounds)
-        #istart = CartesianIndex(max.(1,NG-1)...) :: CartesianIndex{ndim}
-        #iend = CartesianIndex(min.(nx,NG+1)...)  :: CartesianIndex{ndim}
-
-        #istart = CartesianIndex(max.(1,NG-1)...):: CartesianIndex{ndim}
-        #iend = CartesianIndex(min.(nx,NG+1)...)  :: CartesianIndex{ndim}
 
         istart = CartesianIndex( (max.( 1,NG-1)...) :: NTuple{ndim,Int} )
-        iend   = CartesianIndex( (min.(nx,NG+1)...) :: NTuple{ndim,Int} )
+        iend   = CartesianIndex( (min.(sz,NG+1)...) :: NTuple{ndim,Int} )
         
         for ind in CartesianRange(istart,iend)
-            #Now for each point in the box calculate contribution
-            for i7=1:NP[ind]
-               #ii=IP[ind,i7]
-               ii=IP2[ind][i7]
+            # Now for each point in the box calculate contribution
 
-                COV = 1.
-                dist = 0.
+            for ipoint = 1:NP[ind]
+                ii = IP[ind][ipoint]
+
+                dist = 0.                
                 for j = 1:ndim
-                    dis = (coord[j,i]-coord[j,ii]) * ilen[j]
-                    dist = dist + dis^2
+                    dist += ((coord[j,i]-coord[j,ii]) * ilen[j])^2
                 end
-                COV = exp(-dist)
-                Rx[i] += COV * x[ii]
+                
+                cov = exp(-dist)
+                Rx[i] += cov * x[ii]
             end
-        #end
-            end
+        end
     end
 
-    return IP
+    return Rx
 
 end
 
@@ -163,6 +148,7 @@ end
 # large
 ndata = 20000
 ndim = 2
+
 coord = randn(ndata,ndim)'
 x = zeros(ndata)
 Rx = zeros(ndata)
