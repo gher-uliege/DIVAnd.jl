@@ -156,33 +156,17 @@ Rx = zeros(ndata)
 LS = ntuple(i -> 0.1,ndim)
 @time Rtimesx!(coord,LS,x,Rx)
 
+# large 2D
 #=
-julia> @benchmark Rtimesx!(coord,LS,x,Rx)
-BenchmarkTools.Trial:
-  memory estimate:  440.40 MiB
-  allocs estimate:  18428011
+  memory estimate:  18.13 MiB
+  allocs estimate:  418500
   --------------
-  minimum time:     1.257 s (6.16% GC)
-  median time:      1.444 s (12.61% GC)
-  mean time:        1.425 s (11.16% GC)
-  maximum time:     1.554 s (12.53% GC)
+  minimum time:     1.170 s (0.48% GC)
+  median time:      1.201 s (0.46% GC)
+  mean time:        1.204 s (0.37% GC)
+  maximum time:     1.245 s (0.44% GC)
   --------------
-  samples:          4
-=#
-
-
-# simple version, type-stable
-#=
-  memory estimate:  2.86 MiB
-  allocs estimate:  49012
-  --------------
-  minimum time:     297.525 ms (0.00% GC)
-  median time:      306.481 ms (0.00% GC)
-  mean time:        307.441 ms (0.07% GC)
-  maximum time:     337.868 ms (0.00% GC)
-  --------------
-  samples:          17
+  samples:          5
   evals/sample:     1
-
 
 =#
