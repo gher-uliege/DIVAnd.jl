@@ -37,6 +37,9 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
     coordmin = minimum(coord,2)
     coordmax = maximum(coord,2)
 
+    ilen = 1./len
+    ilenmax = 1./(3*len)
+    
     # Slightly enlarge bounding box to be sure all points remain
     # in box even when rounding occurs
 
@@ -46,7 +49,7 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
 
 
     # Now number of grid points in each direction
-    nx = round.(Int,(coordmax - coordmin)./(3*len))+1
+    nx = round.(Int, (coordmax - coordmin) .* ilenmax)+1
     #nxt = (nx...) :: NTuple{ndim,Int}
 
     # now allocate array
@@ -60,7 +63,7 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
 
     for i=1:ndata
         for j = 1:ndim
-            NG[j] = round(Int,(coord[j,i]-coordmin[j])./(3*len[j]))+1
+            NG[j] = round(Int,(coord[j,i]-coordmin[j]) * ilenmax[j]) + 1
         end
         #NG = ntuple(j -> round(Int,(coord[j,i]-coordmin[j])/(3*len[j]))+1, ndim) :: NTuple{ndim,Int}
         NP[NG[1],NG[2]] += 1
@@ -77,7 +80,7 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
     NP[:] = 0
     for i = 1:ndata
         for j = 1:ndim
-            NG[j] = round(Int,(coord[j,i]-coordmin[j])./(3*len[j]))+1
+            NG[j] = round(Int,(coord[j,i]-coordmin[j]) * ilenmax[j]) + 1
         end
         
         #NG = ((round.(Int,(coord[:,i]-coordmin)./(3*len))+1)...) :: NTuple{ndim,Int}
@@ -119,8 +122,8 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
                 COV = 1.
                 dist = 0.
                 for j = 1:ndim
-                    dis=(coord[j,i]-coord[j,ii])/len[j]
-                    dist=dist+dis*dis
+                    dis = (coord[j,i]-coord[j,ii]) * ilen[j]
+                    dist = dist + dis^2
                 end
                 COV = exp(-dist)
                 Rx[i] += COV * x[ii]
@@ -167,17 +170,16 @@ BenchmarkTools.Trial:
 
 # simple version, type-stable
 #=
-julia> @benchmark Rtimesx!(coord,LS,x,Rx)
-BenchmarkTools.Trial: 
-  memory estimate:  2.71 MiB
-  allocs estimate:  49010
+  memory estimate:  2.86 MiB
+  allocs estimate:  49012
   --------------
-  minimum time:     408.167 ms (0.00% GC)
-  median time:      408.883 ms (0.00% GC)
-  mean time:        410.242 ms (0.02% GC)
-  maximum time:     425.057 ms (0.00% GC)
+  minimum time:     297.525 ms (0.00% GC)
+  median time:      306.481 ms (0.00% GC)
+  mean time:        307.441 ms (0.07% GC)
+  maximum time:     337.868 ms (0.00% GC)
   --------------
-  samples:          13
+  samples:          17
   evals/sample:     1
+
 
 =#
