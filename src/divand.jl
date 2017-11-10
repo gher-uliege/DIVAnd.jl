@@ -350,6 +350,10 @@ export domain
 include("diva.jl");
 export diva
 
+include("divand_weights.jl");
+
+export diva
+
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 
 # statevector
