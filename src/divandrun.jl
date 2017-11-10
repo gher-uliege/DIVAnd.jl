@@ -137,12 +137,8 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     # check inputs
     if !any(mask[:])
-        warn("no sea points in mask, will return NaN");
-
-        return     fill!(Array(Float64,size(mask)),NaN),0
-
-
-
+        warn("no sea points in mask, will return NaN");        
+        return fill!(Array(Float64,size(mask)),NaN),0
     end
 
     #       @show alphabc
