@@ -76,6 +76,11 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
 
     #ip_size = (nx...,NPMAX) :: NTuple{ndim+1,Int}
     IP = zeros(Int, nx[1] , nx[2], NPMAX )
+
+    IP2 = Array{Vector{Int},ndim}(nxt)
+    for i in eachindex(IP2)
+        IP2[i] = Vector{Int}(NP[i])
+    end
     # For each grid point collect index all points which fall into bin
 
     NP[:] = 0
@@ -91,6 +96,7 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         
         NPP = NP[NG...]
         IP[NG...,NPP] = i
+        IP2[NG...][NPP] = i
 
         # For all points get index of grid bin where if falls
         gridindex[i,:] = NG
@@ -104,7 +110,6 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
     for i=1:ndata
         # Find grid indexes
         NG = gridindex[i,:]
-        NGt = (gridindex[i,:]...)
         
         # Now all boxes around this one
 
@@ -127,7 +132,8 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         for ind in CartesianRange(istart,iend)
             #Now for each point in the box calculate contribution
             for i7=1:NP[ind]
-               ii=IP[ind,i7]
+               #ii=IP[ind,i7]
+               ii=IP2[ind][i7]
 
                 COV = 1.
                 dist = 0.
