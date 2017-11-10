@@ -1,7 +1,7 @@
 using Base.Test
 
 
-coord = [0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.7699; 0.357327 0.891722; 0.101827 0.856188; 0.862349 0.0555934; 0.992086 0.97036; 0.702955 0.591252; 0.685006 0.23132]
+coord = [0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.7699; 0.357327 0.891722; 0.101827 0.856188; 0.862349 0.0555934; 0.992086 0.97036; 0.702955 0.591252; 0.685006 0.23132]'
 
 #x = (coord[:,1],coord[:,2])
 
@@ -10,19 +10,19 @@ coord = [0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.76
 LS = (0.1,0.1)
 
 dist2(x,y,len) = sum(((x-y)./len).^2)
-nobs = size(coord,1) 
+nobs = size(coord,2) 
 x = ones(nobs)
 Rx1 = zeros(nobs) 
 Rx = zeros(nobs) 
 
 function Rtimesx1!(coord,LS,x,Rx)
-    nobs = size(coord,1) 
+    nobs = size(coord,2) 
     len = [LS...]
     cov = zeros(nobs,nobs)
     
     for j = 1:nobs
         for i = 1:nobs
-            d2 = dist2(coord[i,:],coord[j,:],len)
+            d2 = dist2(coord[:,i],coord[:,j],len)
             cov[i,j] = exp(-d2)
         end
     end
@@ -32,12 +32,12 @@ end
 
 
 function Rtimesx!(coord,LS,x,Rx)
-    nobs = size(coord,1)
+    nobs = size(coord,2)
     ndata = nobs
-    ndim = size(coord,2)
+    ndim = size(coord,1)
     len = [LS...]
-    coordmin = minimum(coord,1)
-    coordmax = maximum(coord,1)
+    coordmin = minimum(coord,2)
+    coordmax = maximum(coord,2)
 
     # Slightly enlarge bounding box to be sure all points remain
     # in box even when rounding occurs
@@ -46,9 +46,6 @@ function Rtimesx!(coord,LS,x,Rx)
     coordmin -= range * eps(eltype(coord))
     coordmax += range * eps(eltype(coord))
     
-
-    # FIX ME
-    coord = coord'
 
     # Now number of grid points in each direction
     nx = round.(Int,(coordmax - coordmin)./(3*len))+1
