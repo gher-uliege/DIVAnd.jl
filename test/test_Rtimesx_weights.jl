@@ -108,19 +108,19 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         # Now all boxes around this one
 
         Rx[i] = 0
-        for i1 = max(1,NG[1]-1):min(nx[1],NG[1]+1)
-            for i2 = max(1,NG[2]-1):min(nx[2],NG[2]+1)
-            for i7=1:NP[i1,i2]
-                ii=IP[i1,i2,i7]
+        # for i1 = max(1,NG[1]-1):min(nx[1],NG[1]+1)
+        #     for i2 = max(1,NG[2]-1):min(nx[2],NG[2]+1)
+        #     for i7=1:NP[i1,i2]
+        #         ii=IP[i1,i2,i7]
 
         # loop over all indices between ng-1 and ng+1 (but still within bounds)
-        #istart = CartesianIndex(max.(1,NG-1)...)
-        #iend = CartesianIndex(min.(nx,NG+1)...)
+        istart = CartesianIndex(max.(1,NG-1)...) :: CartesianIndex{ndim}
+        iend = CartesianIndex(min.(nx,NG+1)...)  :: CartesianIndex{ndim}
 
-        #for ind in CartesianRange(istart,iend)
-            # Now for each point in the box calculate contribution
-            #for i7=1:NP[ind]
-            #    ii=IP[ind,i7]
+        for ind in CartesianRange(istart,iend)
+            #Now for each point in the box calculate contribution
+            for i7=1:NP[ind]
+               ii=IP[ind,i7]
 
                 COV = 1.
                 dist = 0.
@@ -131,7 +131,7 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
                 COV = exp(-dist)
                 Rx[i] += COV * x[ii]
             end
-        end
+        #end
             end
     end
 
