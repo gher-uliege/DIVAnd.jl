@@ -3,7 +3,7 @@ __precompile__()
 module divand
 
 using Interpolations
-using NetCDF
+using NCDatasets
 using Base.Test
 using Base.Cartesian
 import SpecialFunctions
@@ -352,7 +352,8 @@ export diva
 
 include("divand_weights.jl");
 
-export diva
+include("Vocab.jl");
+export Vocab
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 

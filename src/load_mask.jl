@@ -4,9 +4,9 @@ function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,level::Number)
 
     level = -abs(level);
 
-    x = ncread(bath_name,"lon")
-    y = ncread(bath_name,"lat")
-    nc = NetCDF.open(bath_name);
+    nc = Dataset(bath_name)
+    x = nc["lon"].var[:]
+    y = nc["lat"].var[:]
 
     rx = x[2]-x[1];
     ry = y[2]-y[1];
@@ -43,12 +43,12 @@ function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,level::Number)
 
 
         for l=1:length(jumps)-1
-            b[(jumps[l]+1):jumps[l+1],:] = nc["bat"][i2[jumps[l]+1]:i2[jumps[l+1]],j];
+            b[(jumps[l]+1):jumps[l+1],:] = nc["bat"].var[i2[jumps[l]+1]:i2[jumps[l+1]],j];
         end
     else
         i = maximum([minimum(i) 1]):minimum([maximum(i) length(x)]);
         j = maximum([minimum(j) 1]):minimum([maximum(j) length(y)]);
-        b[:,:] = nc["bat"][i,j];
+        b[:,:] = nc["bat"].var[i,j];
     end
 
     mask = b .< level;
@@ -76,7 +76,7 @@ function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,level::Number)
     mif = itp[xi,yi];
 
     mi = mif .> 1/2;
-    NetCDF.close(nc);
+    close(nc)
 
     return  xi,yi,mi
 end
@@ -98,9 +98,9 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
 
     level = -abs(level);
 
-    x = ncread(bath_name,"lon")
-    y = ncread(bath_name,"lat")
-    nc = NetCDF.open(bath_name);
+    nc = Dataset(bath_name)
+    x = nc["lon"].var[:]
+    y = nc["lat"].var[:]
 
     rx = x[2]-x[1];
     ry = y[2]-y[1];
@@ -128,12 +128,12 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
 
 
         for l=1:length(jumps)-1
-            b[(jumps[l]+1):jumps[l+1],:] = nc["bat"][i2[jumps[l]+1]:i2[jumps[l+1]],j];
+            b[(jumps[l]+1):jumps[l+1],:] = nc["bat"].var[i2[jumps[l]+1]:i2[jumps[l+1]],j];
         end
     else
         i = maximum([minimum(i) 1]):minimum([maximum(i) length(x)]);
         j = maximum([minimum(j) 1]):minimum([maximum(j) length(y)]);
-        b[:,:] = nc["bat"][i,j];
+        b[:,:] = nc["bat"].var[i,j];
     end
 
     mask = b .< level;
@@ -161,7 +161,7 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     mif = itp[xi,yi];
 
     mi = mif .> 1/2;
-    NetCDF.close(nc);
+    close(nc)
 
     return  xi,yi,mi
 end

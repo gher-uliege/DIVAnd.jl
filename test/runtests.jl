@@ -47,6 +47,9 @@ import Base.LinAlg.BLAS
 
     include("test_averaged_bg.jl");
 
+    # SDN Vocabulary
+    include("test_vocab.jl");
+
 
     # test divand_filter3
     A=zeros(5,5,5,5,5);A[3,3,3,3,3]=1
@@ -74,4 +77,3 @@ import Base.LinAlg.BLAS
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
 end
-
