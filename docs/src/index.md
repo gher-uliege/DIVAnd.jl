@@ -8,6 +8,11 @@ divand
 divandrun
 ```
 
+# Vocabulary
+
+```@docs
+SDNCollection
+```
 
 # Information for developpers
 

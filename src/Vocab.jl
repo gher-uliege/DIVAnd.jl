@@ -35,7 +35,14 @@ function Concept(url::AbstractString)
     return Concept(xdoc)
 end
 
+"""
+    s = prefLabel(c::Concept)
+Return the preferred label of a concept `c`
+"""
+
 prefLabel(c::Concept) = nodecontent(findfirst(root(c.xdoc),"//skos:prefLabel",namespaces))
+
+
 notation(c::Concept) = nodecontent(findfirst(root(c.xdoc),"//skos:notation",namespaces))
 altLabel(c::Concept) = nodecontent(findfirst(root(c.xdoc),"//skos:altLabel",namespaces))
 date(c::Concept) = DateTime(
@@ -49,6 +56,21 @@ type Collection{T <: AbstractString}
 end
 
 Base.getindex(c::Collection,identifier::AbstractString) = Concept(c.baseurl * identifier)
+
+"""
+    collection = SDNCollection(name)
+
+Open the SeaDataNet collection with the name `name` at the URL
+http://vocab.nerc.ac.uk/collection/
+The collection can be indexed with brackets using the identifier.
+
+```
+using divand
+collection = Vocab.SDNCollection("P01")
+concept = collection["PSALPR01"]
+@show Vocab.prefLabel(concept)
+```
+"""
 
 SDNCollection(name) = Collection("http://vocab.nerc.ac.uk/collection/$(name)/current/")
 
