@@ -25,6 +25,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Vocabulary-1",
+    "page": "divand.jl documentation",
+    "title": "Vocabulary",
+    "category": "section",
+    "text": "SDNCollection"
+},
+
+{
     "location": "index.html#Information-for-developpers-1",
     "page": "divand.jl documentation",
     "title": "Information for developpers",
