@@ -2,7 +2,7 @@ module Vocab
 
 using Base
 using EzXML
-using Requests
+import HTTP
 import Base.find
 import Base.findfirst
 import Base.repr
@@ -50,7 +50,7 @@ type Concept
 end
 
 function Concept(url::AbstractString)
-    r = Requests.get(url)
+    r = HTTP.get(url)
     xdoc = parsexml(readstring(r))
     return Concept(xdoc)
 end
@@ -131,7 +131,7 @@ type EDMOEntry
 end
 
 function EDMOEntry(url::AbstractString)
-    r = Requests.get(url)
+    r = HTTP.get(url)
     xdoc = parsexml(readstring(r))
     return EDMOEntry(xdoc)
 end
