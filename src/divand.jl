@@ -4,8 +4,10 @@ module divand
 
 using Interpolations
 using NCDatasets
+using DataArrays
 using Base.Test
 using Base.Cartesian
+
 import SpecialFunctions
 
 include("statevector.jl")

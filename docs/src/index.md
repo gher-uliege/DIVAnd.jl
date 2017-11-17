@@ -11,7 +11,9 @@ divandrun
 # Vocabulary
 
 ```@docs
-SDNCollection
+Vocab.SDNCollection
+Vocab.prefLabel(c::Concept)
+urn_str
 ```
 
 # Information for developpers

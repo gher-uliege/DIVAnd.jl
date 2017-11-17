@@ -6,10 +6,10 @@ function divand_save(filename,mask,varname,fi)
 
     # Dimensions
 
-    ds.dim["time"] = sz[4];
-    ds.dim["depth"] = sz[3];
-    ds.dim["lat"] = sz[2];
-    ds.dim["lon"] = sz[1];
+    ds.dim["time"] = sz[4]
+    ds.dim["depth"] = sz[3]
+    ds.dim["lat"] = sz[2]
+    ds.dim["lon"] = sz[1]
 
     @show filename
     ncvar = defVar(ds, varname, Float32, ("lon", "lat", "depth", "time"))
@@ -21,6 +21,10 @@ end
 
 
 """
+
+# Optional arguments:
+
+  * `relerr`: relative error
 
 ncinfo
 
@@ -98,7 +102,11 @@ http://seadatanet.maris2.nl/edmo/
 
 
 
-function divand_save2(filename,mask,xyi,fi,varname; ncinfo = Dict(), ncglobalattrib = Dict())
+function divand_save2(filename,mask,xyi,fi,varname;
+                      ncinfo = Dict(), ncglobalattrib = Dict(),
+                      thresholds = [("L1",0.3),("L2",0.5)],
+                      kwargs...)
+
     function defnD(ds,varname,dims,ncinfo)
         ncvar = defVar(ds,varname, Float32, dims)
 
@@ -108,8 +116,8 @@ function divand_save2(filename,mask,xyi,fi,varname; ncinfo = Dict(), ncglobalatt
             end
         end
 
-        ncvar.attrib["_FillValue"] = Float32(fillval);
-        ncvar.attrib["missing_value"] = Float32(fillval);
+        ncvar.attrib["_FillValue"] = Float32(fillval)
+        ncvar.attrib["missing_value"] = Float32(fillval)
 
         return ncvar
     end
@@ -117,6 +125,7 @@ function divand_save2(filename,mask,xyi,fi,varname; ncinfo = Dict(), ncglobalatt
     def4D(ds,varname,ncinfo) = defnD(ds,varname,("lon", "lat", "depth", "time"),ncinfo)
     def3D(ds,varname,ncinfo) = defnD(ds,varname,("lon", "lat", "time"),ncinfo)
 
+    kw = Dict(kwargs)
 
     (xi,yi,zi,ti) = xyi
 
@@ -129,172 +138,187 @@ function divand_save2(filename,mask,xyi,fi,varname; ncinfo = Dict(), ncglobalatt
 
     fillval = NC_FILL_FLOAT
 
-    ds = Dataset(filename,"c")
+    Dataset(filename,"c") do ds
 
-    # Dimensions
+        # Dimensions
 
-    ds.dim["time"] = sz[4];
-    ds.dim["depth"] = sz[3];
-    ds.dim["lat"] = sz[2];
-    ds.dim["lon"] = sz[1];
-    #ds.dim["nv"] = 2;
-    #ds.dim["observations"] = 23626;
-    #ds.dim["idlen"] = 40;
+        ds.dim["time"] = sz[4]
+        ds.dim["depth"] = sz[3]
+        ds.dim["lat"] = sz[2]
+        ds.dim["lon"] = sz[1]
+        #ds.dim["nv"] = 2
 
-    # Declare variables
+        # Declare variables
 
-    # ncCLfield = defVar(ds,"CLfield", Float32, ("lon", "lat", "depth", "time"))
-    # ncCLfield.attrib["long_name"] = "Correlation length field";
-    # ncCLfield.attrib["valid_min"] = Float32(0.0);
-    # ncCLfield.attrib["valid_max"] = Float32(0.76);
-    # ncCLfield.attrib["_FillValue"] = Float32(fillval);
-    # ncCLfield.attrib["missing_value"] = Float32(fillval);
+        # ncCLfield = defVar(ds,"CLfield", Float32, ("lon", "lat", "depth", "time"))
+        # ncCLfield.attrib["long_name"] = "Correlation length field"
+        # ncCLfield.attrib["valid_min"] = Float32(0.0)
+        # ncCLfield.attrib["valid_max"] = Float32(0.76)
+        # ncCLfield.attrib["_FillValue"] = Float32(fillval)
+        # ncCLfield.attrib["missing_value"] = Float32(fillval)
 
-    # ncCORRLEN = defVar(ds,"CORRLEN", Float32, ("depth", "time"))
-    # ncCORRLEN.attrib["long_name"] = "Correlation Length";
-    # ncCORRLEN.attrib["units"] = "degrees_north";
+        # ncCORRLEN = defVar(ds,"CORRLEN", Float32, ("depth", "time"))
+        # ncCORRLEN.attrib["long_name"] = "Correlation Length"
+        # ncCORRLEN.attrib["units"] = "degrees_north"
 
-    # ncSNR = defVar(ds,"SNR", Float32, ("depth", "time"))
-    # ncSNR.attrib["long_name"] = "Signal to Noise";
+        # ncSNR = defVar(ds,"SNR", Float32, ("depth", "time"))
+        # ncSNR.attrib["long_name"] = "Signal to Noise"
 
-    # ncVARBACK = defVar(ds,"VARBACK", Float32, ("depth", "time"))
-    # ncVARBACK.attrib["long_name"] = "Background Field Variance";
-    # ncVARBACK.attrib["units"] = "umol/l^2";
+        # ncVARBACK = defVar(ds,"VARBACK", Float32, ("depth", "time"))
+        # ncVARBACK.attrib["long_name"] = "Background Field Variance"
+        # ncVARBACK.attrib["units"] = "umol/l^2"
 
 
-    ncvar = def4D(ds,varname,ncinfo)
-    ncvar.attrib["long_name"] = "$(longname)"
-    ncvar.attrib["cell_methods"] = "time: mean within years time: mean over years";
+        ncvar = def4D(ds,varname,ncinfo)
+        ncvar.attrib["long_name"] = "$(longname)"
+        ncvar.attrib["cell_methods"] = "time: mean within years time: mean over years"
 
-    ncvar_L1 = def4D(ds,"$(varname)_L1",ncinfo)
-    ncvar_L1.attrib["long_name"] = "$(longname) masked using relative error threshold 0.3";
-
-    ncvar_L2 = def4D(ds,"$(varname)_L2",ncinfo)
-    ncvar_L2.attrib["long_name"] = "$(longname) masked using relative error threshold 0.5";
-
-    ncvar_deepest = def3D(ds,"$(varname)_deepest",ncinfo)
-    ncvar_deepest.attrib["long_name"] = "Deepest values of $(longname)";
-
-    ncvar_deepest_L1 = def3D(ds,"$(varname)_deepest_L1",ncinfo)
-    ncvar_deepest_L1.attrib["long_name"] = "Deepest values of $(longname) masked using relative error threshold 0.3";
-
-    ncvar_deepest_L2 = def3D(ds,"$(varname)_deepest_L2", ncinfo)
-    ncvar_deepest_L2.attrib["long_name"] = "Deepest values of $(longname) masked using relative error threshold 0.5";
-
-    # ncvar_err = def4D(ds,"$(varname)_err", Float32, ("lon", "lat", "depth", "time"))
-    # ncvar_err.attrib["long_name"] = "Error standard deviation of $(longname)";
-    # ncvar_err.attrib["units"] = units;
-    # ncvar_err.attrib["valid_min"] = Float32(0.0);
-    # ncvar_err.attrib["valid_max"] = Float32(3.6);
-    # ncvar_err.attrib["_FillValue"] = Float32(fillval);
-    # ncvar_err.attrib["missing_value"] = Float32(fillval);
-
-    ncvar_relerr = defVar(ds,"$(varname)_relerr", Float32, ("lon", "lat", "depth", "time"))
-    ncvar_relerr.attrib["long_name"] = "Relative error of $(longname)";
-    ncvar_relerr.attrib["valid_min"] = Float32(0.0);
-    ncvar_relerr.attrib["valid_max"] = Float32(1.0);
-    ncvar_relerr.attrib["_FillValue"] = Float32(fillval);
-    ncvar_relerr.attrib["missing_value"] = Float32(fillval);
-
-    ncclimatology_bounds = defVar(ds,"climatology_bounds", Float32, ("nv", "time"))
-    ncclimatology_bounds.attrib["climatology_bounds"] = Float32[244.0, 3622.0];
-
-#     ncdatabins = defVar(ds,"databins", Float32, ("lon", "lat", "depth", "time"))
-#     ncdatabins.attrib["long_name"] = "Logarithm10 of number of data in bins"
-# ncdatabins.attrib["valid_min"] = Float32(0.0);
-# ncdatabins.attrib["valid_max"] = Float32(1.1);
-# ncdatabins.attrib["_FillValue"] = Float32(fillval);
-# ncdatabins.attrib["missing_value"] = Float32(fillval);
-
-ncdepth = defVar(ds,"depth", Float32, ("depth",))
-ncdepth.attrib["units"] = "meters";
-ncdepth.attrib["positive"] = "down";
-
-nclat = defVar(ds,"lat", Float32, ("lat",))
-nclat.attrib["units"] = "degrees_north";
-
-nclon = defVar(ds,"lon", Float32, ("lon",))
-nclon.attrib["units"] = "degrees_east";
-
-ncobsdepth = defVar(ds,"obsdepth", Float32, ("observations",))
-ncobsdepth.attrib["units"] = "meters";
-ncobsdepth.attrib["positive"] = "down";
-
-ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"))
-ncobsid.attrib["long_name"] = "observation identifier";
-ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon";
-
-ncobslat = defVar(ds,"obslat", Float32, ("observations",))
-ncobslat.attrib["units"] = "degrees_north";
-
-ncobslon = defVar(ds,"obslon", Float32, ("observations",))
-ncobslon.attrib["units"] = "degrees_east";
-
-ncobstime = defVar(ds,"obstime", Float32, ("observations",))
-ncobstime.attrib["units"] = "days since 1900-01-01 00:00:00";
-
-# ncoutlbins = defVar(ds,"outlbins", Float32, ("lon", "lat", "depth", "time"))
-# ncoutlbins.attrib["long_name"] = "Logarithm10 of number of outliers data in bins";
-# ncoutlbins.attrib["valid_min"] = Float32(0.0);
-# ncoutlbins.attrib["valid_max"] = Float32(fillval);
-# ncoutlbins.attrib["_FillValue"] = Float32(fillval);
-# ncoutlbins.attrib["missing_value"] = Float32(fillval);
-
-nctime = defVar(ds,"time", Float32, ("time",))
-nctime.attrib["units"] = "Days since 1980-01-01";
-nctime.attrib["climatology"] = "climatology_bounds";
-
-# Global attributes
-
-ds.attrib["Conventions"] = "CF-1.0";
-ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
-ds.attrib["title"] = "DIVA 4D analysis of $(longname)";
-ds.attrib["file_name"] = filename
-ds.attrib["product_id"] =  Base.Random.uuid1()
-
-for (k,v) in ncglobalattrib
-    ncglobalattrib[k] = v
-end
+        ncvar_deepest = def3D(ds,"$(varname)_deepest",ncinfo)
+        ncvar_deepest.attrib["long_name"] = "Deepest values of $(longname)"
 
 
-# Define variables
+
+        if haskey(kw,:relerr)
+            for (thresholds_name,thresholds_value) in thresholds
+
+                ncvar_Lx = def4D(ds,"$(varname)_$(thresholds_name)",ncinfo)
+                ncvar_Lx.attrib["long_name"] = "$(longname) masked using relative error threshold $(thresholds_value)"
+
+                ncvar_deepest_Lx = def3D(ds,"$(varname)_deepest_$(thresholds_name)",ncinfo)
+                ncvar_deepest_Lx.attrib["long_name"] = "Deepest values of $(longname) masked using relative error threshold $(thresholds_value)"
+            end
+
+            # ncvar_err = def4D(ds,"$(varname)_err", Float32, ("lon", "lat", "depth", "time"))
+            # ncvar_err.attrib["long_name"] = "Error standard deviation of $(longname)"
+            # ncvar_err.attrib["units"] = units
+            # ncvar_err.attrib["valid_min"] = Float32(0.0)
+            # ncvar_err.attrib["valid_max"] = Float32(3.6)
+            # ncvar_err.attrib["_FillValue"] = Float32(fillval)
+            # ncvar_err.attrib["missing_value"] = Float32(fillval)
+
+            ncvar_relerr = defVar(ds,"$(varname)_relerr", Float32, ("lon", "lat", "depth", "time"))
+            ncvar_relerr.attrib["long_name"] = "Relative error of $(longname)"
+            ncvar_relerr.attrib["valid_min"] = Float32(0.0)
+            ncvar_relerr.attrib["valid_max"] = Float32(1.0)
+            ncvar_relerr.attrib["_FillValue"] = Float32(fillval)
+            ncvar_relerr.attrib["missing_value"] = Float32(fillval)
+        end
+
+        #    ncclimatology_bounds = defVar(ds,"climatology_bounds", Float32, ("nv", "time"))
+        #    ncclimatology_bounds.attrib["climatology_bounds"] = Float32[244.0, 3622.0]
+
+        #     ncdatabins = defVar(ds,"databins", Float32, ("lon", "lat", "depth", "time"))
+        #     ncdatabins.attrib["long_name"] = "Logarithm10 of number of data in bins"
+        # ncdatabins.attrib["valid_min"] = Float32(0.0)
+        # ncdatabins.attrib["valid_max"] = Float32(1.1)
+        # ncdatabins.attrib["_FillValue"] = Float32(fillval)
+        # ncdatabins.attrib["missing_value"] = Float32(fillval)
+
+        ncdepth = defVar(ds,"depth", Float32, ("depth",))
+        ncdepth.attrib["units"] = "meters"
+        ncdepth.attrib["positive"] = "down"
+
+        nclat = defVar(ds,"lat", Float32, ("lat",))
+        nclat.attrib["units"] = "degrees_north"
+
+        nclon = defVar(ds,"lon", Float32, ("lon",))
+        nclon.attrib["units"] = "degrees_east"
+
+
+        # ncoutlbins = defVar(ds,"outlbins", Float32, ("lon", "lat", "depth", "time"))
+        # ncoutlbins.attrib["long_name"] = "Logarithm10 of number of outliers data in bins"
+        # ncoutlbins.attrib["valid_min"] = Float32(0.0)
+        # ncoutlbins.attrib["valid_max"] = Float32(fillval)
+        # ncoutlbins.attrib["_FillValue"] = Float32(fillval)
+        # ncoutlbins.attrib["missing_value"] = Float32(fillval)
+
+        nctime = defVar(ds,"time", Float32, ("time",))
+        nctime.attrib["units"] = "Days since 1980-01-01"
+        nctime.attrib["climatology"] = "climatology_bounds"
+
+        # Global attributes
+
+        ds.attrib["Conventions"] = "CF-1.0"
+        ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
+        ds.attrib["file_name"] = filename
+        ds.attrib["product_id"] =  repr(Base.Random.uuid1())
+        ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
+
+        for (k,v) in ncglobalattrib
+            ds.attrib[k] = v
+        end
+
+
+        # Define variables
+
+        nclon[:]   = xyi[1]
+        nclat[:]   = xyi[2]
+ncdepth[:] = xyi[3]
+nctime[:]  = xyi[4]
 
 # ncCLfield[:] = ...
 # ncCORRLEN[:] = ...
 # ncSNR[:] = ...
 # ncVARBACK[:] = ...
-ncvar[:] = fi
-# ncvar_L1[:] = ...
-# ncvar_L2[:] = ...
+ncvar[:] = DataArray(fi,isnan.(fi))
+
+if haskey(kw,:relerr)
+    relerr = kw[:relerr]
+
+    for (thresholds_name,thresholds_value) in thresholds
+        ds["$(varname)_$(thresholds_name)"][:] =
+            DataArray(fi,isnan.(fi) .| (relerr .> thresholds_value))
+    end
+
+    ncvar_relerr[:] = DataArray(relerr,isnan.(fi))
+end
+
 # ncvar_deepest[:] = ...
 # ncvar_deepest_L1[:] = ...
 # ncvar_deepest_L2[:] = ...
 # ncvar_err[:] = ...
-# ncvar_relerr[:] = ...
 # ncclimatology_bounds[:] = ...
 # ncdatabins[:] = ...
-# ncdepth[:] = ...
-# nclat[:] = ...
-# nclon[:] = ...
-# ncobsdepth[:] = ...
-# ncobsid[:] = ...
-# ncobslat[:] = ...
-# ncobslon[:] = ...
-# ncobstime[:] = ...
 # ncoutlbins[:] = ...
-# nctime[:] = ...
+end
 
-close(ds)
-
-# dims = [NcDim("longitude",sz[1]),
-#         NcDim("latitude",sz[2]),
-#         NcDim("depth",sz[3]),
-#         NcDim("time",sz[4])]
-
-# @show filename
-# nc = NetCDF.create(filename,NcVar(varname,dims))
-# nc[varname][:,:,:,:] = fi
-# NetCDF.close(nc)
 
 return nothing
+end
+
+
+function divand_save_obs(filename,ids,xy)
+    x,y,z,t = xy
+
+    idlen = maximum(length.(ids))
+    obsids = cat(2,[convert(Vector{Char},rpad(id,idlen)) for id in ids]...)
+
+    Dataset(filename,"a") do
+
+        ds.dim["observations"] = length(ids)
+        ds.dim["idlen"] = idlen
+
+        ncobslon = defVar(ds,"obslon", Float32, ("observations",))
+        ncobslon.attrib["units"] = "degrees_east"
+
+        ncobslat = defVar(ds,"obslat", Float32, ("observations",))
+        ncobslat.attrib["units"] = "degrees_north"
+
+        ncobstime = defVar(ds,"obstime", Float32, ("observations",))
+        ncobstime.attrib["units"] = "days since 1900-01-01 00:00:00"
+
+        ncobsdepth = defVar(ds,"obsdepth", Float32, ("observations",))
+        ncobsdepth.attrib["units"] = "meters"
+        ncobsdepth.attrib["positive"] = "down"
+
+        ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"))
+        ncobsid.attrib["long_name"] = "observation identifier"
+        ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
+
+        ncobslon[:] = xy[1]
+        ncobslat[:] = xy[2]
+        ncobsdepth[:] = xy[3]
+        ncobstime[:] = xy[4]
+        ncobsid[:] = obsids
+    end
 end
