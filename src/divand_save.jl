@@ -142,13 +142,34 @@ function divand_save2(filename,mask,xyi,fi,varname;
 
         # Dimensions
 
-        ds.dim["time"] = sz[4]
-        ds.dim["depth"] = sz[3]
-        ds.dim["lat"] = sz[2]
         ds.dim["lon"] = sz[1]
-        #ds.dim["nv"] = 2
+        ds.dim["lat"] = sz[2]
+        ds.dim["depth"] = sz[3]
+        ds.dim["time"] = sz[4]
+        ds.dim["nv"] = 2
 
         # Declare variables
+
+        nclon = defVar(ds,"lon", Float32, ("lon",))
+        nclon.attrib["units"] = "degrees_east"
+
+        nclat = defVar(ds,"lat", Float32, ("lat",))
+        nclat.attrib["units"] = "degrees_north"
+
+        ncdepth = defVar(ds,"depth", Float32, ("depth",))
+        ncdepth.attrib["units"] = "meters"
+        ncdepth.attrib["positive"] = "down"
+
+        nctime = defVar(ds,"time", Float64, ("time",))
+        nctime.attrib["units"] = "days since 1900-01-01 00:00:00"
+
+
+        if haskey(kw,:climatology_bounds)
+            nctime.attrib["climatology"] = "climatology_bounds"
+            ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64, ("nv", "time"))
+            ncclimatology_bounds.attrib["units"] = "days since 1900-01-01 00:00:00"
+        end
+        
 
         # ncCLfield = defVar(ds,"CLfield", Float32, ("lon", "lat", "depth", "time"))
         # ncCLfield.attrib["long_name"] = "Correlation length field"
@@ -204,7 +225,7 @@ function divand_save2(filename,mask,xyi,fi,varname;
             ncvar_relerr.attrib["missing_value"] = Float32(fillval)
         end
 
-        #    ncclimatology_bounds = defVar(ds,"climatology_bounds", Float32, ("nv", "time"))
+
         #    ncclimatology_bounds.attrib["climatology_bounds"] = Float32[244.0, 3622.0]
 
         #     ncdatabins = defVar(ds,"databins", Float32, ("lon", "lat", "depth", "time"))
@@ -214,15 +235,6 @@ function divand_save2(filename,mask,xyi,fi,varname;
         # ncdatabins.attrib["_FillValue"] = Float32(fillval)
         # ncdatabins.attrib["missing_value"] = Float32(fillval)
 
-        ncdepth = defVar(ds,"depth", Float32, ("depth",))
-        ncdepth.attrib["units"] = "meters"
-        ncdepth.attrib["positive"] = "down"
-
-        nclat = defVar(ds,"lat", Float32, ("lat",))
-        nclat.attrib["units"] = "degrees_north"
-
-        nclon = defVar(ds,"lon", Float32, ("lon",))
-        nclon.attrib["units"] = "degrees_east"
 
 
         # ncoutlbins = defVar(ds,"outlbins", Float32, ("lon", "lat", "depth", "time"))
@@ -231,10 +243,6 @@ function divand_save2(filename,mask,xyi,fi,varname;
         # ncoutlbins.attrib["valid_max"] = Float32(fillval)
         # ncoutlbins.attrib["_FillValue"] = Float32(fillval)
         # ncoutlbins.attrib["missing_value"] = Float32(fillval)
-
-        nctime = defVar(ds,"time", Float32, ("time",))
-        nctime.attrib["units"] = "Days since 1980-01-01"
-        nctime.attrib["climatology"] = "climatology_bounds"
 
         # Global attributes
 
@@ -277,7 +285,9 @@ end
 # ncvar_deepest_L1[:] = ...
 # ncvar_deepest_L2[:] = ...
 # ncvar_err[:] = ...
-# ncclimatology_bounds[:] = ...
+if haskey(kw,:climatology_bounds)
+    ncclimatology_bounds[:] = kw[:climatology_bounds]
+end
 # ncdatabins[:] = ...
 # ncoutlbins[:] = ...
 end
@@ -304,7 +314,7 @@ function divand_save_obs(filename,ids,xy)
         ncobslat = defVar(ds,"obslat", Float32, ("observations",))
         ncobslat.attrib["units"] = "degrees_north"
 
-        ncobstime = defVar(ds,"obstime", Float32, ("observations",))
+        ncobstime = defVar(ds,"obstime", Float64, ("observations",))
         ncobstime.attrib["units"] = "days since 1900-01-01 00:00:00"
 
         ncobsdepth = defVar(ds,"obsdepth", Float32, ("observations",))
