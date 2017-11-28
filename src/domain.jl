@@ -1,6 +1,8 @@
 """
-mask,(pm,pn,po,pp),(xi,yi,zi,ti) = domain(bathname,isglobal,lonr,latr,depthr,timer)
-geospatial domain
+    mask,(pm,pn,po,pp),(xi,yi,zi,ti) = domain(bathname,isglobal,lonr,latr,depthr,timer)
+
+Generate a geospatial domain based on the topography from the NetCDF file
+`bathname`.
 """
 
 function domain(bathname,isglobal,lonr,latr,depthr,timer)
@@ -21,7 +23,7 @@ function domain(bathname,isglobal,lonr,latr,depthr,timer)
     @show size(mask)
     dx = lonr[2] - lonr[1]
     dy = latr[2] - latr[1]
-    
+
     mxi,myi,mask2 = divand.load_mask(bathname,isglobal,minimum(lonr),maximum(lonr),dx,minimum(latr),maximum(latr),dy,depthr)
 
     mask3 = repeat(mask2,inner = (1,1,1,length(timer)))

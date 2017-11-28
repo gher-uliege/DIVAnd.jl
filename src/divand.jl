@@ -1,4 +1,4 @@
-__precompile__()
+#__precompile__()
 
 module divand
 
@@ -7,8 +7,9 @@ using NCDatasets
 using DataArrays
 using Base.Test
 using Base.Cartesian
-
+using DataStructures
 import SpecialFunctions
+import HTTP
 
 include("statevector.jl")
 
@@ -354,8 +355,17 @@ export diva
 
 include("divand_weights.jl");
 
+# ODV support
+include("ODVspreadsheet.jl");
+export ODVspreadsheet
+
+# Vocabulary
 include("Vocab.jl");
 export Vocab
+export urn_str
+
+include("SDNMetadata.jl");
+export SDNMetadata
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 

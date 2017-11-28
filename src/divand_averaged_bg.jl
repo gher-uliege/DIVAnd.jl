@@ -1,8 +1,8 @@
 """
- fma,faanom=   divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
+    fma,faanom = divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
 # Input:
-# As for divandrun, including all dimensions before averaging
+As for divandrun, including all dimensions before averaging
 
 # additional argument:
 * toaverage: Array of ndims of boolean telling if in the corresponding direction averaging must be done
@@ -10,7 +10,7 @@
 # Presently NO optional arguments from divandrun supported except moddim
 
 # Output:
-#
+
 * fma: Analysis where in the directions where toaverage is true, the same value is found
 * faanom: Data anomalies when the analysis is subtracted from the input field.
 
@@ -110,7 +110,7 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
     vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
     faanom=f-vaanalyzed
     @show extrema(vaanalyzed), sum(sm.obsout), extrema(faanom)
-    
+
     reshapeshape =([(toaverage[i] ? (1) : (size(mask)[i])) for i = 1:n]...)
     copyshape =([(toaverage[i] ? (size(mask)[i]) : (1)) for i = 1:n]...)
 

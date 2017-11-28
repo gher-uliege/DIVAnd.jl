@@ -6,7 +6,7 @@ the coordinates `x`. The array `fi` represent the interpolated field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Input:
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
+* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
        element represents the scale factor of the corresponding dimension. Its
@@ -137,7 +137,7 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     # check inputs
     if !any(mask[:])
-        warn("no sea points in mask, will return NaN");        
+        warn("no sea points in mask, will return NaN");
         return fill!(Array(Float64,size(mask)),NaN),0
     end
 

@@ -16,9 +16,67 @@ const namespaces = Dict(
     "rdfs" => "http://www.w3.org/2000/01/rdf-schema#",
     "owl" => "http://www.w3.org/2002/07/owl#" )
 
+const CFStandardNameURL = "http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml"
+const CFAreaTypesURL = "http://cfconventions.org/Data/area-type-table/current/src/area-type-table.xml"
+
+type CFVocab
+    xdoc :: EzXML.Document
+end
+
+type CFEntry
+    node :: EzXML.Node
+end
+
 
 """
-    collection,tag,key = splitURL(url)
+    collection = Vocab.CFVocab(url)
+
+Create a Dict-like object represeting the NetCDF CF Standard Name vocabulary.
+If the `url` is not provided then current CF Standard Name list
+$(CFStandardNameURL) is used. Individual standard names are retirved by indexing
+which return an object of the type `CFEntry`:
+
+```julia
+collection = Vocab.CFVocab()
+entry = collection["sea_water_temperature"]
+```
+
+
+"""
+function CFVocab(url = CFStandardNameURL)
+    r = Requests.get(url)
+    xdoc = EzXML.parsexml(readstring(r))
+    return CFVocab(xdoc)
+end
+
+function Base.getindex(c::CFVocab,stdname::AbstractString)
+    return CFEntry([e for e in find(c.xdoc,"//entry") if e["id"] == stdname ][1])
+end
+
+"""
+    bool = haskey(collection::CFVocab,stdname)
+
+Return true if `stdname` is part of the NetCDF CF Standard Name vocabulary
+`collection`.
+"""
+
+Base.haskey(c::CFVocab,stdname) = length([e for e in find(c.xdoc,"//entry") if e["id"] == stdname ]) > 0
+
+for (method,tag) in [(:description,"description"),
+                     (:canonical_units,"canonical_units")]
+    @eval begin
+"""
+    str = description(entry::CFEntry)
+    str = canonical_units(entry::CFEntry)
+
+    Return the description or the canonical units of the `entry`.
+"""
+        $method(e::CFEntry) = nodecontent(findfirst(e.node,$tag))
+    end
+end
+
+"""
+    collection,tag,key = Vocab.splitURL(url)
 
 Split a concept URL into collection, tag and key.
 url must finishe with a slash.
@@ -31,7 +89,14 @@ end
 
 
 """
-SDN:P021:current:TEMP
+    entry = Vocab.resolve(urn)
+
+Resolve a SeaDataNet URN (Uniform Resource Name) and returns the corresponding
+EDMO entry or Vocabulary concept. For example:
+
+```julia
+concept = Vocab.resolve("SDN:P021:current:TEMP")
+```
 """
 function resolve(urn)
     parts = split(urn,':')
@@ -56,17 +121,22 @@ function Concept(url::AbstractString)
     return Concept(xdoc)
 end
 
-# """
-#     s = prefLabel(c::Concept)
-# Return the preferred label of a concept `c`
-# """
-
-for (method,tag) in [(:prefLabel,"prefLabel"),
-                     (:notation,"notation"),
-                     (:altLabel,"altLabel")]
+#            s = Vocab.$($tag)(urn::AbstractString)
+for (method,tag,docname) in [(:prefLabel,"prefLabel","preferred label"),
+                             (:notation,"notation","identifier"),
+                             (:altLabel,"altLabel","alternative label")]
     @eval begin
-        $method(c::Concept) = nodecontent(findfirst(root(c.xdoc),"//skos:" * $tag,namespaces))
-        $method(urn) = $method(resolve(urn))
+        @doc """
+            s = Vocab.$($tag)(c::Vocab.Concept)
+
+        Return the $($docname) of a concept `c`
+        """ $method(c::Concept) = nodecontent(findfirst(root(c.xdoc),"//skos:" * $tag,namespaces))
+
+        @doc """
+            s = Vocab.$($tag)(urn::AbstractString)
+
+        Return the $($docname) of a concept usings it URN (Uniform Resource Name)
+        """ $method(urn::AbstractString) = $method(resolve(urn))
     end
 end
 
@@ -76,7 +146,12 @@ date(c::Concept) = DateTime(
 
 urn(c::Concept) = notation(c)
 
-"""name can be related, narrower, broader"""
+"""
+    find(c::Concept,name,collection)
+
+Return a list of related concepts in the collection `collection`.
+`name` can be the string "related", "narrower", "broader".
+"""
 function Base.find(c::Concept,name,collection)
     concepts = Concept[]
 
@@ -90,6 +165,13 @@ function Base.find(c::Concept,name,collection)
 
     return concepts
 end
+
+"""
+    findfirst(c::Concept,name,collection)
+
+Return the first related concepts in the collection `collection`.
+`name` can be the string "related", "narrower", "broader".
+"""
 
 Base.findfirst(c::Concept,name,collection) = find(c,name,collection)[1]
 

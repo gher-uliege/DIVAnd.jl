@@ -89,7 +89,13 @@ function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,levels::AbstractVector)
     return data[1][1],data[1][2],cat(3,[d[3] for d in data]...)
 end
 
+"""
+    xi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)
 
+Generate a land-sea mask based on the topography from the NetCDF file
+`bathname`.
+
+"""
 
 function load_mask(bath_name,isglobal,xi,yi,level::Number)
 

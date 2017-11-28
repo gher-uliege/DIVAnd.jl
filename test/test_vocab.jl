@@ -2,6 +2,16 @@ using Base.Test
 import divand
 
 
+# Test CF names
+
+collection = divand.Vocab.CFVocab()
+@test haskey(collection,"sea_water_temperature")
+
+entry = collection["sea_water_temperature"]
+
+@test contains(divand.Vocab.description(entry),"water")
+@test divand.Vocab.canonical_units(entry) == "K"
+
 
 #collection = divand.Vocab.Collection("http://www.seadatanet.org/urnurl/collection/P01/current/")
 
@@ -53,3 +63,5 @@ name = divand.Vocab.name(divand.Vocab.resolve("SDN:EDMO::575"))
 
 name = divand.Vocab.name(divand.Vocab.urn"SDN:EDMO::575")
 @test name == "National Oceanographic Data Committee"
+
+
