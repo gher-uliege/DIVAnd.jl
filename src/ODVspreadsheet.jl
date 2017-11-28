@@ -10,6 +10,7 @@ Logging.configure(level=loglevel);
 """
 Define composite type that will contain:
 * the metadata (dictionary),
+* SDN parameter mapping (dictionary)
 * the column labels (array) and
 * the profiles (array of arrays).
 """
@@ -17,6 +18,9 @@ Define composite type that will contain:
 global Spreadsheet
 type Spreadsheet
     metadata::Dict{String,String}
+    # local name to a tuple of object and unit
+    # //<subject>SDN:LOCAL:Chronological Julian Date</subject><object>SDN:P01::CJDY1101</object><units>SDN:P06::UTAA</units>
+    SDN_parameter_mapping::Dict{String,Dict{String,String}}
     columnLabels::Array{SubString{String},1}
     profileList::Array{Any,1}
 end
@@ -86,14 +90,20 @@ function readODVspreadsheet(datafile)
     # metadata will be stored in a dictionary
     # ODV doc: Comment lines start with two slashes  // as first two characters
     metadata = Dict{String, String}()
-
+    SDN_parameter_mapping = Dict{String,Dict{String,String}}()
+    
     # Context manager
     open(datafile, enc"Latin1", "r") do f
         line = readline(f)
-
+        
+        # Byte Order Mark (BOM) as Latin-1
+        if startswith(line,"ï»¿")
+            # ignore BOM
+            line = line[7:end]
+        end
+        
         # Read the metadata (lines starting with //)
         while line[1:2] == "//"
-
             # Identify metadata fields using regex
             # (name of the field is between < > and </ >)
             m = match(r"<(\w+)>(.+)</(\w+)>", line)
@@ -103,6 +113,24 @@ function readODVspreadsheet(datafile)
                 debug(m[1] * ": " * m[2])
                 # Add key - value in the dictionnary
                 metadata[String(m[1])] = String(m[2])
+            end
+
+            if line == "//SDN_parameter_mapping"
+                line = readline(f);
+                
+                # The semantic descriptions are terminated by an empty comment
+                # record (i.e. a record containing the // characters and nothing else)
+
+                while line != "//"
+                    @assert line[1:2] == "//"
+                    parts = split(line[3:end],r"[<|>]",keep=false)
+                    tmp = Dict(k => v for (k,v) in zip(parts[1:3:end],parts[2:3:end]))
+                
+                    subject = tmp["subject"]
+                    delete!(tmp,"subject")
+                    SDN_parameter_mapping[subject] = tmp
+                    line = readline(f);
+                end
             end
             line = readline(f);
         end
@@ -163,11 +191,20 @@ function readODVspreadsheet(datafile)
         push!(profileList, profile);
 
         info("No. of profiles in the file: " * string(nprofiles))
-        ODVdata = Spreadsheet(metadata, columnLabels, profileList)
+        ODVdata = Spreadsheet(metadata, SDN_parameter_mapping, columnLabels, profileList)
         return ODVdata
     end
 end
 
-export readODVspreadsheet
+"""
+    p = listSDNparam(ODVData)
+
+    Return a list of SeaDataNet P01 parameters in a ODV spreadsheet `ODVData`.
+"""
+function listSDNparams(ODVData)
+    return [d["object"] for (k,d) in ODVData.SDN_parameter_mapping]
+end
+
+export readODVspreadsheet, listSDNparams
 
 end
