@@ -1,4 +1,22 @@
 """
+    mask,(pm,pn),(xi,yi) = domain(bathname,isglobal,lonr,latr)
+
+Generate a 2D geospatial domain based on the topography from the NetCDF file
+`bathname`.
+"""
+
+function domain(bathname,isglobal,lonr,latr)
+    mask,(pm,pn),(xi,yi) = divand.divand_rectdom(lonr,latr)
+
+    mxi,myi,mask = divand.load_mask(bathname,isglobal,lonr,latr,1.)
+
+    pm,pn = divand.divand_metric(xi,yi)
+
+    return mask,(pm,pn),(xi,yi)
+end
+
+
+"""
     mask,(pm,pn,po,pp),(xi,yi,zi,ti) = domain(bathname,isglobal,lonr,latr,depthr,timer)
 
 Generate a geospatial domain based on the topography from the NetCDF file
@@ -30,3 +48,6 @@ function domain(bathname,isglobal,lonr,latr,depthr,timer)
 
     return mask3,(pm,pn,po,pp),(xi,yi,zi,ti)
 end
+
+
+

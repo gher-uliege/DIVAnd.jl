@@ -142,6 +142,11 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
         b[:,:] = nc["bat"].var[i,j];
     end
 
+    # hack
+    #b = -b
+    #b[isnan.(b)] = 10
+    # end hack
+    @show extrema(b)
     mask = b .< level;
 
     bx = X0 + rx*(i-1);

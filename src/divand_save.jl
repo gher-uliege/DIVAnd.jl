@@ -58,7 +58,7 @@ function divand_save2(filename,mask,xyi,fi,varname;
                        chunksizes = chunksizes[1:length(dims)])
 
         for (k,v) in ncvarattrib
-            ncvar.attrib[k] = ncvarattrib[v]
+            ncvar.attrib[k] = v
         end
 
         ncvar.attrib["_FillValue"] = type_save(fillval)

@@ -388,14 +388,14 @@ end
 
 """
      data,data_qv,obslon,obslat,obsdepth,obstime,obstime_qv,EDMO,LOCAL_CDI_ID =
-     loadSDNprofile(T,sheet,iprofile,P01name)
+     loadprofile(T,sheet,iprofile,P01name)
 
 Load a `iprofile`-th profile from the ODV spreadsheet `sheet` of the
 parameter `P01name`. The resulting vectors have the data type `T`
 (expect the quality flag and `obstime`) .
 """
 
-function loadSDNprofile(T,sheet,iprofile,P01name)
+function loadprofile(T,sheet,iprofile,P01name)
     const fillvalue = T(NaN)
     const filldate_jd = 0.
     const filldate = parsejd(filldate_jd)
@@ -457,7 +457,7 @@ end
 
 
 """
-     profiles,lons,lats,depths,times,ids = loadSDN(T,fnames,P01names)
+     profiles,lons,lats,depths,times,ids = load(T,fnames,P01names)
 
 Load all profiles in all file from the array `fnames` corresponding the
 one of the parameter names `P01names`. The resulting vectors have the data
@@ -467,7 +467,7 @@ type `T` (expect `times` and `ids` which are vectors of `DateTime` and
 No checks are done if the units are consistent.
 """
 
-function loadSDN(T,fnames,P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
+function load(T,fnames::Vector{<:AbstractString},P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
     profiles = T[]
     lons = T[]
     lats = T[]
@@ -488,7 +488,7 @@ function loadSDN(T,fnames,P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
                 for iprofile = 1:nprofiles(sheet)
 
                     data,data_qv,obslon,obslat,obsdepth,obstime,
-                    obstime_qv,EDMO,LOCAL_CDI_ID = loadSDNprofile(T,sheet,iprofile,P01name)
+                    obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,P01name)
 
                     # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
                     obsids = String[e * "-" * l for (e,l) in zip(EDMO,LOCAL_CDI_ID)]
@@ -522,7 +522,22 @@ function loadSDN(T,fnames,P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
     return profiles,lons,lats,depths,times,ids
 end
 
+"""
+     profiles,lons,lats,depths,times,ids = load(T,dir,P01names)
 
+Load all ODV files under the directory `dir` corresponding the
+one of the parameter names `P01names`. The resulting vectors have the data
+type `T` (expect `times` and `ids` which are vectors of `DateTime` and
+`String` respectively).
+
+No checks are done if the units are consistent.
+"""
+
+
+function load(T,dir::AbstractString,P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
+    fnames = cat(1,[[joinpath(root, file) for file in files if endswith(file,".txt")] for (root, dirs, files) in walkdir(dir)]...)
+    return load(T,fnames,P01names; qv_flags = qv_flags)
+end
 
 export readODVspreadsheet, listSDNparams, nprofiles
 

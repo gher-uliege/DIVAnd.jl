@@ -355,6 +355,12 @@ export diva
 
 include("divand_weights.jl");
 
+include("obsstat.jl");
+export statpos
+
+include("anamorphosis.jl");
+export Anam
+
 # ODV support
 include("ODVspreadsheet.jl");
 export ODVspreadsheet
@@ -366,6 +372,7 @@ export urn_str
 
 include("SDNMetadata.jl");
 export SDNMetadata
+
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 
