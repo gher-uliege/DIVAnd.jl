@@ -2,7 +2,7 @@
 
 function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,level::Number)
 
-    level = -abs(level);
+    #level = -abs(level);
 
     nc = Dataset(bath_name)
     x = nc["lon"].var[:]
@@ -93,7 +93,7 @@ end
     xi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)
 
 Generate a land-sea mask based on the topography from the NetCDF file
-`bathname`.
+`bathname`. In the water, level is negative.
 
 """
 
@@ -102,7 +102,7 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     dxi = xi[2] - xi[1]
     dyi = yi[2] - yi[1]
 
-    level = -abs(level);
+    #level = -abs(level);
 
     nc = Dataset(bath_name)
     x = nc["lon"].var[:]
