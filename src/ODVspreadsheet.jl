@@ -505,6 +505,8 @@ function load(T,fnames::Vector{<:AbstractString},P01names; qv_flags = [GOOD_VALU
                         good_time[:] =  good_time .| (obstime_qv .== flag)
                     end
 
+                    # time quality flag can also be absent
+                    good_time[:] =  good_time .| (obstime_qv .== "")
 
                     good = good_data .& good_time
 
