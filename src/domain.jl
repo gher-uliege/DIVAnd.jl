@@ -8,7 +8,7 @@ Generate a 2D geospatial domain based on the topography from the NetCDF file
 function domain(bathname,isglobal,lonr,latr)
     mask,(pm,pn),(xi,yi) = divand.divand_rectdom(lonr,latr)
 
-    mxi,myi,mask = divand.load_mask(bathname,isglobal,lonr,latr,1.)
+    mxi,myi,mask = divand.load_mask(bathname,isglobal,lonr,latr,0.)
 
     pm,pn = divand.divand_metric(xi,yi)
 
