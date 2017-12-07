@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.load_mask",
     "category": "Function",
-    "text": "deprecated\n\n\n\ndeprecated\n\n\n\nxi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)\n\nGenerate a land-sea mask based on the topography from the NetCDF file bathname.\n\n\n\n"
+    "text": "deprecated\n\n\n\ndeprecated\n\n\n\nxi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)\n\nGenerate a land-sea mask based on the topography from the NetCDF file bathname. In the water, level is negative.\n\n\n\n"
 },
 
 {
@@ -70,6 +70,14 @@ var documenterSearchIndex = {"docs": [
     "title": "divand.jl documentation",
     "category": "section",
     "text": "divandrun\ndivandgo\ndivand_averaged_bg\nload_mask\ndomain\nSDNMetadata\ndivand.divand_save2"
+},
+
+{
+    "location": "index.html#Examples-1",
+    "page": "divand.jl documentation",
+    "title": "Examples",
+    "category": "section",
+    "text": "To run the example, you need to install PyPlot. In the folder examples of divand, you can run e.g. the example divand_simple_example_1D.jl by issuing:# cd(\"/path/to/divand/examples\")\ninclude(\"divand_simple_example_1D.jl\")Replace /path/to/divand/ by the installation directory of divand which is the output of Pkg.dir(\"divand\") if you installed divand using Julias package manager."
 },
 
 {
@@ -173,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "Update the documentation",
     "category": "section",
-    "text": "Installpip3 install --user mkdocs\npip3 install --user python-markdown-mathPkg.add(\"Documenter\")"
+    "text": "InstallPkg.add(\"Documenter\")"
 },
 
 ]}
