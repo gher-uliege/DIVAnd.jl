@@ -14,6 +14,19 @@ SDNMetadata
 divand.divand_save2
 ```
 
+# Examples
+
+To run the example, you need to install `PyPlot`.
+In the folder `examples` of divand, you can run e.g. the example `divand_simple_example_1D.jl` by issuing:
+
+```julia
+# cd("/path/to/divand/examples")
+include("divand_simple_example_1D.jl")
+```
+
+Replace `/path/to/divand/` by the installation directory of divand which is the output of `Pkg.dir("divand")` if you installed `divand` using Julias package manager.
+
+
 # Vocabulary
 
 urn_str
@@ -37,11 +50,6 @@ Vocab.splitURL
 ## Update the documentation
 
 Install
-
-```bash
-pip3 install --user mkdocs
-pip3 install --user python-markdown-math
-```
 
 ```julia
 Pkg.add("Documenter")
