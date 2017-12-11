@@ -295,7 +295,7 @@ reference value is taken from
 https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm
 """
 
-parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int,(t - 2454141.5) * (24*60*60*1000)))
+parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454141.5) * (24*60*60*1000)))
 
 
 """
@@ -318,6 +318,7 @@ function SDNparse!(col,fillmode,fillvalue,data)
 
                 data[i] = data[i-1]
             else
+                #@show length(data),i
                 data[i] == fillvalue
             end
         else
@@ -388,25 +389,35 @@ end
 
 """
      data,data_qv,obslon,obslat,obsdepth,obstime,obstime_qv,EDMO,LOCAL_CDI_ID =
-     loadprofile(T,sheet,iprofile,P01name)
+     loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
 
 Load a `iprofile`-th profile from the ODV spreadsheet `sheet` of the
-parameter `P01name`. The resulting vectors have the data type `T`
+parameter `dataname`. If `nametype` is `:P01` (default), the
+dataname is the P01 vocabulary name with the SDN prefix. If nametype is 
+`:localname`, then it is the ODV column header.
+ The resulting vectors have the data type `T`
 (expect the quality flag and `obstime`) .
 """
 
-function loadprofile(T,sheet,iprofile,P01name)
+function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
     const fillvalue = T(NaN)
     const filldate_jd = 0.
     const filldate = parsejd(filldate_jd)
 
     profile = sheet.profileList[iprofile]
-
     locnames = localnames(sheet)
     P01names = listSDNparams(sheet)
 
-    data_locname = localnames(sheet,P01name)[1]
-    data,data_qv = loaddataqv(sheet,profile,data_locname,fillvalue)
+    localname =
+        if nametype == :P01
+            localnames(sheet,dataname)[1]
+        elseif nametype == :localname
+            dataname
+        else
+            error("nametype should be :P01 or :localname and not $(nametype)")
+        end
+        
+    data,data_qv = loaddataqv(sheet,profile,localname,fillvalue)
     sz = size(data)
 
     #cruise = loaddata(sheet,profile,"Cruise","")
@@ -422,6 +433,19 @@ function loadprofile(T,sheet,iprofile,P01name)
     if "SDN:P01::ADEPZZ01" in P01names
         localname_depth = localnames(sheet,"SDN:P01::ADEPZZ01")
         depth[:] = loaddata(sheet,profile,localname_depth,fillvalue)
+    elseif "Water depth" in locnames
+        depth[:] = loaddata(sheet,profile,"Water depth",fillvalue)
+        # if "Depth reference" in locnames
+        #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
+
+            
+        #     unexpected_depthref = ((depthref .!= "mean sea level") .&
+        #                            (depthref .!= "sea level"))
+            
+        #     if any(unexpected_depthref)
+        #         @show depthref[unexpected_depthref]
+        #     end
+        # end
     end
 
     time = Vector{DateTime}(sz)
@@ -457,17 +481,24 @@ end
 
 
 """
-     profiles,lons,lats,depths,times,ids = load(T,fnames,P01names)
+     profiles,lons,lats,depths,times,ids = load(T,fnames,datanames; 
+        qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
+        nametype = :P01)
 
-Load all profiles in all file from the array `fnames` corresponding the
-one of the parameter names `P01names`. The resulting vectors have the data
-type `T` (expect `times` and `ids` which are vectors of `DateTime` and
-`String` respectively).
+Load all profiles in all file from the array `fnames` corresponding to
+one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
+datanames are P01 vocabulary names with the SDN prefix. If nametype is 
+`:localname`, then they are the ODV column header.
+The resulting vectors have the data type `T` (expect `times` and `ids` which 
+are vectors of `DateTime` and `String` respectively). Only values matching the 
+quality flag `qv_flags` are retained.
 
 No checks are done if the units are consistent.
 """
 
-function load(T,fnames::Vector{<:AbstractString},P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
+function load(T,fnames::Vector{<:AbstractString},datanames;
+              qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
+              nametype = :P01)
     profiles = T[]
     lons = T[]
     lats = T[]
@@ -483,12 +514,25 @@ function load(T,fnames::Vector{<:AbstractString},P01names; qv_flags = [GOOD_VALU
         sheet_P01names = listSDNparams(sheet)
 
         # loop over all parameters
-        for P01name in P01names
-            if P01name in sheet_P01names
-                for iprofile = 1:nprofiles(sheet)
+        for dataname in datanames
+            if nametype == :P01
+                if !(dataname in sheet_P01names)
+                    # ignore this file
+                    @show sheet_P01names
+                    warn("no data in $(fname)")
+                    continue
+                end
+            elseif nametype == :localname
+                if !(dataname in localnames(sheet))
+                    # ignore this file
+                    warn("no data in $(fname)")
+                    continue
+                end
+            end
 
+            for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obstime,
-                    obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,P01name)
+                    obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname; nametype = nametype)
 
                     # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
                     obsids = String[e * "-" * l for (e,l) in zip(EDMO,LOCAL_CDI_ID)]
@@ -516,7 +560,6 @@ function load(T,fnames::Vector{<:AbstractString},P01names; qv_flags = [GOOD_VALU
                     append!(depths,obsdepth[good])
                     append!(times,obstime[good])
                     append!(ids,obsids[good])
-                end
             end
         end
     end
@@ -536,9 +579,11 @@ No checks are done if the units are consistent.
 """
 
 
-function load(T,dir::AbstractString,P01names; qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE])
+function load(T,dir::AbstractString,datanames;
+              qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
+              nametype = :P01)
     fnames = cat(1,[[joinpath(root, file) for file in files if endswith(file,".txt")] for (root, dirs, files) in walkdir(dir)]...)
-    return load(T,fnames,P01names; qv_flags = qv_flags)
+    return load(T,fnames,datanames; qv_flags = qv_flags, nametype = nametype)
 end
 
 export readODVspreadsheet, listSDNparams, nprofiles
