@@ -17,4 +17,4 @@
 //<subject>SDN:LOCAL:Salinity</subject><object>SDN:P01::ODSDM021</object><units>SDN:P06::UPPT</units>
 //
 Cruise	Station	Type	yyyy-mm-ddThh:mm:ss.sss	Longitude [degrees_east]	Latitude [degrees_north]	LOCAL_CDI_ID	EDMO_code	Bot. Depth [m]	Sampling depth [m]	QV:SEADATANET	Temperature [degC]	QV:SEADATANET	Nitrate NO3-N [umol/l]	QV:SEADATANET	Sum_Nitrate_and_Nitrite [umol/l]	QV:SEADATANET	Silicate SiO4-Si [umol/l]	QV:SEADATANET	Suspended solids [mg/l]	QV:SEADATANET	Nitrite NO2-N [umol/l]	QV:SEADATANET	Ammonium NH4-N [umol/l]	QV:SEADATANET	Dissolved oxygen [mg/l]	QV:SEADATANET	Phaeophytin-a [ug/l]	QV:SEADATANET	Phosphate PO4-P [umol/l]	QV:SEADATANET	Chlorophyll-a [ug/l]	QV:SEADATANET	pH [pH units]	QV:SEADATANET	Salinity [ppt]	QV:SEADATANET
-BE2016/03A	S01	B	2010-01-01T00:00:00.000	10	20	water_sample2	1234	9999.0	3	9		9		9	59	1	37.5	1	3.74666666666666666666666666666666666667E01	1	.54	1	2.95	1		9		9	1.55	1		9	8.15	1	29.8736	1
+BE2016/03A	S01	B	2010-01-01T00:00:00.000	10	20	water_sample2	1234	9999.0	3	9		9		9	59	1	37.5	1	3.74666666666666666666666666666666666667E01	1	.54	1	2.95	1		9		9	1.55	1		9	8.15	1	30	1
