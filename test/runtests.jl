@@ -33,6 +33,10 @@ import Base.LinAlg.BLAS
     include("test_3dvar.jl");
 
     include("test_4dvar.jl");
+
+    # comparision with analytical kernels
+    include("test_ndvar_point.jl");
+
     include("test_divandgo.jl");
 
 
