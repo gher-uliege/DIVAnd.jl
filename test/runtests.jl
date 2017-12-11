@@ -50,6 +50,9 @@ import Base.LinAlg.BLAS
     # SDN Vocabulary
     include("test_vocab.jl");
 
+    # SDN ODVspreadsheet
+    include("test_ODVspreadsheet.jl");
+    
     # SDN metadata
     include("test_metadata.jl");
 
