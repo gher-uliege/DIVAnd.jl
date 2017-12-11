@@ -1,10 +1,10 @@
 using Base.Test
 
-#import divand
+import divand
 
-#ODVspreadsheet = divand.ODVspreadsheet
+ODVspreadsheet = divand.ODVspreadsheet
 
-import ODVspreadsheet
+#import ODVspreadsheet
 
 fname = joinpath(dirname(@__FILE__),"..","data","sample_ODV.txt")
 
@@ -23,3 +23,5 @@ fnames = [joinpath(dirname(@__FILE__),"..","data",n) for n in ["sample_ODV.txt",
 
 P01names = ["SDN:P01::ODSDM021"]
 profiles,lons,lats,depths,times,ids = ODVspreadsheet.load(T,fnames,P01names)
+
+
