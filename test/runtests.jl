@@ -28,6 +28,10 @@ import Base.LinAlg.BLAS
     include("test_2dvar_cv.jl");
     include("test_2dvar_matfun.jl");
     include("test_2dvar_qc.jl");
+
+    include("test_2dvar_outside.jl");
+
+
     include("test_variableLandpmn.jl")
 
     include("test_3dvar.jl");
@@ -56,13 +60,13 @@ import Base.LinAlg.BLAS
 
     # SDN ODVspreadsheet
     include("test_ODVspreadsheet.jl");
-    
+
     # SDN metadata
     include("test_metadata.jl");
 
     # Anamorphosis
     include("test_anam.jl");
-    
+
     # test divand_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1
