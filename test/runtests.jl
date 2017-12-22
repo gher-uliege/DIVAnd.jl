@@ -27,6 +27,8 @@ import Base.LinAlg.BLAS
     #include("test_2dvar_jog.jl");
     include("test_2dvar_error.jl");
 
+    include("test_2dvar_all_masked.jl");
+
     # cross-validation
     include("test_2dvar_cv.jl");
     include("test_2dvar_matfun.jl");
