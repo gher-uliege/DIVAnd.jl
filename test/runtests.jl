@@ -3,6 +3,9 @@ using Base.Test
 import Base.LinAlg.BLAS
 
 @testset "divand" begin
+    # ndgrid
+    include("test_ndgrid.jl");
+
     include("test_covaris.jl");
 
     # conjugate gradient
@@ -50,6 +53,9 @@ import Base.LinAlg.BLAS
     # SDN Vocabulary
     include("test_vocab.jl");
 
+    # SDN ODVspreadsheet
+    include("test_ODVspreadsheet.jl");
+    
     # SDN metadata
     include("test_metadata.jl");
 

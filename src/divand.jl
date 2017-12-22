@@ -170,6 +170,10 @@ end
             )
     end
 
+# ndgrid* functions are from 
+# https://github.com/JuliaLang/julia/blob/master/examples/ndgrid.jl
+# Licence MIT
+
 function ndgrid_fill(a, v, s, snext)
     for j = 1:length(a)
         a[j] = v[div(rem(j-1, snext), s)+1]
@@ -177,13 +181,13 @@ function ndgrid_fill(a, v, s, snext)
 end
 
 # type stable
-function ndgrid{T}(v1::AbstractVector{T},v2::AbstractVector{T})
+function ndgrid(v1::AbstractVector{T},v2::AbstractVector{T}) where T
     return ([x1 for x1 in v1, x2 in v2],
             [x2 for x1 in v1, x2 in v2])
 end
 
 
-function ndgrid{T}(vs::AbstractVector{T}...)
+function ndgrid(vs::AbstractVector{T}...) where T
     n = length(vs)
     sz = map(length, vs)
     out = ntuple(i->Array{T}(sz), n)
@@ -198,6 +202,14 @@ function ndgrid{T}(vs::AbstractVector{T}...)
     out
 end
 
+
+# https://stackoverflow.com/questions/31235469/array-type-promotion-in-julia
+function promote_array(arrays...)
+    eltype = Base.promote_eltype(arrays...)
+    tuple([convert(Array{eltype}, array) for array in arrays]...)
+end
+
+ndgrid(vs...) = ndgrid(promote_array(vs...)...)
 
 """concatenate diagonal matrices"""
 function blkdiag(X::Diagonal...)

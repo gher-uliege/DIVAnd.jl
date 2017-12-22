@@ -44,10 +44,18 @@ function divand_obs(s,xi,x,yo,R; I = [])
     nout = sum(out);
     if nout != 0
         noutbbox = sum(outbbox);
-        #    fprintf(1,'Observations out of bounding box: %d and touching land %d\n',...
-        #  noutbbox,nout-noutbbox);
+        #warn("Observations out of bounding box: $(noutbbox) and touching land $(nout-noutbbox)")
     end
 
+    # NaN points
+    nanobs = isnan.(yo)
+    nnanobs = sum(nanobs)
+    if nnanobs != 0
+        out = out .| nanobs
+        yo = deepcopy(yo)
+        yo[nanobs] = 0.
+        warn("Observations equal to NaN: $(nnanobs)")
+    end
 
     H = H * sparse_pack(mask)';
 
