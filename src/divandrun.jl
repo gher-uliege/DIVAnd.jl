@@ -135,12 +135,6 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    )
 
 
-    # check inputs
-    if !any(mask[:])
-        warn("no sea points in mask, will return NaN");
-        return fill!(Array(Float64,size(mask)),NaN),0
-    end
-
     #       @show alphabc
     #       @show moddim
 
@@ -148,6 +142,12 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     #For testing this version of alphabc deactivate the other one
     s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
+
+    # check inputs
+    if !any(mask[:])
+        warn("no sea points in mask, will return NaN");
+        return fill(NaN,size(mask)),s
+    end
 
     s.betap = 0;
     s.EOF_lambda = EOF_lambda;

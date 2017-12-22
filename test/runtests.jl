@@ -3,6 +3,9 @@ using Base.Test
 import Base.LinAlg.BLAS
 
 @testset "divand" begin
+    # ndgrid
+    include("test_ndgrid.jl");
+
     include("test_covaris.jl");
 
     # conjugate gradient
@@ -23,6 +26,8 @@ import Base.LinAlg.BLAS
     include("test_2dvar_iter.jl");
     #include("test_2dvar_jog.jl");
     include("test_2dvar_error.jl");
+
+    include("test_2dvar_all_masked.jl");
 
     # cross-validation
     include("test_2dvar_cv.jl");
