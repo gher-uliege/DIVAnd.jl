@@ -156,9 +156,9 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
         @nexprs $N m->begin
         pm_i = pmn[m]
         if (m .== j)
-           (@nref $N tmp i) *= ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+            (@nref $N tmp i) *= 0.5 * ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
         else
-           (@nref $N tmp i) /= ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+            (@nref $N tmp i) /= 0.5 * ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
         end
 
         if !(@nref $N mask i) || !(@nref $N mask l->(l==j?i_l+1:i_l))

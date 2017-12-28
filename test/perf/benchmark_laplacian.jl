@@ -1,6 +1,6 @@
 using Base.Cartesian
 using Base.Test
-using divand
+import divand
 
 sz = (1000,1000)
 #sz = (100,100)
