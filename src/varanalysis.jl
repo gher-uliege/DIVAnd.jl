@@ -18,9 +18,9 @@ Symmetric matrix
 
 SB = √(β) (1 + α L)^(nmax/2) W^{-1}
 
+where W is the volumne of the corresponding grid cell.
+The background error covariance matrix B is SB W SB
 """
-
-
 
 function decompB!{T}(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx)
     work2[:] = 0
@@ -41,6 +41,11 @@ end
 
 """
 Variational analysis similar to 3D-var
+
+
+  | x + W^1/2 * SB^1/2 * H' * (R \ (H * SB^1/2 * W^1/2 * x ))   -   W^1/2 SB^{1/2} * H' * (R \ yo) | 
+     <  
+  tol * s.sv.n / length(yo)  * | W^1/2 SB^{1/2} * H' * (R \ yo) |
 
 Kernel is the solution of the n-dimensional diffusion equation
 
@@ -92,8 +97,6 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     # 10% safety margin
     α = α0 / 1.1
 
-    # number of iterations
-    #nmax = round(Int,1/(2*α))
     # number of iterations 1/(2*α) (round to the closest be even number)
     nmax = 2*round(Int,1/(4*α))
     @show nmax
