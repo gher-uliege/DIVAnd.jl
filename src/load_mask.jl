@@ -148,7 +148,7 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     #b = -b
     #b[isnan.(b)] = 10
     # end hack
-    @show extrema(b)
+    #@show extrema(b)
     mask = b .< level;
 
     bx = X0 + rx*(i-1);

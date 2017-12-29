@@ -280,8 +280,14 @@ Len = len_harmonise(len,mask)
 Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
 a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
 """
-len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len,size(mask)) for i=1:N)...)
-len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len[i],size(mask)) for i=1:N)...)
+function len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    return ((fill(len,size(mask)) for i=1:N)...)
+end
+
+function len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    return ((fill(len[i],size(mask)) for i=1:N)...)
+end
+
 function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
     for i=1:N
         if size(mask) != size(len[i])
@@ -291,6 +297,12 @@ function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::Ab
 
     return len
 end
+
+function len_harmonize(len,mask::AbstractArray{Bool,N}) where N
+    # promote all lens to a common type
+    return len_harmonize(promote_array(len...),mask)
+end
+
 
 
 include("sparse_operator.jl");
