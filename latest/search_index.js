@@ -57,11 +57,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#divand.divand_save2",
+    "location": "index.html#divand.save",
     "page": "divand.jl documentation",
-    "title": "divand.divand_save2",
+    "title": "divand.save",
     "category": "Function",
-    "text": "divand_save2(filename,mask,xyi,fi,varname;\n                  ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nfilename: the name of the NetCDF file\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.\nxyi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\n\n\n\n"
+    "text": "save(filename,xyi,fi,varname;\n                      ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nfilename: the name of the NetCDF file\nxyi: tuple with n vectors. Every element in this tuple represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\n\n\n\n"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.jl documentation",
     "category": "section",
-    "text": "divandrun\ndivandgo\ndivand_averaged_bg\nload_mask\ndomain\nSDNMetadata\ndivand.divand_save2"
+    "text": "divandrun\ndivandgo\ndivand_averaged_bg\nload_mask\ndomain\nSDNMetadata\ndivand.save"
 },
 
 {
