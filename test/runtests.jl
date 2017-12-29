@@ -69,6 +69,9 @@ import Base.LinAlg.BLAS
     # SDN metadata
     include("test_metadata.jl");
 
+    # Saving data as NetCDF file
+    include("test_save.jl");
+    
     # Anamorphosis
     include("test_anam.jl");
 

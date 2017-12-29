@@ -11,7 +11,7 @@ divand_averaged_bg
 load_mask
 domain
 SDNMetadata
-divand.divand_save2
+divand.save
 ```
 
 # Examples
