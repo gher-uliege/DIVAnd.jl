@@ -23,9 +23,17 @@ The background error covariance matrix B is SB W SB
 """
 
 function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) where T
-    work2[:] = 0
-    work2[sv.mask[1]] = x
-    work2[:] = work2[:] .* ivol[:]
+    for i in eachindex(work2)
+        if sv.mask[1][i]
+            work2[i] = x[i] * ivol[i]
+        else
+            work2[i] = 0
+        end
+    end
+            
+    # work2[:] = 0
+    # work2[sv.mask[1]] = x
+    # work2[:] = work2[:] .* ivol[:]
 
     for niter = 1:(nmax ÷ 2)
         divand_laplacian_apply!(ivol,nus,work2,work1)
@@ -33,10 +41,14 @@ function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) whe
         BLAS.axpy!(α,work1,work2)
     end
 
-    work2[:] = β * work2
+    for i in eachindex(work2)
+        work2[i] = β * work2[i]
+    end
 
     decompBx[:] = pack(sv,(work2,))
 end
+
+#function A_ldiv_B!(
 
 
 """
@@ -66,7 +78,11 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
                      f::AbstractVector{T},len,epsilon2;
                      tol::T = 1e-5,
                      maxit::Int = 100000,
-                     progress = (iter,x,r,tol2,fun!,b) -> nothing) where N where T
+                     progress = (iter,x,r,tol2,fun!,b) -> nothing,
+                     kwargs...) where N where T
+
+    # all keyword agruments as a dictionary
+    kw = Dict(kwargs)
     
     n = ndims(mask)
 
@@ -140,17 +156,35 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     
     work1 = zeros(size(mask))
     work2 = zeros(size(mask))
-    tmpx = zeros(s.sv.n)    
+    tmpx = zeros(s.sv.n)
+    Htmpx = zeros(length(f))
+    RHtmpx = zeros(length(f))
+    HRHtmpx = zeros(s.sv.n)
+    
     b = zeros(s.sv.n)
 
     # x + W^1/2 * SB^1/2 * H' * (R \ (H * SB^1/2 * W^1/2 * x ))
     function fun!(x,fx)
         # tmpx = SB^1/2 W^1/2 x
         decompB!(s.sv,β,ivol,nus,nmax,α,sW * x,work1,work2,tmpx)
-        # tmpx = SB^1/2 * H' * (R \ (H * SB^1/2 x ))
-        decompB!(s.sv,β,ivol,nus,nmax,α,H' * (R \ (H * tmpx)),work1,work2,tmpx)
+
+        # Htmpx = H * SB^1/2 W^1/2 x
+        A_mul_B!(Htmpx,H,tmpx)
+
+        # Htmpx = R \ (H * SB^1/2 W^1/2 x)
+        A_ldiv_B!(R,Htmpx)
+
+        # HRHtmpx = H' * (R \ (H * SB^1/2 W^1/2 x))
+        At_mul_B!(HRHtmpx,H,Htmpx)
+        
+        # tmpx = SB^1/2 * H' * (R \ (H * SB^1/2 W^1/2 x ))
+        decompB!(s.sv,β,ivol,nus,nmax,α,HRHtmpx,work1,work2,tmpx)
+        
         # fx = x + W^1/2 SB^1/2 * H' * (R \ (H * SB^1/2 x ))
-        fx[:] = x + sW * tmpx
+        A_mul_B!(fx,sW,tmpx)
+        for i in 1:length(fx)
+            fx[i] += x[i]
+        end
     end
 
     # b = W^1/2 SB^{1/2} * H' * (R \ yo)
