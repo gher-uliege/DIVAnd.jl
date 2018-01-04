@@ -99,7 +99,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
 
     # number of iterations 1/(2*α) (round to the closest be even number)
     nmax = 2*round(Int,1/(4*α))
-    @show nmax
+    #@show nmax
 
     # Green's functions
     # ∂c/∂t =  ∇ ⋅ (D ∇ c)
@@ -132,7 +132,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     
     #W = Diagonal(vol)
 
-    @show Ld
+    #@show Ld
     β = ((4π * α * nmax)^(n/4) * sqrt(prod(Ld)))   
     
     #H = H * Diagonal(sqrt.(ivol[mask]))
@@ -163,7 +163,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
 
     # xp = (I + W^1/2 SB^1/2 * H' * (R^{-1} * (H * SB^1/2 * W^1/2)) )^{-1} b
 
-    @show divand.checksym(s.sv.n,fun!)
+    #@show divand.checksym(s.sv.n,fun!)
           
     xp,success,s.niter = divand.conjugategradient(
         fun!,b; tol = tol, maxit = maxit,
@@ -172,12 +172,12 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     # tmpx = SB^1/2 * W^1/2 * xp
     decompB!(s.sv,β,ivol,nus,nmax,α,sW * xp,work1,work2,tmpx)
 
-    @show "1",mean(β),nmax,α
+    #@show mean(β),nmax,α
     
     # debugging function
     function decompB(x)
 
-        @show mean(β),nmax,α
+        #@show mean(β),nmax,α
         
         decompBx = similar(x)
         divand.decompB!(s.sv,β,ivol,nus,nmax,α,x,work1,work2,decompBx)
