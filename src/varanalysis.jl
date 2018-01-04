@@ -23,17 +23,18 @@ The background error covariance matrix B is SB W SB
 """
 
 function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) where T
-    for i in eachindex(work2)
-        if sv.mask[1][i]
-            work2[i] = x[i] * ivol[i]
-        else
-            work2[i] = 0
-        end
-    end
+    # does not work is some points are masked
+    # for i in eachindex(work2)
+    #     if sv.mask[1][i]
+    #         work2[i] = x[i] * ivol[i]
+    #     else
+    #         work2[i] = 0
+    #     end
+    # end
             
-    # work2[:] = 0
-    # work2[sv.mask[1]] = x
-    # work2[:] = work2[:] .* ivol[:]
+    work2[:] = 0
+    work2[sv.mask[1]] = x
+    work2[:] = work2[:] .* ivol[:]
 
     for niter = 1:(nmax ÷ 2)
         divand_laplacian_apply!(ivol,nus,work2,work1)
@@ -53,6 +54,12 @@ end
 
 """
 Variational analysis similar to 3D-var
+
+Input:
+
+  x0: start vector for iteration, at output it is the last state of the 
+   iteration. Note that x0 is related to the analysis xa by
+      xa = SB^1/2 * W^1/2 * xa
 
 
   | x + W^1/2 * SB^1/2 * H' * (R \ (H * SB^1/2 * W^1/2 * x ))   -   W^1/2 SB^{1/2} * H' * (R \ yo) | 
@@ -109,6 +116,8 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     #α0 = dx_min^2/(2 * nu_max * n)
     #α0 = 1/(2 * n * max([maximum(pmn[i].^2 .* nu[i]) for i in 1:n]...)) :: T
     # ok
+
+    #@show [maximum(pmn[i].^2 .* nu[i]) for i in 1:n]
     α0 = 1/(2 * sum([maximum(pmn[i].^2 .* nu[i]) for i in 1:n])) :: T
     
     # 10% safety margin
