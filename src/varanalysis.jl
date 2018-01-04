@@ -22,7 +22,7 @@ where W is the volumne of the corresponding grid cell.
 The background error covariance matrix B is SB W SB
 """
 
-function decompB!{T}(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx)
+function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) where T
     work2[:] = 0
     work2[sv.mask[1]] = x
     work2[:] = work2[:] .* ivol[:]
@@ -62,10 +62,11 @@ http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """
 
-function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector{T},len,epsilon2;
-                          tol::T = 1e-5,
-                          maxit::Int = 100000,
-                          progress = (iter,x,r,tol2,fun!,b) -> nothing)
+function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
+                     f::AbstractVector{T},len,epsilon2;
+                     tol::T = 1e-5,
+                     maxit::Int = 100000,
+                     progress = (iter,x,r,tol2,fun!,b) -> nothing) where N where T
     
     n = ndims(mask)
 
