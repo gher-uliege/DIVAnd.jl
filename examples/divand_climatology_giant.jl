@@ -124,7 +124,7 @@ z=0
 
 vaa=va-ffb
 
-fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2,:none;moddim=moddim,MEMTOFIT=3.5)
+fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2,:none;moddim=moddim,MEMTOFIT=3.0)
 
 
 #fi=fi+fmb+vm
