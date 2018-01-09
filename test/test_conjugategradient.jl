@@ -2,8 +2,8 @@ using Base.Test
 
 n = 10; # dimension
 
-S = randn(n,n);
-b = randn(n);
+S = [(i+j)/100. for i = 1:n, j = 1:n]
+b = ones(n);
 
 A = 10*eye(n,n) + 0.01*S*S'; # symmetric and positive defined matrix
 function fun!(x,fx)
