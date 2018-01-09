@@ -25,4 +25,4 @@ fi2 = ds[varname][:]
 close(ds)
 
 @test fi2[mask] == fi[mask]
-@test .!isna.(fi2) == mask
+@test .!ismissing.(fi2) == mask
