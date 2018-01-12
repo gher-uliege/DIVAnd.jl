@@ -44,11 +44,6 @@ defined by the coordinates `xi` and the scales factors `pmn`.
           m=2   1   3   3   1   (n=3,4)
           ...
 
-* `EOF`, EOF: sub-space constraint. Orthogonal (EOF' WE^2 EOF = I) (units of
-       EOF: m^(-n/2))
-
-* `EOF_scaling`, EOF_scaling: (dimensional)
-
 * `constraints`: a structure with user specified constrain
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
@@ -109,7 +104,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 # ::Union{T,AbstractVector{T},AbstractMatrix{T}}
-function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
+function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    velocity = (),
                    primal::Bool = true,
                    factorize = true,
@@ -138,7 +133,6 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
     # observation error covariance (scaled)
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
     # boundary
-
     # For testing this version of alphabc deactivate the other one
     s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
 
@@ -179,7 +173,7 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     divand_factorize!(s);
 
-    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0; btrunc = btrunc);
+    fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
 
     return fi,s
 end
