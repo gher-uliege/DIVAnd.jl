@@ -39,7 +39,8 @@ Save the result of the analysis in a NetCDF file .
   * `ncglobalattrib`: a dictionary with the global attributes
   * `ncvarattrib`: a dictionary with the variable attributes
   * `relerr`: relative error
-
+  * `timeorigin`: time origin for the time units attribute (default is 
+1900-01-01 00:00:00)
 """
 
 
@@ -50,6 +51,7 @@ function ncfile(filename,xyi,varname;
                 deflatelevel = 5,
                 chunksizes = [100,100,1,1],
                 type_save = Float32,
+                timeorigin = DateTime(1900,1,1,0,0,0),
                 kwargs...)
 
     function defnD(ds,varname,dims,ncvarattrib)
@@ -118,7 +120,8 @@ function ncfile(filename,xyi,varname;
     ncdepth.attrib["long_name"] = "depth below sea level"
     
     nctime = defVar(ds,"time", Float64, ("time",))
-    nctime.attrib["units"] = "days since 1900-01-01 00:00:00"
+    nctime.attrib["units"] = "days since " *
+        Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
     nctime.attrib["standard_name"] = "time"
     nctime.attrib["long_name"] = "time"
     nctime.attrib["calendar"] = "standard"
