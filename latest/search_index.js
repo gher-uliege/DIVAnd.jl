@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.divandgo",
     "category": "Function",
-    "text": "Compute a variational analysis of arbitrarily located observations.\n\nfi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array fi represent the interpolated field at the grid defined by the coordinates xi and the scales factors pmn.\n\nInput:\n\nAs for divandrun but as a higher level routine which will automatically create windowing etc it also include the definition of the errormethod\n\nerrormethod : cpme none exact\n\nOutput:\n\nfi: the analysed field\ns: structure with an array s.P representing the analysed error covariance\n\n\n\n"
+    "text": "Compute a variational analysis of arbitrarily located observations.\n\nfi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array fi represent the interpolated field at the grid defined by the coordinates xi and the scales factors pmn.\n\nInput:\n\nAs for divandrun but as a higher level routine which will automatically create windowing etc it also include the definition of the errormethod\n\nerrormethod : :cpme (clever poormans method), :none or :exact\n\nOutput:\n\nfi: the analysed field\ns: structure with an array s.P representing the analysed error covariance\n\n\n\n"
 },
 
 {
