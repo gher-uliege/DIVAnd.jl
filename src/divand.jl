@@ -375,7 +375,7 @@ export domain
 
 # high-level interface
 include("diva.jl");
-export diva
+export diva, diva3d
 
 include("divand_weights.jl");
 
@@ -396,6 +396,9 @@ export urn_str
 
 include("SDNMetadata.jl");
 export SDNMetadata
+
+include("select_time.jl");
+
 
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
