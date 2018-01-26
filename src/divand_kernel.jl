@@ -1,17 +1,13 @@
 """
-Return the analytical kernel and normalization factor.
+    mu,K,len_scale = divand_kernel(n,alpha)
 
-mu,K,len_scale = divand_kernel(n,alpha)
+Return the analytical kernel and normalization factor.
 
 Analytical (normalized) kernels `K` for infinite domain in dimension `n` and for
 coefficients `alpha` and normalization factor `mu`.
-Input
-  n: number of dimensions
-  alpha: coefficients
-Output:
-  K(r): kernel function (function of the normalized distance `r`)
-  mu: normalization factor
-  len_scale: distance at which K(len_scale) = 0.6019072301972346 (which is besselk(1,1))
+
+`K(r)` is the kernel function (function of the normalized distance `r`), 
+`len_scale` is the distance at which `K(len_scale)` = 0.6019072301972346 (which is besselk(1,1))
 """
 
 function divand_kernel(n,alpha)
