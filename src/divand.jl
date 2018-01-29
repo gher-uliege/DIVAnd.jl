@@ -170,7 +170,7 @@ end
             )
     end
 
-# ndgrid* functions are from 
+# ndgrid* functions are from
 # https://github.com/JuliaLang/julia/blob/master/examples/ndgrid.jl
 # Licence MIT
 
@@ -303,6 +303,42 @@ function len_harmonize(len,mask::AbstractArray{Bool,N}) where N
     return len_harmonize(promote_array(len...),mask)
 end
 
+@inline function alpha_default(neff::Int)
+    # kernel should has be continuous derivative
+
+    # highest derivative in cost function
+    m = ceil(Int,1+neff/2)
+
+    # alpha is the (m+1)th row of the Pascal triangle:
+    # m=0         1
+    # m=1       1   1
+    # m=1     1   2   1
+    # m=2   1   3   3   1
+    # ...
+
+    m = ceil(Int,1+neff/2)
+    return [binomial(m,k) for k = 0:m]
+end
+
+
+"""
+    neff, alpha = alpha_default(Labs,alpha)
+
+Return a default value of alpha.
+"""
+
+@inline function alpha_default(Labs,alpha)
+    # must handle the case when Labs is zero in some dimension
+    # thus reducing the effective dimension
+    neff = sum([mean(L) > 0 for L in Labs])::Int
+
+    if isempty(alpha)
+        return neff, alpha_default(neff)
+    else
+        return neff, alpha
+    end
+
+end
 
 
 include("sparse_operator.jl");

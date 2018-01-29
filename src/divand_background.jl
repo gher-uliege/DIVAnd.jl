@@ -23,9 +23,9 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     # number of dimensions
     n = ndims(mask)
 
-    # must handle the case when Labs is zero in some dimension
-    # thus reducing the effective dimension
-    neff = sum([mean(L) > 0 for L in Labs])::Int
+    Labs = len_harmonize(Labs,mask)
+
+    neff, alpha = alpha_default(Labs,alpha)
 
     sz = size(mask)
 
@@ -34,26 +34,6 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     end
 
     iscyclic = moddim .> 0
-
-    Labs = len_harmonize(Labs,mask)
-
-    if isempty(alpha)
-        # kernel should has be continuous derivative
-
-        # highest derivative in cost function
-        m = Int(ceil(1+neff/2))
-
-        # alpha is the (m+1)th row of the Pascal triangle:
-        # m=0         1
-        # m=1       1   1
-        # m=1     1   2   1
-        # m=2   1   3   3   1
-        # ...
-
-        alpha = [binomial(m,k) for k = 0:m]
-    end
-
-
 
     # scale iB such that the diagonal of inv(iB) is 1 far from
     # the boundary
@@ -82,7 +62,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 
 
- 
+
 
     # mean correlation length in every dimension
     Ld = [mean(L) for L in Labs]
@@ -92,20 +72,20 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     geomean(v) = prod(v)^(1/length(v))
     L = geomean(Ld[Ld .> 0])
 
-	
+
 
 
     alphabc=0
 
 
- 
+
     s,D = divand_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...),iscyclic,mapindex,Labs)
 
     # D is laplacian (a dimensional, since nu = Labs.^2)
     sv = s.sv
     n = s.n
 
-    
+
     # Labsp: 1st index represents the dimensions
     #Labsp = permute(Labs,[n+1 1:n])
     #pmnp = permute(pmn,[n+1 1:n])
@@ -123,7 +103,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     d = .*(pmn[Ld .> 0]...)
 
-  
+
 
 	WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
 
@@ -191,7 +171,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 	# mean correlation legth
 
-	
+
 	s.Ld = Ld
 
 

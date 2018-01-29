@@ -1,10 +1,12 @@
 using Base.Test
 import divand
+using NLopt
+using LsqFit
 
 """
     meanx,stdx = stats(sumx,sumx2,N)
 
-Computes the mean `meanx` and the standard deviation `stdx` from the sum 
+Computes the mean `meanx` and the standard deviation `stdx` from the sum
 (`sumx`) and the sum of squares (`sumx2`) from `N` numbers.
 """
 
@@ -20,7 +22,7 @@ function stats(sumx,sumx2,N)
 
     # de-bias std
     stdx = stdx/(N-1)
-    
+
     stdx =
         if stdx < 0
             zero(stdx)
@@ -34,8 +36,8 @@ end
 """
     meanx,meany,stdx,stdy,covar,corr = stats(sumx,sumx2,sumy,sumy2,sumxy,N)
 
-Computes the mean `meanx` and the standard deviation `stdx` from the sum 
-(`sumx`) and the sum of squares (`sumx2`) from `N` numbers and 
+Computes the mean `meanx` and the standard deviation `stdx` from the sum
+(`sumx`) and the sum of squares (`sumx2`) from `N` numbers and
 similarily for the variable `y`. The function computes also the
 Pearson correlation `corr` and covariance `covar` between `x` and `y`.
 """
@@ -78,14 +80,14 @@ meanx,meany,stdx,stdy,covar,corr = stats(sumx,sumx2,sumy,sumy2,sumxy,length(x))
     @test corr ≈ -1
 end
 
-    
+
 
 
 
 function empiriccovar(x,v,distbin,min_count;
                       maxpoints = 1000000,
                       distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
-    
+
 
     pmax = length(distbin)-1;
     sumvivj = zeros(pmax);
@@ -94,22 +96,22 @@ function empiriccovar(x,v,distbin,min_count;
     sumvi2 = zeros(pmax);
     sumvj2 = zeros(pmax);
     count = zeros(pmax);
-    
+
     corr = zeros(pmax);
     covar = zeros(pmax);
     varx = zeros(pmax);
     count = zeros(pmax);
-    
+
     distx = (distbin[1:end-1] + distbin[2:end])/2;
-    
-    
+
+
 
     # coordinates of considered points
     xi = zeros(eltype(x[1]),length(x))
-    xj = zeros(eltype(x[1]),length(x))    
-    
+    xj = zeros(eltype(x[1]),length(x))
+
     for l=1:maxpoints
-    
+
         # random index
         i = rand(1:length(x[1]));
         j = rand(1:length(x[1]));
@@ -121,26 +123,26 @@ function empiriccovar(x,v,distbin,min_count;
 
         if isnan(v[i]) || isnan(v[j])
             # one point is masked
-            continue    
+            continue
         end
 
         #dist = distance(y(i1,j1),x(i1,j1),y(i2,j2),x(i2,j2));
         distance = distfun(xi,xj)
-  
+
         if distance >= distbin[end]
             # distance too large
-            continue    
+            continue
         end
-  
+
         p = findlast(distance .>= distbin)
-    
+
         if count[p] >= min_count
             # already enought points
-            continue    
+            continue
         end
-  
+
         #distbin(p) <= dist && dist < distbin(p+1)
-    
+
         sumvivj[p] += v[i] * v[j]
         sumvi[p]  += v[i]
         sumvj[p]  += v[j]
@@ -151,7 +153,7 @@ function empiriccovar(x,v,distbin,min_count;
         #if mod(l,1000) == 0
         #    @show count
         #end
-  
+
         if all(count .>= min_count)
             break
         end
@@ -165,15 +167,25 @@ function empiriccovar(x,v,distbin,min_count;
         #meanx,stdx = stats(sumvi[i] + sumvj[i],sumvi2[i] + sumvj2[i],2*count[i])
         #@show i, stdx, sqrt(varx[i])
     end
-    
+
 
     return distx,covar,corr,varx,count
 end
 
-function divafit(x,v,distbin,min_count,alpha)
+"""
+    alpha: if one correlation length is forced to zero during the anaylsis
+the values of alpha sould be set using the effective dimension.
+For example, if a 2D-analysis is simulated by forcing the vertical correlation
+length to zero, then alpha should be set to [1,2,1], otherwise alpha will be
+[1,3,3,1] (for for any proper 3D analysis).
+
+"""
+function divafit(x,v,distbin,min_count;
+                 alpha = divand.alpha_default(length(x)))
+
     @time distx,covar,corr,varx,count = empiriccovar(x,v,distbin,min_count)
 
-    # dimension
+    # number of dimensions
     n = length(x)
 
     mu,K,len_scale = divand.divand_kernel(n,alpha)
@@ -182,8 +194,80 @@ function divafit(x,v,distbin,min_count,alpha)
 
     len,var0 = fit.param
 
-    return len,var0,distx,covar
+    fitcovar = var0 *  K.(distx * len_scale/len)
+
+    return len,var0,distx,covar,fitcovar
 end
+
+"""
+
+See the note of alpha in `divafit` which also applies here.
+"""
+function divafit2(x,v,distbin,min_count;
+                  alpha = divand.alpha_default(length(x)))
+
+    seed = rand(UInt64)
+    # number of dimensions
+    n = length(x)
+
+    mu,K,len_scale = divand.divand_kernel(n,alpha)
+
+    function fitcovarlen(var0,lens)
+        # fix seed to get the same observations
+        srand(seed)
+
+        distx,covar,corr,varx,count = empiriccovar(
+            x,v,distbin,min_count;
+            maxpoints = 1000000,
+            distfun = (xi,xj) -> sqrt(sum(abs2,(xi-xj)./lens)))
+
+        fitcovar = var0 * K.(distx * len_scale)
+        return distx,covar,fitcovar,count
+    end
+
+    function fitt(p, grad::Vector #= unused =#)
+        var0 = p[1]
+        lens = p[2:3]
+
+        distx,covar,fitcovar,count = fitcovarlen(var0,lens)
+        # avoid NaNs
+        covar[count .== 0] = 0
+        fitness = sum(abs2,fitcovar - covar)
+
+
+        @show var0,lens,fitness
+        return fitness
+    end
+
+    n = length(x)
+    minlen = zeros(n)
+    maxlen = ones(n)
+    tolrel = 1e-4
+    len0 = ones(n)
+
+    maxvar0 = 1.
+    minvar0 = 0.
+
+    opt = Opt(:LN_COBYLA, 1+n)
+    lower_bounds!(opt, [minvar0, minlen...])
+    upper_bounds!(opt, [maxvar0, maxlen...])
+    xtol_rel!(opt,tolrel)
+
+    min_objective!(opt, fitt)
+
+    (minf,minx,ret) = optimize(opt, [var0, len0...])
+    println("got $minf at $minx after $count iterations (returned $ret)")
+
+
+    var0opt = minx[1]
+    lensopt = minx[2:end]
+
+    distx,covar,fitcovar,count = fitcovarlen(var0opt,lensopt)
+
+    return var0opt,lensopt,distx,covar,fitcovar
+end
+
+
 
 fname = "/home/abarth/projects/Julia/divand-example-data/BlackSea/Salinity.bigfile"
 
@@ -196,79 +280,22 @@ sel = (depth .> 10) .& Dates.month.(time) .== 1;
 x = (lon[sel],lat[sel]);
 v = value[sel] - mean(value[sel]);
 distbin = 0:0.5:10
-alpha = [1,2,1]
 
 
-len,var0,distx,covar = divafit(x,v,distbin,min_count,alpha)
+len,var0,distx,covar,fitcovar = divafit(x,v,distbin,min_count)
 
-    
-plot(distx,covar, label = "empirical covariance");
-plot(distx,var0 *  K.(distx * len_scale/len), label = "fitted function")
-legend()
-
-
-function fitcovarlen(var0,lens)
-    srand(123)
-
-    distx,covar,corr,varx,count = empiriccovar(
-        x,v,distbin,min_count;
-        maxpoints = 1000000,
-        distfun = (xi,xj) -> sqrt(sum(abs2,(xi-xj)./lens)))
-
-    fitcovar = var0 * K.(distx * len_scale)
-    return distx,covar,fitcovar,count
-end
-
-function fitt(p, grad::Vector)
-    var0 = p[1]
-    lens = p[2:3]
-    
-    # distx,covar,corr,varx,count = empiriccovar(
-    #     x,v,distbin,min_count;
-    #     maxpoints = 1000000,
-    #     distfun = (xi,xj) -> sqrt(sum(abs2,(xi-xj)./lens)))
-
-    # # avoid NaNs
-    # covar[count .== 0] = 0
-    # fitness = sum(abs2,var0 * K.(distx * len_scale) - covar)
-
-    distx,covar,fitcovar,count = fitcovarlen(var0,lens)
-    # avoid NaNs
-    covar[count .== 0] = 0
-    fitness = sum(abs2,fitcovar - covar)
-
-    
-    @show var0,lens,fitness
-    return fitness
-end
-
-n = length(x)
-minlen = zeros(n)
-maxlen = ones(n)
-tolrel = 1e-4
-len0 = ones(n)
-
-maxvar0 = 1.
-minvar0 = 0.
-
-opt = Opt(:LN_COBYLA, 1+n)
-lower_bounds!(opt, [minvar0, minlen...])
-upper_bounds!(opt, [maxvar0, maxlen...])
-xtol_rel!(opt,tolrel)
-
-min_objective!(opt, fitt)
-
-(minf,minx,ret) = optimize(opt, [var0, len0...])
-println("got $minf at $minx after $count iterations (returned $ret)")
-
-figure(2)
-
-var0opt = minx[1]
-lensopt = minx[2:end]
-
-distx,covar,fitcovar,count = fitcovarlen(var0opt,lensopt)
 
 plot(distx,covar, label = "empirical covariance");
 plot(distx,fitcovar, label = "fitted function")
 legend()
 
+
+var0opt,lensopt,distx,covar,fitcovar = divafit2(x,v,distbin,min_count)
+
+figure(2)
+
+
+plot(distx,covar, label = "empirical covariance");
+plot(distx,fitcovar, label = "fitted function")
+xlabel("normalized distance")
+legend()
