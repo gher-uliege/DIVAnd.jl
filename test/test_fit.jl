@@ -28,6 +28,7 @@ min_count = 50
 nobs = 1000;
 x = (2*pi*rand(nobs), 2*pi*rand(nobs))
 v = sin.(x[1]) .* sin.(x[2]);
+distbin = 0:0.5:10
 
 #@code_warntype fit(x,v,distbin,min_count)
 

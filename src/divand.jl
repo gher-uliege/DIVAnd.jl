@@ -317,7 +317,6 @@ end
     # m=2   1   3   3   1
     # ...
 
-    m = ceil(Int,1+neff/2)
     return Int[binomial(m,k) for k = 0:m]
 end
 
@@ -328,7 +327,7 @@ end
 Return a default value of alpha.
 """
 
-@inline function alpha_default(Labs,alpha::Vector{T}) :: Vector{T} where T
+@inline function alpha_default(Labs,alpha::Vector{T}) where T
     # must handle the case when Labs is zero in some dimension
     # thus reducing the effective dimension
     neff = sum([mean(L) > 0 for L in Labs])::Int
