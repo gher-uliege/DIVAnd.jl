@@ -71,9 +71,12 @@ import Base.LinAlg.BLAS
 
     # Saving data as NetCDF file
     include("test_save.jl");
-    
+
     # Anamorphosis
     include("test_anam.jl");
+
+    # Fitting covariance model
+    include("test_fit.jl");
 
     # test divand_filter3
     A = zeros(5,5,5,5,5)

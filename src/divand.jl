@@ -10,6 +10,7 @@ using Base.Cartesian
 using DataStructures
 import SpecialFunctions
 import HTTP
+using NLopt
 
 include("statevector.jl")
 
@@ -434,6 +435,8 @@ include("SDNMetadata.jl");
 export SDNMetadata
 
 include("select_time.jl");
+
+include("fit.jl");
 
 
 
