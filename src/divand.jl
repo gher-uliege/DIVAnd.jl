@@ -317,7 +317,7 @@ end
     # ...
 
     m = ceil(Int,1+neff/2)
-    return [binomial(m,k) for k = 0:m]
+    return Int[binomial(m,k) for k = 0:m]
 end
 
 
@@ -327,13 +327,13 @@ end
 Return a default value of alpha.
 """
 
-@inline function alpha_default(Labs,alpha)
+@inline function alpha_default(Labs,alpha::Vector{T}) :: Vector{T} where T
     # must handle the case when Labs is zero in some dimension
     # thus reducing the effective dimension
     neff = sum([mean(L) > 0 for L in Labs])::Int
 
     if isempty(alpha)
-        return neff, alpha_default(neff)
+        return neff, Vector{T}(alpha_default(neff))
     else
         return neff, alpha
     end

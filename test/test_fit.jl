@@ -183,6 +183,8 @@ length to zero, then alpha should be set to [1,2,1], otherwise alpha will be
 function divafit(x,v,distbin,min_count;
                  alpha = divand.alpha_default(length(x)))
 
+    len = 1.
+    var0 = 1.
     @time distx,covar,corr,varx,count = empiriccovar(x,v,distbin,min_count)
 
     # number of dimensions
@@ -190,7 +192,7 @@ function divafit(x,v,distbin,min_count;
 
     mu,K,len_scale = divand.divand_kernel(n,alpha)
     model(x,p) = p[2] * K(x * len_scale/p[1])
-    fit = curve_fit(model, distx, covar, [1.,1.])
+    fit = curve_fit(model, distx, covar, [len,var0])
 
     len,var0 = fit.param
 
@@ -203,12 +205,20 @@ end
 
 See the note of alpha in `divafit` which also applies here.
 """
-function divafit2(x,v,distbin,min_count;
-                  alpha = divand.alpha_default(length(x)))
-
-    seed = rand(UInt64)
+function divafit2(x,v,distbin,min_count)
     # number of dimensions
     n = length(x)
+
+    alpha = divand.alpha_default(length(x))
+    minlen = zeros(length(x))
+    maxlen = ones(length(x))
+    tolrel = 1e-4
+    len0 = ones(length(x))
+    var0 = 1.;
+    minvar0 = 0.
+    maxvar0 = 2.
+
+    const seed = rand(UInt64)
 
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
@@ -226,8 +236,8 @@ function divafit2(x,v,distbin,min_count;
     end
 
     function fitt(p, grad::Vector #= unused =#)
-        var0 = p[1]
-        lens = p[2:3]
+        local var0 = p[1]
+        local lens = p[2:3]
 
         distx,covar,fitcovar,count = fitcovarlen(var0,lens)
         # avoid NaNs
@@ -240,13 +250,6 @@ function divafit2(x,v,distbin,min_count;
     end
 
     n = length(x)
-    minlen = zeros(n)
-    maxlen = ones(n)
-    tolrel = 1e-4
-    len0 = ones(n)
-
-    maxvar0 = 1.
-    minvar0 = 0.
 
     opt = Opt(:LN_COBYLA, 1+n)
     lower_bounds!(opt, [minvar0, minlen...])
@@ -255,18 +258,19 @@ function divafit2(x,v,distbin,min_count;
 
     min_objective!(opt, fitt)
 
-    (minf,minx,ret) = optimize(opt, [var0, len0...])
+    minf,minx,ret = optimize(opt, Float64[var0, len0...])
     println("got $minf at $minx after $count iterations (returned $ret)")
 
 
-    var0opt = minx[1]
-    lensopt = minx[2:end]
+    var0opt = minx[1] :: Float64
+    lensopt = minx[2:end] :: Vector{Float64}
 
     distx,covar,fitcovar,count = fitcovarlen(var0opt,lensopt)
 
+#    distx,covar,fitcovar,count = fitcovarlen(var0,len0) :: Tuple{Vector{Float64},Vector{Float64},Vector{Float64},Vector{Int}}
+
     return var0opt,lensopt,distx,covar,fitcovar
 end
-
 
 
 fname = "/home/abarth/projects/Julia/divand-example-data/BlackSea/Salinity.bigfile"
@@ -280,6 +284,8 @@ sel = (depth .> 10) .& Dates.month.(time) .== 1;
 x = (lon[sel],lat[sel]);
 v = value[sel] - mean(value[sel]);
 distbin = 0:0.5:10
+
+@code_warntype divafit2(x,v,distbin,min_count)
 
 
 len,var0,distx,covar,fitcovar = divafit(x,v,distbin,min_count)
