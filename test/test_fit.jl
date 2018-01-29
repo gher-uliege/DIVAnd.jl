@@ -1,7 +1,6 @@
 using Base.Test
 import divand
 using NLopt
-using LsqFit
 
 """
     meanx,stdx = stats(sumx,sumx2,N)
@@ -82,7 +81,18 @@ end
 
 
 
+"""
+    distx,covar,corr,varx,count = empiriccovar(x,v,distbin,min_count;
+                              maxpoints = 1000000,
+                              distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
 
+Compute the covariance, correlation and variance of a cloud of data points with
+the value `v` (a vector) and the location `x` (a tuple of vectors) grouped by
+distance. Random pairs are choosen and grouped by their distance
+(computed by `distfun`) in bins defined by `distbin`. The function try to fill
+at least `min_count` of data points in each bin but always stop after
+considering `maxpoints` pairs.
+"""
 
 function empiriccovar(x,v,distbin,min_count;
                       maxpoints = 1000000,
@@ -173,6 +183,25 @@ function empiriccovar(x,v,distbin,min_count;
 end
 
 """
+    len,var0,distx,covar,fitcovar = fit_isotropic(x,v,distbin,min_count;
+                               alpha = divand.alpha_default(length(x)),
+                               len = 1.,
+                               var0 = 1.,
+                               minlen = 0.,
+                               maxlen = 10.,
+                               minvar0 = 0.,
+                               maxvar0 = 10.,
+                               tolrel = 1e-4,
+                               maxpoints = 1000000,
+                               distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
+                           )
+
+Determines the optimal correlation length `len` and variance for a distance
+equal to zero `var0` of a cloud of data points with value `v` and coordiantes
+`x` (tuple of vectors with the coordinates).
+
+See also `empiriccovar` for future information about these parameters.
+
     alpha: if one correlation length is forced to zero during the anaylsis
 the values of alpha sould be set using the effective dimension.
 For example, if a 2D-analysis is simulated by forcing the vertical correlation
@@ -180,22 +209,50 @@ length to zero, then alpha should be set to [1,2,1], otherwise alpha will be
 [1,3,3,1] (for for any proper 3D analysis).
 
 """
-function divafit(x,v,distbin,min_count;
-                 alpha = divand.alpha_default(length(x)))
-
-    len = 1.
-    var0 = 1.
-    @time distx,covar,corr,varx,count = empiriccovar(x,v,distbin,min_count)
+function fit_isotropic(x,v,distbin,min_count;
+                       alpha = divand.alpha_default(length(x)),
+                       len = 1.,
+                       var0 = 1.,
+                       minlen = 0.,
+                       maxlen = 10.,
+                       minvar0 = 0.,
+                       maxvar0 = 10.,
+                       tolrel = 1e-4,
+                       maxpoints = 1000000,
+                       distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj))
+                       )
 
     # number of dimensions
     n = length(x)
 
+    # compute the empirical covariance
+    distx,covar,corr,varx,count = empiriccovar(x,v,distbin,min_count;
+                                               maxpoints = maxpoints,
+                                               distfun = distfun)
+
+    # Kernel for the given dimension
     mu,K,len_scale = divand.divand_kernel(n,alpha)
-    model(x,p) = p[2] * K(x * len_scale/p[1])
-    fit = curve_fit(model, distx, covar, [len,var0])
 
-    len,var0 = fit.param
+    # function to minimize
+    function fitt(p, grad::Vector #= unused =#)
+        local fitcovar
+        fitcovar = p[2] * K.(distx * len_scale/p[1])
+        return sum(abs2,fitcovar - covar)
+    end
 
+    # setup the optimser
+    opt = Opt(:LN_COBYLA, 2)
+    lower_bounds!(opt, [minvar0, minlen])
+    upper_bounds!(opt, [maxvar0, maxlen])
+    xtol_rel!(opt,tolrel)
+
+    min_objective!(opt, fitt)
+
+    minf,minx,ret = optimize(opt, [var0, len])
+    len = minx[1]
+    var0 = minx[2]
+
+    # fitted covariance
     fitcovar = var0 *  K.(distx * len_scale/len)
 
     return len,var0,distx,covar,fitcovar
@@ -205,24 +262,29 @@ end
 
 See the note of alpha in `divafit` which also applies here.
 """
-function divafit2(x,v,distbin,min_count)
+function fit(x,v,distbin,min_count;
+             alpha = divand.alpha_default(length(x)),
+             minlen = zeros(length(x)),
+             maxlen = ones(length(x)),
+             tolrel = 1e-4,
+             len0 = ones(length(x)),
+             var0 = 1.,
+             minvar0 = 0.,
+             maxvar0 = 2.,
+             maxpoints = 1000000,
+             distfun = (xi,xj,lens) -> sqrt(sum(abs2,(xi-xj)./lens))
+             )
     # number of dimensions
     n = length(x)
 
-    alpha = divand.alpha_default(length(x))
-    minlen = zeros(length(x))
-    maxlen = ones(length(x))
-    tolrel = 1e-4
-    len0 = ones(length(x))
-    var0 = 1.;
-    minvar0 = 0.
-    maxvar0 = 2.
 
     const seed = rand(UInt64)
 
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
     function fitcovarlen(var0,lens)
+        # declare the variable as local as they have the same name as the
+        # variables in outer scope
         local distx, covar, corr, varx, count, fitcovar
 
         # fix seed to get the same observations
@@ -230,14 +292,17 @@ function divafit2(x,v,distbin,min_count)
 
         distx,covar,corr,varx,count = empiriccovar(
             x,v,distbin,min_count;
-            maxpoints = 1000000,
-            distfun = (xi,xj) -> sqrt(sum(abs2,(xi-xj)./lens)))
+            maxpoints = maxpoints,
+            distfun = (xi,xj) -> distfun(xi,xj,lens))
 
         fitcovar = var0 * K.(distx * len_scale)
         return distx,covar,fitcovar,count
     end
 
     function fitt(p, grad::Vector #= unused =#)
+        # declare the variable as local as they have the same name as the
+        # variables in outer scope
+
         local distx,covar,fitcovar,count,fitness
         local var0 = p[1]
         local lens = p[2:3]
@@ -247,8 +312,7 @@ function divafit2(x,v,distbin,min_count)
         covar[count .== 0] = 0
         fitness = sum(abs2,fitcovar - covar)
 
-
-        @show var0,lens,fitness
+        #@show var0,lens,fitness
         return fitness
     end
 
@@ -267,8 +331,6 @@ function divafit2(x,v,distbin,min_count)
     lensopt = minx[2:end]
     distx,covar,fitcovar,count = fitcovarlen(var0opt,lensopt)
 
-    distx,covar,fitcovar,count = fitcovarlen(var0,len0)
-
     return var0opt,lensopt,distx,covar,fitcovar
 end
 
@@ -285,11 +347,10 @@ x = (lon[sel],lat[sel]);
 v = value[sel] - mean(value[sel]);
 distbin = 0:0.5:10
 
-@code_warntype divafit2(x,v,distbin,min_count)
+@code_warntype fit(x,v,distbin,min_count)
 
-#=
 
-len,var0,distx,covar,fitcovar = divafit(x,v,distbin,min_count)
+len,var0,distx,covar,fitcovar = fit_isotropic(x,v,distbin,min_count)
 
 
 plot(distx,covar, label = "empirical covariance");
@@ -297,7 +358,7 @@ plot(distx,fitcovar, label = "fitted function")
 legend()
 
 
-var0opt,lensopt,distx,covar,fitcovar = divafit2(x,v,distbin,min_count)
+@time var0opt,lensopt,distx,covar,fitcovar = fit(x,v,distbin,min_count)
 
 figure(2)
 
@@ -306,4 +367,3 @@ plot(distx,covar, label = "empirical covariance");
 plot(distx,fitcovar, label = "fitted function")
 xlabel("normalized distance")
 legend()
-=#
