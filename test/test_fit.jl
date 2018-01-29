@@ -223,6 +223,8 @@ function divafit2(x,v,distbin,min_count)
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
     function fitcovarlen(var0,lens)
+        local distx, covar, corr, varx, count, fitcovar
+
         # fix seed to get the same observations
         srand(seed)
 
@@ -236,6 +238,7 @@ function divafit2(x,v,distbin,min_count)
     end
 
     function fitt(p, grad::Vector #= unused =#)
+        local distx,covar,fitcovar,count,fitness
         local var0 = p[1]
         local lens = p[2:3]
 
@@ -258,16 +261,13 @@ function divafit2(x,v,distbin,min_count)
 
     min_objective!(opt, fitt)
 
-    minf,minx,ret = optimize(opt, Float64[var0, len0...])
-    println("got $minf at $minx after $count iterations (returned $ret)")
+    minf,minx,ret = optimize(opt, [var0, len0...])
 
-
-    var0opt = minx[1] :: Float64
-    lensopt = minx[2:end] :: Vector{Float64}
-
+    var0opt = minx[1]
+    lensopt = minx[2:end]
     distx,covar,fitcovar,count = fitcovarlen(var0opt,lensopt)
 
-#    distx,covar,fitcovar,count = fitcovarlen(var0,len0) :: Tuple{Vector{Float64},Vector{Float64},Vector{Float64},Vector{Int}}
+    distx,covar,fitcovar,count = fitcovarlen(var0,len0)
 
     return var0opt,lensopt,distx,covar,fitcovar
 end
@@ -287,6 +287,7 @@ distbin = 0:0.5:10
 
 @code_warntype divafit2(x,v,distbin,min_count)
 
+#=
 
 len,var0,distx,covar,fitcovar = divafit(x,v,distbin,min_count)
 
@@ -305,3 +306,4 @@ plot(distx,covar, label = "empirical covariance");
 plot(distx,fitcovar, label = "fitted function")
 xlabel("normalized distance")
 legend()
+=#
