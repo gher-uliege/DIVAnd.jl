@@ -3,7 +3,6 @@ module Vocab
 using Base
 using EzXML
 import Requests
-import HTTP
 import Base.find
 import Base.findfirst
 import Base.repr

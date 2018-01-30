@@ -113,23 +113,24 @@ function SDNMetadata(metadata,filename,varname,lonr,latr,fi)
     field = fi[:,:,end,1]
     default_field_min,default_field_max = extrema(field[.!isnan.(field)])
 
-    ncglobalattrib["preview"] = string(HTTP.URL(project["baseurl_wms"]; query =
-                                                OrderedDict(
-                                                    "service" => "WMS",
-                                                    "request" => "GetMap",
-                                                    "version" => "1.3.0",
-                                                    "crs" => "CRS:84",
-                                                    "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
-                                                    "decorated" => "true",
-                                                    "format" => "image/png",
-                                                    "layers" => Vocab.prefLabel(area) * "/" * filename * layersep * varname,
-                                                    "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
-                                                                                    "vmax" => default_field_max)),
-                                                    #"elevation" => "-0.0",
-                                                    #"time" => "03",
-                                                    "transparent" => "true",
-                                                    "height" => "500",
-                                                    "width" => "800")))
+    ncglobalattrib["preview"] = project["baseurl_wms"] * string(
+        HTTP.URI(;query=
+                 OrderedDict(
+                     "service" => "WMS",
+                     "request" => "GetMap",
+                     "version" => "1.3.0",
+                     "crs" => "CRS:84",
+                     "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
+                     "decorated" => "true",
+                     "format" => "image/png",
+                     "layers" => Vocab.prefLabel(area) * "/" * filename * layersep * varname,
+                     "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
+                                                     "vmax" => default_field_max)),
+                     #"elevation" => "-0.0",
+                     #"time" => "03",
+                     "transparent" => "true",
+                     "height" => "500",
+                     "width" => "800")))
 
 ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],
                           "standard_name" => metadata["netcdf_standard_name"],
