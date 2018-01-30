@@ -1,10 +1,9 @@
-# Testing divand in 2 dimensions with independent verification.
+# Testing divand in 2 dimensions with data outside of the domain
 
-using Base.Test
 #using divand
 
 # grid of background field
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30))
+xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100))
 
 mask = trues(size(xi))
 pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
@@ -13,10 +12,9 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(linspace(epsilon,1-epsilon,20),linspace(epsilon,1-epsilon,20))
-x = x[:]
-y = y[:]
-v = sin.(x*6) .* cos.(y*6)
+x = [0.5, 2.2]
+y = [0.5, .5]
+v = [1.,  1.]
 
 
 lenx = .15;
@@ -24,27 +22,29 @@ leny = .15;
 
 epsilon2 = 0.05;
 
-#,err,s
-va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+# analysis with all values
+va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
 
-#Z = randn(size(s.H,1),size(s.H,1));
-Z = eye(size(s.H,1));
+# analysis with only values inside the domain
+inside = 1:1
+va2,s = divandrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,leny),epsilon2)
 
-ZtHKZ = Z' * (s.H*(s.P * (s.H'* (s.R \ Z))));
-WW=s.P * (s.H'* (s.R \ Z)); ZtHKZ2 =  Z'*s.H*WW;
-
-@time ZtHKZ = Z'*s.H*(s.P * (s.H'* (s.R \ Z)));
-
-@time begin
-    WW=s.P * (s.H'* (s.R \ Z));
-    ZtHKZ2 =  Z'*s.H*WW;
-end
+@test va == va2
 
 
+x = [0.5, .9]
+y = [0.5, .5]
+v = [1.,  1.]
+mask[end-40:end,:] = false
+va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
+
+inside = 1:1
+va2,s = divandrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,leny),epsilon2)
+
+@test va[mask] == va2[mask]
 
 
-
-# Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

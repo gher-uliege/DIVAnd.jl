@@ -44,11 +44,6 @@ defined by the coordinates `xi` and the scales factors `pmn`.
           m=2   1   3   3   1   (n=3,4)
           ...
 
-* `EOF`, EOF: sub-space constraint. Orthogonal (EOF' WE^2 EOF = I) (units of
-       EOF: m^(-n/2))
-
-* `EOF_scaling`, EOF_scaling: (dimensional)
-
 * `constraints`: a structure with user specified constrain
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
@@ -109,10 +104,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
 # ::Union{T,AbstractVector{T},AbstractMatrix{T}}
-function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
+function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    velocity = (),
-                   EOF = [],
-                   EOF_lambda::Vector{T} = Float64[],
                    primal::Bool = true,
                    factorize = true,
                    tol = 1e-6,
@@ -131,26 +124,25 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    operatortype = Val{:sparse},
                    alphabc = 1.0,
                    scale_len = true,
-                   btrunc=[]
+                   btrunc=[],
+				   MEMTOFIT=16.
                    )
 
+    pmn,xi,len = divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
+
+    # observation error covariance (scaled)
+    # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
+    # boundary
+    # For testing this version of alphabc deactivate the other one
+    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
 
     # check inputs
     if !any(mask[:])
         warn("no sea points in mask, will return NaN");
-        return fill!(Array(Float64,size(mask)),NaN),0
+        return fill(NaN,size(mask)),s
     end
 
-    #       @show alphabc
-    #       @show moddim
-
-    pmn,xi,len=divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
-
-    #For testing this version of alphabc deactivate the other one
-    s = divand_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
-
     s.betap = 0;
-    s.EOF_lambda = EOF_lambda;
     s.primal = primal;
     s.factorize = factorize;
     s.tol = tol;
@@ -160,52 +152,6 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
     s.keepLanczosVectors = keepLanczosVectors;
     s.compPC = compPC;
     s.progress = progress
-
-    # # remove non-finite elements from observations
-    # f = f[:];
-    # valid = isfinite(f);
-    # x = cat_cell_array(x);
-
-    # if !all(valid)
-    #   fprintf(1,"remove %d (out of %d) non-finite elements from observation vector\n",sum(!valid),numel(f));
-    #   x = reshape(x,[length(f) s.n]);
-    #   f = f[valid];
-    #   x = reshape(x(repmat(valid,[1 s.n])),[length(f) s.n]);
-
-    #   if !isempty(fracindex)
-    #     fracindex = fracindex[:,valid];
-    #   end
-
-    #   if isscalar(epsilon2)
-    #     # do nothing
-    #   elseif isvector(epsilon2)
-    #     epsilon2 = epsilon2[valid];
-    #   elseif ismatrix(epsilon2)
-    #     epsilon2 = epsilon2[valid,valid];
-    #   end
-    # end
-
-    # apply_EOF_contraint = !(isempty(EOF) | all(EOF_lambda == 0));
-
-    # s.mode = 1;
-
-    # if !apply_EOF_contraint
-    #     s.betap = 0;
-    # else
-    #     if s.mode==0
-    #         s.betap = max(EOF_lambda)/s.coeff;  # units m^(-n)
-    #     elseif s.mode==1
-    #         s.betap = max(max(EOF_lambda)-1,0)/s.coeff;
-    #     end
-    # end
-
-    # increase contraint on total enegery to ensure system is still positive defined
-    #s.betap
-    #s.iB = s.iB + s.betap * s.WE'*s.WE;
-
-    # observation error covariance (scaled)
-    # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
-    # boundary
 
     R = divand_obscovar(epsilon2,length(f));
 
@@ -222,25 +168,14 @@ function divandrun{T}(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
         s = divand_addc(s,constraints[i]);
     end
 
-    #if apply_EOF_contraint
-    #    s = divand_eof_contraint(s,EOF_lambda,EOF);
-    #end
-
     # factorize a posteori error covariance matrix
     # or compute preconditioner
 
-
     divand_factorize!(s);
 
-    #if !apply_EOF_contraint
     fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
-    #else
-    #    fi,s = divand_solve_eof(s,f);
-    #end
 
     return fi,s
-
-
 end
 
 

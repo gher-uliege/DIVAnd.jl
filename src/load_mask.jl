@@ -2,7 +2,7 @@
 
 function load_mask(bath_name,isglobal,x0,x1,dx,y0,y1,dy,level::Number)
 
-    #level = -abs(level);
+    level = -level;
 
     nc = Dataset(bath_name)
     x = nc["lon"].var[:]
@@ -93,7 +93,11 @@ end
     xi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)
 
 Generate a land-sea mask based on the topography from the NetCDF file
-`bathname`. In the water, level is negative.
+`bathname`. The parameter `isglobal` is true if the NetCDF file covers the whole globe and 
+thus the last longitude point can be considered to be right next to the first longitude point.
+`xi` and `yi` is a vector of the longitude and latitude grid onto which the bathymetry should be 
+interpolated.
+In the water, `level` is postive and in the air `level` is negative.
 
 """
 
@@ -102,7 +106,7 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     dxi = xi[2] - xi[1]
     dyi = yi[2] - yi[1]
 
-    #level = -abs(level);
+    level = -level;
 
     nc = Dataset(bath_name)
     x = nc["lon"].var[:]
@@ -131,8 +135,6 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
         i2 = mod.(i-1,size(nc["bat"] ,1))+1;
         jumps = [0; find(abs.(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
 
-
-
         for l=1:length(jumps)-1
             b[(jumps[l]+1):jumps[l+1],:] = nc["bat"].var[i2[jumps[l]+1]:i2[jumps[l+1]],j];
         end
@@ -146,7 +148,7 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     #b = -b
     #b[isnan.(b)] = 10
     # end hack
-    @show extrema(b)
+    #@show extrema(b)
     mask = b .< level;
 
     bx = X0 + rx*(i-1);

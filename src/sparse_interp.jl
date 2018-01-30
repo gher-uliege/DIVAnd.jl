@@ -1,19 +1,18 @@
-# Create a sparse interpolation matrix.
-#
-# [H,out] = sparse_interp(mask,I)
-#
-# Create interpolation matrix from mask and fractional indexes I
-#
-# Input:
-#   mask: 0 invalid and 1 valid points (n-dimensional array)
-#   I: fractional indexes (2-dim array n by mi, where mi is the number of points to interpolate)
-# Ouput:
-#   H: sparse matrix with interpolation coefficients
-#   out: true if value outside of grid
-#   outbbox: 1 if outise bouding box
-#   onland: 1 if point touches land (where mask == 0)
+"""
+    H,out = sparse_interp(mask,I)
 
-#function sparse_interp{n}(mask::Array{Bool,n},I::Array{Float64,2},iscyclic = falses(size(I,1)))
+Create interpolation matrix from `mask` and fractional indexes `I`.
+
+Input:
+  mask: 0 invalid and 1 valid points (n-dimensional array)
+  I: fractional indexes (2-dim array n by mi, where mi is the number of points to interpolate)
+Ouput:
+  H: sparse matrix with interpolation coefficients
+  out: true if value outside of grid
+  outbbox: 1 if outise bouding box
+  onland: 1 if point touches land (where mask == 0)
+"""
+
 function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     if ndims(mask) != size(I,1)
         error("sparse_interp: inconsistent arguments")
@@ -24,7 +23,6 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     # n dimension of the problem
     n = size(I,1)
     m = prod(sz)
-
 
     # mi is the number of arbitrarly distributed observations
     mi = size(I,2)

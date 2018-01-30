@@ -12,7 +12,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 As for divandrun but as a higher level routine which will automatically create windowing etc
 it also include the definition of the errormethod
 
-* errormethod : cpme none exact
+* errormethod : :cpme (clever poormans method), :none or :exact
 
 
 # Output:
@@ -46,6 +46,11 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     if haskey(kwargs_dict,:moddim)
         moddim=kwargs_dict[:moddim]
     end
+	# optional argument for window fitting.
+	MEMTOFIT=16
+	if haskey(kwargs_dict,:MEMTOFIT)
+        MEMTOFIT=kwargs_dict[:MEMTOFIT]
+    end
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
@@ -63,7 +68,9 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     Lpmnrange = divand_Lpmnrange(pmn,Labs)
 
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
-    windowlist,csteps,lmask,alphanormpc = divand_cutter(Lpmnrange,size(mask),moddim)
+	@show moddim,MEMTOFIT
+	
+    windowlist,csteps,lmask,alphanormpc = divand_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT)
 
 	@show size(mask),size(windowlist)
 
@@ -74,8 +81,11 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     #fi=SharedArray(Float64,size(mask));
     #erri=SharedArray(Float64,size(mask));
     fi=SharedArray{Float32}(size(mask));
-    erri=SharedArray{Float32}(size(mask));
-
+	if errormethod==:none
+        erri=eye(1)
+        else
+	    erri=SharedArray{Float32}(size(mask));
+    end
 
     @sync @parallel for iwin=1:size(windowlist)[1]
 
@@ -209,9 +219,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
             end
         end
 
-        if errormethod==:none
-            errw=fill!(Array(Float64,size(fw)),NaN)
-        end
+        
 
         # Cpme: just run and take out same window
 
@@ -257,9 +265,11 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 
 
-
-erri[windowpointsstore...]=errw[windowpointssol...];
-
+		if errormethod==:none
+            erri=eye(1);
+			else
+			erri[windowpointsstore...]=errw[windowpointssol...];
+		end
 
 end
 

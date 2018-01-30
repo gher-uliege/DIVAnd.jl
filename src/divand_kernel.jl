@@ -1,18 +1,15 @@
 """
-Return the analytical kernel and normalization factor.
+    mu,K,len_scale = divand_kernel(n,alpha)
 
-mu,K,len_scale = divand_kernel(n,alpha)
+Return the analytical kernel and normalization factor.
 
 Analytical (normalized) kernels `K` for infinite domain in dimension `n` and for
 coefficients `alpha` and normalization factor `mu`.
-Input
-  n: number of dimensions
-  alpha: coefficients
-Output:
-  K(r): kernel function (function of the normalized distance `r`)
-  mu: normalization factor
-  len_scale: distance at which K(len_scale) = 0.6019072301972346 (which is besselk(1,1))
+
+`K(r)` is the kernel function (function of the normalized distance `r`),
+`len_scale` is the distance at which `K(len_scale)` = 0.6019072301972346 (which is besselk(1,1))
 """
+
 
 function divand_kernel(n,alpha)
     # precision on len_scale
@@ -24,19 +21,18 @@ function divand_kernel(n,alpha)
 
     m = length(alpha)-1;
 
-    K = [];
     alpha_binomial = [binomial(m,k) for k = 0:m]
+
+    mu,K = divand_kernel_binom(n,m);
 
     if alpha_binomial == alpha
         # alpha are binomial coefficients
-
-        mu,K = divand_kernel_binom(n,m);
+        # ok pass
     else
         if alpha_binomial[2:end] == alpha[2:end]
             # alpha are binomial coefficients except first one
             #warn("Semi-norm used?, check scaling $alpha")
 
-            mu,K = divand_kernel_binom(n,m);
             #   correction for missing term CHECK IF NOT THE INVERSE
             #  Added fudge factor 2 to mimic same behaviour in test case
             jmscale=(1.0/2^(m))*sum(alpha[:])/2
@@ -47,7 +43,6 @@ function divand_kernel(n,alpha)
         else
             # unsupported sequence of alpha
 
-            mu,K = divand_kernel_binom(n,m);
             #warn("Unsupported norm used, check scaling $alpha")
             #   Scaling is correct if all alphas are binomials times a common factor
 
@@ -65,17 +60,13 @@ end
 
 
 function divand_kernel_binom(n,m)
-
-
-    # #if isequal(alpha,1)
-
-    nu = m-n/2;
-    mu = (4*pi)^(n/2) * gamma(m) / gamma(nu);
-    K(x) = divand_rbesselk(nu,x);
+    const nu = m-n/2
+    mu = (4*pi)^(n/2) * gamma(m) / gamma(nu)
+    K(x) = divand_rbesselk(nu,x)
 
     if nu <= 0
-        warn("divand:nonorm ","No normalization possible. Extend parameter alpha.");
-        mu = 1;
+        warn("divand:nonorm ","No normalization possible. Extend parameter alpha.")
+        mu = 1.
     end
 
     return mu,K

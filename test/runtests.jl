@@ -27,15 +27,25 @@ import Base.LinAlg.BLAS
     #include("test_2dvar_jog.jl");
     include("test_2dvar_error.jl");
 
+    include("test_2dvar_all_masked.jl");
+
     # cross-validation
     include("test_2dvar_cv.jl");
     include("test_2dvar_matfun.jl");
     include("test_2dvar_qc.jl");
+
+    include("test_2dvar_outside.jl");
+
+
     include("test_variableLandpmn.jl")
 
     include("test_3dvar.jl");
 
     include("test_4dvar.jl");
+
+    # comparision with analytical kernels
+    include("test_ndvar_point.jl");
+
     include("test_divandgo.jl");
 
 
@@ -55,13 +65,19 @@ import Base.LinAlg.BLAS
 
     # SDN ODVspreadsheet
     include("test_ODVspreadsheet.jl");
-    
+
     # SDN metadata
     include("test_metadata.jl");
 
+    # Saving data as NetCDF file
+    include("test_save.jl");
+
     # Anamorphosis
     include("test_anam.jl");
-    
+
+    # Fitting covariance model
+    include("test_fit.jl");
+
     # test divand_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1

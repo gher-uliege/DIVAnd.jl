@@ -18,11 +18,20 @@ Symmetric matrix
 
 SB = √(β) (1 + α L)^(nmax/2) W^{-1}
 
+where W is the volumne of the corresponding grid cell.
+The background error covariance matrix B is SB W SB
 """
 
-
-
-function decompB!{T}(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx)
+function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) where T
+    # does not work is some points are masked
+    # for i in eachindex(work2)
+    #     if sv.mask[1][i]
+    #         work2[i] = x[i] * ivol[i]
+    #     else
+    #         work2[i] = 0
+    #     end
+    # end
+            
     work2[:] = 0
     work2[sv.mask[1]] = x
     work2[:] = work2[:] .* ivol[:]
@@ -33,14 +42,29 @@ function decompB!{T}(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx)
         BLAS.axpy!(α,work1,work2)
     end
 
-    work2[:] = β * work2
+    for i in eachindex(work2)
+        work2[i] = β * work2[i]
+    end
 
     decompBx[:] = pack(sv,(work2,))
 end
 
+#function A_ldiv_B!(
+
 
 """
 Variational analysis similar to 3D-var
+
+Input:
+
+  x0: start vector for iteration, at output it is the last state of the 
+   iteration. Note that x0 is related to the analysis xa by
+      xa = SB^1/2 * W^1/2 * xa
+
+
+  | x + W^1/2 * SB^1/2 * H' * (R \ (H * SB^1/2 * W^1/2 * x ))   -   W^1/2 SB^{1/2} * H' * (R \ yo) | 
+     <  
+  tol * s.sv.n / length(yo)  * | W^1/2 SB^{1/2} * H' * (R \ yo) |
 
 Kernel is the solution of the n-dimensional diffusion equation
 
@@ -57,10 +81,15 @@ http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """
 
-function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector{T},len,epsilon2;
-                          tol::T = 1e-5,
-                          maxit::Int = 100000,
-                          progress = (iter,x,r,tol2,fun!,b) -> nothing)
+function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
+                     f::AbstractVector{T},len,epsilon2;
+                     tol::T = 1e-5,
+                     maxit::Int = 100000,
+                     progress = (iter,x,r,tol2,fun!,b) -> nothing,
+                     kwargs...) where N where T
+
+    # all keyword agruments as a dictionary
+    kw = Dict(kwargs)
     
     n = ndims(mask)
 
@@ -87,16 +116,16 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     #α0 = dx_min^2/(2 * nu_max * n)
     #α0 = 1/(2 * n * max([maximum(pmn[i].^2 .* nu[i]) for i in 1:n]...)) :: T
     # ok
+
+    #@show [maximum(pmn[i].^2 .* nu[i]) for i in 1:n]
     α0 = 1/(2 * sum([maximum(pmn[i].^2 .* nu[i]) for i in 1:n])) :: T
     
     # 10% safety margin
     α = α0 / 1.1
 
-    # number of iterations
-    #nmax = round(Int,1/(2*α))
     # number of iterations 1/(2*α) (round to the closest be even number)
     nmax = 2*round(Int,1/(4*α))
-    @show nmax
+    #@show nmax
 
     # Green's functions
     # ∂c/∂t =  ∇ ⋅ (D ∇ c)
@@ -129,24 +158,42 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     
     #W = Diagonal(vol)
 
-    @show Ld
+    #@show Ld
     β = ((4π * α * nmax)^(n/4) * sqrt(prod(Ld)))   
     
     #H = H * Diagonal(sqrt.(ivol[mask]))
     
     work1 = zeros(size(mask))
     work2 = zeros(size(mask))
-    tmpx = zeros(s.sv.n)    
+    tmpx = zeros(s.sv.n)
+    Htmpx = zeros(length(f))
+    RHtmpx = zeros(length(f))
+    HRHtmpx = zeros(s.sv.n)
+    
     b = zeros(s.sv.n)
 
     # x + W^1/2 * SB^1/2 * H' * (R \ (H * SB^1/2 * W^1/2 * x ))
     function fun!(x,fx)
         # tmpx = SB^1/2 W^1/2 x
         decompB!(s.sv,β,ivol,nus,nmax,α,sW * x,work1,work2,tmpx)
-        # tmpx = SB^1/2 * H' * (R \ (H * SB^1/2 x ))
-        decompB!(s.sv,β,ivol,nus,nmax,α,H' * (R \ (H * tmpx)),work1,work2,tmpx)
+
+        # Htmpx = H * SB^1/2 W^1/2 x
+        A_mul_B!(Htmpx,H,tmpx)
+
+        # Htmpx = R \ (H * SB^1/2 W^1/2 x)
+        A_ldiv_B!(R,Htmpx)
+
+        # HRHtmpx = H' * (R \ (H * SB^1/2 W^1/2 x))
+        At_mul_B!(HRHtmpx,H,Htmpx)
+        
+        # tmpx = SB^1/2 * H' * (R \ (H * SB^1/2 W^1/2 x ))
+        decompB!(s.sv,β,ivol,nus,nmax,α,HRHtmpx,work1,work2,tmpx)
+        
         # fx = x + W^1/2 SB^1/2 * H' * (R \ (H * SB^1/2 x ))
-        fx[:] = x + sW * tmpx
+        A_mul_B!(fx,sW,tmpx)
+        for i in 1:length(fx)
+            fx[i] += x[i]
+        end
     end
 
     # b = W^1/2 SB^{1/2} * H' * (R \ yo)
@@ -160,7 +207,7 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
 
     # xp = (I + W^1/2 SB^1/2 * H' * (R^{-1} * (H * SB^1/2 * W^1/2)) )^{-1} b
 
-    @show divand.checksym(s.sv.n,fun!)
+    #@show divand.checksym(s.sv.n,fun!)
           
     xp,success,s.niter = divand.conjugategradient(
         fun!,b; tol = tol, maxit = maxit,
@@ -169,12 +216,12 @@ function varanalysis{T,N}(mask::AbstractArray{Bool,N},pmn,xi,x,f::AbstractVector
     # tmpx = SB^1/2 * W^1/2 * xp
     decompB!(s.sv,β,ivol,nus,nmax,α,sW * xp,work1,work2,tmpx)
 
-    @show "1",mean(β),nmax,α
+    #@show mean(β),nmax,α
     
     # debugging function
     function decompB(x)
 
-        @show mean(β),nmax,α
+        #@show mean(β),nmax,α
         
         decompBx = similar(x)
         divand.decompB!(s.sv,β,ivol,nus,nmax,α,x,work1,work2,decompBx)

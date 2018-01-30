@@ -450,10 +450,11 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
             
 			
-			fs=statevector_pack(si.sv,(fi,));
-			fgs=statevector_pack(si.sv,(figuess,));
-			al=dot(fs,fgs)/dot(fgs,fgs)
-			@show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
+			#			fs=statevector_pack(si.sv,(fi,));
+			#			fgs=statevector_pack(si.sv,(figuess,));
+			#			al=dot(fs,fgs)/dot(fgs,fgs)
+			#			@show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
+						
             return fi,si
         end
     end
@@ -1176,10 +1177,10 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		end
 		
 		# A posteriori scaling of initial guess
-			fs=statevector_pack(si.sv,(fi,));
-			fgs=statevector_pack(si.sv,(figuess,));
-			al=dot(fs,fgs)/dot(fgs,fgs)
-			@show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
+		#	fs=statevector_pack(si.sv,(fi,));
+		#	fgs=statevector_pack(si.sv,(figuess,));
+		#	al=dot(fs,fgs)/dot(fgs,fgs)
+		#	@show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
 		
 
 

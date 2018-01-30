@@ -22,12 +22,24 @@ stepsize,overlapping,isdirect = divand_fittocpu(Lpmnrange,gridsize,latercsteps,m
 """
 
 
-function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
+function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 
 
     #################################################################################
     # Number of dimensions
     n = size(Lpmnrange)[1]
+	
+	@show moddim
+	@show MEMTOFIT
+	
+	fudgefac=MEMTOFIT/16.
+	#@show ENV["MEMTOFIT"]
+	#myval=tryparse(Float64,ENV["MEMTOFIT"])
+	#@show myval
+	# if ~isnull(myval)
+	 
+	#  fudgefac=get(myval)/16.
+	# end
 
     if moddim==[]
         moddim=zeros[n]
@@ -42,9 +54,9 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[])
     # How wide is the overlap in terms of number of length scales
     factoroverlap=3.3
 
-    biggestproblemitern=[500*500 500*500 50*50*50 170*170*6*12]
+    biggestproblemitern=[500*500 500*500 50*50*50 170*170*6*12]*fudgefac
     #biggestproblemitern=[500*500 500*500 50*50*50 50*50*6*12]
-    biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]
+    biggestproblemdirectn=[200*200 200*200 50*50*20 50*50*10]*fudgefac
 
     biggestproblemiter=biggestproblemitern[minimum([n,4])]
     biggestproblemdirect=biggestproblemdirectn[minimum([n,4])]

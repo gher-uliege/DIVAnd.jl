@@ -1,4 +1,4 @@
-function divand_save(filename,mask,varname,fi)
+function divand_save(filename,mask::AbstractArray{Bool,N},varname,fi) where N
 
     sz = size(mask)
 
@@ -21,7 +21,7 @@ end
 
 
 """
-    divand_save2(filename,mask,xyi,fi,varname;
+    divand_save(filename,xyi,fi,varname;
                       ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)
 
 Save the result of the analysis in a NetCDF file .
@@ -39,21 +39,23 @@ Save the result of the analysis in a NetCDF file .
   * `ncglobalattrib`: a dictionary with the global attributes
   * `ncvarattrib`: a dictionary with the variable attributes
   * `relerr`: relative error
-
+  * `timeorigin`: time origin for the time units attribute (default is 
+1900-01-01 00:00:00)
 """
 
 
 
-function divand_save2(filename,mask,xyi,fi,varname;
-                      ncvarattrib = Dict(), ncglobalattrib = Dict(),
-                      thresholds = [("L1",0.3),("L2",0.5)],
-                      deflatelevel = 5,
-                      chunksizes = [100,100,1,1],
-                      type_save = Float32,
-                      kwargs...)
+function ncfile(filename,xyi,varname;
+                ncvarattrib = Dict(), ncglobalattrib = Dict(),
+                thresholds = [("L1",0.3),("L2",0.5)],
+                deflatelevel = 5,
+                chunksizes = [100,100,1,1],
+                type_save = Float32,
+                timeorigin = DateTime(1900,1,1,0,0,0),
+                kwargs...)
 
     function defnD(ds,varname,dims,ncvarattrib)
-        ncvar = defVar(ds,varname, type_save, dims;
+        local ncvar = defVar(ds,varname, type_save, dims;
                        deflatelevel = deflatelevel,
                        chunksizes = chunksizes[1:length(dims)])
 
@@ -71,9 +73,12 @@ function divand_save2(filename,mask,xyi,fi,varname;
     def3D(ds,varname,ncvarattrib) = defnD(ds,varname,("lon", "lat", "time"),ncvarattrib)
 
     kw = Dict(kwargs)
+    
+    # size
+    sz = length.(xyi)
+
     # chunksizes should not exceed the size of fi
-    chunksizes = min.(chunksizes,collect(size(fi)))
-    @show chunksizes
+    chunksizes = min.(chunksizes,collect(sz))
 
     (xi,yi,zi,ti) = xyi
 
@@ -82,61 +87,60 @@ function divand_save2(filename,mask,xyi,fi,varname;
     validmin = get(ncvarattrib,"valid_min","")
     validmax = get(ncvarattrib,"valid_max",0.)
 
-    sz = size(mask)
 
     fillval = NC_FILL_FLOAT
 
-    Dataset(filename,"c") do ds
+    ds = Dataset(filename,"c")
 
-        # Dimensions
+    # Dimensions
+    
+    ds.dim["lon"] = sz[1]
+    ds.dim["lat"] = sz[2]
+    ds.dim["depth"] = sz[3]
+    ds.dim["time"] = sz[4]
+    ds.dim["nv"] = 2
 
-        ds.dim["lon"] = sz[1]
-        ds.dim["lat"] = sz[2]
-        ds.dim["depth"] = sz[3]
-        ds.dim["time"] = sz[4]
-        ds.dim["nv"] = 2
+    # Declare variables
+    
+    nclon = defVar(ds,"lon", Float64, ("lon",))
+    nclon.attrib["units"] = "degrees_east"
+    nclon.attrib["standard_name"] = "longitude"
+    nclon.attrib["long_name"] = "longitude"
+    
 
-        @show sz
-        # Declare variables
-
-        nclon = defVar(ds,"lon", Float64, ("lon",))
-        nclon.attrib["units"] = "degrees_east"
-        nclon.attrib["standard_name"] = "longitude"
-        nclon.attrib["long_name"] = "longitude"
-
-
-        nclat = defVar(ds,"lat", Float64, ("lat",))
-        nclat.attrib["units"] = "degrees_north"
-        nclat.attrib["standard_name"] = "latitude"
-        nclat.attrib["long_name"] = "latitude"
-
-        ncdepth = defVar(ds,"depth", Float64, ("depth",))
-        ncdepth.attrib["units"] = "meters"
-        ncdepth.attrib["positive"] = "down"
-        ncdepth.attrib["standard_name"] = "depth"
-        ncdepth.attrib["long_name"] = "depth below sea level"
-
-        nctime = defVar(ds,"time", Float64, ("time",))
-        nctime.attrib["units"] = "days since 1900-01-01 00:00:00"
-        nctime.attrib["standard_name"] = "time"
-        nctime.attrib["long_name"] = "time"
-        nctime.attrib["calendar"] = "standard"
-
-        if haskey(kw,:climatology_bounds)
-            nctime.attrib["climatology"] = "climatology_bounds"
-            ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64, ("nv", "time"))
-            ncclimatology_bounds.attrib["units"] = "days since 1900-01-01 00:00:00"
-        end
-
-
-        # ncCLfield = defVar(ds,"CLfield", type_save, ("lon", "lat", "depth", "time"))
-        # ncCLfield.attrib["long_name"] = "Correlation length field"
-        # ncCLfield.attrib["valid_min"] = type_save(0.0)
-        # ncCLfield.attrib["valid_max"] = type_save(0.76)
-        # ncCLfield.attrib["_FillValue"] = type_save(fillval)
-        # ncCLfield.attrib["missing_value"] = type_save(fillval)
-
-        # ncCORRLEN = defVar(ds,"CORRLEN", type_save, ("depth", "time"))
+    nclat = defVar(ds,"lat", Float64, ("lat",))
+    nclat.attrib["units"] = "degrees_north"
+    nclat.attrib["standard_name"] = "latitude"
+    nclat.attrib["long_name"] = "latitude"
+    
+    ncdepth = defVar(ds,"depth", Float64, ("depth",))
+    ncdepth.attrib["units"] = "meters"
+    ncdepth.attrib["positive"] = "down"
+    ncdepth.attrib["standard_name"] = "depth"
+    ncdepth.attrib["long_name"] = "depth below sea level"
+    
+    nctime = defVar(ds,"time", Float64, ("time",))
+    nctime.attrib["units"] = "days since " *
+        Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
+    nctime.attrib["standard_name"] = "time"
+    nctime.attrib["long_name"] = "time"
+    nctime.attrib["calendar"] = "standard"
+    
+    if haskey(kw,:climatology_bounds)
+        nctime.attrib["climatology"] = "climatology_bounds"
+        ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64, ("nv", "time"))
+        ncclimatology_bounds.attrib["units"] = "days since 1900-01-01 00:00:00"
+    end
+    
+    
+    # ncCLfield = defVar(ds,"CLfield", type_save, ("lon", "lat", "depth", "time"))
+    # ncCLfield.attrib["long_name"] = "Correlation length field"
+    # ncCLfield.attrib["valid_min"] = type_save(0.0)
+    # ncCLfield.attrib["valid_max"] = type_save(0.76)
+    # ncCLfield.attrib["_FillValue"] = type_save(fillval)
+    # ncCLfield.attrib["missing_value"] = type_save(fillval)
+    
+    # ncCORRLEN = defVar(ds,"CORRLEN", type_save, ("depth", "time"))
         # ncCORRLEN.attrib["long_name"] = "Correlation Length"
         # ncCORRLEN.attrib["units"] = "degrees_north"
 
@@ -147,49 +151,49 @@ function divand_save2(filename,mask,xyi,fi,varname;
         # ncVARBACK.attrib["long_name"] = "Background Field Variance"
         # ncVARBACK.attrib["units"] = "umol/l^2"
 
+    
+    ncvar = def4D(ds,varname,ncvarattrib)
+    ncvar.attrib["long_name"] = "$(longname)"
+    ncvar.attrib["cell_methods"] = "time: mean within years time: mean over years"
 
-        ncvar = def4D(ds,varname,ncvarattrib)
-        ncvar.attrib["long_name"] = "$(longname)"
-        ncvar.attrib["cell_methods"] = "time: mean within years time: mean over years"
-
-        ncvar_deepest = def3D(ds,"$(varname)_deepest",ncvarattrib)
-        ncvar_deepest.attrib["long_name"] = "Deepest values of $(longname)"
+    #ncvar_deepest = def3D(ds,"$(varname)_deepest",ncvarattrib)
+    #ncvar_deepest.attrib["long_name"] = "Deepest values of $(longname)"
 
 
-
-        if haskey(kw,:relerr)
-            for (thresholds_name,thresholds_value) in thresholds
-
-                ncvar_Lx = def4D(ds,"$(varname)_$(thresholds_name)",ncvarattrib)
-                ncvar_Lx.attrib["long_name"] = "$(longname) masked using relative error threshold $(thresholds_value)"
-
-                ncvar_deepest_Lx = def3D(ds,"$(varname)_deepest_$(thresholds_name)",ncvarattrib)
-                ncvar_deepest_Lx.attrib["long_name"] = "Deepest values of $(longname) masked using relative error threshold $(thresholds_value)"
-            end
-
-            # ncvar_err = def4D(ds,"$(varname)_err", type_save, ("lon", "lat", "depth", "time"))
-            # ncvar_err.attrib["long_name"] = "Error standard deviation of $(longname)"
-            # ncvar_err.attrib["units"] = units
-            # ncvar_err.attrib["valid_min"] = type_save(0.0)
-            # ncvar_err.attrib["valid_max"] = type_save(3.6)
-            # ncvar_err.attrib["_FillValue"] = type_save(fillval)
-            # ncvar_err.attrib["missing_value"] = type_save(fillval)
-
-            @show "relerr"
-            ncvar_relerr = defVar(ds,"$(varname)_relerr", type_save, ("lon", "lat", "depth", "time");
-                                  deflatelevel = deflatelevel,
-                                  chunksizes = chunksizes)
-
-            @show "relerr2"
-            # section 3.1 'The conforming unit for quantities that represent fractions, or parts of a whole, is "1".'
-            # https://web.archive.org/web/20171121154031/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html
-            ncvar_relerr.attrib["units"] = "1"
-            ncvar_relerr.attrib["long_name"] = "Relative error of $(longname)"
-            ncvar_relerr.attrib["valid_min"] = type_save(0.0)
-            ncvar_relerr.attrib["valid_max"] = type_save(1.0)
-            ncvar_relerr.attrib["_FillValue"] = type_save(fillval)
-            ncvar_relerr.attrib["missing_value"] = type_save(fillval)
+    ncvar_Lx = Dict()
+    ncvar_relerr = nothing
+    
+    if haskey(kw,:relerr)
+        for (thresholds_name,thresholds_value) in thresholds
+            
+            ncvar_Lx[thresholds_value] = def4D(ds,"$(varname)_$(thresholds_name)",ncvarattrib)
+            ncvar_Lx[thresholds_value].attrib["long_name"] = "$(longname) masked using relative error threshold $(thresholds_value)"
+            
+            #ncvar_deepest_Lx = def3D(ds,"$(varname)_deepest_$(thresholds_name)",ncvarattrib)
+            #ncvar_deepest_Lx.attrib["long_name"] = "Deepest values of $(longname) masked using relative error threshold $(thresholds_value)"
         end
+
+        # ncvar_err = def4D(ds,"$(varname)_err", type_save, ("lon", "lat", "depth", "time"))
+        # ncvar_err.attrib["long_name"] = "Error standard deviation of $(longname)"
+        # ncvar_err.attrib["units"] = units
+        # ncvar_err.attrib["valid_min"] = type_save(0.0)
+        # ncvar_err.attrib["valid_max"] = type_save(3.6)
+        # ncvar_err.attrib["_FillValue"] = type_save(fillval)
+        # ncvar_err.attrib["missing_value"] = type_save(fillval)
+
+        ncvar_relerr = defVar(ds,"$(varname)_relerr", type_save, ("lon", "lat", "depth", "time");
+                              deflatelevel = deflatelevel,
+                              chunksizes = chunksizes)
+        
+        # section 3.1 'The conforming unit for quantities that represent fractions, or parts of a whole, is "1".'
+        # https://web.archive.org/web/20171121154031/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html
+        ncvar_relerr.attrib["units"] = "1"
+        ncvar_relerr.attrib["long_name"] = "Relative error of $(longname)"
+        ncvar_relerr.attrib["valid_min"] = type_save(0.0)
+        ncvar_relerr.attrib["valid_max"] = type_save(1.0)
+        ncvar_relerr.attrib["_FillValue"] = type_save(fillval)
+        ncvar_relerr.attrib["missing_value"] = type_save(fillval)
+    end
 
 
         #    ncclimatology_bounds.attrib["climatology_bounds"] = type_save[244.0, 3622.0]
@@ -223,10 +227,10 @@ function divand_save2(filename,mask,xyi,fi,varname;
         end
 
 
-        # Define variables
+# Define variables
 
-        nclon[:]   = xyi[1]
-        nclat[:]   = xyi[2]
+nclon[:]   = xyi[1]
+nclat[:]   = xyi[2]
 ncdepth[:] = xyi[3]
 nctime[:]  = xyi[4]
 
@@ -234,36 +238,91 @@ nctime[:]  = xyi[4]
 # ncCORRLEN[:] = ...
 # ncSNR[:] = ...
 # ncVARBACK[:] = ...
-ncvar[:] = DataArray(fi,isnan.(fi))
 
-if haskey(kw,:relerr)
-    relerr = kw[:relerr]
-
-    for (thresholds_name,thresholds_value) in thresholds
-        ds["$(varname)_$(thresholds_name)"][:] =
-            DataArray(fi,isnan.(fi) .| (relerr .> thresholds_value))
-    end
-
-    ncvar_relerr[:] = DataArray(relerr,isnan.(fi))
-end
-
-# ncvar_deepest[:] = ...
-# ncvar_deepest_L1[:] = ...
-# ncvar_deepest_L2[:] = ...
-# ncvar_err[:] = ...
 if haskey(kw,:climatology_bounds)
     ncclimatology_bounds[:] = kw[:climatology_bounds]
 end
-# ncdatabins[:] = ...
-# ncoutlbins[:] = ...
+
+sync(ds)
+return ds, ncvar, ncvar_relerr, ncvar_Lx
 end
 
 
-return nothing
+"""
+    ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
+
+White a slice of data in a NetCDF given by the index `index`. The variable
+`relerr` can be nothing.
+"""
+
+function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
+    ncvar[index...] = DataArray(fi,isnan.(fi))
+
+    if relerr != nothing
+
+        for (thresholds_value,ncvar_L) in ncvar_Lx
+            ncvar_L[index...] =
+                DataArray(fi,isnan.(fi) .| (relerr .> thresholds_value))
+        end
+
+        ncvar_relerr[index...] = DataArray(relerr,isnan.(relerr))
+    end
+
+    # ncvar_deepest[:] = ...
+    # ncvar_deepest_L1[:] = ...
+    # ncvar_deepest_L2[:] = ...
+    # ncvar_err[:] = ...
+    # ncdatabins[:] = ...
+    # ncoutlbins[:] = ...
 end
 
 
-function divand_save_obs(filename,ids,xy; type_save = Float32)
+"""
+    save(filename,xyi,fi,varname;
+                          ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)
+
+Save the result of the analysis in a NetCDF file .
+
+# Input arguments
+
+* `filename`: the name of the NetCDF file
+*  `xyi`: tuple with n vectors. Every element in this tuple represents a coordinate
+  of the final grid on which the observations are interpolated
+*  `fi`: the analysed field
+* `varname`: the name of the NetCDF variable
+
+# Optional arguments:
+  * `ncglobalattrib`: a dictionary with the global attributes
+  * `ncvarattrib`: a dictionary with the variable attributes
+  * `relerr`: relative error
+
+"""
+
+
+
+
+function save(filename,xyi,fi,varname;
+                      kwargs...)
+
+
+    kw = Dict(kwargs)
+    # write the whole array
+    index = (:,)
+    
+    ds, ncvar, ncvar_relerr, ncvar_Lx = ncfile(filename,xyi,varname;
+                                           kwargs...)
+    writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+               fi, get(kw,:relerr,nothing), index)
+
+    close(ds)
+    
+    return nothing
+end
+
+
+
+
+function saveobs(filename,ids,xy; type_save = Float32)
     x,y,z,t = xy
 
     idlen = maximum(length.(ids))

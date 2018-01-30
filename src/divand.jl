@@ -10,6 +10,7 @@ using Base.Cartesian
 using DataStructures
 import SpecialFunctions
 import HTTP
+using NLopt
 
 include("statevector.jl")
 
@@ -170,7 +171,7 @@ end
             )
     end
 
-# ndgrid* functions are from 
+# ndgrid* functions are from
 # https://github.com/JuliaLang/julia/blob/master/examples/ndgrid.jl
 # Licence MIT
 
@@ -280,8 +281,14 @@ Len = len_harmonise(len,mask)
 Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
 a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
 """
-len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len,size(mask)) for i=1:N)...)
-len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len[i],size(mask)) for i=1:N)...)
+function len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    return ((fill(len,size(mask)) for i=1:N)...)
+end
+
+function len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    return ((fill(len[i],size(mask)) for i=1:N)...)
+end
+
 function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
     for i=1:N
         if size(mask) != size(len[i])
@@ -290,6 +297,47 @@ function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::Ab
     end
 
     return len
+end
+
+function len_harmonize(len,mask::AbstractArray{Bool,N}) where N
+    # promote all lens to a common type
+    return len_harmonize(promote_array(len...),mask)
+end
+
+@inline function alpha_default(neff::Int)
+    # kernel should has be continuous derivative
+
+    # highest derivative in cost function
+    m = ceil(Int,1+neff/2)
+
+    # alpha is the (m+1)th row of the Pascal triangle:
+    # m=0         1
+    # m=1       1   1
+    # m=1     1   2   1
+    # m=2   1   3   3   1
+    # ...
+
+    return Int[binomial(m,k) for k = 0:m]
+end
+
+
+"""
+    neff, alpha = alpha_default(Labs,alpha)
+
+Return a default value of alpha.
+"""
+
+@inline function alpha_default(Labs,alpha::Vector{T}) where T
+    # must handle the case when Labs is zero in some dimension
+    # thus reducing the effective dimension
+    neff = sum([mean(L) > 0 for L in Labs])::Int
+
+    if isempty(alpha)
+        return neff, Vector{T}(alpha_default(neff))
+    else
+        return neff, alpha
+    end
+
 end
 
 
@@ -363,7 +411,7 @@ export domain
 
 # high-level interface
 include("diva.jl");
-export diva
+export diva, diva3d
 
 include("divand_weights.jl");
 
@@ -384,6 +432,11 @@ export urn_str
 
 include("SDNMetadata.jl");
 export SDNMetadata
+
+include("select_time.jl");
+
+include("fit.jl");
+
 
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
