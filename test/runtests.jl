@@ -76,6 +76,9 @@ import Base.LinAlg.BLAS
     include("test_anam.jl");
 
     # Fitting covariance model
+    include("test_select_time.jl");
+    
+    # Fitting covariance model
     include("test_fit.jl");
 
     # test divand_filter3
