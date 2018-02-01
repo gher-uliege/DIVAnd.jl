@@ -1,11 +1,3 @@
-# Compute metric scale factors.
-#
-# [pm,pn] = divand_metric(lon,lat)
-#
-# Compute metric scale factors pm and pn based on
-# longitude lon and latitude lat. The variables pm and pn
-# represent the inverse of the local resolution in meters using
-# the mean Earth radius.
 
 """
 Compute the great-circle distance between the points (`lat1,`lon1`) and (`lat2,`lon2`).
@@ -21,7 +13,14 @@ function distance(lat1,lon1,lat2,lon2)
     return 180/π * Δσ
 end
 
+"""
+    pm,pn = divand_metric(lon,lat)
 
+Compute metric scale factors `pm` and `pn` based on
+longitude `lon` and latitude `lat`. The variables pm and pn
+represent the inverse of the local resolution in meters using
+the mean Earth radius.
+"""
 function divand_metric(lon,lat)
 
     sz = size(lon);

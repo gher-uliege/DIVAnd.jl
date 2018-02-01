@@ -4,8 +4,8 @@
 using divand
 using PyPlot
 
-# observations with points outside
-x = -1+3*rand(10);
+# observations with some points outside
+x = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1]
 f = sin.(x*6) ;
 
 # final grid
@@ -29,12 +29,14 @@ pm = ones(size(xi)) / (xi[2]-xi[1]);
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 0.1;
 
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=0);
 
-plot(xi,fi,".")
+plot(x,f,".",label="observation")
+plot(xi,fi,"-",label="analysis")
+legend()
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

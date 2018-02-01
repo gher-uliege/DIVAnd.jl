@@ -9,6 +9,10 @@ julia:
 matrix:
   allow_failures:
     - julia: nightly
+addons:
+    apt: # apt-get for linux
+        packages:
+          - libnlopt0
 notifications:
   email: false
 # uncomment the following lines to override the default test script
@@ -20,3 +24,6 @@ after_success:
   - julia -e 'cd(Pkg.dir("divand")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("divand")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  # push documentation to the github pages
+  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'cd(Pkg.dir("divand")); include(joinpath("docs", "make.jl"))'

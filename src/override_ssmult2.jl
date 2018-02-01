@@ -87,7 +87,7 @@ end
 
 
 
-function Base.:*(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,Int64})
+function Base.:*(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int})
 
     nnzC = myspmatmul_nnz(A,B)
     #@show nnz(A),nnz(B),nnzC
@@ -104,7 +104,7 @@ function Base.:*(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,In
 end
 
 
-function Base.:A_mul_Bc(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,Int64})
+function Base.:A_mul_Bc(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int})
 
     BT = B'
     nnzC = myspmatmul_nnz(A,BT)
@@ -122,7 +122,7 @@ function Base.:A_mul_Bc(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Flo
 end
 
 
-function Base.:Ac_mul_B(A::SparseMatrixCSC{Float64,Int64},B::SparseMatrixCSC{Float64,Int64})
+function Base.:Ac_mul_B(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int})
 
     AT = A'
     nnzC = myspmatmul_nnz(AT,B)

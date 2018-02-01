@@ -1,4 +1,12 @@
-julia 0.5
+julia 0.6
 Interpolations
-NetCDF
+NCDatasets
 SpecialFunctions
+DataArrays
+DataStructures
+HTTP
+Requests
+EzXML
+Logging
+StringEncodings
+NLopt

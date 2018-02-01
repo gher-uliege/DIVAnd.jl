@@ -715,7 +715,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                             function fun!(x::Array{Float64,1},fx::Array{Float64,1})
 							    #@show size(x),typeof(HI),typeof(scP)
 							    #work1[:]=diagshift*x ::Array{Float64,1}
-							    At_mul_B!(work3::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int64},x::Array{Float64,1})
+							    At_mul_B!(work3::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
 								#work3[:]=HI'*x  ::Array{Float64,1}
 								if scP==1
     								work3b=work3
@@ -727,7 +727,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 								
 								#
 								
-								A_mul_B!(fx::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int64},work3b::Array{Float64,1})
+								A_mul_B!(fx::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int},work3b::Array{Float64,1})
 								#fx[:]=HI*work3b ::Array{Float64,1}
 								fx[:]=scalef2*fx ::Array{Float64,1}
 								#fx[:]=work1+work2 ::Array{Float64,1}

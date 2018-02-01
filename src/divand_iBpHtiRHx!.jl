@@ -12,13 +12,13 @@ function divand_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
     
 	
 	#iBx=s.iB*x
-	A_mul_B!(iBx::Array{Float64,1},s.iB::SparseMatrixCSC{Float64,Int64},x::Array{Float64,1})
+	A_mul_B!(iBx::Array{Float64,1},s.iB::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
 	
     if btrunc==[]
 		#iBx[:]=iBx[:]+s.H'*(s.R \ (s.H * x))
-		A_mul_B!(workobs1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int64},x::Array{Float64,1})
+		A_mul_B!(workobs1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
 		workobs1[:]=s.R\workobs1
-		At_mul_B!(workstate1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int64},workobs1::Array{Float64,1})
+		At_mul_B!(workstate1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},workobs1::Array{Float64,1})
 		iBx[:]=iBx[:]+workstate1[:]
 		return iBx
     end
@@ -43,7 +43,7 @@ function divand_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 			#  D^k*x
 			workstate1[:]=x[:]
 			for kk=1:k
-				A_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int64},workstate1::Array{Float64,1})
+				A_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},workstate1::Array{Float64,1})
 				workstate1[:]=workstate2[:]
 			end
 			
@@ -53,12 +53,12 @@ function divand_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 			    #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
                 #                iBx_ = iBx_ + Dx'*(Dx*x);
 			
-			A_mul_B!(iBx_::Array{Float64,1},s.WEss[1]::SparseMatrixCSC{Float64,Int64},workstate1::Array{Float64,1})
+			A_mul_B!(iBx_::Array{Float64,1},s.WEss[1]::SparseMatrixCSC{Float64,Int},workstate1::Array{Float64,1})
 							
 			
 			for kk=1:k
 				#iBx_=Dk'*iBx_
-				At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int64},iBx_::Array{Float64,1})
+				At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},iBx_::Array{Float64,1})
 				iBx_[:]=workstate2[:]
 			end
 			
@@ -71,20 +71,20 @@ function divand_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 		   
 		   workstate1[:]=x[:]
 		   for kk=1:k+1
-		     A_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int64},workstate1::Array{Float64,1})
+		     A_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},workstate1::Array{Float64,1})
 		     workstate1[:]=workstate2[:]
 		   end
 		   
 		   #iBx_ = WD'*(WD*x);
 			
-				A_mul_B!(workstate2::Array{Float64,1},s.WE::SparseMatrixCSC{Float64,Int64},workstate1::Array{Float64,1})
-				A_mul_B!(workstate1::Array{Float64,1},s.WE::SparseMatrixCSC{Float64,Int64},workstate2::Array{Float64,1})
+				A_mul_B!(workstate2::Array{Float64,1},s.WE::SparseMatrixCSC{Float64,Int},workstate1::Array{Float64,1})
+				A_mul_B!(workstate1::Array{Float64,1},s.WE::SparseMatrixCSC{Float64,Int},workstate2::Array{Float64,1})
 				
 				# or better ?
 				# workstate1[:]=(diag(s.WE).^2).*workstate1
 				
 			for kk=1:k+1
-		     At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int64},workstate1::Array{Float64,1})
+		     At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},workstate1::Array{Float64,1})
 		     workstate1[:]=workstate2[:]
 		    end	
 			iBx_[:]=workstate1[:]
@@ -102,9 +102,9 @@ function divand_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 	
 	
 	#iBx[:]=iBx[:]+s.H'*(s.R \ (s.H * x))
-	A_mul_B!(workobs1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int64},x::Array{Float64,1})
+	A_mul_B!(workobs1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
 	workobs1[:]=s.R\workobs1
-	At_mul_B!(workstate1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int64},workobs1::Array{Float64,1})
+	At_mul_B!(workstate1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},workobs1::Array{Float64,1})
 	iBx[:]=iBx[:]+workstate1[:]
 	
 	

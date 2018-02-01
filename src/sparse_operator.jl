@@ -1,5 +1,5 @@
 
-sparse_diag(d)::SparseMatrixCSC{Float64,Int64} = spdiagm(d)
+sparse_diag(d)::SparseMatrixCSC{Float64,Int} = spdiagm(d)
 
 function sparse_pack(mask)
 

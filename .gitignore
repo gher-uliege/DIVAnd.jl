@@ -6,3 +6,4 @@ docs/build/
 docs/site/
 test/perf/*.err
 test/perf/*.out
+examples/.ipynb_checkpoints/

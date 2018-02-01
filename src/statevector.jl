@@ -4,14 +4,14 @@
 # N is the dimension of all variables
 type statevector{nvar_,N}
     mask::NTuple{nvar_,BitArray{N}}
-    nvar::Int64
-    numels::Vector{Int64}
-    numels_all::Vector{Int64}
-    size::Vector{NTuple{N,Int64}}
-    ind::Vector{Int64}
-    n::Int64
-    packed2unpacked::Vector{Vector{Int64}}
-    unpacked2packed::Vector{Vector{Int64}}
+    nvar::Int
+    numels::Vector{Int}
+    numels_all::Vector{Int}
+    size::Vector{NTuple{N,Int}}
+    ind::Vector{Int}
+    n::Int
+    packed2unpacked::Vector{Vector{Int}}
+    unpacked2packed::Vector{Vector{Int}}
 end
 
 function unpack_(v,mask)

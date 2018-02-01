@@ -4,7 +4,11 @@ x,success,niter = conjugategradient(fun!,b)
 
 Solve a linear system with the preconditioned conjugated-gradient method:
 A x = b
-where `A` is a symmetric positive defined matrix and `b` is a vector. The function `fun!(x,fx)` computes fx which is equal to  `A*x`.
+where `A` is a symmetric positive defined matrix and `b` is a vector. 
+Equivalently the solution `x` minimizes the cost function 
+J(x) = ½ xᵀ A x - bᵀ x.
+
+The function `fun!(x,fx)` computes fx which is equal to  `A*x`.
 For example:
 
 ```
@@ -48,10 +52,53 @@ function pc_none!(x,fx)
   fx[:] = x
 end
 
+"""
+xAy, yATx = checksym(n,fun!)
+Check if the the function `fun!` represents a symmetric matrix when applied on 
+random vectors of size `n`. 
+"""
+function checksym(n,fun!)
+    x = randn(n)
+    y = randn(n)
+    Ax = zeros(n)
+    Ay = zeros(n)
+
+    fun!(x,Ax)
+    fun!(y,Ay)
+
+    return (y ⋅ Ax),(x ⋅ Ay)
+
+end
+
+function cgprogress(iter,x,r,tol2,fun!,b)
+    if iter == 1
+        print("|  Iteration | Cost function | Norm of residual/√n | max. norm/√n |\n")
+        print("|------------|---------------|---------------------|--------------|\n")
+    end
+
+    # this is the same
+    # Ax = zeros(size(x))
+    # fun!(x,Ax)
+    
+    Ax = b-r
+    J = (x ⋅ Ax)/2 - (b ⋅ x)
+    n = length(r)
+
+    print("|")
+    print_with_color(:default,"$(@sprintf("%11d",iter))", bold=true)
+    print(" |")
+    print_with_color(:light_magenta,"$(@sprintf("%14.3f",J))")
+    print(" |")
+    print_with_color(:red,"$(@sprintf("%20f",sqrt((r ⋅ r)/n)))")
+    print(" |")
+    print_with_color(:default,"$(@sprintf("%13f",sqrt(tol2/n)))")
+    print(" |\n")
+end
+
 function conjugategradient{T}(fun!, b::Vector{T};
                               x0::Vector{T} = zeros(size(b)),
                               tol::T = 1e-6,
-                              maxit::Int = min(size(b,1),20),
+                              maxit::Int = min(size(b,1),100000),
                               minit::Int = 0,
                               pc! = pc_none!,
                               progress = (iter,x,r,tol2,fun!,b) -> nothing
@@ -132,14 +179,14 @@ function conjugategradient{T}(fun!, b::Vector{T};
         #    @show k, r ⋅ r,tol2,size(r)
         #end
 
-        if r ⋅ r < tol2 && k >= minit
+        if ((r ⋅ r) < tol2) && (k >= minit)
             success = true
             #@show k
             break
         end
 
         # apply pre-conditionner
-		
+
         pc!(r,z)
 
         zr_new = r ⋅ z

@@ -3,6 +3,9 @@ using Base.Test
 import Base.LinAlg.BLAS
 
 @testset "divand" begin
+    # ndgrid
+    include("test_ndgrid.jl");
+
     include("test_covaris.jl");
 
     # conjugate gradient
@@ -24,15 +27,25 @@ import Base.LinAlg.BLAS
     #include("test_2dvar_jog.jl");
     include("test_2dvar_error.jl");
 
+    include("test_2dvar_all_masked.jl");
+
     # cross-validation
     include("test_2dvar_cv.jl");
     include("test_2dvar_matfun.jl");
     include("test_2dvar_qc.jl");
+
+    include("test_2dvar_outside.jl");
+
+
     include("test_variableLandpmn.jl")
 
     include("test_3dvar.jl");
 
     include("test_4dvar.jl");
+
+    # comparision with analytical kernels
+    include("test_ndvar_point.jl");
+
     include("test_divandgo.jl");
 
 
@@ -47,12 +60,33 @@ import Base.LinAlg.BLAS
 
     include("test_averaged_bg.jl");
 
+    # SDN Vocabulary
+    include("test_vocab.jl");
+
+    # SDN ODVspreadsheet
+    include("test_ODVspreadsheet.jl");
+
+    # SDN metadata
+    include("test_metadata.jl");
+
+    # Saving data as NetCDF file
+    include("test_save.jl");
+
+    # Anamorphosis
+    include("test_anam.jl");
+
+    # Fitting covariance model
+    include("test_select_time.jl");
+    
+    # Fitting covariance model
+    include("test_fit.jl");
 
     # test divand_filter3
-    A=zeros(5,5,5,5,5);A[3,3,3,3,3]=1
-    z=divand_filter3(A,9999,1)
+    A = zeros(5,5,5,5,5)
+    A[3,3,3,3,3] = 1
+    z = divand_filter3(A,9999,1)
 
-    @test maximum(z)≈0.00411522633744856
+    @test maximum(z) ≈ 0.00411522633744856
 
     # test divand_metric
     lon,lat = ndgrid([0:10;],[0:5;])
@@ -74,4 +108,3 @@ import Base.LinAlg.BLAS
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
 end
-

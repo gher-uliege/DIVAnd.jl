@@ -12,7 +12,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 As for divandrun but as a higher level routine which will automatically create windowing etc
 it also include the definition of the errormethod
 
-* errormethod : cpme none exact
+* errormethod : :cpme (clever poormans method), :none or :exact
 
 
 # Output:

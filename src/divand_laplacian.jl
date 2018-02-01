@@ -78,6 +78,7 @@ function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscy
 
         #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
 		# Already include final operation to reduce problem size in real problems with land mask
+
         D = oper_diag(operatortype,d) * (oper_diff(operatortype,sz,i,iscyclic[i])*H')
 		
         if !iscyclic[i]
@@ -130,16 +131,22 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
     const sz = size(mask)
     const ivol = .*(pmn...)
 
-    const nus = ntuple(i -> zeros(sz),$N)::NTuple{$N,Array{T,$N}}
+    const nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
 
     # This heavily uses macros to generate fast code 
     # In e.g. 3 dimensions
     # (@nref $N tmp i) corresponds to tmp[i_1,i_2,i_3]
     # (@nref $N nu_i l->(l==j?i_l+1:i_l)  corresponds to nu_i[i_1+1,i_2,i_3] if j==1
 
+    # loop over all dimensions to create
+    # nus[1] (nu stagger in the 1st dimension)
+    # nus[2] (nu stagger in the 2nd dimension)
+    # ...
+
     @nexprs $N j->begin
     tmp = nus[j]
 
+    # loop over all spatio-temporal dimensions
     @nloops $N i k->(k == j ? (1:sz[k]-1) : (1:sz[k]))  begin
         nu_i = nu[j]
         # stagger nu
@@ -149,9 +156,9 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
         @nexprs $N m->begin
         pm_i = pmn[m]
         if (m .== j)
-           (@nref $N tmp i) *= ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+            (@nref $N tmp i) *= 0.5 * ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
         else
-           (@nref $N tmp i) /= ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+            (@nref $N tmp i) /= 0.5 * ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
         end
 
         if !(@nref $N mask i) || !(@nref $N mask l->(l==j?i_l+1:i_l))
@@ -175,11 +182,11 @@ function divand_laplacian_apply!{T}(ivol,nus,x::AbstractArray{T,$N},Lx::Abstract
             tmp2 = nus[d1]
             
             if i_d1 < sz[d1]
-                (@nref $N Lx i) += (@nref $N tmp2 i) * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                @inbounds (@nref $N Lx i) += (@nref $N tmp2 i) * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
             end
             
             if i_d1 > 1
-                (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1?i_d2-1:i_d2)) * ((@nref $N x i) -  (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                @inbounds (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1?i_d2-1:i_d2)) * ((@nref $N x i) -  (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
             end
         end
         (@nref $N Lx i) *= (@nref $N ivol i)

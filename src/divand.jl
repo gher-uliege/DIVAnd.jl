@@ -1,14 +1,20 @@
+#__precompile__()
+
 module divand
 
 using Interpolations
-using NetCDF
+using NCDatasets
+using DataArrays
 using Base.Test
 using Base.Cartesian
+using DataStructures
 import SpecialFunctions
+import HTTP
+using NLopt
 
 include("statevector.jl")
 
-type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{T}, TH <: AbstractMatrix{T}}
+type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{<: Number}, TH <: AbstractMatrix{<: Number}}
     yo::Vector{T}
     R::TR
     H::TH
@@ -78,12 +84,12 @@ end
 
         sv = statevector_init((mask,))
         sz = size(mask)
-        sempty = sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([]),prod(sz),prod(sz))
+        sempty = sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([]),prod(sz),prod(sz))
 
         D = copy(sempty)
         WE = copy(sempty)
         iB = copy(sempty)
-        iB_ = Vector{SparseMatrixCSC{Float64,Int64}}()
+        iB_ = Vector{SparseMatrixCSC{Float64,Int}}()
         Ld = Float64[]
         P = Matrix{Float64}(0,0)
 
@@ -93,9 +99,9 @@ end
         mapindex_packed = Int[]
         #mask_stag = [Array{Bool,1}() for i in 1:n]
         mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
-        WEs = Vector{SparseMatrixCSC{Float64,Int64}}()
-        WEss = [sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]
-        Dx = ([sparse(Array{Int64}([]),Array{Int64}([]),Array{Float64}([])) for i in 1:n]...)
+        WEs = Vector{SparseMatrixCSC{Float64,Int}}()
+        WEss = [sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]
+        Dx = ([sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]...)
         applybc = copy(sempty)
 
         betap = 0.
@@ -165,6 +171,10 @@ end
             )
     end
 
+# ndgrid* functions are from
+# https://github.com/JuliaLang/julia/blob/master/examples/ndgrid.jl
+# Licence MIT
+
 function ndgrid_fill(a, v, s, snext)
     for j = 1:length(a)
         a[j] = v[div(rem(j-1, snext), s)+1]
@@ -172,13 +182,13 @@ function ndgrid_fill(a, v, s, snext)
 end
 
 # type stable
-function ndgrid{T}(v1::AbstractVector{T},v2::AbstractVector{T})
+function ndgrid(v1::AbstractVector{T},v2::AbstractVector{T}) where T
     return ([x1 for x1 in v1, x2 in v2],
             [x2 for x1 in v1, x2 in v2])
 end
 
 
-function ndgrid{T}(vs::AbstractVector{T}...)
+function ndgrid(vs::AbstractVector{T}...) where T
     n = length(vs)
     sz = map(length, vs)
     out = ntuple(i->Array{T}(sz), n)
@@ -193,6 +203,14 @@ function ndgrid{T}(vs::AbstractVector{T}...)
     out
 end
 
+
+# https://stackoverflow.com/questions/31235469/array-type-promotion-in-julia
+function promote_array(arrays...)
+    eltype = Base.promote_eltype(arrays...)
+    tuple([convert(Array{eltype}, array) for array in arrays]...)
+end
+
+ndgrid(vs...) = ndgrid(promote_array(vs...)...)
 
 """concatenate diagonal matrices"""
 function blkdiag(X::Diagonal...)
@@ -263,8 +281,14 @@ Len = len_harmonise(len,mask)
 Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
 a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
 """
-len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len,size(mask)) for i=1:N)...)
-len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} = ((fill(len[i],size(mask)) for i=1:N)...)
+function len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    return ((fill(len,size(mask)) for i=1:N)...)
+end
+
+function len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+    return ((fill(len[i],size(mask)) for i=1:N)...)
+end
+
 function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
     for i=1:N
         if size(mask) != size(len[i])
@@ -273,6 +297,47 @@ function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::Ab
     end
 
     return len
+end
+
+function len_harmonize(len,mask::AbstractArray{Bool,N}) where N
+    # promote all lens to a common type
+    return len_harmonize(promote_array(len...),mask)
+end
+
+@inline function alpha_default(neff::Int)
+    # kernel should has be continuous derivative
+
+    # highest derivative in cost function
+    m = ceil(Int,1+neff/2)
+
+    # alpha is the (m+1)th row of the Pascal triangle:
+    # m=0         1
+    # m=1       1   1
+    # m=1     1   2   1
+    # m=2   1   3   3   1
+    # ...
+
+    return Int[binomial(m,k) for k = 0:m]
+end
+
+
+"""
+    neff, alpha = alpha_default(Labs,alpha)
+
+Return a default value of alpha.
+"""
+
+@inline function alpha_default(Labs,alpha::Vector{T}) where T
+    # must handle the case when Labs is zero in some dimension
+    # thus reducing the effective dimension
+    neff = sum([mean(L) > 0 for L in Labs])::Int
+
+    if isempty(alpha)
+        return neff, Vector{T}(alpha_default(neff))
+    else
+        return neff, alpha
+    end
+
 end
 
 
@@ -341,9 +406,38 @@ include("load_mask.jl");
 include("load_obs.jl");
 export loadbigfile
 
+include("domain.jl");
+export domain
+
 # high-level interface
 include("diva.jl");
-export diva
+export diva, diva3d
+
+include("divand_weights.jl");
+
+include("obsstat.jl");
+export statpos
+
+include("anamorphosis.jl");
+export Anam
+
+# ODV support
+include("ODVspreadsheet.jl");
+export ODVspreadsheet
+
+# Vocabulary
+include("Vocab.jl");
+export Vocab
+export urn_str
+
+include("SDNMetadata.jl");
+export SDNMetadata
+
+include("select_time.jl");
+
+include("fit.jl");
+
+
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 

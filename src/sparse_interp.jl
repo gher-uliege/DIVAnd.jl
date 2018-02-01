@@ -1,19 +1,18 @@
-# Create a sparse interpolation matrix.
-#
-# [H,out] = sparse_interp(mask,I)
-#
-# Create interpolation matrix from mask and fractional indexes I
-#
-# Input:
-#   mask: 0 invalid and 1 valid points (n-dimensional array)
-#   I: fractional indexes (2-dim array n by mi, where mi is the number of points to interpolate)
-# Ouput:
-#   H: sparse matrix with interpolation coefficients
-#   out: true if value outside of grid
-#   outbbox: 1 if outise bouding box
-#   onland: 1 if point touches land (where mask == 0)
+"""
+    H,out = sparse_interp(mask,I)
 
-#function sparse_interp{n}(mask::Array{Bool,n},I::Array{Float64,2},iscyclic = falses(size(I,1)))
+Create interpolation matrix from `mask` and fractional indexes `I`.
+
+Input:
+  mask: 0 invalid and 1 valid points (n-dimensional array)
+  I: fractional indexes (2-dim array n by mi, where mi is the number of points to interpolate)
+Ouput:
+  H: sparse matrix with interpolation coefficients
+  out: true if value outside of grid
+  outbbox: 1 if outise bouding box
+  onland: 1 if point touches land (where mask == 0)
+"""
+
 function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     if ndims(mask) != size(I,1)
         error("sparse_interp: inconsistent arguments")
@@ -24,7 +23,6 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     # n dimension of the problem
     n = size(I,1)
     m = prod(sz)
-
 
     # mi is the number of arbitrarly distributed observations
     mi = size(I,2)
@@ -42,7 +40,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     scale = strides(mask)
 
     # integer index
-    ind = floor.(Int64,I)
+    ind = floor.(Int,I)
     inside = trues(mi)
 
     for i = 1:n
@@ -71,7 +69,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     #si = repmat(collect(1:mip),2^n,1)
     si = [j for i in 1:2^n, j in 1:mip]
 
-    sj = ones(Int64,2^n, mip)
+    sj = ones(Int,2^n, mip)
     ss = ones(2^n, mip)
 
     # loop over all corner of hypercube
