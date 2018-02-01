@@ -14,6 +14,7 @@ load_mask
 domain
 SDNMetadata
 divand.save
+divand.checkobs
 ```
 
 # Examples

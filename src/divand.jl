@@ -437,6 +437,8 @@ include("select_time.jl");
 
 include("fit.jl");
 
+include("utils.jl");
+
 
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi

@@ -81,6 +81,12 @@ import Base.LinAlg.BLAS
     # Fitting covariance model
     include("test_fit.jl");
 
+    # Test utility functions
+    include("test_utils.jl");
+
+    # Test utility functions
+    include("test_obsstat.jl");
+    
     # test divand_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1

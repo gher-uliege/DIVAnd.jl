@@ -16,7 +16,7 @@ end
 """
     pm,pn = divand_metric(lon,lat)
 
-Compute metric scale factors `pm` and `pn` based on
+Compute metric scale factors `pm` and `pn` based on the arrays
 longitude `lon` and latitude `lat`. The variables pm and pn
 represent the inverse of the local resolution in meters using
 the mean Earth radius.
