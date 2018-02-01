@@ -65,11 +65,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#divand.checkobs",
+    "page": "divand.jl documentation",
+    "title": "divand.checkobs",
+    "category": "Function",
+    "text": " checkobs(x,v,ids)\n checkobs(io::IO,x,v,ids)\n\nPrint some basic information about the coordinates x (tuple of vector) and  values v (vector) having the identifier ids (vector of strings) to check  erroneous data. It prints wheter NaNs or Infs are found and the minimum and  maximum value.\n\nIf the argument io is provided, the information is input/output stream io.\n\n\n\n"
+},
+
+{
     "location": "index.html#divand.jl-documentation-1",
     "page": "divand.jl documentation",
     "title": "divand.jl documentation",
     "category": "section",
-    "text": "divandrun\ndivandgo\ndivand_averaged_bg\nload_mask\ndomain\nSDNMetadata\ndivand.save"
+    "text": "divandrun\ndivandgo\ndivand_averaged_bg\nload_mask\ndomain\nSDNMetadata\ndivand.save\ndivand.checkobs"
 },
 
 {
