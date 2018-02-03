@@ -48,7 +48,7 @@ maximum value.
 If the argument `io` is provided, the information is input/output stream `io`.
 """
 
-checkobs(io::IO,x,v,ids) = checkobs(STDOUT,x,v,ids)
+checkobs(x,v,ids) = checkobs(STDOUT,x,v,ids)
 
 function checkobs(io::IO,x,v,ids)
     function check(xc,ids,name)
