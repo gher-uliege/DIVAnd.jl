@@ -94,7 +94,8 @@ Base.length(TS::TimeSelectorRunningAverage) = length(TS.times)
 ctimes(TS::TimeSelectorRunningAverage) = TS.times
 
 function select(TS::TimeSelectorRunningAverage,index,obstime)   
-    s = falses(size(obstime))
+    # convertion to Int is necessary on 32-bit systems
+    s = falses(Int.(size(obstime)))
 
     # loop over all observation time instance
     for i = 1:length(obstime)
