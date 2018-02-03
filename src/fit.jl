@@ -72,8 +72,10 @@ considering `maxpoints` pairs.
 function empiriccovar(x,v,distbin,min_count;
                       maxpoints = 1000000,
                       distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
+    
+    @assert all(length.(x) .== length(v))
 
-
+    
     pmax = length(distbin)-1;
     sumvivj = zeros(pmax);
     sumvi = zeros(pmax);
@@ -244,8 +246,36 @@ function fit_isotropic(x,v,distbin,min_count;
 end
 
 
-function fitprogress(var0,lens,fitness)
-    @show var0,lens,fitness
+function fitprogress(iter,var0,lens,fitness)
+    if iter == 0
+        
+        @printf("| %10s |","var0")
+        for i = 1:length(lens)
+            @printf(" %10s |","length $(i)")
+        end
+        
+        @printf(" %10s |","fitness")
+        println()
+        
+        print("|------------|")
+        for i = 1:length(lens)
+            print("------------|")
+        end
+        
+        print("------------|")
+        println()
+    end
+    
+    @printf("| %10g |",var0)
+    for i = 1:length(lens)
+        @printf(" %10g |",lens[i])
+    end
+                
+    print_with_color(:light_magenta,@sprintf(" %10g ",fitness))
+    
+    println("|")
+    
+    return nothing
 end
 """
 
@@ -256,13 +286,13 @@ function fit(x,v,distbin,min_count;
              minlen = zeros(length(x)),
              maxlen = ones(length(x)),
              tolrel = 1e-4,
-             len0 = ones(length(x)),
+             lens0 = ones(length(x)),
              var0 = 1.,
              minvar0 = 0.,
              maxvar0 = 2.,
              maxpoints = 1000000,
              distfun = (xi,xj,lens) -> sqrt(sum(abs2,(xi-xj)./lens)),
-             progress = (var,len,fitness) -> nothing
+             progress = (iter,var,len,fitness) -> nothing
              #progress = fitprogress
              )
     # number of dimensions
@@ -270,7 +300,8 @@ function fit(x,v,distbin,min_count;
 
 
     const seed = rand(UInt64)
-
+    iter = 0 :: Int
+    
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
     function fitcovarlen(var0,lens)
@@ -296,14 +327,15 @@ function fit(x,v,distbin,min_count;
 
         local distx,covar,fitcovar,count,fitness
         local var0 = p[1]
-        local lens = p[2:3]
+        local lens = p[2:end]
 
         distx,covar,fitcovar,count = fitcovarlen(var0,lens)
         # avoid NaNs
         covar[count .== 0] = 0
         fitness = sum(abs2,fitcovar - covar)
 
-        progress(var0,lens,fitness)
+        progress(iter,var0,lens,fitness)
+        iter = (iter::Int) + 1
         #@show var0,lens,fitness
         return fitness
     end
@@ -317,7 +349,7 @@ function fit(x,v,distbin,min_count;
 
     min_objective!(opt, fitt)
 
-    minf,minx,ret = optimize(opt, [var0, len0...])
+    minf,minx,ret = optimize(opt, [var0, lens0...])
 
     var0opt = minx[1]
     lensopt = minx[2:end]
