@@ -494,9 +494,17 @@ are vectors of `DateTime` and `String` respectively). Only values matching the
 quality flag `qv_flags` are retained.
 
 No checks are done if the units are consistent.
+
+If the ODV does not contain a semantic header (e.g. for the aggregated ODV files), 
+then local names must be used.
+
+```julia-repl
+julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float32,["data_from_med_profiles_non-restricted_v2.txt"],
+                                       ["Water body salinity"]; nametype = :localname );
+```
 """
 
-function load(T,fnames::Vector{<:AbstractString},datanames;
+function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
               nametype = :P01)
     profiles = T[]
@@ -525,6 +533,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames;
             elseif nametype == :localname
                 if !(dataname in localnames(sheet))
                     # ignore this file
+                    @show localnames(sheet)
                     warn("no data in $(fname)")
                     continue
                 end
