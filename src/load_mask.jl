@@ -180,7 +180,7 @@ function load_bath(bath_name,isglobal,xi,yi)
     # m = conv2(maskf,F);
     Xi,Yi = ndgrid(xi,yi);
 
-    itp = interpolate((bx,by), b,Gridded(Linear()))
+    itp = interpolate((bx,by), b, Gridded(Linear()))
     bi = itp[xi,yi];
 
     return  xi,yi,bi
@@ -231,7 +231,6 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     mif = itp[xi,yi];
 
     mi = mif .> 1/2;
-    close(nc)
 
     return  xi,yi,mi
 end
