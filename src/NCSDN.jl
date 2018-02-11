@@ -4,19 +4,33 @@ using NCDatasets
 using DataArrays
 using Missings
 
-import ODVspreadsheet:
-    NO_QUALITY_CONTROL,
-    GOOD_VALUE,
-    PROBABLY_GOOD_VALUE,
-    PROBABLY_BAD_VALUE,
-    BAD_VALUE,
-    CHANGED_VALUE,
-    VALUE_BELOW_DETECTION,
-    VALUE_IN_EXCESS,
-    INTERPOLATED_VALUE,
-    MISSING_VALUE,
-    VALUE_PHENOMENON_UNCERTAIN
+# import ODVspreadsheet:
+#     NO_QUALITY_CONTROL,
+#     GOOD_VALUE,
+#     PROBABLY_GOOD_VALUE,
+#     PROBABLY_BAD_VALUE,
+#     BAD_VALUE,
+#     CHANGED_VALUE,
+#     VALUE_BELOW_DETECTION,
+#     VALUE_IN_EXCESS,
+#     INTERPOLATED_VALUE,
+#     MISSING_VALUE,
+#     VALUE_PHENOMENON_UNCERTAIN
 
+# SeaDataNet Quality Flags
+# http://vocab.nerc.ac.uk/collection/L20/current/
+
+const NO_QUALITY_CONTROL = "0"
+const GOOD_VALUE = "1"
+const PROBABLY_GOOD_VALUE = "2"
+const PROBABLY_BAD_VALUE = "3"
+const BAD_VALUE = "4"
+const CHANGED_VALUE = "5"
+const VALUE_BELOW_DETECTION = "6"
+const VALUE_IN_EXCESS = "7"
+const INTERPOLATED_VALUE = "8"
+const MISSING_VALUE = "9"
+const VALUE_PHENOMENON_UNCERTAIN = "A"
 
 
 const QC_SUFFIX = "SEADATANET_QC"
