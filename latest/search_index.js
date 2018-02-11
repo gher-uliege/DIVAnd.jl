@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.domain",
     "category": "Function",
-    "text": "mask,(pm,pn),(xi,yi) = domain(bathname,isglobal,lonr,latr)\n\nGenerate a 2D geospatial domain based on the topography from the NetCDF file bathname.\n\n\n\nmask,(pm,pn,po),(xi,yi,zi) = domain(bathname,isglobal,lonr,latr,depthr)\n\nGenerate a 3D geospatial domain based on the topography from the NetCDF file bathname.\n\n\n\nmask,(pm,pn,po,pp),(xi,yi,zi,ti) = domain(bathname,isglobal,lonr,latr,depthr,timer)\n\nGenerate a geospatial domain based on the topography from the NetCDF file bathname.\n\n\n\n"
+    "text": "mask,(pm,pn),(xi,yi) = domain(bathname,bathisglobal,lonr,latr)\n\nGenerate a 2D geospatial domain based on the topography from the NetCDF file bathname.\n\n\n\nmask,(pm,pn,po),(xi,yi,zi) = domain(bathname,bathisglobal,lonr,latr,depthr)\n\nGenerate a 3D geospatial domain based on the topography from the NetCDF file bathname. if zlevel = :surface, then depthr is zero for the sea surface and positive in water (positive is down) if zlevel = :floor, then depthr is zero for the sea floor and positive in water (positive is up)\n\n\n\nmask,(pm,pn,po,pp),(xi,yi,zi,ti) = domain(bathname,bathisglobal,lonr,latr,depthr,timer)\n\nGenerate a geospatial domain based on the topography from the NetCDF file bathname.\n\n\n\n"
 },
 
 {
