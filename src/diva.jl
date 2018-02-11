@@ -159,14 +159,17 @@ all elements have the same value which should be considered togeter. """
 aggregation_monthly(time) =  Dates.month.(time)
 
 
-
+"""
+zlevel :surface or :floor
+"""
 function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data"),
                 bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc"),
                 bathisglobal = true,
                 plotres = (timeindex,sel,fit,erri) -> nothing,
                 timeorigin = DateTime(1900,1,1,0,0,0),
-                moddim = [0,0,0]
+                moddim = [0,0,0],
+                zlevel = :surface,
                 )
 
     # metadata of grid
@@ -176,11 +179,30 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
     lon,lat,depth,time = x
 
     # correlation length
-    lenx,leny,lenz = len
+    lenx,leny,lenz = map(x -> Float64.(x),len)
     
-    mask,(pm,pn,po),(xi,yi,zi) = divand.domain(bathname,bathisglobal,lonr,latr,depthr)
-    
+    mask,(pm,pn,po),(xi,yi,zi) = divand.domain(
+        bathname,bathisglobal,lonr,latr,depthr;
+        zlevel = zlevel)
+
     sz = size(mask)
+
+    if zlevel == :floor       
+        depth = copy(depth)
+        @show "analysis from the sea floor"
+        @show size(lonr)
+        @show size(latr)
+        
+        bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
+
+        itp = interpolate((bxi,byi), bi, Gridded(Linear()))
+        
+        # shift the depth of the observations relative to the ocean floor
+        for k = 1:length(depth)
+            depth[k] = -itp[lon[k],lat[k]] - depth[k]
+        end
+    end
+
     
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]

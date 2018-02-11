@@ -66,6 +66,9 @@ import Base.LinAlg.BLAS
     # SDN ODVspreadsheet
     include("test_ODVspreadsheet.jl");
 
+    # SDN NetCDF
+    include("test_ncsdn.jl");
+    
     # SDN metadata
     include("test_metadata.jl");
 
