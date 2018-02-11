@@ -21,7 +21,7 @@ longitude `lon` and latitude `lat`. The variables pm and pn
 represent the inverse of the local resolution in meters using
 the mean Earth radius.
 """
-function divand_metric(lon,lat)
+function divand_metric(lon::Array{T,2},lat::Array{T,2}) where T
 
     sz = size(lon);
     i = 2:sz[1]-1;
@@ -45,6 +45,10 @@ function divand_metric(lon,lat)
     pn = 1./dy;
 
     return pm,pn
+end
+
+function divand_metric(lon::AbstractVector,lat::AbstractVector)
+    return divand_metric(ndgrid(lon,lat)...)
 end
 
 function deg2m(dlat)
