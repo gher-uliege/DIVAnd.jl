@@ -38,7 +38,52 @@ function interp(xi,fi,x)
     return f
 end
 
-    
+
+function detrend(mask,pm,xi,x,f,len,epsilon2;
+                 niter = 10,
+                 progressiter = (i,fi) -> nothing
+                 )
+
+    nlevels = length(mask)
+
+    fi = [zeros(xi[i][1]) for i = 1:nlevels]
+
+
+
+    tmp = copy(f)
+    # iterative solver
+    for i = 1:niter
+
+        # loop over all levels starting with the finest
+        for k = nlevels:-1:1
+            # remove all scales from observations f expect scale k
+            tmp[:] = f
+            for j = 1:nlevels
+                if j != k
+                    tmp = f - interp(xi[j],fi[j],x)
+                end
+            end
+            
+            # analyse variations at scale k
+            fi[k][:],s = divandrun(mask[k],pm[k],xi[k],x,tmp,len[k],epsilon2);
+        end
+
+        progressiter(i,fi)
+    end
+
+    # final analysis:
+    # add all scales
+
+    fa = copy(fi[nlevels])
+
+    for i = 1:nlevels-1
+        fa = fa + interp(xi[i],fi[i],xi[nlevels])
+    end
+
+    return fa,fi
+end
+
+
 
 # grid
 # xi[i][j][k₁,k₂,...] is the coordinate of the point k₁,k₂,...
@@ -47,12 +92,12 @@ end
 # The last grid is the final grid
 
 xi = (
-    (collect(linspace(0,4*pi,200)),),  # coarse grid
-    (collect(linspace(0,4*pi,200)),)   # fine grid
+    (collect(linspace(0,4*pi,400)),),  # coarse grid
+    (collect(linspace(0,4*pi,400)),)   # fine grid
 )
 
 
-nlevels = 2
+nlevels = length(xi)
 
 # sample data on fine grid
 fitrue = sin.(xi[2][1]) + sin.(10*xi[2][1])
@@ -77,7 +122,7 @@ pm = ntuple(i -> (ones(size(xi[i][1])) / (xi[i][1][2]-xi[i][1][1]),), length(xi)
 # len[1] -> long-term trend (u)
 # len[2] -> short-term variation (x)
 
-len = [1, 0.1];
+len = [1.5, 1.5/10];
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
@@ -86,48 +131,20 @@ epsilon2 = 1.;
 # fi[1] is u
 # fi[2] is x
 
-fi = [zeros(xi[i][1]) for i = 1:2]
 
-niter = 100
-
-# iterative solver
-for i = 1:niter
-    # Anomalies d̃ = d - H₂ u used in classical analysis J₁ and provides x
-    
-    # remove large-scale trend from f
-    tmp = f - interp(xi[1],fi[1],x)
-    # find short-term variation x
-    fi[2][:],s = divandrun(mask[2],pm[2],xi[2],x,tmp,len[2],epsilon2);
-
-    
-    # Anomalies d̃ = d - H₁ x used in classical analysis J₂ and provides u
-
-    # remove short-term variation x from f
-    tmp = f - interp(xi[2],fi[2],x)
-    # find large-scale trend u
-    fi[1][:],s = divandrun(mask[1],pm[1],xi[1],x,tmp,len[1],epsilon2);
-
+function plotiter(i,fi)    
     figure(1)
-    subplot(2,1,1)
-    plot(xi[1][1],fi[1],"-",label="analysis (trend) $(i)");
-    title("trend")
-    
-    subplot(2,1,2)    
-    plot(xi[2][1],fi[2],"-",label="analysis (variations) $(i)");
-    title("variations")
-    
+    for k = 1:nlevels 
+        subplot(nlevels,1,k)
+        plot(xi[k][1],fi[k],"-",label="iteration $(i)");
+        title("level $(k)")
+    end        
 end
 
-# final analysis
-# add all parts
-
-fa = copy(fi[nlevels])
-
-for i = 1:nlevels-1
-    fa = fa + interp(xi[i],fi[i],xi[nlevels])
-end
-
-
+fa,fi = detrend(mask,pm,xi,x,f,len,epsilon2;
+                niter = 10,
+                progressiter = plotiter,
+                )
 
 
 figure(2)
