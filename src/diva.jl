@@ -190,8 +190,6 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
     if zlevel == :floor       
         depth = copy(depth)
         @show "analysis from the sea floor"
-        @show size(lonr)
-        @show size(latr)
         
         bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
 

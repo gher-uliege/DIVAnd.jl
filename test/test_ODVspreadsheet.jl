@@ -27,3 +27,15 @@ datanames = ["Water body salinity"]
 profiles,lons,lats,depths,times,ids = ODV.load(T,[fname],datanames,nametype = :localname)
 
 @test length(profiles) > 0
+
+# values from
+# https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm
+# rounded to 3 hour
+
+@test divand.ODVspreadsheet.parsejd(2454142.125) == DateTime(2007,02,10,03,0,0)
+
+# values from
+# http://www.julian-date.com/ (setting GMT offset to zero)
+# https://web.archive.org/web/20180212213256/http://www.julian-date.com/
+
+@test divand.ODVspreadsheet.parsejd(2455512.375) == DateTime(2010,11,11,9,0,0)

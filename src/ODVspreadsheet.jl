@@ -293,9 +293,15 @@ colnumber(sheet,localname) = findfirst(localnames(sheet) .== localname)
 Convert a Chronological Julian Day Number to a DateTime object. The
 reference value is taken from
 https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm
+
+From the SDN standard:
+"A real number representing the Chronological Julian Date, which is defined as the time
+elapsed in days from 00:00 on January 1 st 4713 BC. ... "
+
+The time origin is _not_ noon (12:00) on Monday, January 1, 4713 BC as for the Julia Date Number.
 """
 
-parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454141.5) * (24*60*60*1000)))
+parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454142.) * (24*60*60*1000)))
 
 
 """
@@ -393,7 +399,7 @@ end
 
 Load a `iprofile`-th profile from the ODV spreadsheet `sheet` of the
 parameter `dataname`. If `nametype` is `:P01` (default), the
-dataname is the P01 vocabulary name with the SDN prefix. If nametype is 
+dataname is the P01 vocabulary name with the SDN prefix. If nametype is
 `:localname`, then it is the ODV column header.
  The resulting vectors have the data type `T`
 (expect the quality flag and `obstime`) .
@@ -416,7 +422,7 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
         else
             error("nametype should be :P01 or :localname and not $(nametype)")
         end
-        
+
     data,data_qv = loaddataqv(sheet,profile,localname,fillvalue)
     sz = size(data)
 
@@ -438,10 +444,10 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
-            
+
         #     unexpected_depthref = ((depthref .!= "mean sea level") .&
         #                            (depthref .!= "sea level"))
-            
+
         #     if any(unexpected_depthref)
         #         @show depthref[unexpected_depthref]
         #     end
@@ -481,21 +487,21 @@ end
 
 
 """
-     profiles,lons,lats,depths,times,ids = load(T,fnames,datanames; 
+     profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
         qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
         nametype = :P01)
 
 Load all profiles in all file from the array `fnames` corresponding to
 one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
-datanames are P01 vocabulary names with the SDN prefix. If nametype is 
+datanames are P01 vocabulary names with the SDN prefix. If nametype is
 `:localname`, then they are the ODV column header.
-The resulting vectors have the data type `T` (expect `times` and `ids` which 
-are vectors of `DateTime` and `String` respectively). Only values matching the 
+The resulting vectors have the data type `T` (expect `times` and `ids` which
+are vectors of `DateTime` and `String` respectively). Only values matching the
 quality flag `qv_flags` are retained.
 
 No checks are done if the units are consistent.
 
-If the ODV does not contain a semantic header (e.g. for the aggregated ODV files), 
+If the ODV does not contain a semantic header (e.g. for the aggregated ODV files),
 then local names must be used.
 
 ```julia-repl
