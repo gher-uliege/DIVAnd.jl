@@ -439,8 +439,8 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
     if "SDN:P01::ADEPZZ01" in P01names
         localname_depth = localnames(sheet,"SDN:P01::ADEPZZ01")
         depth[:] = loaddata(sheet,profile,localname_depth,fillvalue)
-    elseif "Water depth" in locnames
-        depth[:] = loaddata(sheet,profile,"Water depth",fillvalue)
+    elseif "Depth" in locnames
+        depth[:] = loaddata(sheet,profile,"Depth",fillvalue)
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
