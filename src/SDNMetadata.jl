@@ -9,7 +9,10 @@ Based on the information in the dictionary `metadata` and the analysed 4D field
 `fi` produce a list of NetCDF global and variable attributes for `divand_save2`.
 """
 
-function SDNMetadata(metadata,filename,varname,lonr,latr,fi)
+function SDNMetadata(metadata,filename,varname,lonr,latr;
+                     field = nothing,
+                     default_field_min = nothing,
+                     default_field_max = nothing)
 
     const layersep = "*"
 
@@ -109,9 +112,16 @@ function SDNMetadata(metadata,filename,varname,lonr,latr,fi)
     # Where the product can be visualised
     ncglobalattrib["WEB_visualisation"] = project["baseurl_visualization"]
 
-    # default layer (first time instance and surface)
-    field = fi[:,:,end,1]
-    default_field_min,default_field_max = extrema(field[.!isnan.(field)])
+    if (default_field_min == nothing) || (default_field_max == nothing)
+        if field != nothing
+            # default layer (first time instance and surface)
+            default_field = field[:,:,end,1]
+            default_field_min,default_field_max = extrema(default_field[.!isnan.(default_field)])
+        else
+            error("Either default_field_min and default_field_max or field must be provided")
+        end
+    end
+        
 
     ncglobalattrib["preview"] = project["baseurl_wms"] * string(
         HTTP.URI(;query=

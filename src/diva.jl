@@ -170,6 +170,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 timeorigin = DateTime(1900,1,1,0,0,0),
                 moddim = [0,0,0],
                 zlevel = :surface,
+                ncvarattrib = Dict(), ncglobalattrib = Dict(),
                 )
 
     # metadata of grid
@@ -205,9 +206,12 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
     
-    # create NetCDF file
-    ds, ncvar, ncvar_relerr, ncvar_Lx = divand.ncfile(filename,(lonr,latr,depthr,timeclim),varname;
-                                                  relerr = true)
+    # create the NetCDF file
+    ds, ncvar, ncvar_relerr, ncvar_Lx = divand.ncfile(
+        filename,(lonr,latr,depthr,timeclim),varname;
+        ncvarattrib = ncvarattrib,
+        ncglobalattrib = ncglobalattrib,
+        relerr = true)
 
     # Prepare background as mean vertical profile and time evolution.
     # Just call divand in two dimensions forgetting x and y ...
