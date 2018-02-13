@@ -15,6 +15,8 @@ domain
 SDNMetadata
 divand.save
 divand.checkobs
+divand.fit_isotropic
+divand.fit
 ```
 
 # Examples

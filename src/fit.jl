@@ -170,23 +170,37 @@ end
                                maxvar0 = 10.,
                                tolrel = 1e-4,
                                maxpoints = 1000000,
-                               distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
+                               distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj))),
+                               progress = (var,len,fitness) -> nothing
                            )
 
-Determines the optimal correlation length `len` and variance for a distance
-equal to zero `var0` of a cloud of data points with value `v` and coordiantes
+Determines the optimal correlation length `len` and variance (for a separation
+distance approaching zero) `var0` of a cloud of data points with value `v` and coordiantes
 `x` (tuple of vectors with the coordinates).
 
 The function can find the solution corresponding to  a local minimum
 which is not necessarily the global minimum.
 
-See also `empiriccovar` for future information about these parameters.
+See also `empiriccovar` for future information about the output parameters.
 
-    alpha: if one correlation length is forced to zero during the anaylsis
-the values of alpha sould be set using the effective dimension.
-For example, if a 2D-analysis is simulated by forcing the vertical correlation
-length to zero, then alpha should be set to [1,2,1], otherwise alpha will be
-[1,3,3,1] (for for any proper 3D analysis).
+Optional input parameters:
+
+* `alpha`: if one correlation length is forced to zero during the anaylsis
+  the values of alpha sould be set using the effective dimension.
+  For example, if a 2D-analysis is simulated by forcing the vertical correlation
+  length to zero, then alpha should be set to `[1,2,1]`, otherwise alpha will be
+  `[1,3,3,1]` (for for any proper 3D analysis).
+* `len`: initial value for the correlation length
+* `var0`: initial value of the variance
+* `minlen`, `maxlen`: minmum and maximum value for the correlation length
+* `minvar0`, `maxvar0`: minmum and maximum value for the variance
+* `tolrel`: relative tolerance for the solver
+* `maxpoints`: maximum number of data points considered
+* `distfun`: function to compute the distance between point `xi` (vector) and 
+   `xj`. Per default `distun` is the Eucedian distance 
+  `(xi,xj) -> sqrt(sum(abs2,xi-xj)))`.
+* `progress`: call-back function to show the progress of the optimization with 
+  the input parameters `var`, `len` and `fitness` (all scalars).
 
 """
 function fit_isotropic(x,v,distbin,min_count;
@@ -278,6 +292,24 @@ function fitprogress(iter,var0,lens,fitness)
     return nothing
 end
 """
+    var0opt,lensopt,distx,covar,fitcovar = fit(x,v,distbin,min_count;
+             alpha = divand.alpha_default(length(x)),
+             minlen = zeros(length(x)),
+             maxlen = ones(length(x)),
+             tolrel = 1e-4,
+             lens0 = ones(length(x)),
+             var0 = 1.,
+             minvar0 = 0.,
+             maxvar0 = 2.,
+             maxpoints = 1000000,
+             distfun = (xi,xj,lens) -> sqrt(sum(abs2,(xi-xj)./lens)),
+             progress = (iter,var,len,fitness) -> nothing
+             )
+
+The same as the function `fit_isotropic` except that now the correlation 
+length-scale `lens0`, `minlen`, `maxlen`, `lensopt` are a vectors 
+(one value per dimension). The distance function `distfun` uses an additional 
+parameter to compute the normalized distance.
 
 See the note of alpha in `divafit` which also applies here.
 """
@@ -293,7 +325,6 @@ function fit(x,v,distbin,min_count;
              maxpoints = 1000000,
              distfun = (xi,xj,lens) -> sqrt(sum(abs2,(xi-xj)./lens)),
              progress = (iter,var,len,fitness) -> nothing
-             #progress = fitprogress
              )
     # number of dimensions
     n = length(x)
