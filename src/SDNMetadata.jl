@@ -112,35 +112,38 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
     # Where the product can be visualised
     ncglobalattrib["WEB_visualisation"] = project["baseurl_visualization"]
 
-    if (default_field_min == nothing) || (default_field_max == nothing)
-        if field != nothing
+    if (field != nothing) || (
+        (default_field_min != nothing) && (default_field_max != nothing))
+        
+        if (default_field_min == nothing) || (default_field_max == nothing)
             # default layer (first time instance and surface)
             default_field = field[:,:,end,1]
             default_field_min,default_field_max = extrema(default_field[.!isnan.(default_field)])
-        else
-            error("Either default_field_min and default_field_max or field must be provided")
         end
-    end
         
 
-    ncglobalattrib["preview"] = project["baseurl_wms"] * string(
-        HTTP.URI(;query=
-                 OrderedDict(
-                     "service" => "WMS",
-                     "request" => "GetMap",
-                     "version" => "1.3.0",
-                     "crs" => "CRS:84",
-                     "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
-                     "decorated" => "true",
-                     "format" => "image/png",
-                     "layers" => Vocab.prefLabel(area) * "/" * filename * layersep * varname,
-                     "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
-                                                     "vmax" => default_field_max)),
-                     #"elevation" => "-0.0",
-                     #"time" => "03",
-                     "transparent" => "true",
-                     "height" => "500",
-                     "width" => "800")))
+        ncglobalattrib["preview"] = project["baseurl_wms"] * string(
+            HTTP.URI(;query=
+                     OrderedDict(
+                         "service" => "WMS",
+                         "request" => "GetMap",
+                         "version" => "1.3.0",
+                         "crs" => "CRS:84",
+                         "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
+                         "decorated" => "true",
+                         "format" => "image/png",
+                         "layers" => Vocab.prefLabel(area) * "/" * filename * layersep * varname,
+                         "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
+                                                         "vmax" => default_field_max)),
+                         #"elevation" => "-0.0",
+                         #"time" => "03",
+                         "transparent" => "true",
+                         "height" => "500",
+                         "width" => "800")))
+
+        # Example  http://ec.oceanbrowser.net/emodnet/Python/web/wms?styles=vmax%3A1.97872%2Bvmin%3A1.67568&format=image%2Fpng&height=500&bbox=27.5%2C42.0%2C30.0%2C44.5&decorated=true&transparent=true&layers=Back+Sea%2Fvarname.4Danl_autumn.nc%2Avarname&crs=CRS%3A84&service=WMS&request=GetMap&width=800&version=1.3.0
+        
+    end
 
 ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],
                           "standard_name" => metadata["netcdf_standard_name"],
@@ -150,7 +153,6 @@ ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],
                           #  "sdn_uom_urn" => sdn_uom_urn,
                           #  "sdn_uom_name" => sdn_uom_name,
                           )
-# Example  http://ec.oceanbrowser.net/emodnet/Python/web/wms?styles=vmax%3A1.97872%2Bvmin%3A1.67568&format=image%2Fpng&height=500&bbox=27.5%2C42.0%2C30.0%2C44.5&decorated=true&transparent=true&layers=Back+Sea%2Fvarname.4Danl_autumn.nc%2Avarname&crs=CRS%3A84&service=WMS&request=GetMap&width=800&version=1.3.0
 
 return ncglobalattrib,ncvarattrib
 end
