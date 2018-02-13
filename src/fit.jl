@@ -160,7 +160,7 @@ function empiriccovar(x,v,distbin,min_count;
 end
 
 """
-    len,var0,distx,covar,fitcovar = fit_isotropic(x,v,distbin,min_count;
+    var0,len,distx,covar,fitcovar = fit_isotropic(x,v,distbin,min_count;
                                alpha = divand.alpha_default(length(x)),
                                len = 1.,
                                var0 = 1.,
@@ -242,7 +242,7 @@ function fit_isotropic(x,v,distbin,min_count;
     # fitted covariance
     fitcovar = var0 *  K.(distx * len_scale/len)
 
-    return len,var0,distx,covar,fitcovar
+    return var0,len,distx,covar,fitcovar
 end
 
 

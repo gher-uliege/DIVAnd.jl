@@ -33,7 +33,7 @@ distbin = 0:0.5:10
 #@code_warntype fit(x,v,distbin,min_count)
 
 # isotropic fit
-len,var0,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,min_count)
+var0,len,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,min_count)
 @test len < 2
 
 # anisotropic fit
