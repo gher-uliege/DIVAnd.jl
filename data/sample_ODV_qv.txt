@@ -1,0 +1,21 @@
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=1234&identifier=water_sample2" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="1234:water_sample2"/>
+//
+//SDN_parameter_mapping
+//<subject>SDN:LOCAL:Sampling depth</subject><object>SDN:P01::ADEPZZ01</object><units>SDN:P06::ULAA</units>
+//<subject>SDN:LOCAL:Temperature</subject><object>SDN:P01::PSSTTS01</object><units>SDN:P06::UPAA</units>
+//<subject>SDN:LOCAL:Nitrate NO3-N</subject><object>SDN:P01::NTRAZZXX</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:Sum_Nitrate_and_Nitrite</subject><object>SDN:P01::NTRZZZXX</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:Silicate SiO4-Si</subject><object>SDN:P01::SLCAAAZX</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:Suspended solids</subject><object>SDN:P01::TSEDZZZZ</object><units>SDN:P06::UMGL</units>
+//<subject>SDN:LOCAL:Nitrite NO2-N</subject><object>SDN:P01::NTRIZZXX</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:Ammonium NH4-N</subject><object>SDN:P01::AMONZZXX</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:Dissolved oxygen</subject><object>SDN:P01::DOXYSE01</object><units>SDN:P06::UMGL</units>
+//<subject>SDN:LOCAL:Phaeophytin-a</subject><object>SDN:P01::PTAXZZXX</object><units>SDN:P06::UGPL</units>
+//<subject>SDN:LOCAL:Phosphate PO4-P</subject><object>SDN:P01::PHOSAAZX</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:Chlorophyll-a</subject><object>SDN:P01::CPHLSPPC</object><units>SDN:P06::UGPL</units>
+//<subject>SDN:LOCAL:pH</subject><object>SDN:P01::ACIDZZXX</object><units>SDN:P06::UUPH</units>
+//<subject>SDN:LOCAL:Salinity</subject><object>SDN:P01::ODSDM021</object><units>SDN:P06::UPPT</units>
+//
+Cruise	Station	Type	yyyy-mm-ddThh:mm:ss.sss	Longitude [degrees_east]	Latitude [degrees_north]	LOCAL_CDI_ID	EDMO_code	Bot. Depth [m]	Sampling depth [m]	QV:SEADATANET	Temperature [degC]	QV:SEADATANET	Nitrate NO3-N [umol/l]	QV:SEADATANET	Sum_Nitrate_and_Nitrite [umol/l]	QV:SEADATANET	Silicate SiO4-Si [umol/l]	QV:SEADATANET	Suspended solids [mg/l]	QV:SEADATANET	Nitrite NO2-N [umol/l]	QV:SEADATANET	Ammonium NH4-N [umol/l]	QV:SEADATANET	Dissolved oxygen [mg/l]	QV:SEADATANET	Phaeophytin-a [ug/l]	QV:SEADATANET	Phosphate PO4-P [umol/l]	QV:SEADATANET	Chlorophyll-a [ug/l]	QV:SEADATANET	pH [pH units]	QV:SEADATANET	Salinity [ppt]	QV:SEADATANET
+BE2016/03A	S01	B	2010-01-01T00:00:00.000	10	20	water_sample2	1234	9999.0	3	9		9		9	59	1	37.5	1	3.74666666666666666666666666666666666667E01	1	.54	1	2.95	1		9		9	1.55	1		9	8.15	1	30	1
+BE2016/03A	S01	B	2010-01-01T00:00:00.000	10	20	water_sample2	1234	9999.0	4	1		9		9	59	1	37.5	1	3.74666666666666666666666666666666666667E01	1	.54	1	2.95	1		9		9	1.55	1		9	8.15	1	30	1
