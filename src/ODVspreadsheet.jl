@@ -403,7 +403,7 @@ function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) wher
 end
 
 """
-     data,data_qv,obslon,obslat,obsdepth,obstime,obstime_qv,EDMO,LOCAL_CDI_ID =
+     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,obstime_qv,EDMO,LOCAL_CDI_ID =
      loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
 
 Load a `iprofile`-th profile from the ODV spreadsheet `sheet` of the
@@ -445,11 +445,12 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
     lat = loaddata(sheet,profile,"Latitude",fillvalue)
 
     depth = fill(fillvalue,sz)
+    depth_qv = fill("",sz)
     if "SDN:P01::ADEPZZ01" in P01names
         localname_depth = localnames(sheet,"SDN:P01::ADEPZZ01")
-        depth[:] = loaddata(sheet,profile,localname_depth,fillvalue)
+        depth[:],depth_qv[:] = loaddataqv(sheet,profile,localname_depth,fillvalue)
     elseif "Depth" in locnames
-        depth[:] = loaddata(sheet,profile,"Depth",fillvalue)
+        depth[:],depth_qv[:] = loaddataqv(sheet,profile,"Depth",fillvalue)
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
@@ -490,9 +491,21 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
         end
     end
 
-    return data,data_qv,lon,lat,depth,time,time_qv,EDMO,LOCAL_CDI_ID
+    return data,data_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID
 end
 
+
+function goodflag(obstime_qv,qv_flags)
+    good_time = falses(size(obstime_qv))
+    for flag in qv_flags
+        good_time[:] =  good_time .| (obstime_qv .== flag)
+    end
+
+    # time quality flag can also be absent
+    good_time[:] =  good_time .| (obstime_qv .== "")
+
+    return good_time
+end
 
 
 """
@@ -509,9 +522,9 @@ if the column header is `Water body salinity [per mille]`, then `datenames`
 should be `["Water body salinity"]`.
 The resulting vectors have the data type `T` (expect `times` and `ids` which
 are vectors of `DateTime` and `String` respectively). Only values matching the
-quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings 
+quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings
 (based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. "1" means "good value").
-One can also use the constants these constants (prefixed with 
+One can also use the constants these constants (prefixed with
 `divand.ODVspreadsheet.`):
 
 |                    constant | value |
@@ -577,7 +590,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
             end
 
             for iprofile = 1:nprofiles(sheet)
-                    data,data_qv,obslon,obslat,obsdepth,obstime,
+                    data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                     obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname; nametype = nametype)
 
                     # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
@@ -590,15 +603,10 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                         good_data[:] =  good_data .| (data_qv .== flag)
                     end
 
-                    good_time = falses(size(obstime_qv))
-                    for flag in qv_flags
-                        good_time[:] =  good_time .| (obstime_qv .== flag)
-                    end
+                    good_time = goodflag(obstime_qv,qv_flags)
+                    good_depth = goodflag(obsdepth_qv,qv_flags)
 
-                    # time quality flag can also be absent
-                    good_time[:] =  good_time .| (obstime_qv .== "")
-
-                    good = good_data .& good_time
+                    good = good_data .& good_time .& good_depth
 
                     append!(profiles,data[good])
                     append!(lons,obslon[good])
