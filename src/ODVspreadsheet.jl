@@ -188,7 +188,14 @@ function readODVspreadsheet(datafile)
 
         while !eof(f)
             nlines += 1;
-            line = split(chomp(readline(f)), "\t");
+
+            row = readline(f)
+            if startswith(row,"//")
+                # ignore lines starting with e.g.
+                # //<History> ...
+                continue
+            end
+            line = split(chomp(row), "\t");
 
             # Count empty values
             nonempty_ind = getNonEmptyInd(line);
@@ -368,6 +375,8 @@ end
     data,data_qv = loaddataqv(sheet,profile,locname,fillvalue; fillmode = :repeat)
 
 The same as `loaddata`, but now the quality flag are also loaded.
+
+profile[i][j] is the j-th column of the i-th row of a profile.
 """
 
 function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where T
@@ -494,7 +503,9 @@ end
 Load all profiles in all file from the array `fnames` corresponding to
 one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
 datanames are P01 vocabulary names with the SDN prefix. If nametype is
-`:localname`, then they are the ODV column header.
+`:localname`, then they are the ODV column header without units. For example
+if the column header is `Water body salinity [per mille]`, then `datenames`
+should be `["Water body salinity"]`.
 The resulting vectors have the data type `T` (expect `times` and `ids` which
 are vectors of `DateTime` and `String` respectively). Only values matching the
 quality flag `qv_flags` are retained.
