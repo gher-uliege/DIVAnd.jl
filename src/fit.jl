@@ -192,15 +192,19 @@ Optional input parameters:
   `[1,3,3,1]` (for for any proper 3D analysis).
 * `len`: initial value for the correlation length
 * `var0`: initial value of the variance
-* `minlen`, `maxlen`: minmum and maximum value for the correlation length
-* `minvar0`, `maxvar0`: minmum and maximum value for the variance
-* `tolrel`: relative tolerance for the solver
+* `minlen`, `maxlen`: minimum and maximum value for the correlation length
+* `minvar0`, `maxvar0`: minimum and maximum value for the variance
+* `tolrel`: relative tolerance for the optimizer
 * `maxpoints`: maximum number of data points considered
 * `distfun`: function to compute the distance between point `xi` (vector) and 
    `xj`. Per default `distun` is the Eucedian distance 
   `(xi,xj) -> sqrt(sum(abs2,xi-xj)))`.
 * `progress`: call-back function to show the progress of the optimization with 
   the input parameters `var`, `len` and `fitness` (all scalars).
+
+The length-scale parameters and the variance have the corresponding units from 
+the `x` and `v`. It is therefore often necessary to provide reasonable values 
+for these default parameters.
 
 """
 function fit_isotropic(x,v,distbin,min_count;
@@ -311,7 +315,7 @@ length-scale `lens0`, `minlen`, `maxlen`, `lensopt` are a vectors
 (one value per dimension). The distance function `distfun` uses an additional 
 parameter to compute the normalized distance.
 
-See the note of alpha in `divafit` which also applies here.
+The note of the optional parameters in `divafit` which also applies here.
 """
 function fit(x,v,distbin,min_count;
              alpha = divand.alpha_default(length(x)),
