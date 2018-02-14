@@ -497,7 +497,8 @@ end
 
 """
      profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
-        qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
+        qv_flags = [divand.ODVspreadsheet.GOOD_VALUE,
+                    divand.ODVspreadsheet.PROBABLY_GOOD_VALUE],
         nametype = :P01)
 
 Load all profiles in all file from the array `fnames` corresponding to
@@ -508,17 +509,36 @@ if the column header is `Water body salinity [per mille]`, then `datenames`
 should be `["Water body salinity"]`.
 The resulting vectors have the data type `T` (expect `times` and `ids` which
 are vectors of `DateTime` and `String` respectively). Only values matching the
-quality flag `qv_flags` are retained.
+quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings 
+(based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. "1" means "good value").
+One can also use the constants these constants (prefixed with 
+`divand.ODVspreadsheet.`):
 
-No checks are done if the units are consistent.
+|                    constant | value |
+|-----------------------------|-------|
+|          NO_QUALITY_CONTROL |   "0" |
+|                  GOOD_VALUE |   "1" |
+|         PROBABLY_GOOD_VALUE |   "2" |
+|          PROBABLY_BAD_VALUE |   "3" |
+|                   BAD_VALUE |   "4" |
+|               CHANGED_VALUE |   "5" |
+|       VALUE_BELOW_DETECTION |   "6" |
+|             VALUE_IN_EXCESS |   "7" |
+|          INTERPOLATED_VALUE |   "8" |
+|               MISSING_VALUE |   "9" |
+|  VALUE_PHENOMENON_UNCERTAIN |   "A" |
+
 
 If the ODV does not contain a semantic header (e.g. for the aggregated ODV files),
 then local names must be used.
 
 ```julia-repl
 julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float32,["data_from_med_profiles_non-restricted_v2.txt"],
-                                       ["Water body salinity"]; nametype = :localname );
+      ["Water body salinity"]; nametype = :localname );
 ```
+
+No checks are done if the units are consistent.
+
 """
 
 function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
