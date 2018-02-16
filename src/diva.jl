@@ -171,6 +171,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 moddim = [0,0,0],
                 zlevel = :surface,
                 ncvarattrib = Dict(), ncglobalattrib = Dict(),
+                transform = Anam.notransform(),
                 )
 
     # metadata of grid
@@ -181,6 +182,9 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
 
     # correlation length
     lenx,leny,lenz = map(x -> Float64.(x),len)
+
+    # anamorphosis transform
+    trans,invtrans = transform
     
     mask,(pm,pn,po),(xi,yi,zi) = divand.domain(
         bathname,bathisglobal,lonr,latr,depthr;
@@ -221,9 +225,12 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
         # select observation to be used for the time instance timeindex
         sel = select(TS,timeindex,time)
 
+        # apply the transformation
+        value_trans = trans.(value[sel])
+        
         # spatial mean of observations
-        vm = mean(value[sel])
-        va = value[sel]-vm
+        vm = mean(value_trans)
+        va = value_trans - vm
         
         # background profile
         fi,vaa = divand.divand_averaged_bg(mask,(pm,pn,po),(xi,yi,zi),
@@ -241,6 +248,9 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
         
         # sum analysis and backgrounds
         fit = fi2 + fi + vm
+
+        # inverse anamorphosis transformation
+        fit .= invtrans.(fit)
         
         plotres(timeindex,sel,fit,erri)
         

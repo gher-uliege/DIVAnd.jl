@@ -1,3 +1,30 @@
+const pathname = joinpath(dirname(@__FILE__),"..")
+
+const PROJECTS = Dict(
+    "EMODNET-chemistry" =>  Dict(
+        "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
+        "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
+        "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
+        "baseurl_opendap" =>  "http://ec.oceanbrowser.net:8081/data/emodnet-domains",
+        "template" => joinpath(pathname,"templates","emodnet-chemistry.xml"),
+    ),
+    "SeaDataNet" => Dict(
+        "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
+        "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
+        "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
+        "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataNet-domains",
+        "template" => joinpath(pathname,"templates","seadatanet.xml"),
+    ),
+    "SeaDataCloud" => Dict(
+        "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
+        "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
+        "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
+        "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataNet-domains",
+        "template" => joinpath(pathname,"templates","seadatanet.xml"),
+    )
+)
+
+
 """encode parameters as key-value separated by : and +"""
 encodeWMSStyle(params) = join([k * ':' * string(v) for (k,v) in  params ],"+")
 
@@ -18,29 +45,6 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
 
     pathname = joinpath(dirname(@__FILE__),"..")
 
-    const PROJECTS = Dict(
-        "EMODNET-chemistry" =>  Dict(
-            "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
-            "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
-            "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
-            "baseurl_opendap" =>  "http://ec.oceanbrowser.net:8081/data/emodnet-domains",
-            "template" => joinpath(pathname,"templates","emodnet-chemistry.xml"),
-        ),
-        "SeaDataNet" => Dict(
-            "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
-            "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
-            "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
-            "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataNet-domains",
-            "template" => joinpath(pathname,"templates","seadatanet.xml"),
-        ),
-        "SeaDataCloud" => Dict(
-            "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
-            "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
-            "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
-            "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataNet-domains",
-            "template" => joinpath(pathname,"templates","seadatanet.xml"),
-        )
-    )
 
 
 
@@ -114,13 +118,13 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
 
     if (field != nothing) || (
         (default_field_min != nothing) && (default_field_max != nothing))
-        
+
         if (default_field_min == nothing) || (default_field_max == nothing)
             # default layer (first time instance and surface)
             default_field = field[:,:,end,1]
             default_field_min,default_field_max = extrema(default_field[.!isnan.(default_field)])
         end
-        
+
 
         ncglobalattrib["preview"] = project["baseurl_wms"] * string(
             HTTP.URI(;query=
@@ -142,7 +146,7 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
                          "width" => "800")))
 
         # Example  http://ec.oceanbrowser.net/emodnet/Python/web/wms?styles=vmax%3A1.97872%2Bvmin%3A1.67568&format=image%2Fpng&height=500&bbox=27.5%2C42.0%2C30.0%2C44.5&decorated=true&transparent=true&layers=Back+Sea%2Fvarname.4Danl_autumn.nc%2Avarname&crs=CRS%3A84&service=WMS&request=GetMap&width=800&version=1.3.0
-        
+
     end
 
 ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],

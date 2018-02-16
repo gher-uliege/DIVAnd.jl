@@ -7,16 +7,19 @@ divand
 
 
 ```@docs
-divandrun
-divandgo
-divand_averaged_bg
-load_mask
-domain
-SDNMetadata
+divand.divandrun
+divand.divandgo
+divand.divand_averaged_bg
+divand.load_mask
+divand.domain
+divand.SDNMetadata
 divand.save
+divand.saveobs
 divand.checkobs
 divand.fit_isotropic
 divand.fit
+divand.Anam.loglin
+divand.Anam.logit
 ```
 
 # Examples
@@ -49,6 +52,7 @@ Vocab.description
 Vocab.canonical_units
 Vocab.splitURL
 ```
+
 
 # Information for developpers
 

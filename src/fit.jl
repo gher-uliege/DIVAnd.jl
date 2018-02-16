@@ -206,12 +206,20 @@ The length-scale parameters and the variance have the corresponding units from
 the `x` and `v`. It is therefore often necessary to provide reasonable values 
 for these default parameters.
 
+If the lower bound `minlen` is too small, then you might get the following error:
+
+```
+AmosException with id 4: input argument magnitude too large, complete loss of accuracy by argument reduction.
+```
+
+In these case, increase `minlen`.
+
 """
 function fit_isotropic(x,v,distbin,min_count;
                        alpha = divand.alpha_default(length(x)),
                        len = 1.,
                        var0 = 1.,
-                       minlen = 0.,
+                       minlen = 1e-5,
                        maxlen = 10.,
                        minvar0 = 0.,
                        maxvar0 = 10.,
@@ -238,7 +246,8 @@ function fit_isotropic(x,v,distbin,min_count;
     function fitt(p, grad::Vector #= unused =#)
         local fitcovar
 
-        fitcovar = p[2] * K.(distx * len_scale/p[1])
+        #@show p
+        fitcovar = p[1] * K.(distx * len_scale/p[2])
         fitness = sum(abs2,fitcovar - covar)
 
         progress(p[1],p[2],fitness)
@@ -254,8 +263,8 @@ function fit_isotropic(x,v,distbin,min_count;
     min_objective!(opt, fitt)
 
     minf,minx,ret = optimize(opt, [var0, len])
-    len = minx[1]
-    var0 = minx[2]
+    var0 = minx[1]
+    len = minx[2]
 
     # fitted covariance
     fitcovar = var0 *  K.(distx * len_scale/len)
