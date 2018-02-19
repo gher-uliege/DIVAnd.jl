@@ -46,6 +46,5 @@ trans,invtrans = Anam.notransform()
 
 x = linspace(0.03,200,100)
 
-@test x == invtrans.(trans.(x))
-@test x = trans.(x)
-
+@test collect(x) == invtrans.(trans.(x))
+@test collect(x) == trans.(x)
