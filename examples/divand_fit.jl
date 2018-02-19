@@ -2,7 +2,7 @@ using Base.Test
 import divand
 using PyPlot
 
-min_count = 1000
+mincount = 1000
 
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 
@@ -14,9 +14,9 @@ value,lon,lat,depth,time,ids = divand.loadbigfile(fname)
 sel = (depth .> 10) .& Dates.month.(time) .== 1;
 x = (lon[sel],lat[sel]);
 v = value[sel] - mean(value[sel]);
-distbin = 0:0.5:10
+distbin = collect(0:0.5:10)
 
-var0,len,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,min_count)
+var0,len,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,mincount)
 
 
 figure()
@@ -26,7 +26,7 @@ legend()
 title("isotropic fit 2D")
 
 
-var0opt,lensopt,distx,covar,fitcovar = divand.fit(x,v,distbin,min_count)
+var0opt,lensopt,distx,covar,fitcovar = divand.fit(x,v,distbin,mincount)
 
 @test all(lensopt .<= 2)
 
@@ -50,7 +50,7 @@ v = value[sel] - mean(value[sel]);
 distbin = 0:0.5:10
 
 var0opt,lensopt,distx,covar,fitcovar =
-    divand.fit(x,v,distbin,min_count;
+    divand.fit(x,v,distbin,mincount;
         lens0 = [0.5, 0.5, 10.],
         maxlen = [10,10,1000],
         progress = divand.fitprogress)
@@ -76,7 +76,7 @@ integ_lenz(z) = log.(a + b*z) / b
 x = (lon[sel],lat[sel],integ_lenz(depth[sel]));
 
 var0opt,lensopt,distx,covar,fitcovar =
-    divand.fit(x,v,distbin,min_count;
+    divand.fit(x,v,distbin,mincount;
         lens0 = [0.5, 0.5, 10.],
         maxlen = [10,10,1000],
         progress = divand.fitprogress)
