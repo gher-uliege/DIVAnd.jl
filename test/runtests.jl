@@ -68,7 +68,7 @@ import Base.LinAlg.BLAS
 
     # SDN NetCDF
     include("test_ncsdn.jl");
-    
+
     # SDN metadata
     include("test_metadata.jl");
 
@@ -80,7 +80,7 @@ import Base.LinAlg.BLAS
 
     # Fitting covariance model
     include("test_select_time.jl");
-    
+
     # Fitting covariance model
     include("test_fit.jl");
 
@@ -89,7 +89,10 @@ import Base.LinAlg.BLAS
 
     # Test utility functions
     include("test_obsstat.jl");
-    
+
+    # Test XML metadata description
+    include("test_xml.jl");
+
     # test divand_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1

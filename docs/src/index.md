@@ -20,6 +20,7 @@ divand.fit_isotropic
 divand.fit
 divand.Anam.loglin
 divand.Anam.logit
+divand.divadoxml
 ```
 
 # Examples

@@ -10,3 +10,5 @@ EzXML
 Logging
 StringEncodings
 NLopt
+Mustache
+ZipFile
