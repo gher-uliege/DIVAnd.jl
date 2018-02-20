@@ -56,16 +56,18 @@ RL = divand.lengraddepth((pm,pn),h,L)
 @test RL[40,1] < RL[60,1]
 
 
-z = linspace(-50,50,101);
-f = zeros(z)
-f[(end+1)÷2] = 1
-
 
 # Greens functions for 1D diffusion
 # 1/sqrt(4 π k t) * exp(-x^2 / (4kt))
 
+
+
+z = linspace(-50,50,201);
+f = zeros(z)
+f[(end+1)÷2] = 1
+
 scale = 10
-ff = smoothfilter(z,f,scale)
+ff = divand.smoothfilter(z,f,scale)
 
 fref =  (z[2]-z[1]) * exp.(-z.^2/(2*scale^2)) / sqrt(2* π * scale^2);
 
