@@ -1,5 +1,6 @@
 using Base.Test
 import divand
+using DataArrays
 #include("/home/abarth/projects/Julia/divand.jl/src/utils.jl")
 
 # gradient
@@ -53,3 +54,27 @@ RL = divand.lengraddepth((pm,pn),h,L)
 
 @test maximum(RL) < 1 + 10*eps(Float64)
 @test RL[40,1] < RL[60,1]
+
+
+z = linspace(-50,50,101);
+f = zeros(z)
+f[(end+1)÷2] = 1
+
+
+# Greens functions for 1D diffusion
+# 1/sqrt(4 π k t) * exp(-x^2 / (4kt))
+
+scale = 10
+ff = smoothfilter(z,f,scale)
+
+fref =  (z[2]-z[1]) * exp.(-z.^2/(2*scale^2)) / sqrt(2* π * scale^2);
+
+@test sum(fref) ≈ 1 atol=1e-4
+@test sum(ff) ≈ 1 atol=1e-4
+@test maximum(abs.(ff - fref)) < 1e-4
+
+
+
+#clf(); plot(z,ff, label = "sol"); plot(z,fref,label = "ref"); legend()
+
+

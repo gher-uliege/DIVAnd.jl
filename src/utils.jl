@@ -331,6 +331,69 @@ function lengraddepth(pmn,h::Array{T,2}, L;
     return RL
 end
 
+function smoothfilter!(x,f::Vector{T},scale) where T
+    sz = size(f)
+
+    pm = zeros(T,sz)
+    for i = 1:sz[1]
+        dx = 
+            if i == 1
+                x[2]-x[1]
+            elseif i == sz[1]
+                x[i]-x[i-1]
+            else
+                (x[i-1] - x[i+1])/2.
+            end
+        pm[i] = 1/dx
+    end
+                
+    ν = sqrt(scale)
+    ivol,nus = divand.divand_laplacian_prepare(trues(sz),(pm,),(fill(ν,sz),))
+
+    Δx  = 1/(minimum(pm))
+
+    dt_max = Δx^2 / (2 * ν)
+    dt = 0.5 * dt_max
+    
+    # 4 t * ν  = 2 scale^2
+    # 4 niter * dt * ν  = 2 scale^2
+    # niter = scale^2 / (2 * dt * ν)
+    niter = ceil(Int,scale^2 / (2 * dt * ν))
+
+    flux = zeros(T,sz[1]+1)
+    
+    for i = 1:niter
+        # flux
+        for i = 2:sz[1]
+            flux[i] = -ν * (f[i-1] - f[i])
+        end
+
+        for i = 1:sz[1]
+            f[i] = f[i] + dt * (flux[i+1] - flux[i])
+        end
+    end
+    
+end
 
 
-                      
+"""
+    ff = smoothfilter(x,f,scale)
+
+Smooth the function `f` defined on `x` by solving the diffusion equation
+
+∂ₜ ϕ = ν ∂²ₓ ϕ
+
+`scale` is the spatial scales of the removed length-scales.
+It is defined as 2Tν  where T is the integration time.
+
+# Greens functions for 1D diffusion
+# 1/sqrt(4 π ν t) * exp(-x^2 / (4νt))
+
+
+"""
+
+function smoothfilter(x,f::Vector{T},scale) where T
+    ff = copy(f)
+    smoothfilter!(x,ff,scale)
+    return ff
+end

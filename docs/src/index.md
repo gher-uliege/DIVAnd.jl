@@ -18,6 +18,7 @@ divand.saveobs
 divand.checkobs
 divand.fit_isotropic
 divand.fit
+divand.smoothfilter
 divand.Anam.loglin
 divand.Anam.logit
 divand.divadoxml
