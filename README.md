@@ -18,12 +18,19 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
+Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` which you can install under Debian/Ubuntu with:
+
+```bash
+apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
+bash
+
 Your need [Julia](http://julialang.org) to run `divand`. The command line version is sufficient for `divand`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
 Pkg.clone("https://github.com/gher-ulg/divand.jl")
 ```
+
 
 # Testing
 
