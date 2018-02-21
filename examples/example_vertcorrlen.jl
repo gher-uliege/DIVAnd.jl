@@ -77,7 +77,7 @@ function vertcorrlen(x,value::Vector{T},z;
   end
 
   #@code_warntype vertchoose(x,zlevel2)
-  @code_warntype vchoose(x)
+  #@code_warntype vchoose(x)
 
   pmax = length(distbin)-1
   kmax = length(z)
