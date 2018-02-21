@@ -97,6 +97,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#divand.smoothfilter",
+    "page": "divand.jl documentation",
+    "title": "divand.smoothfilter",
+    "category": "Function",
+    "text": "ff = smoothfilter(x,f,scale)\n\nSmooth the function f defined on x by solving the diffusion equation\n\n∂ₜ ϕ = ν ∂²ₓ ϕ\n\nscale is the spatial scales of the removed length-scales. It is defined as 2Tν  where T is the integration time.\n\nGreens functions for 1D diffusion\n\n1/sqrt(4 π ν t) * exp(-x^2 / (4νt))\n\n\n\n"
+},
+
+{
     "location": "index.html#divand.Anam.loglin",
     "page": "divand.jl documentation",
     "title": "divand.Anam.loglin",
@@ -125,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.jl documentation",
     "category": "section",
-    "text": "divand.divandrun\ndivand.divandgo\ndivand.divand_averaged_bg\ndivand.load_mask\ndivand.domain\ndivand.SDNMetadata\ndivand.save\ndivand.saveobs\ndivand.checkobs\ndivand.fit_isotropic\ndivand.fit\ndivand.Anam.loglin\ndivand.Anam.logit\ndivand.divadoxml"
+    "text": "divand.divandrun\ndivand.divandgo\ndivand.divand_averaged_bg\ndivand.load_mask\ndivand.domain\ndivand.SDNMetadata\ndivand.save\ndivand.saveobs\ndivand.checkobs\ndivand.fit_isotropic\ndivand.fit\ndivand.smoothfilter\ndivand.Anam.loglin\ndivand.Anam.logit\ndivand.divadoxml"
 },
 
 {
