@@ -63,10 +63,10 @@ function select(TS::TimeSelectorYearListMonthList,index,obstime)
 
     yearlist = TS.yearlists[yearindex]
     monthlist = TS.monthlists[mlindex]
-    
-    s = falses(size(obstime))
 
-    @show yearlist,monthlist
+    # convertion to Int is necessary on 32-bit systems
+    s = falses(Int.(size(obstime)))
+
     # loop over all observation time instance
     for i = 1:length(obstime)
         # s[i] is true if the observation is within the time range
@@ -94,7 +94,8 @@ Base.length(TS::TimeSelectorRunningAverage) = length(TS.times)
 ctimes(TS::TimeSelectorRunningAverage) = TS.times
 
 function select(TS::TimeSelectorRunningAverage,index,obstime)   
-    s = falses(size(obstime))
+    # convertion to Int is necessary on 32-bit systems
+    s = falses(Int.(size(obstime)))
 
     # loop over all observation time instance
     for i = 1:length(obstime)

@@ -66,6 +66,9 @@ import Base.LinAlg.BLAS
     # SDN ODVspreadsheet
     include("test_ODVspreadsheet.jl");
 
+    # SDN NetCDF
+    include("test_ncsdn.jl");
+
     # SDN metadata
     include("test_metadata.jl");
 
@@ -76,7 +79,19 @@ import Base.LinAlg.BLAS
     include("test_anam.jl");
 
     # Fitting covariance model
+    include("test_select_time.jl");
+
+    # Fitting covariance model
     include("test_fit.jl");
+
+    # Test utility functions
+    include("test_utils.jl");
+
+    # Test utility functions
+    include("test_obsstat.jl");
+
+    # Test XML metadata description
+    include("test_xml.jl");
 
     # test divand_filter3
     A = zeros(5,5,5,5,5)

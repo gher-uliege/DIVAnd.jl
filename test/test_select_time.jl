@@ -1,5 +1,5 @@
 using Base.Test
-include("../src/select_time.jl")
+import divand
 
 obstime = DateTime(1990,1,1) : DateTime(2010,12,31)
 
@@ -21,17 +21,17 @@ monthlists = [
     [10,11,12]
 ];
 
-TS = TimeSelectorYW(years,yearwindow,monthlists)
+TS = divand.TimeSelectorYW(years,yearwindow,monthlists)
 @test length(TS) == 8
 
 
-centraltimes = ctimes(TS)
+centraltimes = divand.ctimes(TS)
 
 @test length(centraltimes) == length(TS)
 
 @test Dates.Year(centraltimes[1]).value == 1993
 
-sel = select(TS,1,obstime)
+sel = divand.select(TS,1,obstime)
 
 @test all(years[1] - yearwindow/2 .<= Dates.year.(obstime[sel]) .<= years[1] + yearwindow/2)
 @test all(1 .<= Dates.month.(obstime[sel]) .<= 3)
@@ -41,9 +41,9 @@ sel = select(TS,1,obstime)
 # running average
 times = DateTime(1990,1,1):Dates.Month(1):DateTime(2010,12,31)
 window = 90
-TS = TimeSelectorRunningAverage(times,window)
+TS = divand.TimeSelectorRunningAverage(times,window)
 @test length(TS) == length(times)
-sel = select(TS,1,obstime)
+sel = divand.select(TS,1,obstime)
 @test all((obstime[sel] - times[1]) .<= Dates.Day(window))
 
 
@@ -70,16 +70,16 @@ monthlists = [
     [10,11,12]
 ];
 
-TS = TimeSelectorYearListMonthList(yearlists,monthlists)
+TS = divand.TimeSelectorYearListMonthList(yearlists,monthlists)
 @test length(TS) == 8
 
-centraltimes = ctimes(TS)
+centraltimes = divand.ctimes(TS)
 
 @test length(centraltimes) == length(TS)
 
 @test Dates.Year(centraltimes[1]).value == 1993
 
-sel = select(TS,1,obstime)
+sel = divand.select(TS,1,obstime)
 
 @test all(years[1] - yearwindow/2 .<= Dates.year.(obstime[sel]) .<= years[1] + yearwindow/2)
 @test all(1 .<= Dates.month.(obstime[sel]) .<= 3)
@@ -94,16 +94,16 @@ monthlists = [
     [10:12; 1]
 ];
 
-TS = TimeSelectorYearListMonthList(yearlists,monthlists)
+TS = divand.TimeSelectorYearListMonthList(yearlists,monthlists)
 @test length(TS) == 8
 
-centraltimes = ctimes(TS)
+centraltimes = divand.ctimes(TS)
 
-@test length(centraltimes) == length(TS)
+@test length(centraltimes) == divand.length(TS)
 
 @test Dates.Year(centraltimes[1]).value == 1993
 
-sel = select(TS,4,obstime)
+sel = divand.select(TS,4,obstime)
 
 @test all(years[1] - yearwindow/2 .<= Dates.year.(obstime[sel]) .<= years[1] + yearwindow/2)
 obsmonth = Dates.month.(obstime[sel])

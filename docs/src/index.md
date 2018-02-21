@@ -4,14 +4,24 @@ divand
 
 # divand.jl documentation
 
+
+
 ```@docs
-divandrun
-divandgo
-divand_averaged_bg
-load_mask
-domain
-SDNMetadata
+divand.divandrun
+divand.divandgo
+divand.divand_averaged_bg
+divand.load_mask
+divand.domain
+divand.SDNMetadata
 divand.save
+divand.saveobs
+divand.checkobs
+divand.fit_isotropic
+divand.fit
+divand.smoothfilter
+divand.Anam.loglin
+divand.Anam.logit
+divand.divadoxml
 ```
 
 # Examples

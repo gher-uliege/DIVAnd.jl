@@ -1,6 +1,6 @@
 #SBATCH --mem-per-cpu=16000
 
-#ENV["MEMTOFIT"]=4.0
+#ENV["MEMTOFIT"]=8.0
 
 using divand
 using PyPlot
@@ -86,16 +86,21 @@ mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 
 sz = size(mask)
 @show sz
+@show size(mask3)
 
 z = zeros(sz)
 # correlation length in arc degree
-lenx = fill(4*dx,sz)
-leny = fill(4*dy,sz)
+#lenx = fill(4*dx,sz)
+lenx=4*dx
+#leny = fill(4*dy,sz)
+leny=4*dy
 # correlation length in meters
-lenz = (10 + zi/5)/3
+#lenz = (10 + zi/5)/3
+lenz=3
 @show mean(lenz)
 # correlation time-scale in month
-lent = fill(1.,sz)
+#lent = fill(1.,sz)
+lent=1.
 
 moddim=[0,0,0,12]
 
@@ -110,6 +115,12 @@ toaverage=[true true false false]
 
 # save background field
 divand_save(replace(@__FILE__,r".jl$","hr0.02SB.nc"),mask,"Salinity",fi+vm)
+
+# try to clean up 
+fi=0
+
+z=0
+
 
 vaa=va-ffb
 

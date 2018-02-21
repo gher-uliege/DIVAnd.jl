@@ -188,7 +188,14 @@ function readODVspreadsheet(datafile)
 
         while !eof(f)
             nlines += 1;
-            line = split(chomp(readline(f)), "\t");
+
+            row = readline(f)
+            if startswith(row,"//")
+                # ignore lines starting with e.g.
+                # //<History> ...
+                continue
+            end
+            line = split(chomp(row), "\t");
 
             # Count empty values
             nonempty_ind = getNonEmptyInd(line);
@@ -293,9 +300,15 @@ colnumber(sheet,localname) = findfirst(localnames(sheet) .== localname)
 Convert a Chronological Julian Day Number to a DateTime object. The
 reference value is taken from
 https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm
+
+From the SDN standard:
+"A real number representing the Chronological Julian Date, which is defined as the time
+elapsed in days from 00:00 on January 1 st 4713 BC. ... "
+
+The time origin is _not_ noon (12:00) on Monday, January 1, 4713 BC as for the Julia Date Number.
 """
 
-parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454141.5) * (24*60*60*1000)))
+parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454142.) * (24*60*60*1000)))
 
 
 """
@@ -362,6 +375,8 @@ end
     data,data_qv = loaddataqv(sheet,profile,locname,fillvalue; fillmode = :repeat)
 
 The same as `loaddata`, but now the quality flag are also loaded.
+
+profile[i][j] is the j-th column of the i-th row of a profile.
 """
 
 function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where T
@@ -388,12 +403,12 @@ function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) wher
 end
 
 """
-     data,data_qv,obslon,obslat,obsdepth,obstime,obstime_qv,EDMO,LOCAL_CDI_ID =
+     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,obstime_qv,EDMO,LOCAL_CDI_ID =
      loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
 
 Load a `iprofile`-th profile from the ODV spreadsheet `sheet` of the
 parameter `dataname`. If `nametype` is `:P01` (default), the
-dataname is the P01 vocabulary name with the SDN prefix. If nametype is 
+dataname is the P01 vocabulary name with the SDN prefix. If nametype is
 `:localname`, then it is the ODV column header.
  The resulting vectors have the data type `T`
 (expect the quality flag and `obstime`) .
@@ -416,7 +431,7 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
         else
             error("nametype should be :P01 or :localname and not $(nametype)")
         end
-        
+
     data,data_qv = loaddataqv(sheet,profile,localname,fillvalue)
     sz = size(data)
 
@@ -430,18 +445,19 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
     lat = loaddata(sheet,profile,"Latitude",fillvalue)
 
     depth = fill(fillvalue,sz)
+    depth_qv = fill("",sz)
     if "SDN:P01::ADEPZZ01" in P01names
         localname_depth = localnames(sheet,"SDN:P01::ADEPZZ01")
-        depth[:] = loaddata(sheet,profile,localname_depth,fillvalue)
-    elseif "Water depth" in locnames
-        depth[:] = loaddata(sheet,profile,"Water depth",fillvalue)
+        depth[:],depth_qv[:] = loaddataqv(sheet,profile,localname_depth,fillvalue)
+    elseif "Depth" in locnames
+        depth[:],depth_qv[:] = loaddataqv(sheet,profile,"Depth",fillvalue)
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
-            
+
         #     unexpected_depthref = ((depthref .!= "mean sea level") .&
         #                            (depthref .!= "sea level"))
-            
+
         #     if any(unexpected_depthref)
         #         @show depthref[unexpected_depthref]
         #     end
@@ -475,28 +491,70 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
         end
     end
 
-    return data,data_qv,lon,lat,depth,time,time_qv,EDMO,LOCAL_CDI_ID
+    return data,data_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID
 end
 
 
+function goodflag(obstime_qv,qv_flags)
+    good_time = falses(size(obstime_qv))
+    for flag in qv_flags
+        good_time[:] =  good_time .| (obstime_qv .== flag)
+    end
+
+    # time quality flag can also be absent
+    good_time[:] =  good_time .| (obstime_qv .== "")
+
+    return good_time
+end
+
 
 """
-     profiles,lons,lats,depths,times,ids = load(T,fnames,datanames; 
-        qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
+     profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
+        qv_flags = [divand.ODVspreadsheet.GOOD_VALUE,
+                    divand.ODVspreadsheet.PROBABLY_GOOD_VALUE],
         nametype = :P01)
 
 Load all profiles in all file from the array `fnames` corresponding to
 one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
-datanames are P01 vocabulary names with the SDN prefix. If nametype is 
-`:localname`, then they are the ODV column header.
-The resulting vectors have the data type `T` (expect `times` and `ids` which 
-are vectors of `DateTime` and `String` respectively). Only values matching the 
-quality flag `qv_flags` are retained.
+datanames are P01 vocabulary names with the SDN prefix. If nametype is
+`:localname`, then they are the ODV column header without units. For example
+if the column header is `Water body salinity [per mille]`, then `datenames`
+should be `["Water body salinity"]`.
+The resulting vectors have the data type `T` (expect `times` and `ids` which
+are vectors of `DateTime` and `String` respectively). Only values matching the
+quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings
+(based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. "1" means "good value").
+One can also use the constants these constants (prefixed with
+`divand.ODVspreadsheet.`):
+
+|                    constant | value |
+|-----------------------------|-------|
+|          NO_QUALITY_CONTROL |   "0" |
+|                  GOOD_VALUE |   "1" |
+|         PROBABLY_GOOD_VALUE |   "2" |
+|          PROBABLY_BAD_VALUE |   "3" |
+|                   BAD_VALUE |   "4" |
+|               CHANGED_VALUE |   "5" |
+|       VALUE_BELOW_DETECTION |   "6" |
+|             VALUE_IN_EXCESS |   "7" |
+|          INTERPOLATED_VALUE |   "8" |
+|               MISSING_VALUE |   "9" |
+|  VALUE_PHENOMENON_UNCERTAIN |   "A" |
+
+
+If the ODV does not contain a semantic header (e.g. for the aggregated ODV files),
+then local names must be used.
+
+```julia-repl
+julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float32,["data_from_med_profiles_non-restricted_v2.txt"],
+      ["Water body salinity"]; nametype = :localname );
+```
 
 No checks are done if the units are consistent.
+
 """
 
-function load(T,fnames::Vector{<:AbstractString},datanames;
+function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
               nametype = :P01)
     profiles = T[]
@@ -525,13 +583,14 @@ function load(T,fnames::Vector{<:AbstractString},datanames;
             elseif nametype == :localname
                 if !(dataname in localnames(sheet))
                     # ignore this file
+                    @show localnames(sheet)
                     warn("no data in $(fname)")
                     continue
                 end
             end
 
             for iprofile = 1:nprofiles(sheet)
-                    data,data_qv,obslon,obslat,obsdepth,obstime,
+                    data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                     obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname; nametype = nametype)
 
                     # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
@@ -544,15 +603,10 @@ function load(T,fnames::Vector{<:AbstractString},datanames;
                         good_data[:] =  good_data .| (data_qv .== flag)
                     end
 
-                    good_time = falses(size(obstime_qv))
-                    for flag in qv_flags
-                        good_time[:] =  good_time .| (obstime_qv .== flag)
-                    end
+                    good_time = goodflag(obstime_qv,qv_flags)
+                    good_depth = goodflag(obsdepth_qv,qv_flags)
 
-                    # time quality flag can also be absent
-                    good_time[:] =  good_time .| (obstime_qv .== "")
-
-                    good = good_data .& good_time
+                    good = good_data .& good_time .& good_depth
 
                     append!(profiles,data[good])
                     append!(lons,obslon[good])

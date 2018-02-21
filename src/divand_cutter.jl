@@ -181,7 +181,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
         # end loop over all dimensions
 
         # Need a deepcopy here otherwise last values everywhere as only memory adress would be used
-
+        @show (iw1,iw2,isol1,isol2,istore1,istore2,)
         windowlist[iw]=deepcopy((iw1,iw2,isol1,isol2,istore1,istore2,))
 
     end

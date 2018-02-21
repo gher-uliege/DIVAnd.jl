@@ -15,7 +15,14 @@ Please cite this paper as follows if you use `divand` in a publication:
 
 Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: divand-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, [doi:10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
 
+
 # Installing
+
+Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` which you can install under Debian/Ubuntu with:
+
+```bash
+apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
+bash
 
 Your need [Julia](http://julialang.org) to run `divand`. The command line version is sufficient for `divand`.
 Inside Julia, you can download and install the package by issuing:
@@ -23,6 +30,7 @@ Inside Julia, you can download and install the package by issuing:
 ```julia
 Pkg.clone("https://github.com/gher-ulg/divand.jl")
 ```
+
 
 # Testing
 

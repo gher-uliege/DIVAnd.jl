@@ -1,4 +1,4 @@
-using divand
+import divand
 using DataStructures
 
 metadata = OrderedDict(
@@ -60,8 +60,14 @@ metadata = OrderedDict(
 
 filename = "test.nc"
 varname = "temp"
-ncglobalattrib,ncvarattrib = SDNMetadata(metadata,filename,varname,1:10,1:10,ones(10,10))
-
+ncglobalattrib,ncvarattrib = divand.SDNMetadata(metadata,filename,varname,1:10,1:10;
+                                         field = ones(10,10))
 
 @test ncvarattrib["units"] == "degree Celsius"
 @test typeof(ncglobalattrib["area_keywords"]) == String
+
+ncglobalattrib,ncvarattrib = divand.SDNMetadata(metadata,filename,varname,1:10,1:10;
+                                         default_field_min = -123,
+                                         default_field_max = 123)
+
+@test contains(ncglobalattrib["preview"],"123")

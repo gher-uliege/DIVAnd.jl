@@ -22,20 +22,26 @@ meanx,meany,stdx,stdy,covar,corr = divand.stats(sumx,sumx2,sumy,sumy2,sumxy,leng
 
 # DIVA fit
 
-min_count = 50
+mincount = 50
 
 # test data
 nobs = 1000;
 x = (2*pi*rand(nobs), 2*pi*rand(nobs))
 v = sin.(x[1]) .* sin.(x[2]);
-distbin = 0:0.5:10
+distbin = collect(0:0.5:10)
 
-#@code_warntype fit(x,v,distbin,min_count)
+
+distx,covar,corr,varx,count = divand.empiriccovar(x,v,distbin,mincount)
+
+#@code_warntype fit(x,v,distbin,mincount)
 
 # isotropic fit
-len,var0,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,min_count)
+@time var0,len,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,mincount)
 @test len < 2
 
+@show len
+
 # anisotropic fit
-var0opt,lensopt,distx,covar,fitcovar = divand.fit(x,v,distbin,min_count)
+@time var0opt,lensopt,distx,covar,fitcovar = divand.fit(x,v,distbin,mincount)
 @test all(lensopt .<= 2)
+@show lensopt
