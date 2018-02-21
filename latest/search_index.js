@@ -233,9 +233,9 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Information-for-developpers-1",
+    "location": "index.html#Information-for-developers-1",
     "page": "divand.jl documentation",
-    "title": "Information for developpers",
+    "title": "Information for developers",
     "category": "section",
     "text": ""
 },
@@ -246,6 +246,22 @@ var documenterSearchIndex = {"docs": [
     "title": "Update the documentation",
     "category": "section",
     "text": "InstallPkg.add(\"Documenter\")"
+},
+
+{
+    "location": "index.html#Troubleshooting-1",
+    "page": "divand.jl documentation",
+    "title": "Troubleshooting",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "index.html#No-plot-windows-1",
+    "page": "divand.jl documentation",
+    "title": "No plot windows",
+    "category": "section",
+    "text": "If the following command doesn\'t produce any figureusing PyPlot\nplot(0, 1)a possible solution is to modify the backend: this is done by editing the python configuration file matplotlibrc. The location of this file is obtained in python with:import matplotlib\nmatplotlib.matplotlib_fnamewhich, in my case, returns \'~/.config/matplotlib/matplotlibrc\'"
 },
 
 ]}
