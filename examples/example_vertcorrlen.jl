@@ -34,11 +34,15 @@ function vertcorrlen(x,value::Vector{T},z;
 
   function vertchoose(x,zlevel)
     #mask = abs.(zlevel - x[3]) .< 20
-    #j = pickone(mask);
-
+      #j = pickone(mask);
+      maxntries = 10000
+      maxntries2 = 1000
+      j = -1
+      jindex = -1
       
-    jindex = rand(1:length(zindex))
-    j = zindex[jindex] :: Int
+    for ntries = 1:maxntries  
+      
+    j = zindex[rand(1:length(zindex))] :: Int
 
     #mask = falses(size(x[1]))
     #for k = 1:length(x[1])
@@ -46,15 +50,23 @@ function vertcorrlen(x,value::Vector{T},z;
       #end
     #jindex = pickone(mask)
       jindex = -1
-      
-      while true
+
+        for ntries2 = 1:maxntries2
           k = rand(1:length(x[1]))
           if distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < 0.5
               jindex = k
               break
           end
-      end
+        end
 
+        if jindex != -1
+            break
+        end
+    end
+
+      if (j == -1) || (jindex == -1)
+          error("fail to find enought pairs at z = $(zlevels2)")
+      end
     #@show j,jindex
     return j,jindex
   end
