@@ -333,43 +333,43 @@ end
 
 function smoothfilter!(x,f::Vector{T},scale) where T
     sz = size(f)
-
-    pm = zeros(T,sz)
-    for i = 1:sz[1]
-        dx = 
-            if i == 1
-                x[2]-x[1]
-            elseif i == sz[1]
-                x[i]-x[i-1]
-            else
-                (x[i-1] - x[i+1])/2.
-            end
-        pm[i] = 1/dx
+    imax = sz[1]
+    
+    #      x[1]
+    # |     *    |   *   |
+    # xf[1]    xf[2]
+    
+    xf = zeros(T,sz[1]+1)
+    xf[1] = x[1] - (x[2]-x[1])/2
+    xf[imax+1] = x[imax] + (x[imax]-x[imax-1])/2
+        
+    for i = 2:imax
+        xf[i] = (x[i]+x[i-1])/2
     end
-                
+
+    #@show xf
     ν = sqrt(scale)
-    ivol,nus = divand.divand_laplacian_prepare(trues(sz),(pm,),(fill(ν,sz),))
+    Δx_min = minimum(xf[2:end]-xf[1:end-1])
+    #@show Δx_min
 
-    Δx  = 1/(minimum(pm))
-
-    dt_max = Δx^2 / (2 * ν)
-    dt = 0.5 * dt_max
+    Δt_max = Δx_min^2 / (2 * ν)
+    Δt = 0.5 * Δt_max
     
     # 4 t * ν  = 2 scale^2
-    # 4 niter * dt * ν  = 2 scale^2
-    # niter = scale^2 / (2 * dt * ν)
-    niter = ceil(Int,scale^2 / (2 * dt * ν))
+    # 4 niter * Δt * ν  = 2 scale^2
+    # niter = scale^2 / (2 * Δt * ν)
+    niter = ceil(Int,scale^2 / (2 * Δt * ν))
 
     flux = zeros(T,sz[1]+1)
     
     for i = 1:niter
         # flux
         for i = 2:sz[1]
-            flux[i] = -ν * (f[i-1] - f[i])
+            flux[i] = ν * (f[i] - f[i-1])/(x[i] - x[i-1])
         end
 
         for i = 1:sz[1]
-            f[i] = f[i] + dt * (flux[i+1] - flux[i])
+            f[i] = f[i] + Δt * (flux[i+1] - flux[i])/(xf[i+1] - xf[i])
         end
     end
     

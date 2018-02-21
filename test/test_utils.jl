@@ -60,8 +60,6 @@ RL = divand.lengraddepth((pm,pn),h,L)
 # Greens functions for 1D diffusion
 # 1/sqrt(4 π k t) * exp(-x^2 / (4kt))
 
-
-
 z = linspace(-50,50,201);
 f = zeros(z)
 f[(end+1)÷2] = 1
@@ -75,8 +73,4 @@ fref =  (z[2]-z[1]) * exp.(-z.^2/(2*scale^2)) / sqrt(2* π * scale^2);
 @test sum(ff) ≈ 1 atol=1e-4
 @test maximum(abs.(ff - fref)) < 1e-4
 
-
-
 #clf(); plot(z,ff, label = "sol"); plot(z,fref,label = "ref"); legend()
-
-

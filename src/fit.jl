@@ -56,6 +56,13 @@ function stats(sumx,sumx2,sumy,sumy2,sumxy,N)
 end
 
 
+function fitchoose(x)
+    # random index
+    i = rand(1:length(x[1]));
+    j = rand(1:length(x[1]));
+    return (i,j)
+end
+
 """
     distx,covar,corr,varx,count = empiriccovar(x,v,distbin,mincount;
                               maxpoints = 10000,
@@ -71,6 +78,7 @@ considering `maxpoints` pairs.
 
 function empiriccovar(x,v,distbin,mincount;
                       maxpoints = 10000,
+                      choose = fitchoose,
                       distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
     
     @assert all(length.(x) .== length(v))
@@ -103,8 +111,9 @@ function empiriccovar(x,v,distbin,mincount;
     for l=1:maxpoints
 
         # random index
-        i = rand(1:length(x[1]));
-        j = rand(1:length(x[1]));
+        #i = rand(1:length(x[1]));
+        #j = rand(1:length(x[1]));
+        i,j = choose(x)
 
         for k = 1:length(x)
             xi[k] = x[k][i]
@@ -189,6 +198,7 @@ end
 function empiriccovarmean(x,v::Vector{T},distbin,mincount;
                           maxpoints = 10000,
                           nmean = 10,
+                          choose = fitchoose,
                           distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))::NTuple{6,Vector{T}} where T
 
 
@@ -204,15 +214,19 @@ function empiriccovarmean(x,v::Vector{T},distbin,mincount;
     # https://web.archive.org/web/20180217105449/https://stackoverflow.com/questions/22798305/function-variable-does-not-live-outside-a-for-loop
 
     # necessary for type inference of distx
+
     distx,covar[:,1],corr[:,1],varx[:,1],count[:,1] =
         empiriccovar(x,v,distbin,mincount;
                      maxpoints = maxpoints,
+                     choose = choose,
                      distfun = distfun)
+
     
-    for k = 2:nmean
+    for k = 1:nmean
         distx,covar[:,k],corr[:,k],varx[:,k],count[:,k] =
             empiriccovar(x,v,distbin,mincount;
                          maxpoints = maxpoints,
+                         choose = choose,
                          distfun = distfun)
     end
 
@@ -294,7 +308,8 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                        nmean::Int = 10,
                        stdcovar = zeros(T,length(distbin)-1),
                        distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
-                       progress = (var,len,fitness) -> nothing                       
+                       progress = (var,len,fitness) -> nothing,
+                       choose = fitchoose,                       
                        ) where T
 
     # number of dimensions
@@ -305,32 +320,49 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     #                      nmean = nmean,
     #                      distfun = distfun)
     # compute the empirical covariance
+    info("Making empirical covariance")
+    
     distx,covar,corr,varx,count,stdcovar[:] =
         empiriccovarmean(x,v,distbin,mincount;
                          maxpoints = maxpoints,
                          nmean = nmean,
+                         choose = choose,
                          distfun = distfun)
 
+    if all(count .< mincount)        
+        error("Not enought pairs at all distances (count = $(count), mincount = $(mincount))")
+    end
+    info("Fitting empirical covariance")
     distx2 = copy(distx)
-    #@show covar
+
     # Kernel for the given dimension
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
+    #@show count
     #covar[count .== 0] = 0
-    covar[isnan.(covar) .| isnan.(stdcovar)] = 0
+    #covar[isnan.(covar) .| isnan.(stdcovar)] = 0
     
 
     # function to minimize
     function fitt(p, grad::Vector #= unused =#)
-        local fitcovar
+        local fitcovar_i, nbins, fitness
 
         #@show p
-        fitcovar = p[1] * K.(distx * len_scale/p[2]) :: Vector{Float64}
+        fitness = zero(eltype(p))
+        nbins = 0
+        for i = 1:length(distx)
+            if (count[i] > mincount)  && !isnan(stdcovar[i]) 
+            #if !isnan(stdcovar[i]) 
+                fitcovar_i = p[1] *  K(distx[i] * len_scale/p[2])
+                
+                # sum of squares scaled by the standard deviation
+                fitness += abs2( (fitcovar_i-covar[i])/stdcovar[i] )
+                nbins += 1
+            end
+        end
 
-        # sum of squares
-        fitness = sum(abs2,fitcovar - covar)
-        #fitness = sum(abs2, (fitcovar - covar) ./ stdcovar)
-
+        fitness /= nbins
+        #@show p,fitness,nbins
         progress(p[1],p[2],fitness)
         return fitness
     end
@@ -355,7 +387,13 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     fitcovar = var0 *  (K.(distx * len_scale/len):: Vector{Float64})
     
     #return distx
-    return var0,len,distx,covar,fitcovar
+    return var0,len,distx,covar,fitcovar,stdcovar
+end
+
+
+function fit_isotropic(x,v,distbin,mincount; kwargs...)
+    T = eltype(v)
+    return fit_isotropic(x,v,collect(T,distbin),mincount; kwargs...)
 end
 
 
@@ -468,7 +506,7 @@ function fit(x,v,distbin,mincount;
 
         progress(iter,var0,lens,fitness)
         iter = (iter::Int) + 1
-        @show var0,lens,fitness
+        #@show var0,lens,fitness
         return fitness
     end
 
@@ -479,18 +517,20 @@ function fit(x,v,distbin,mincount;
     upper_bounds!(opt, [maxvar0, maxlen...])
     xtol_rel!(opt,tolrel)
 
-    @show fitt([0.225,1.,1.],[])
-    @show fitt([0.225,1.,1.2],[])
+    #@show fitt([0.225,1.,1.],[])
+    #@show fitt([0.225,1.,1.2],[])
     
     min_objective!(opt, fitt)
 
     
     minf,minx,ret = optimize(opt, [var0, lens0...])
 
-    @show minx
+    #@show minx
     var0opt = minx[1]
     lensopt = minx[2:end]
     distx,covar,fitcovar,count = fitcovarlen(var0opt,lensopt)
 
     return var0opt,lensopt,distx,covar,fitcovar
 end
+
+

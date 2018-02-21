@@ -1,23 +1,25 @@
 using Base.Test
 import divand
 using PyPlot
+using BenchmarkTools
 
 mincount = 1000
 
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 
-value,lon,lat,depth,time,ids = divand.loadbigfile(fname)
+value,lon,lat,depth,timed,ids = divand.loadbigfile(fname)
 
 # 2D
-
 # surface values for the month January
-sel = (depth .> 10) .& Dates.month.(time) .== 1;
+sel = (depth .> 10) .& Dates.month.(timed) .== 1;
 x = (lon[sel],lat[sel]);
 v = value[sel] - mean(value[sel]);
 distbin = collect(0:0.5:10)
 
-var0,len,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,mincount)
+@benchmark var0,len,distx,covar,fitcovar = divand.fit_isotropic(x,v,distbin,mincount)
 
+
+#=
 
 figure()
 plot(distx,covar, label = "empirical covariance")
@@ -88,3 +90,4 @@ xlabel("normalized distance")
 title("general fit in 3D with transformed coordinate")
 
 println("You need to multiply the coefficient a and b of lenz by $(lensopt[3])")
+=#
