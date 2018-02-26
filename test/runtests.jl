@@ -74,6 +74,7 @@ import Base.LinAlg.BLAS
 
     # Saving data as NetCDF file
     include("test_save.jl");
+    include("test_loadobs.jl");
 
     # Anamorphosis
     include("test_anam.jl");

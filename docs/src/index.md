@@ -15,6 +15,8 @@ divand.domain
 divand.SDNMetadata
 divand.save
 divand.saveobs
+divand.loadobs
+divand.loadbigfile
 divand.checkobs
 divand.fit_isotropic
 divand.fit

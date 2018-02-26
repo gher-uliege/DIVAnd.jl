@@ -350,8 +350,10 @@ function saveobs(filename,xy,ids;
         obsids[1:length(ids[i]),i] = convert(Vector{Char},ids[i])
     end
 
-    Dataset(filename,"a") do ds
-        @show length(ids),idlen
+    mode = (isfile(filename) ? "a" : "c")
+    
+    Dataset(filename,mode) do ds
+        #@show length(ids),idlen
 
         ds.dim["observations"] = length(ids)
         ds.dim["idlen"] = idlen
@@ -391,6 +393,44 @@ function saveobs(filename,xy,ids;
         ncobstime[:] = xy[4]
         ncobsid[:] = obsids
     end
+end
+
+
+"""
+    divand.saveobs(filename,varname,value,xy,ids;
+                   type_save = Float32,
+                   timeorigin = DateTime(1900,1,1,0,0,0),
+                   )
+
+Save `value` and the location and time of the observation in the NetCDF file `filename` and
+their identifier `ids`. `xy` is a tuple with the vectors longitude, latitude,
+depth and time (as a vector of `DateTime`). The values will be saved in the 
+variable called `varname`.
+
+# Optional arguments:
+  * `type_save`: the type to save the data (default Float32). However, the time
+     is always saved as `Float64`.
+  * `timeorigin`: time origin for the time units attribute (default is
+1900-01-01 00:00:00)
+
+"""
+
+function saveobs(filename,varname,value,xy,ids;
+                 type_save = Float32,
+                 timeorigin = DateTime(1900,1,1,0,0,0),
+                 )
+
+    saveobs(filename,xy,ids;
+            type_save = type_save,
+            timeorigin = timeorigin
+            )
+
+
+    Dataset(filename,"a") do ds
+        ncobs = defVar(ds,varname, type_save, ("observations",))
+        ncobs[:] = value
+    end
+    
 end
 
 
