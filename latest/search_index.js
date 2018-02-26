@@ -69,7 +69,23 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.saveobs",
     "category": "Function",
-    "text": "divand.saveobs(filename,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime).\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\n"
+    "text": "divand.saveobs(filename,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime).\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\ndivand.saveobs(filename,varname,value,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave value and the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime). The values will be saved in the  variable called varname.\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\n"
+},
+
+{
+    "location": "index.html#divand.loadobs",
+    "page": "divand.jl documentation",
+    "title": "divand.loadobs",
+    "category": "Function",
+    "text": "value,lon,lat,depth,time,obsid = loadobs(T,filename,varname)\n\nLoad the variable varname from the NetCDF file filename. Coordinates (the NetCDF variables \"obslon\", \"obslat\", \"obsdepth\"), time (\"obstime\") and identifies (\"obsids\") will also be loaded. Numeric output arguments will have the type T.\n\n\n\n"
+},
+
+{
+    "location": "index.html#divand.loadbigfile",
+    "page": "divand.jl documentation",
+    "title": "divand.loadbigfile",
+    "category": "Function",
+    "text": "value,lon,lat,depth,time,obsid = loadbigfile(filename)\n\nLoad data from the text file filename and returns vectors with the value, longitude, latitude, depth and time (as DateTime). A list string identifiers is also returned.\n\n\n\n"
 },
 
 {
@@ -133,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.jl documentation",
     "category": "section",
-    "text": "divand.divandrun\ndivand.divandgo\ndivand.divand_averaged_bg\ndivand.load_mask\ndivand.domain\ndivand.SDNMetadata\ndivand.save\ndivand.saveobs\ndivand.checkobs\ndivand.fit_isotropic\ndivand.fit\ndivand.smoothfilter\ndivand.Anam.loglin\ndivand.Anam.logit\ndivand.divadoxml"
+    "text": "divand.divandrun\ndivand.divandgo\ndivand.divand_averaged_bg\ndivand.load_mask\ndivand.domain\ndivand.SDNMetadata\ndivand.save\ndivand.saveobs\ndivand.loadobs\ndivand.loadbigfile\ndivand.checkobs\ndivand.fit_isotropic\ndivand.fit\ndivand.smoothfilter\ndivand.Anam.loglin\ndivand.Anam.logit\ndivand.divadoxml"
 },
 
 {
