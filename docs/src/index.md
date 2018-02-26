@@ -57,8 +57,7 @@ Vocab.canonical_units
 Vocab.splitURL
 ```
 
-
-# Information for developpers
+# Information for developers
 
 ## Update the documentation
 
@@ -67,3 +66,22 @@ Install
 ```julia
 Pkg.add("Documenter")
 ```
+
+# Troubleshooting
+
+## No plot windows
+
+If the following command doesn't produce any figure
+```julia
+using PyPlot
+plot(0, 1)
+```
+a possible solution is to modify the *backend*: this is done by editing the python configuration file
+[matplotlibrc](http://matplotlib.org/users/customizing.html#the-matplotlibrc-file). The location of this file is obtained in python with:
+
+```python
+import matplotlib
+matplotlib.matplotlib_fname
+```
+which, in my case, returns
+```'~/.config/matplotlib/matplotlibrc'```

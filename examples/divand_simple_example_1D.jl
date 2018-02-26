@@ -1,4 +1,4 @@
-# A simple example of divand in 1 dimensions
+# A simple example of divand in 1 dimension
 # with observations from an analytical function.
 
 using divand
@@ -6,10 +6,9 @@ using PyPlot
 
 # observations with some points outside
 x = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1]
-f = sin.(x*6) ;
+f = sin.(x*6);
 
 # final grid
-
 xi=collect(linspace(0,1,30));
 
 # reference field
@@ -20,10 +19,7 @@ mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
 pm = ones(size(xi)) / (xi[2]-xi[1]);
-
 
 # correlation length
 len = 0.1;
