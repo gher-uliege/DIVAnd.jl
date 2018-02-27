@@ -413,7 +413,7 @@ export domain
 
 # high-level interface
 include("diva.jl");
-export diva, diva3d
+export diva3d
 
 include("divand_weights.jl");
 

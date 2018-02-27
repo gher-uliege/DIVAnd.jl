@@ -245,7 +245,7 @@ end
                                tolrel = 1e-4,
                                maxpoints = 10000,
                                distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj))),
-                               progress = (var,len,fitness) -> nothing
+                               progress = (iter,var,len,fitness) -> nothing
                            )
 
 Determines the optimal correlation length `len` and variance (for a separation
@@ -274,7 +274,7 @@ Optional input parameters:
    `xj`. Per default `distun` is the Eucedian distance
   `(xi,xj) -> sqrt(sum(abs2,xi-xj)))`.
 * `progress`: call-back function to show the progress of the optimization with
-  the input parameters `var`, `len` and `fitness` (all scalars).
+  the input parameters `iter`, `var`, `len` and `fitness` (all scalars).
 
 The length-scale parameters and the variance have the corresponding units from
 the `x` and `v`. It is therefore often necessary to provide reasonable values
@@ -370,11 +370,14 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     end
 
     # setup the optimser
-    opt = Opt(:LN_COBYLA, 2)
+    #opt = Opt(:LN_COBYLA, 2)
+    opt = Opt(:GN_DIRECT, 2)
+    
     lower_bounds!(opt, [minvar0/norm_var0, minlen/norm_len])
     upper_bounds!(opt, [maxvar0/norm_var0, maxlen/norm_len])
     xtol_rel!(opt,tolrel)
-
+    NLopt.maxeval!(opt,1000)
+    
     #@code_warntype fitt([1.,1.],[0.,0.])
 
     min_objective!(opt, fitt)
@@ -399,6 +402,8 @@ function fit_isotropic(x,v,distbin,mincount; kwargs...)
     return fit_isotropic(x,v,collect(T,distbin),mincount; kwargs...)
 end
 
+function fitquite(iter,var0,lens,fitness)
+end
 
 function fitprogress(iter,var0,lens,fitness)
     if iter == 0
@@ -518,6 +523,7 @@ function fit(x,v,distbin,mincount;
     n = length(x)
 
     opt = Opt(:LN_COBYLA, 1+n)
+    #opt = Opt(:GN_DIRECT, 1+n)
     lower_bounds!(opt, [minvar0, minlen...])
     upper_bounds!(opt, [maxvar0, maxlen...])
     xtol_rel!(opt,tolrel)
@@ -559,21 +565,27 @@ Optional arguments:
 """
 
 function fithorzlen(x,value::Vector{T},z;
-                    distbin = 0:0.5:5,
-                    mincount = 50,
-                    maxpoints = 10000,
-                    nmean = 100,
-                    len0 = 0.3,
-                    maxlen = 3.,
-                    minlen = 0.1,
-                    smoothz = 100.,
-                    searchz = 300.,
+                    distbin::Vector{T} = collect(0:0.5:5),
+                    mincount::Int = 50,
+                    maxpoints::Int = 10000,
+                    nmean::Int = 100,
+                    len0::T = 0.3,
+                    maxlen::T = 3.,
+                    minlen::T = 0.1,
+                    var0::T = 1.,
+                    minvar0::T = 0.,
+                    maxvar0::T = 2.,                    
+                    tolrel::T = 1e-4,
+                    smoothz::T = 100.,
+                    searchz::T = 300.,
+                    progress = (iter,var,len,fitness) -> nothing,
+                    distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                     ) where T
 
     pmax = length(distbin)-1
     kmax = length(z)
-    len = zeros(kmax)
-    var0 = zeros(kmax)
+    lenopt = zeros(kmax)
+    var0opt = zeros(kmax)
     fitcovar = Array{T,2}(pmax,kmax)
     stdcovar = Array{T,2}(pmax,kmax)
     covar = Array{T,2}(pmax,kmax)
@@ -584,22 +596,31 @@ function fithorzlen(x,value::Vector{T},z;
         xsel = (x[1][sel],x[2][sel]);
         v = value[sel] - mean(value[sel]);
 
-        var0[k],len[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
+        var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
             xsel,v,distbin,mincount;
-            len = len0, minlen = minlen, maxlen = maxlen,
-            nmean = nmean,maxpoints = maxpoints)
+            maxpoints = maxpoints,
+            nmean = nmean,
+            len = len0,
+            minlen = minlen,
+            maxlen = maxlen,
+            var0 = var0,
+            minvar0 = minvar0,
+            maxvar0 = maxvar0,
+            tolrel = tolrel,
+            progress = progress,
+        )
 
-        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(len[k])")
+        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
     end
 
-    lenf = copy(len)
+    lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
-        divand.smoothfilter!(z,lenf,smoothz)
+        divand.smoothfilter!(z,lenoptf,smoothz)
     end
 
-    return lenf,Dict(
-        :var0 => var0,
-        :len => len,
+    return lenoptf,Dict(
+        :var0 => var0opt,
+        :len => lenopt,
         :distx => distx,
         :covar => covar,
         :stdcovar => stdcovar,
@@ -615,18 +636,18 @@ See also divand.fithorzlen
 """
 
 function fitvertlen(x,value::Vector{T},z;
-                     distbin = collect([0.:50:400; 500:100:1000]),
+                     distbin::Vector{T} = collect([0.:50:400; 500:100:1000]),
                      mincount::Int = 50,
                      maxpoints::Int = 10000,
                      nmean::Int = 100,
                      len0::T = 50.,
                      minlen::T = 10.,
                      maxlen::T = 1000.,
-                     smoothz::T = 100.,
-                     tolrel::T = 1e-4,
                      var0::T = 1.,
                      minvar0::T = 0.,
                      maxvar0::T = 2.,
+                     tolrel::T = 1e-4,
+                     smoothz::T = 100.,
                      searchz::T = 2.,
                      searchxy::T = 0.5,
                      maxntries::Int = 10000,
@@ -767,7 +788,7 @@ function fitvertlen(x,value::Vector{T},z;
             progress = progress,
         )
 
-        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
+        println("Data points at z=$(z[k]): $(length(value)), correlation length: $(lenopt[k])")
         #plot(distx,covar, label = "empirical covariance")
         #plot(distx,fitcovar, label = "fitted function")
     end
