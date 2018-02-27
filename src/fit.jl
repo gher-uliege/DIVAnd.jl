@@ -80,10 +80,10 @@ function empiriccovar(x,v,distbin,mincount;
                       maxpoints = 10000,
                       choose = fitchoose,
                       distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
-    
+
     @assert all(length.(x) .== length(v))
 
-    
+
     pmax = length(distbin)-1;
     sumvivj = zeros(pmax);
     sumvi = zeros(pmax);
@@ -102,17 +102,12 @@ function empiriccovar(x,v,distbin,mincount;
         distx[i] = (distbin[i] + distbin[i+1])/2
     end
 
-
-
     # coordinates of considered points
     xi = zeros(eltype(x[1]),length(x))
     xj = zeros(eltype(x[1]),length(x))
 
     for l=1:maxpoints
-
         # random index
-        #i = rand(1:length(x[1]));
-        #j = rand(1:length(x[1]));
         i,j = choose(x)
 
         for k = 1:length(x)
@@ -125,7 +120,6 @@ function empiriccovar(x,v,distbin,mincount;
             continue
         end
 
-        #dist = distance(y(i1,j1),x(i1,j1),y(i2,j2),x(i2,j2));
         distance = distfun(xi,xj)
 
         if distance >= distbin[end]
@@ -178,7 +172,7 @@ function nm(covar::Array{T,2}) where T
     m = zeros(T,size(covar,1))
     s = zeros(T,size(covar,1))
     count = zeros(Int,size(covar,1))
-    for j = 1:size(covar,2)            
+    for j = 1:size(covar,2)
         for i = 1:size(covar,1)
             if !isnan(covar[i,j])
                 m[i] = m[i] + covar[i,j]
@@ -187,11 +181,11 @@ function nm(covar::Array{T,2}) where T
             end
         end
     end
-    
+
     for i = 1:size(covar,1)
         m[i],s[i] = stats(m[i],s[i],count[i])
     end
-    
+
     return m,s
 end
 
@@ -207,7 +201,7 @@ function empiriccovarmean(x,v::Vector{T},distbin,mincount;
     corr = zeros(sz)
     varx = zeros(sz)
     count = zeros(sz)
-    
+
     # make sure that the variable distx is visible
     # outside the for loop
     # https://web.archive.org/save/https://docs.julialang.org/en/release-0.6/manual/variables-and-scoping/#Soft-Local-Scope-1
@@ -221,7 +215,7 @@ function empiriccovarmean(x,v::Vector{T},distbin,mincount;
                      choose = choose,
                      distfun = distfun)
 
-    
+
     for k = 1:nmean
         distx,covar[:,k],corr[:,k],varx[:,k],count[:,k] =
             empiriccovar(x,v,distbin,mincount;
@@ -276,14 +270,14 @@ Optional input parameters:
 * `minvar0`, `maxvar0`: minimum and maximum value for the variance
 * `tolrel`: relative tolerance for the optimizer
 * `maxpoints`: maximum number of data points considered
-* `distfun`: function to compute the distance between point `xi` (vector) and 
-   `xj`. Per default `distun` is the Eucedian distance 
+* `distfun`: function to compute the distance between point `xi` (vector) and
+   `xj`. Per default `distun` is the Eucedian distance
   `(xi,xj) -> sqrt(sum(abs2,xi-xj)))`.
-* `progress`: call-back function to show the progress of the optimization with 
+* `progress`: call-back function to show the progress of the optimization with
   the input parameters `var`, `len` and `fitness` (all scalars).
 
-The length-scale parameters and the variance have the corresponding units from 
-the `x` and `v`. It is therefore often necessary to provide reasonable values 
+The length-scale parameters and the variance have the corresponding units from
+the `x` and `v`. It is therefore often necessary to provide reasonable values
 for these default parameters.
 
 If the lower bound `minlen` is too small, then you might get the following error:
@@ -303,13 +297,13 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                        len::T = 1.,
                        minlen::T = 1e-5,
                        maxlen::T = 10.,
-                       tolrel::T = 1e-4,
+                       tolrel::T = 1e-5,
                        maxpoints::Int = 1000000,
                        nmean::Int = 10,
                        stdcovar = zeros(T,length(distbin)-1),
                        distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
-                       progress = (var,len,fitness) -> nothing,
-                       choose = fitchoose,                       
+                       progress = (iter,var,len,fitness) -> nothing,
+                       choose = fitchoose,
                        ) where T
 
     # number of dimensions
@@ -321,7 +315,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     #                      distfun = distfun)
     # compute the empirical covariance
     info("Making empirical covariance")
-    
+
     distx,covar,corr,varx,count,stdcovar[:] =
         empiriccovarmean(x,v,distbin,mincount;
                          maxpoints = maxpoints,
@@ -329,7 +323,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                          choose = choose,
                          distfun = distfun)
 
-    if all(count .< mincount)        
+    if all(count .< mincount)
         error("Not enought pairs at all distances (count = $(count), mincount = $(mincount))")
     end
     info("Fitting empirical covariance")
@@ -338,11 +332,17 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     # Kernel for the given dimension
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
+    # scale parameters of cost-function
+    const norm_len = maximum(distbin)
+    const norm_var0 = maximum(abs.(covar[isfinite.(covar)]))
+
+    @show norm_len,norm_var0
     #@show count
     #covar[count .== 0] = 0
     #covar[isnan.(covar) .| isnan.(stdcovar)] = 0
-    
 
+    iter = 0
+    
     # function to minimize
     function fitt(p, grad::Vector #= unused =#)
         local fitcovar_i, nbins, fitness
@@ -351,10 +351,10 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
         fitness = zero(eltype(p))
         nbins = 0
         for i = 1:length(distx)
-            if (count[i] > mincount)  && !isnan(stdcovar[i]) 
-            #if !isnan(stdcovar[i]) 
-                fitcovar_i = p[1] *  K(distx[i] * len_scale/p[2])
-                
+            if (count[i] > mincount)  && !isnan(stdcovar[i])
+            #if !isnan(stdcovar[i])
+                fitcovar_i = norm_var0 * p[1] *  K(distx[i] * len_scale/(norm_len * p[2]))
+
                 # sum of squares scaled by the standard deviation
                 fitness += abs2( (fitcovar_i-covar[i])/stdcovar[i] )
                 nbins += 1
@@ -363,29 +363,32 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
 
         fitness /= nbins
         #@show p,fitness,nbins
-        progress(p[1],p[2],fitness)
+        progress(iter,norm_var0 * p[1],norm_len * p[2],fitness)
+        iter = (iter::Int) + 1
+
         return fitness
     end
 
     # setup the optimser
     opt = Opt(:LN_COBYLA, 2)
-    lower_bounds!(opt, [minvar0, minlen])
-    upper_bounds!(opt, [maxvar0, maxlen])
+    lower_bounds!(opt, [minvar0/norm_var0, minlen/norm_len])
+    upper_bounds!(opt, [maxvar0/norm_var0, maxlen/norm_len])
     xtol_rel!(opt,tolrel)
 
     #@code_warntype fitt([1.,1.],[0.,0.])
-    
+
     min_objective!(opt, fitt)
 
-    minf,minx,ret = optimize(opt, [var0, len])
-    var0 = minx[1]
-    len = minx[2]
+    minf,minx,ret = optimize(opt, [var0/norm_var0, len/norm_len])
+    var0 = minx[1] * norm_var0
+    len = minx[2] * norm_len
 
+    @show minf,ret
     # fitted covariance
     #fitcovar = var0 *  K.(distx * len_scale/len) :: Vector{Float64}
     #fitcovar = var0 *  K.( (distx::Vector{Float64}) * (len_scale::Float64)/len)
     fitcovar = var0 *  (K.(distx * len_scale/len):: Vector{Float64})
-    
+
     #return distx
     return var0,len,distx,covar,fitcovar,stdcovar
 end
@@ -399,32 +402,34 @@ end
 
 function fitprogress(iter,var0,lens,fitness)
     if iter == 0
-        
+
         @printf("| %10s |","var0")
         for i = 1:length(lens)
             @printf(" %10s |","length $(i)")
         end
-        
+
         @printf(" %10s |","fitness")
         println()
-        
+
         print("|------------|")
         for i = 1:length(lens)
             print("------------|")
         end
-        
+
         print("------------|")
         println()
     end
-    
-    @printf("| %10g |",var0)
-    for i = 1:length(lens)
-        @printf(" %10g |",lens[i])
+
+    if iter % 20 == 0
+        @printf("| %10g |",var0)
+        for i = 1:length(lens)
+            @printf(" %10g |",lens[i])
+        end
+
+        print_with_color(:light_magenta,@sprintf(" %10g ",fitness))
+        
+        println("|")
     end
-                
-    print_with_color(:light_magenta,@sprintf(" %10g ",fitness))
-    
-    println("|")
     
     return nothing
 end
@@ -443,9 +448,9 @@ end
              progress = (iter,var,len,fitness) -> nothing
              )
 
-The same as the function `fit_isotropic` except that now the correlation 
-length-scale `lens0`, `minlen`, `maxlen`, `lensopt` are a vectors 
-(one value per dimension). The distance function `distfun` uses an additional 
+The same as the function `fit_isotropic` except that now the correlation
+length-scale `lens0`, `minlen`, `maxlen`, `lensopt` are a vectors
+(one value per dimension). The distance function `distfun` uses an additional
 parameter to compute the normalized distance.
 
 The note of the optional parameters in `divafit` which also applies here.
@@ -469,7 +474,7 @@ function fit(x,v,distbin,mincount;
 
     const seed = rand(UInt64)
     iter = 0 :: Int
-    
+
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
     function fitcovarlen(var0,lens)
@@ -498,7 +503,7 @@ function fit(x,v,distbin,mincount;
         local distx,covar,fitcovar,count,fitness
         local var0 = p[1]
         local lens = p[2:end]
-        
+
         distx,covar,fitcovar,count = fitcovarlen(var0,lens)
         # avoid NaNs
         covar[isnan.(covar)] = 0
@@ -519,10 +524,10 @@ function fit(x,v,distbin,mincount;
 
     #@show fitt([0.225,1.,1.],[])
     #@show fitt([0.225,1.,1.2],[])
-    
+
     min_objective!(opt, fitt)
 
-    
+
     minf,minx,ret = optimize(opt, [var0, lens0...])
 
     #@show minx
@@ -533,4 +538,252 @@ function fit(x,v,distbin,mincount;
     return var0opt,lensopt,distx,covar,fitcovar
 end
 
+"""
+    lenz,dbinfo = divand.fithorzlen(x,value,z)
+
+Determines the horizontal correlation length `lenz` based on the 
+measurments `value` at the location `x` (tuple of 3 vectors corresponding to
+longitude, latitude and depth).
+
+Optional arguments:
+ * `distbin` (default 0:0.5:5): distance bins to compute the empirical covariance functions
+ * `mincount` (default 50): minimum pairs per bins
+ * `maxpoints` (default 10000): maximum number of pairs
+ * `nmean` (default 100): number of empirical covariance to average
+ * `len0` (default 0.3): initial value for the correlation length-scale
+ * `maxlen` (default 3): maximum correlation length-scale
+ * `minlen` (default 0.1): minimum correlation length-scale
+ * `smoothz` (default 100): spatial filter for the correlation scale
+ * `searchz` (default 300): vertical search distance
+
+"""
+
+function fithorzlen(x,value::Vector{T},z;
+                    distbin = 0:0.5:5,
+                    mincount = 50,
+                    maxpoints = 10000,
+                    nmean = 100,
+                    len0 = 0.3,
+                    maxlen = 3.,
+                    minlen = 0.1,
+                    smoothz = 100.,
+                    searchz = 300.,
+                    ) where T
+
+    pmax = length(distbin)-1
+    kmax = length(z)
+    len = zeros(kmax)
+    var0 = zeros(kmax)
+    fitcovar = Array{T,2}(pmax,kmax)
+    stdcovar = Array{T,2}(pmax,kmax)
+    covar = Array{T,2}(pmax,kmax)
+    distx = Vector{T}(pmax)
+
+    for k = 1:length(z)
+        sel = (abs.(x[3] - z[k]) .< searchz)
+        xsel = (x[1][sel],x[2][sel]);
+        v = value[sel] - mean(value[sel]);
+
+        var0[k],len[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
+            xsel,v,distbin,mincount;
+            len = len0, minlen = minlen, maxlen = maxlen,
+            nmean = nmean,maxpoints = maxpoints)
+
+        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(len[k])")
+    end
+
+    lenf = copy(len)
+    if (smoothz > 0) && (kmax > 1)
+        divand.smoothfilter!(z,lenf,smoothz)
+    end
+
+    return lenf,Dict(
+        :var0 => var0,
+        :len => len,
+        :distx => distx,
+        :covar => covar,
+        :stdcovar => stdcovar,
+        :fitcovar => fitcovar)
+end
+
+
+
+"""
+    lenz,dbinfo = divand.fitvertlen(x,value,z)
+
+See also divand.fithorzlen
+"""
+
+function fitvertlen(x,value::Vector{T},z;
+                     distbin = collect([0.:50:400; 500:100:1000]),
+                     mincount::Int = 50,
+                     maxpoints::Int = 10000,
+                     nmean::Int = 100,
+                     len0::T = 50.,
+                     minlen::T = 10.,
+                     maxlen::T = 1000.,
+                     smoothz::T = 100.,
+                     tolrel::T = 1e-4,
+                     var0::T = 1.,
+                     minvar0::T = 0.,
+                     maxvar0::T = 2.,
+                     searchz::T = 2.,
+                     searchxy::T = 0.5,
+                     maxntries::Int = 10000,
+                     progress = (iter,var,len,fitness) -> nothing,
+                     distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
+                     ) where T
+
+    zlevel2 = zero(T)
+    zindex = Vector{Int}(length(value))
+    nzindex = 0
+    
+    function pickone(mask)
+        ii = find(mask)
+        jindex = rand(1:length(ii))
+        return ii[jindex]
+    end
+
+
+
+    function vertchoose(x,zlevel)
+        #mask = abs.(zlevel - x[3]) .< searchz
+        #j = pickone(mask);        
+
+        j = -1
+        jindex = -1
+
+        
+        for ntries = 1:maxntries  
+            
+            j = zindex[rand(1:length(zindex))] :: Int
+
+
+            # # for few data, this is faster
+            # if length(zindex) < 10000
+            #     mask = falses(size(x[1]))
+            #     for k = 1:length(x[1])
+            #         mask[k] = distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < searchxy
+            #     end
+            #     jindex = pickone(mask)
+                
+            #     return j,jindex            
+            # end
+            
+            jindex = -1
+
+            for ntries2 = 1:maxntries
+                k = rand(1:length(x[1]))
+                if distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < searchxy
+                    jindex = k
+                    break
+                end
+            end
+
+            if jindex != -1
+                break
+            end
+        end
+
+        if (j == -1) || (jindex == -1)
+            error("fail to find enought pairs at z = $(zlevels2)")
+        end
+        #@show j,jindex
+        return j,jindex
+    end
+
+
+    function vchoose(dummy)
+        vertchoose(x,zlevel2::Float64)
+    end
+
+    #@code_warntype vertchoose(x,zlevel2)
+    #@code_warntype vchoose(x)
+
+    pmax = length(distbin)-1
+    kmax = length(z)
+    lenopt = zeros(kmax)
+    var0opt = zeros(kmax)
+    fitcovar = Array{T,2}(pmax,kmax)
+    stdcovar = Array{T,2}(pmax,kmax)
+    covar = Array{T,2}(pmax,kmax)
+    distx = Vector{T}(pmax)
+
+
+    # @time distx,covar,corr,varx,count = divand.empiriccovarmean(
+    #      (depth[sel],),value[sel],distbin,mincount;
+    #      maxpoints = maxpoints,
+    #      nmean = nmean,
+    #      choose = vchoose,
+    #      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
+
+
+    # k = 1
+    # @time var0[k],len[k],distx,covar,fitcovar = divand.fit_isotropic(
+    #      (depth[sel],),value[sel],distbin,mincount;
+    #      maxpoints = maxpoints,
+    #      nmean = nmean,
+    #      maxlen = maxlen,
+    #      choose = vchoose)
+
+
+    # clf()
+    #
+    # k = 10
+    # distx,covar,corr,varx,count = divand.empiriccovarmean(
+    #     (depth[sel],),value[sel],distbin,mincount;
+    #     maxpoints = maxpoints,
+    #     nmean = nmean,
+    #     choose = vchoose)
+    #
+    #     @time var0[k],len[k],distx,covar,fitcovar = divand.fit_isotropic(
+    #         (depth[sel],),value[sel],distbin,mincount;
+    #         maxpoints = maxpoints,
+    #         nmean = nmean,
+    #         maxlen = maxlen,
+    #         len = len0,
+    #         choose = vchoose)
+
+
+    for k = 1:length(z)
+        zlevel2 = Float64(z[k])
+        zindex = find(abs.(zlevel2 - x[3]) .< searchz)
+        
+        #@show zlevel2,maxpoints,nmean
+        #@show length(zindex) 
+
+        var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
+            (x[3],),value,distbin,mincount;
+            maxpoints = maxpoints,
+            nmean = nmean,
+            len = len0,
+            minlen = minlen,
+            maxlen = maxlen,
+            var0 = var0,
+            minvar0 = minvar0,
+            maxvar0 = maxvar0,
+            choose = vchoose,
+            tolrel = tolrel,
+            progress = progress,
+        )
+
+        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
+        #plot(distx,covar, label = "empirical covariance")
+        #plot(distx,fitcovar, label = "fitted function")
+    end
+
+    lenoptf = copy(lenopt)
+    if (smoothz > 0) && (kmax > 1)
+        divand.smoothfilter!(z,lenoptf,smoothz)
+    end
+
+    return lenoptf,Dict(
+        :var0 => var0opt,
+        :len => lenopt,
+        :distx => distx,
+        :covar => covar,
+        :stdcovar => stdcovar,
+        :fitcovar => fitcovar)
+
+end
 
