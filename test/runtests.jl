@@ -57,8 +57,8 @@ import Base.LinAlg.BLAS
     # test 3D-var analysis
     include("test_varanalysis.jl");
 
-
     include("test_averaged_bg.jl");
+    include("test_domain.jl");
 
     # SDN Vocabulary
     include("test_vocab.jl");

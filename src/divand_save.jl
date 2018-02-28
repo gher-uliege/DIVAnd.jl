@@ -352,47 +352,48 @@ function saveobs(filename,xy,ids;
 
     mode = (isfile(filename) ? "a" : "c")
     
-    Dataset(filename,mode) do ds
-        #@show length(ids),idlen
+    ds = Dataset(filename,mode)
+    #@show length(ids),idlen
+    
+    ds.dim["observations"] = length(ids)
+    ds.dim["idlen"] = idlen
+    
+    ncobslon = defVar(ds,"obslon", type_save, ("observations",))
+    ncobslon.attrib["units"] = "degrees_east"
+    ncobslon.attrib["standard_name"] = "longitude"
+    ncobslon.attrib["long_name"] = "longitude"
+    
+    ncobslat = defVar(ds,"obslat", type_save, ("observations",))
+    ncobslat.attrib["units"] = "degrees_north"
+    ncobslat.attrib["standard_name"] = "latitude"
+    ncobslat.attrib["long_name"] = "latitude"
+    
+    ncobstime = defVar(ds,"obstime", Float64, ("observations",))
+    ncobstime.attrib["units"] = "days since " *
+        Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
+    
+    ncobstime.attrib["standard_name"] = "time"
+    ncobstime.attrib["long_name"] = "time"
 
-        ds.dim["observations"] = length(ids)
-        ds.dim["idlen"] = idlen
+    ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",))
+    ncobsdepth.attrib["units"] = "meters"
+    ncobsdepth.attrib["positive"] = "down"
+    ncobsdepth.attrib["standard_name"] = "depth"
+    ncobsdepth.attrib["long_name"] = "depth below sea level"
 
-        ncobslon = defVar(ds,"obslon", type_save, ("observations",))
-        ncobslon.attrib["units"] = "degrees_east"
-        ncobslon.attrib["standard_name"] = "longitude"
-        ncobslon.attrib["long_name"] = "longitude"
+    ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"))
+    ncobsid.attrib["long_name"] = "observation identifier"
+    ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
+    
+    ncobslon[:] = xy[1]
+    ncobslat[:] = xy[2]
+    ncobsdepth[:] = xy[3]
+    # convertion is done in NCDatasets
+    #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
+    ncobstime[:] = xy[4]
+    ncobsid[:] = obsids
 
-        ncobslat = defVar(ds,"obslat", type_save, ("observations",))
-        ncobslat.attrib["units"] = "degrees_north"
-        ncobslat.attrib["standard_name"] = "latitude"
-        ncobslat.attrib["long_name"] = "latitude"
-
-        ncobstime = defVar(ds,"obstime", Float64, ("observations",))
-        ncobstime.attrib["units"] = "days since " *
-            Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
-
-        ncobstime.attrib["standard_name"] = "time"
-        ncobstime.attrib["long_name"] = "time"
-
-        ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",))
-        ncobsdepth.attrib["units"] = "meters"
-        ncobsdepth.attrib["positive"] = "down"
-        ncobsdepth.attrib["standard_name"] = "depth"
-        ncobsdepth.attrib["long_name"] = "depth below sea level"
-
-        ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"))
-        ncobsid.attrib["long_name"] = "observation identifier"
-        ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
-
-        ncobslon[:] = xy[1]
-        ncobslat[:] = xy[2]
-        ncobsdepth[:] = xy[3]
-        # convertion is done in NCDatasets
-        #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
-        ncobstime[:] = xy[4]
-        ncobsid[:] = obsids
-    end
+    close(ds)
 end
 
 
@@ -426,10 +427,10 @@ function saveobs(filename,varname,value,xy,ids;
             )
 
 
-    Dataset(filename,"a") do ds
-        ncobs = defVar(ds,varname, type_save, ("observations",))
-        ncobs[:] = value
-    end
+    ds = Dataset(filename,"a")
+    ncobs = defVar(ds,varname, type_save, ("observations",))
+    ncobs[:] = value
+    close(ds)
     
 end
 
