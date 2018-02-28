@@ -145,11 +145,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#divand.random",
+    "page": "divand.jl documentation",
+    "title": "divand.random",
+    "category": "Function",
+    "text": "field = divand.random(mask,pmn,len,Nens)\n\nCreate Nens random fields with the correlation length len in  a domain with the mask mask and the metric pmn.\n\nSee divand.divandrun for more information about these parameters.\n\n\n\n"
+},
+
+{
     "location": "index.html#divand.jl-documentation-1",
     "page": "divand.jl documentation",
     "title": "divand.jl documentation",
     "category": "section",
-    "text": "divand.divandrun\ndivand.divandgo\ndivand.divand_averaged_bg\ndivand.load_mask\ndivand.domain\ndivand.SDNMetadata\ndivand.save\ndivand.saveobs\ndivand.loadobs\ndivand.loadbigfile\ndivand.checkobs\ndivand.fit_isotropic\ndivand.fit\ndivand.smoothfilter\ndivand.Anam.loglin\ndivand.Anam.logit\ndivand.divadoxml"
+    "text": "divand.divandrun\ndivand.divandgo\ndivand.divand_averaged_bg\ndivand.load_mask\ndivand.domain\ndivand.SDNMetadata\ndivand.save\ndivand.saveobs\ndivand.loadobs\ndivand.loadbigfile\ndivand.checkobs\ndivand.fit_isotropic\ndivand.fit\ndivand.smoothfilter\ndivand.Anam.loglin\ndivand.Anam.logit\ndivand.divadoxml\ndivand.random"
 },
 
 {
