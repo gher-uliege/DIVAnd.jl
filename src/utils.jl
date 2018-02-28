@@ -397,3 +397,37 @@ function smoothfilter(x,f::Vector{T},scale) where T
     smoothfilter!(x,ff,scale)
     return ff
 end
+
+
+"""
+    field = divand.random(mask,pmn,len,Nens)
+
+Create `Nens` random fields with the correlation length `len` in 
+a domain with the mask `mask` and the metric `pmn`.
+
+See divand.divandrun for more information about these parameters.
+"""
+
+function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
+                alpha::Vector{T} = T[],
+                moddim::Vector{T} = T[],
+                scale_len::Bool = true,
+                btrunc = [],
+                ) where {N,T}
+    
+    s = divand.divand_background(
+        Val{:sparse},mask,pmn,len,alpha,moddim,scale_len,[];
+        btrunc = btrunc);
+    
+    n = size(s.iB,1)::Int
+    z = randn(n,Nens);
+    F = cholfact(s.iB::SparseMatrixCSC{T,Int})
+
+    # P pivoting matrix
+    # s.iB == P'*L*L'*P
+    # F[:UP] ==  L'*P
+    
+    ff = (F[:UP]) \ z;
+    field = divand.unpackens(s.sv,ff)[1] :: Array{T,N+1}
+    return field
+end

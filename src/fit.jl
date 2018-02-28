@@ -298,6 +298,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                        minlen::T = 1e-5,
                        maxlen::T = 10.,
                        tolrel::T = 1e-5,
+                       maxeval::Int = 10000,
                        maxpoints::Int = 1000000,
                        nmean::Int = 10,
                        stdcovar = zeros(T,length(distbin)-1),
@@ -336,7 +337,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     const norm_len = maximum(distbin)
     const norm_var0 = maximum(abs.(covar[isfinite.(covar)]))
 
-    @show norm_len,norm_var0
+    #@show norm_len,norm_var0
     #@show count
     #covar[count .== 0] = 0
     #covar[isnan.(covar) .| isnan.(stdcovar)] = 0
@@ -376,7 +377,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     lower_bounds!(opt, [minvar0/norm_var0, minlen/norm_len])
     upper_bounds!(opt, [maxvar0/norm_var0, maxlen/norm_len])
     xtol_rel!(opt,tolrel)
-    NLopt.maxeval!(opt,1000)
+    NLopt.maxeval!(opt,maxeval)
     
     #@code_warntype fitt([1.,1.],[0.,0.])
 
@@ -386,7 +387,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     var0 = minx[1] * norm_var0
     len = minx[2] * norm_len
 
-    @show minf,ret
+    #@show minf,ret
     # fitted covariance
     #fitcovar = var0 *  K.(distx * len_scale/len) :: Vector{Float64}
     #fitcovar = var0 *  K.( (distx::Vector{Float64}) * (len_scale::Float64)/len)
@@ -522,8 +523,8 @@ function fit(x,v,distbin,mincount;
 
     n = length(x)
 
-    opt = Opt(:LN_COBYLA, 1+n)
-    #opt = Opt(:GN_DIRECT, 1+n)
+    #opt = Opt(:LN_COBYLA, 1+n)
+    opt = Opt(:GN_DIRECT, 1+n)
     lower_bounds!(opt, [minvar0, minlen...])
     upper_bounds!(opt, [maxvar0, maxlen...])
     xtol_rel!(opt,tolrel)

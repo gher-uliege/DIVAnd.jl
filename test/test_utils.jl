@@ -74,3 +74,23 @@ fref =  (z[2]-z[1]) * exp.(-z.^2/(2*scale^2)) / sqrt(2* π * scale^2);
 @test maximum(abs.(ff - fref)) < 1e-4
 
 #clf(); plot(z,ff, label = "sol"); plot(z,fref,label = "ref"); legend()
+
+
+# random field
+
+
+xi,yi = divand.ndgrid(linspace(0,1,100),linspace(0,1,110))
+
+mask = trues(size(xi))
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
+lenx = .05;
+leny = .05;
+Nens = 100
+pmn = (pm,pn)
+len = (lenx,leny)
+srand(123)
+field = divand.random(mask,pmn,len,Nens)
+@test size(field) == (size(mask,1),size(mask,2),Nens)
+
+@test std(field[50,50,:]) ≈ 1 atol=0.2
