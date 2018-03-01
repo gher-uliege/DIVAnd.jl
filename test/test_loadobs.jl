@@ -4,7 +4,7 @@ import divand
 
 T = Float32
 
-fname = tempname()
+fname = tempname() * ".nc"
 nobs = 10
 lon = randn(T,nobs)
 lat = randn(T,nobs)

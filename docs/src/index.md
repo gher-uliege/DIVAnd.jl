@@ -25,6 +25,8 @@ divand.Anam.loglin
 divand.Anam.logit
 divand.divadoxml
 divand.random
+divand.distance
+divand.metric
 ```
 
 # Examples

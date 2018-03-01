@@ -1,5 +1,7 @@
 
 """
+    d = distance(lat1,lon1,lat2,lon2)
+
 Compute the great-circle distance between the points (`lat1,`lon1`) and (`lat2,`lon2`).
 The units of all input and output parameters are degrees.
 """
@@ -9,8 +11,25 @@ function distance(lat1,lon1,lat2,lon2)
     Δλ = π/180 * (lon2 - lon1)
     ϕ1 = π/180 * lat1
     ϕ2 = π/180 * lat2
-    Δσ = acos(sin(ϕ1)*sin(ϕ2) + cos(ϕ1)*cos(ϕ2)*cos(Δλ))
+    cosΔσ = sin(ϕ1)*sin(ϕ2) + cos(ϕ1)*cos(ϕ2)*cos(Δλ)
+
+    eins = one(cosΔσ)
+    cosΔσ = max(min(cosΔσ,eins),-eins)
+    Δσ = acos(cosΔσ)
     return 180/π * Δσ
+end
+
+"""
+    d = distance([lon1,lat1],[lon2,lat2])
+
+The same as `distance(lat1,lon1,lat2,lon2)` but there the arguments are vectors 
+and the order is longitude then latitude.
+
+The units of all input and output parameters are degrees.
+"""
+
+function distance(xi::Vector{T},xj::Vector{T}) where T
+    return distance(xi[2],xi[1],xj[2],xj[1])
 end
 
 """
