@@ -156,7 +156,7 @@ plot(xi[1][1],fi[1],"-",label="analysis (trend)")
 plot(xi[2][1],fa,"-",label="analysis (total)")
 legend()
 # Save figure
-figname = basename(replace(@__FILE__,r".jl$"," "));
+figname = basename(replace(@__FILE__,r".jl$",""));
 savefig(joinpath(figdir, figname))
 info("Saved figure as " * figname)
 
