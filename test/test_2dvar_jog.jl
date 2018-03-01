@@ -1,8 +1,9 @@
 using Base.Test
+import divand
 # Testing divand in 2 dimensions with advection.
 
 # grid of background field
-xi,yi = ndgrid(linspace(-1,1,30),linspace(-1,1,30));
+xi,yi = divand.ndgrid(linspace(-1,1,30),linspace(-1,1,30));
 
 x = [.4]
 y = [.4]
@@ -19,21 +20,13 @@ epsilon2 = 1/200
 len = 0.2
 
 for i=1:5
-@show i
-fi,s = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[2 2],[1 1],i;velocity = (u,v),alphabc=0);
-
-
-@test abs(fi[18,24] - 0.8993529043140029) < 1.4e-2
-
+    fi,s = divand.divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[2 2],[1 1],i;velocity = (u,v),alphabc=0);
+    @test abs(fi[18,24] - 0.8993529043140029) < 1.4e-2
 end
 
 for ii=0:5
-@show ii
-fi,s = divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[1 1],[1 1],ii;velocity = (u,v),alphabc=0);
-
-
-@test abs(fi[18,24] - 0.8993529043140029) < 1.4e-2
-
+    fi,s = divand.divandjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[1 1],[1 1],ii;velocity = (u,v),alphabc=0);
+    @test abs(fi[18,24] - 0.8993529043140029) < 1.4e-2
 end
 
 
