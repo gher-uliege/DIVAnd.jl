@@ -22,7 +22,7 @@ Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` 
 
 ```bash
 apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
-bash
+```
 
 Your need [Julia](http://julialang.org) to run `divand`. The command line version is sufficient for `divand`.
 Inside Julia, you can download and install the package by issuing:
