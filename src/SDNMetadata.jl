@@ -531,7 +531,7 @@ contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
             db = loadoriginators(cdilist)
 
             #UPDATE!! fixme
-filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
+#filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
 
 originators = getoriginators(
     db,filepath,errname,
