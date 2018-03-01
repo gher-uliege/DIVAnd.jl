@@ -1,4 +1,7 @@
 # Experimental
+#=
+Perform an analysis with a 10-year window from the sea floor
+=#
 
 #SBATCH --mem-per-cpu=8000
 
@@ -14,9 +17,6 @@ include("../src/override_ssmult.jl")
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
-
-#bathname = "/media/abarth/Alex_Data/Alex/Data/Europe/EMODNET-Bathymetry/combined_emodnet_bathymetry.nc"
-#bathisglobal = false
 
 if !isdefined(:value)
     value,lon,lat,depth,time,ids = divand.loadbigfile(fname)
@@ -39,7 +39,6 @@ latr = 40.4:dy:46.6
 lonr = 27:dx:42
 latr = 40:dy:47
 
-
 #depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
 depthr = [0.,5, 10, 15, 20, 25, 30, 40, 50, 66, 75, 85, 100, 112, 125, 135, 150, 175, 200, 225, 250, 275, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1600, 1750, 1850, 2000];
 
@@ -61,7 +60,6 @@ leny = fill(200_000.,sz)
 lenz = [10+depthr[k]/15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
 
 @show mean(lenz)
-
 
 years = 1993:1994
 years = [1993]
@@ -94,7 +92,7 @@ bx,by,b = divand.extract_bath(bathname,false,lonr,latr);
 bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
 
 itp = interpolate((bxi,byi), bi, Gridded(Linear()))
-        
+
 # shift the depth of the observations relative to the ocean floor
 aboveseafloor = similar(depth)
 
@@ -109,23 +107,25 @@ function plotres(timeindex,sel,fit,erri)
     figure()
     subplot(2,1,1)
     title("$(timeindex) - near floor")
-    
+
     selfloor = sel .& (aboveseafloor .< 20)
     vmin = minimum(value[selfloor])
     vmax = maximum(value[selfloor])
-    
+
     scatter(lon[selfloor],lat[selfloor],10,value[selfloor];
             cmap = "jet", vmin = vmin, vmax = vmax)
     xlim(minimum(lonr),maximum(lonr))
     ylim(minimum(latr),maximum(latr))
-    
+
     colorbar()
     subplot(2,1,2)
     pcolor(lonr,latr,tmp[:,:,1]';
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
-    
-    savefig(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex)))
+
+    figname = replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex));
+    savefig(figname)
+    info("Saved figure as " * figname)
 end
 
 #----------------
@@ -148,7 +148,7 @@ for k = 1:sz[3]
             leny[i,j,k] = leny[i,j,k] * RL[i,j]
         end
     end
-end        
+end
 
 
 divand.diva3d((lonr,latr,depthr,TS),
