@@ -160,7 +160,7 @@ ignore_errors = true
 divand.divadoxml(filename,varname,project,cdilist,xmlfilename,
           ignore_errors = ignore_errors)
 
-errname = "$(replace(filename,r"\.nc$","").cdi_import_errors_test.csv"
+errname = "$(replace(filename,r"\.nc$","")).cdi_import_errors_test.csv"
 
 data,header = readdlm(errname,'\t'; header = true)
 
