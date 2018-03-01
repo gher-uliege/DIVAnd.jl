@@ -1,4 +1,10 @@
 #SBATCH --mem-per-cpu=8000
+## ENV["MEMTOFIT"]=8.0
+
+#=
+Create a salinity climatology for the Black Sea
+using different grid resolution, correlation length etc.
+=#
 
 using divand
 using PyPlot
@@ -46,7 +52,16 @@ end
 
 @show size(value)
 
+# Grid horizontal resolution
 dx = dy = 1.
+# dx = dy = 0.2
+# dx = dy = 0.1
+# dx = dy = 0.07
+# dx = dy = 0.04
+# dx = 15.0/(50*16)
+# dy = 6.0/(15*16)
+
+
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
 
@@ -56,8 +71,7 @@ latr = 40:dy:47
 
 # depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
 #depthr = [0, 10, 20, 30, 50, 75, 100];
-#depthr = 0:10.:30.;
-depthr = [10., 20.]
+depthr = 0:10.:30.;
 
 timer = 1:1.:12
 
@@ -78,10 +92,14 @@ sz = size(mask)
 
 z = zeros(sz)
 # correlation length in arc degree
+#lenx = fill(1.0,sz)
+#leny = fill(1.0,sz)
 lenx = fill(.3,sz)
 leny = fill(.3,sz)
+
 # correlation length in meters
 lenz = (10 + zi/5)/3
+@show mean(lenz)
 # correlation time-scale in month
 lent = fill(1.,sz)
 
@@ -99,7 +117,11 @@ toaverage=[true true false false]
 
 vaa=va-ffb
 
+# Use a null correlation length along the vertical                                      v
 fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,z,lent),epsilon2;moddim=moddim)
+
+# Use a depth-varying correlation length along vertical                                    v
+# fi,erri=divandgo(mask3,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;moddim=moddim)
 
 
 fi=fi+fmb+vm
@@ -110,6 +132,5 @@ outputfile1 = joinpath(outputdir, basename(replace(@__FILE__,r".jl$","hrS.nc")))
 outputfile2 = joinpath(outputdir, basename(replace(@__FILE__,r".jl$","hrE.nc")));
 divand_save(outputfile1,mask,"Salinity",fi)
 divand_save(outputfile2,mask,"Errorfield",erri)
-
 info("Results written in files\n"* outputfile1 * " and\n" * outputfile2)
 nothing
