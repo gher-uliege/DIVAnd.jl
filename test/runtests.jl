@@ -94,6 +94,9 @@ import Base.LinAlg.BLAS
     # Test XML metadata description
     include("test_xml.jl");
 
+    # Test product generation
+    include("test_product.jl");
+    
     # test divand_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1
