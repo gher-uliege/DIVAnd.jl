@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.load_mask",
     "category": "Function",
-    "text": "deprecated\n\n\n\ndeprecated\n\n\n\nxi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)\n\nGenerate a land-sea mask based on the topography from the NetCDF file bathname. The parameter isglobal is true if the NetCDF file covers the whole globe and  thus the last longitude point can be considered to be right next to the first longitude point. xi and yi is a vector of the longitude and latitude grid onto which the bathymetry should be  interpolated. In the water, level is postive and in the air level is negative.\n\n\n\n"
+    "text": "xi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)\n\nGenerate a land-sea mask based on the topography from the NetCDF file bathname. The parameter isglobal is true if the NetCDF file covers the whole globe and  thus the last longitude point can be considered to be right next to the first longitude point. xi and yi is a vector of the longitude and latitude grid onto which the bathymetry should be  interpolated. In the water, level is postive and in the air level is negative.\n\n\n\n"
 },
 
 {
