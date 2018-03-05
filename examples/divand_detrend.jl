@@ -7,39 +7,6 @@ using Interpolations
 
 include("./prep_dirs.jl");
 
-function interp!(xi::NTuple{N,Array{T,N}},fi::Array{T,N},x,f) where T where N
-    # tuple of vector with the varying parts
-    xivector = ntuple(j -> xi[j][[(i==j ? (:) : 1 ) for i in 1:N]...], N) :: NTuple{N,Vector{T}}
-
-    itp = interpolate(xivector,fi,Gridded(Linear()))
-
-    xpos = zeros(N)
-    for i in eachindex(f)
-        # position of the i-th location in f
-        for j = 1:N
-            xpos[j] = x[j][i]
-        end
-        f[i] = itp[xpos...]
-    end
-end
-
-"""
-    f = interp(xi,fi,x)
-
-Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
-n-dimensional arrays) onto grid `x` (tuble of n-dimensional arrays).
-The grid in `xi` must be align with the axis (e.g. produced by ndgrid).
-"""
-
-function interp(xi,fi,x)
-    # check size
-    @assert all([size(xc) == size(fi) for xc in xi])
-
-    f = similar(x[1])
-    interp!(xi,fi,x,f)
-    return f
-end
-
 
 function detrend(mask,pm,xi,x,f,len,epsilon2;
                  niter = 10,
@@ -62,7 +29,7 @@ function detrend(mask,pm,xi,x,f,len,epsilon2;
             tmp[:] = f
             for j = 1:nlevels
                 if j != k
-                    tmp = f - interp(xi[j],fi[j],x)
+                    tmp = f - divand.interp(xi[j],fi[j],x)
                 end
             end
 
@@ -79,7 +46,7 @@ function detrend(mask,pm,xi,x,f,len,epsilon2;
     fa = copy(fi[nlevels])
 
     for i = 1:nlevels-1
-        fa = fa + interp(xi[i],fi[i],xi[nlevels])
+        fa = fa + divand.interp(xi[i],fi[i],xi[nlevels])
     end
 
     return fa,fi

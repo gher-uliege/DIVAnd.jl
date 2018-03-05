@@ -431,3 +431,60 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
     field = divand.unpackens(s.sv,ff)[1] :: Array{T,N+1}
     return field
 end
+
+
+"""
+    interp!(xi,fi,x,f)
+
+Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
+n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
+The interpolated field is stored in `f`.
+The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+"""
+
+
+
+function interp!(xi::NTuple{N,Vector{T}},
+                 fi::Array{T,N},
+                 x::NTuple{N,Array{T,Nf}},
+                 f::Array{T,Nf}) where {T,N,Nf}   
+    itp = interpolate(xi,fi,Gridded(Linear()))
+
+    xpos = zeros(N)
+    for i in eachindex(f)
+        # position of the i-th location in f
+        for j = 1:N
+            xpos[j] = x[j][i]
+        end
+        f[i] = itp[xpos...]
+    end
+end
+
+
+function interp!(xi::NTuple{N,Array{T,N}},
+                 fi::Array{T,N},
+                 x::NTuple{N,Array{T,Nf}},
+                 f::Array{T,Nf}) where {T,N,Nf}
+    
+    # check size
+    @assert all([size(xc) == size(fi) for xc in xi])
+
+    # tuple of vector with the varying parts
+    xivector = ntuple(j -> xi[j][[(i==j ? (:) : 1 ) for i in 1:N]...], N) :: NTuple{N,Vector{T}}
+    interp!(xivector,fi,x,f)
+end
+
+"""
+    f = interp(xi,fi,x)
+
+Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
+n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
+The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+"""
+
+function interp(xi,fi,x)
+    f = similar(x[1])
+    interp!(xi,fi,x,f)
+    return f
+end
+

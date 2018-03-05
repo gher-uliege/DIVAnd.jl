@@ -27,6 +27,7 @@ divand.divadoxml
 divand.random
 divand.distance
 divand.metric
+divand.interp
 ```
 
 # Examples
