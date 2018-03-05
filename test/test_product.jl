@@ -1,6 +1,8 @@
 import divand
 using Base.Test
 using DataStructures
+using Missings
+using NCDatasets
 
 # 
 varname = "Salinity"
@@ -133,6 +135,10 @@ metadata = OrderedDict(
     "doi" => "...")
 
 
+# edit the bathymetry
+mask,(pm,pn,po),(xi,yi,zi) = divand.domain(bathname,bathisglobal,lonr,latr,depthr)
+mask[3,3,3] = false
+
 ncglobalattrib,ncvarattrib = divand.SDNMetadata(metadata,filename,varname,lonr,latr)
 
 if isfile(filename)
@@ -148,6 +154,8 @@ divand.diva3d((lonr,latr,depthr,TS),
               bathisglobal = bathisglobal,
               ncvarattrib = ncvarattrib,
               ncglobalattrib = ncglobalattrib,
+              fitcorrlen = true,
+              mask = mask,
        )
 
 divand.saveobs(filename,(lon,lat,depth,time),ids)
@@ -164,6 +172,14 @@ errname = "$(replace(filename,r"\.nc$","")).cdi_import_errors_test.csv"
 
 data,header = readdlm(errname,'\t'; header = true)
 
+# check if the missing CDI was identified
 @test data[1] == 999
 @test data[2] == "missing"
 
+# check if editing of the mask was successful
+@test ismissing(Dataset(filename)["Salinity"][3,3,3,1])
+
+xmlstr = readstring(open(xmlfilename));
+
+keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
+@test contains(xmlstr,keyword_code)

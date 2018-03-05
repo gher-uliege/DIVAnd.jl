@@ -14,6 +14,9 @@ using NLopt
 import Mustache
 import ZipFile
 
+
+const EarthRadius = 6372795.477598; # m
+
 include("statevector.jl")
 
 type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{<: Number}, TH <: AbstractMatrix{<: Number}}
