@@ -154,7 +154,6 @@ divand.diva3d((lonr,latr,depthr,TS),
               bathisglobal = bathisglobal,
               ncvarattrib = ncvarattrib,
               ncglobalattrib = ncglobalattrib,
-              fitcorrlen = true,
               mask = mask,
        )
 
@@ -183,3 +182,21 @@ xmlstr = readstring(open(xmlfilename));
 
 keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
 @test contains(xmlstr,keyword_code)
+
+# new analysis with background from file
+
+filename2 = "Water_body_$(replace(varname,' ','_'))2.4Danl.nc"
+
+divand.diva3d((lonr,latr,depthr,TS),
+              (lon,lat,depth,time),
+              value,epsilon2,
+              (lenx,leny,lenz),
+              filename2,varname,
+              bathname = bathname,
+              bathisglobal = bathisglobal,
+              ncvarattrib = ncvarattrib,
+              ncglobalattrib = ncglobalattrib,
+              background = divand.backgroundfile(filename,varname),
+              fitcorrlen = true,
+              mask = mask,
+       )

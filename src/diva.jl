@@ -15,6 +15,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 fitcorrlen::Bool = false,
                 distfun = (xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1]),
                 mask = nothing,
+                background = nothing,
                 )
 
     # metadata of grid
@@ -82,17 +83,28 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
 
         # apply the transformation
         value_trans = trans.(value[sel])
-        
-        # spatial mean of observations
-        vm = mean(value_trans)
-        va = value_trans - vm
-        
-        # background profile
-        fi,vaa = divand.divand_averaged_bg(mask,(pm,pn,po),(xi,yi,zi),
-                                           (lon[sel],lat[sel],depth[sel]),va,
-                                           (lenx,leny,4*lenz),epsilon2*10,toaverage;
-                                           moddim = moddim)
 
+
+        fbackground,vaa =
+            if background == nothing
+                # spatial mean of observations
+                vm = mean(value_trans)
+                va = value_trans - vm
+            
+                # background profile
+                fi,vaa = divand.divand_averaged_bg(mask,(pm,pn,po),(xi,yi,zi),
+                                                   (lon[sel],lat[sel],depth[sel]),va,
+                                                   (lenx,leny,4*lenz),epsilon2*10,toaverage;
+                                                   moddim = moddim)
+                fbackground = fi + vm
+                
+                fbackground,vaa
+            else
+                # anamorphosis transform must already be included to the
+                # background
+                background((lon[sel],lat[sel],depth[sel]),timeindex,value_trans,trans)
+            end
+        
         if fitcorrlen
             # fit correlation length            
             lenxy1,infoxy = divand.fithorzlen(
@@ -132,7 +144,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
         #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)   
         
         # sum analysis and backgrounds
-        fit = fi2 + fi + vm
+        fit = fi2 + fbackground
 
         # inverse anamorphosis transformation
         fit .= invtrans.(fit)

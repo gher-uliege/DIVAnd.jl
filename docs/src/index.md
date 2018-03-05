@@ -28,6 +28,7 @@ divand.random
 divand.distance
 divand.metric
 divand.interp
+divand.backgroundfile
 ```
 
 # Examples

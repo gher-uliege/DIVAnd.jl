@@ -33,7 +33,7 @@ end
 function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     c2 = copy(c)
     # better way
-    valex = T(-9999.)
+    valex = T(-99999.)
     c2[.!mask] = valex
     
     return ufill(c2,valex)
@@ -488,3 +488,40 @@ function interp(xi,fi,x)
     return f
 end
 
+
+
+
+"""
+    fun = backgroundfile(fname,varname)
+
+Return a function `fun` which is used in DIVAnd to make 
+anomalies out of observations based relative to the field
+defined in the NetCDF variable `varname` in the NetCDF file 
+`fname`. It is assumed that the NetCDF variables has the variable
+`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the 
+same grid as the analysis.
+
+"""
+
+function backgroundfile(fname,varname)
+    ds = Dataset(fname)
+    lon = ds["lon"][:].data
+    lat = ds["lat"][:].data
+    depth = ds["depth"][:].data
+    #time = ds["time"][:].data
+    
+    v = ds[varname]
+    x = (lon,lat,depth)    
+    
+    return function (xi,n,value,trans)
+        
+        vn = zeros(size(v[:,:,:,n]))
+        vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
+
+        
+        vn .= trans.(divand.ufill(vn,.!isnan.(vn)))
+        fi = divand.interp(x,vn,xi)
+
+        return vn,value - fi
+    end
+end
