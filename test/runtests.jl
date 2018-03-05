@@ -94,12 +94,12 @@ import Base.LinAlg.BLAS
     # Test XML metadata description
     include("test_xml.jl");
 
-    # interpolate background from a NetCDF file
-    include("test_interp.jl");
-    
     # Test product generation
     include("test_product.jl");
-    
+
+    # interpolate background from a NetCDF file
+    include("test_interp.jl");
+        
     # test divand_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1
