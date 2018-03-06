@@ -97,11 +97,11 @@ field = divand.random(mask,pmn,len,Nens)
 
 # interpolation
 
-x1 = [1.:2:20;]
-x2 = [1.:3:30;]
-X1,X2 = divand.ndgrid([1.:2:20;],[1.:3:30;])
+x1 = collect(1.:2:20)
+x2 = collect(1.:3:30)
+X1,X2 = divand.ndgrid(x1,x2)
 f = 2. * X1 + X2
 
 @test divand.interp((X1,X2),f,([3.],[1.])) ≈ [7.]
-@test divand.interp((x1,y2),f,([3.],[1.])) ≈ [7.]
+@test divand.interp((x1,x2),f,([3.],[1.])) ≈ [7.]
 

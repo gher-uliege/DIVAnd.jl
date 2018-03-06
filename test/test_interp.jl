@@ -38,7 +38,7 @@ fi = divand.interp(x,vn,xi)
 
 
 
-background = backgroundfile(fname,varname)
+background = divand.backgroundfile(fname,varname)
 vn2,fi = background(xi,n,[v[i,j,k,n]],divand.Anam.notransform()[1])
 
 @test fi ≈ [0]
