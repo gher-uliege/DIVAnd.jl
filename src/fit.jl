@@ -374,12 +374,12 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     function fit_lsqfit(x, p)
         local fitcovar
         # clip p
-        p = [ max(min(p[1]*norm_var0,maxvar0),minvar0)/norm_var0,
-              max(min(p[1]*norm_len ,maxlen ),minlen )/norm_len ]
+        pclip = [ max(min(p[1]*norm_var0,maxvar0),minvar0),
+                  max(min(p[2]*norm_len ,maxlen ),minlen ) ]
         #@show p
         fitcovar = zeros(size(x))
         for i = 1:length(distx)
-            fitcovar[i] = norm_var0 * p[1] *  K(distx[i] * len_scale/(norm_len * p[2]))
+            fitcovar[i] = pclip[1] *  K(distx[i] * len_scale/pclip[2])
         end
 
         #@show p,fitness,nbins
@@ -413,6 +413,8 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     fit = LsqFit.curve_fit(fit_lsqfit, distx, covar, [var0/norm_var0, len/norm_len])
     var0 = fit.param[1] * norm_var0
     len = fit.param[2] * norm_len
+    var0 = max(min(var0,maxvar0),minvar0)
+    len = max(min(len,maxlen),minlen)
     
     
     #@show minf,ret
