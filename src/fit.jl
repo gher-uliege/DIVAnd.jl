@@ -373,7 +373,9 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     @inline fit_nlopt(p, grad::Vector #= unused =#) = fit(p)
     function fit_lsqfit(x, p)
         local fitcovar
-
+        # clip p
+        p = [ max(min(p[1]*norm_var0,maxvar0),minvar0)/norm_var0,
+              max(min(p[1]*norm_len ,maxlen ),minlen )/norm_len ]
         #@show p
         fitcovar = zeros(size(x))
         for i = 1:length(distx)
