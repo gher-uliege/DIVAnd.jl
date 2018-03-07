@@ -11,6 +11,7 @@ using DataStructures
 import SpecialFunctions
 import HTTP
 using NLopt
+import LsqFit
 import Mustache
 import ZipFile
 

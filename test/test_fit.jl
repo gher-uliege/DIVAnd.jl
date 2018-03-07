@@ -20,6 +20,7 @@ meanx,meany,stdx,stdy,covar,corr = divand.stats(sumx,sumx2,sumy,sumy2,sumxy,leng
 
 @test corr ≈ -1
 
+
 # DIVA fit
 
 mincount = 50
@@ -38,9 +39,15 @@ mincount = 100
 srand(1234)
 field = divand.random(mask,(pm,pn),(lenx,leny),Nens)
 
+x = (xi[:],yi[:])
+v = field[:]
+
+distx,covar,corr,varx,count = divand.empiriccovar(
+    x,v,distbin,mincount)
+
 
 var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
-    (xi[:],yi[:]),field[:],distbin,mincount)
+    x,v,distbin,mincount)
 
 
 @test lensopt ≈ lenx rtol=0.2

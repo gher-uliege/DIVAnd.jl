@@ -64,7 +64,7 @@ function fitchoose(x)
 end
 
 """
-    distx,covar,corr,varx,count = empiriccovar(x,v,distbin,mincount;
+    distx,covar,corr,varx,count = divand.empiriccovar(x,v,distbin,mincount;
                               maxpoints = 10000,
                               distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
 
@@ -345,7 +345,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     iter = 0
     
     # function to minimize
-    function fitt(p, grad::Vector #= unused =#)
+    function fitt(p)
         local fitcovar_i, nbins, fitness
 
         #@show p
@@ -370,23 +370,49 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
         return fitness
     end
 
-    # setup the optimser
-    #opt = Opt(:LN_COBYLA, 2)
-    opt = Opt(:GN_DIRECT, 2)
+    @inline fit_nlopt(p, grad::Vector #= unused =#) = fit(p)
+    function fit_lsqfit(x, p)
+        local fitcovar
+
+        #@show p
+        fitcovar = zeros(size(x))
+        for i = 1:length(distx)
+            fitcovar[i] = norm_var0 * p[1] *  K(distx[i] * len_scale/(norm_len * p[2]))
+        end
+
+        #@show p,fitness,nbins
+        #progress(iter,norm_var0 * p[1],norm_len * p[2],fitness)
+        #iter = (iter::Int) + 1
+
+        return fitcovar
+    end
     
-    lower_bounds!(opt, [minvar0/norm_var0, minlen/norm_len])
-    upper_bounds!(opt, [maxvar0/norm_var0, maxlen/norm_len])
-    xtol_rel!(opt,tolrel)
-    NLopt.maxeval!(opt,maxeval)
+
+
+    # # NLopt
+    # # setup the optimser
+    # #opt = Opt(:LN_COBYLA, 2)
+    # opt = Opt(:GN_DIRECT, 2)
     
-    #@code_warntype fitt([1.,1.],[0.,0.])
+    # lower_bounds!(opt, [minvar0/norm_var0, minlen/norm_len])
+    # upper_bounds!(opt, [maxvar0/norm_var0, maxlen/norm_len])
+    # xtol_rel!(opt,tolrel)
+    # NLopt.maxeval!(opt,maxeval)
+    
+    # #@code_warntype fitt([1.,1.],[0.,0.])
 
-    min_objective!(opt, fitt)
+    # min_objective!(opt, fit_nlopt)
 
-    minf,minx,ret = optimize(opt, [var0/norm_var0, len/norm_len])
-    var0 = minx[1] * norm_var0
-    len = minx[2] * norm_len
+    # minf,minx,ret = optimize(opt, [var0/norm_var0, len/norm_len])
+    # var0 = minx[1] * norm_var0
+    # len = minx[2] * norm_len
 
+    # LsqFit
+    fit = LsqFit.curve_fit(fit_lsqfit, distx, covar, [var0/norm_var0, len/norm_len])
+    var0 = fit.param[1] * norm_var0
+    len = fit.param[2] * norm_len
+    
+    
     #@show minf,ret
     # fitted covariance
     #fitcovar = var0 *  K.(distx * len_scale/len) :: Vector{Float64}
