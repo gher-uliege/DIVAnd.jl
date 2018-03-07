@@ -58,7 +58,7 @@ function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc
     else
         cpme,s =  divandrun(mask,pmn,xi,x,ones(size(f)),len,epsilon2; otherargs...);
     end
-    cpme=errorscale.*(-cpme.+1);
+    cpme=errorscale .* max.(-cpme.+1,0)
 
     return cpme
 
