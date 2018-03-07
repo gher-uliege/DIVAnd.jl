@@ -310,10 +310,6 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     # number of dimensions
     n = length(x)
 
-    # @code_warntype empiriccovarmean(x,v,distbin,mincount;
-    #                      maxpoints = maxpoints,
-    #                      nmean = nmean,
-    #                      distfun = distfun)
     # compute the empirical covariance
     info("Making empirical covariance")
 
@@ -328,73 +324,22 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
         error("Not enought pairs at all distances (count = $(count), mincount = $(mincount))")
     end
     info("Fitting empirical covariance")
+
     distx2 = copy(distx)
 
     # Kernel for the given dimension
     mu,K,len_scale = divand.divand_kernel(n,alpha)
 
-    # scale parameters of cost-function
-    const norm_len = maximum(distbin)
-    const norm_var0 = maximum(abs.(covar[isfinite.(covar)]))
-
-    #@show norm_len,norm_var0
-    #@show count
-    #covar[count .== 0] = 0
-    #covar[isnan.(covar) .| isnan.(stdcovar)] = 0
-
-    iter = 0
+    var0opt = covar[1]
+    L = linspace(minlen,maxlen,10000)
+    J(L) = sum(((covar - var0opt * K.(distx * len_scale/L))./stdcovar).^2)
+    Jmin,imin = findmin(J.(L))
+    lenopt = L[imin]
     
-    # function to minimize
-    function fitt(p, grad::Vector #= unused =#)
-        local fitcovar_i, nbins, fitness
-
-        #@show p
-        fitness = zero(eltype(p))
-        nbins = 0
-        for i = 1:length(distx)
-            if (count[i] > mincount)  && !isnan(stdcovar[i])
-            #if !isnan(stdcovar[i])
-                fitcovar_i = norm_var0 * p[1] *  K(distx[i] * len_scale/(norm_len * p[2]))
-
-                # sum of squares scaled by the standard deviation
-                fitness += abs2( (fitcovar_i-covar[i])/stdcovar[i] )
-                nbins += 1
-            end
-        end
-
-        fitness /= nbins
-        #@show p,fitness,nbins
-        progress(iter,norm_var0 * p[1],norm_len * p[2],fitness)
-        iter = (iter::Int) + 1
-
-        return fitness
-    end
-
-    # setup the optimser
-    #opt = Opt(:LN_COBYLA, 2)
-    opt = Opt(:GN_DIRECT, 2)
-    
-    lower_bounds!(opt, [minvar0/norm_var0, minlen/norm_len])
-    upper_bounds!(opt, [maxvar0/norm_var0, maxlen/norm_len])
-    xtol_rel!(opt,tolrel)
-    NLopt.maxeval!(opt,maxeval)
-    
-    #@code_warntype fitt([1.,1.],[0.,0.])
-
-    min_objective!(opt, fitt)
-
-    minf,minx,ret = optimize(opt, [var0/norm_var0, len/norm_len])
-    var0 = minx[1] * norm_var0
-    len = minx[2] * norm_len
-
-    #@show minf,ret
-    # fitted covariance
-    #fitcovar = var0 *  K.(distx * len_scale/len) :: Vector{Float64}
-    #fitcovar = var0 *  K.( (distx::Vector{Float64}) * (len_scale::Float64)/len)
-    fitcovar = var0 *  (K.(distx * len_scale/len):: Vector{Float64})
+    fitcovar = var0opt *  (K.(distx * len_scale/lenopt):: Vector{Float64})
 
     #return distx
-    return var0,len,distx,covar,fitcovar,stdcovar
+    return var0opt,lenopt,distx,covar,fitcovar,stdcovar
 end
 
 

@@ -42,8 +42,17 @@ field = divand.random(mask,(pm,pn),(lenx,leny),Nens)
 x = (xi[:],yi[:])
 v = field[:]
 
-distx,covar,corr,varx,count = divand.empiriccovar(
+distx,covar,corr,varx,count,stdcovar = divand.empiriccovarmean(
     x,v,distbin,mincount)
+
+minlen = 0.001
+maxlen = 0.1
+
+var0opt = covar[1]
+L = linspace(minlen,maxlen,100);
+J(L) = sum(((covar - var0opt * K.(distx * len_scale/L))./stdcovar).^2)
+Jmin,imin = findmin(J.(L))
+lenopt = L[imin]
 
 
 var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
