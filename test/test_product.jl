@@ -186,6 +186,9 @@ keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
 # new analysis with background from file
 
 filename2 = "Water_body_$(replace(varname,' ','_'))2.4Danl.nc"
+if isfile(filename2)
+   rm(filename2) # delete the previous analysis
+end
 
 divand.diva3d((lonr,latr,depthr,TS),
               (lon,lat,depth,time),
