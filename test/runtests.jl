@@ -3,84 +3,84 @@ using Base.Test
 import Base.LinAlg.BLAS
 
 @testset "divand" begin
-    # # ndgrid
-    # include("test_ndgrid.jl");
+    # ndgrid
+    include("test_ndgrid.jl");
 
-    # include("test_covaris.jl");
+    include("test_covaris.jl");
 
-    # # conjugate gradient
-    # include("test_conjugategradient.jl");
+    # conjugate gradient
+    include("test_conjugategradient.jl");
 
-    # include("test_sparse_diff.jl");
-    # include("test_laplacian.jl");
-    # include("test_localize_separable_grid.jl");
-    # include("test_statevector.jl");
+    include("test_sparse_diff.jl");
+    include("test_laplacian.jl");
+    include("test_localize_separable_grid.jl");
+    include("test_statevector.jl");
 
-    # include("test_diagnostic_tools.jl");
+    include("test_diagnostic_tools.jl");
 
-    # include("test_1dvar.jl");
-    # include("test_1D_seminormed.jl");
-
-
-    # include("test_2dvar_adv.jl");
-    # include("test_2dvar_iter.jl");
-    # include("test_2dvar_jog.jl");
-    # include("test_2dvar_error.jl");
-
-    # include("test_2dvar_all_masked.jl");
-
-    # # cross-validation
-    # include("test_2dvar_cv.jl");
-    # include("test_2dvar_matfun.jl");
-    # include("test_2dvar_qc.jl");
-
-    # include("test_2dvar_outside.jl");
+    include("test_1dvar.jl");
+    include("test_1D_seminormed.jl");
 
 
-    # include("test_variableLandpmn.jl")
+    include("test_2dvar_adv.jl");
+    include("test_2dvar_iter.jl");
+    include("test_2dvar_jog.jl");
+    include("test_2dvar_error.jl");
 
-    # include("test_3dvar.jl");
+    include("test_2dvar_all_masked.jl");
 
-    # include("test_4dvar.jl");
+    # cross-validation
+    include("test_2dvar_cv.jl");
+    include("test_2dvar_matfun.jl");
+    include("test_2dvar_qc.jl");
 
-    # # comparision with analytical kernels
-    # include("test_ndvar_point.jl");
-
-    # include("test_divandgo.jl");
+    include("test_2dvar_outside.jl");
 
 
-    # # test kernel
-    # include("test_kernel.jl");
+    include("test_variableLandpmn.jl")
 
-    # include("test_fzero.jl");
+    include("test_3dvar.jl");
 
-    # # test 3D-var analysis
-    # include("test_varanalysis.jl");
+    include("test_4dvar.jl");
 
-    # include("test_averaged_bg.jl");
-    # include("test_domain.jl");
+    # comparision with analytical kernels
+    include("test_ndvar_point.jl");
 
-    # # SDN Vocabulary
-    # include("test_vocab.jl");
+    include("test_divandgo.jl");
 
-    # # SDN ODVspreadsheet
-    # include("test_ODVspreadsheet.jl");
 
-    # # SDN NetCDF
-    # include("test_ncsdn.jl");
+    # test kernel
+    include("test_kernel.jl");
 
-    # # SDN metadata
-    # include("test_metadata.jl");
+    include("test_fzero.jl");
 
-    # # Saving data as NetCDF file
-    # include("test_save.jl");
-    # include("test_loadobs.jl");
+    # test 3D-var analysis
+    include("test_varanalysis.jl");
 
-    # # Anamorphosis
-    # include("test_anam.jl");
+    include("test_averaged_bg.jl");
+    include("test_domain.jl");
 
-    # # Fitting covariance model
-    # include("test_select_time.jl");
+    # SDN Vocabulary
+    include("test_vocab.jl");
+
+    # SDN ODVspreadsheet
+    include("test_ODVspreadsheet.jl");
+
+    # SDN NetCDF
+    include("test_ncsdn.jl");
+
+    # SDN metadata
+    include("test_metadata.jl");
+
+    # Saving data as NetCDF file
+    include("test_save.jl");
+    include("test_loadobs.jl");
+
+    # Anamorphosis
+    include("test_anam.jl");
+
+    # Fitting covariance model
+    include("test_select_time.jl");
 
     # Fitting covariance model
     include("test_fit.jl");
