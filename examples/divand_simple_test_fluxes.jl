@@ -24,6 +24,8 @@ mask = trues(xi);
 
 mask[1,:]=false;
 mask[end,:]=false;
+mask[:,1]=false;
+mask[:,end]=false;
 
 mask[30:80,30:80]=false;
 
@@ -44,11 +46,25 @@ h=xi.*(100.-xi)+20
 
 # fi is the interpolated field
 
-fluxes=sin.(yi[1,:]./10.)+0.1*rand(size(h)[2])
+fluxes1=sin.(yi[1,:]./10.)+0.1*rand(size(h)[2])
 
-@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;topographyforfluxes=h,fluxes=fluxes,epsfluxes=1.,alphabc=1,alpha=[1, 0, 1]);
+fluxes2=sin.(xi[:,1]./10.)+0.1*rand(size(h)[1])
+rfluxes=0.00000001
+rfluxes=1
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;topographyforfluxes=(h,0),fluxes=(fluxes1,0),epsfluxes=rfluxes,alphabc=1,alpha=[1, 0, 1]);
 
 # plotting of results
+
+
+ 
+figure() 
+
+pcolor(xi,yi,fi);
+colorbar()
+
+title("Interpolated field");
+
+savefig("divand_simple_example_fluxes1.png")
 
 fluxesafter=zeros(size(h)[2])
 
@@ -59,17 +75,80 @@ for j=1:size(h)[2]
 	end
  end
 end
- 
- 
+@show var(fluxes1-fluxesafter)
+@show var(fluxes1)
+
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;topographyforfluxes=(0,h),fluxes=(0,fluxes2),epsfluxes=rfluxes,alphabc=1,alpha=[1, 0, 1]);
+
+# plotting of results
+
+
+figure()
 
 pcolor(xi,yi,fi);
 colorbar()
 
 title("Interpolated field");
 
-savefig("divand_simple_example_fluxes.png")
+savefig("divand_simple_example_fluxes2.png")
 
-var(fluxes-fluxesafter)
+fluxesafter=zeros(size(h)[1])
+
+for i=1:size(h)[1]
+ for j=2:size(h)[2]-2
+	if mask[i,j]&& mask[i,j+1]
+ 		fluxesafter[i]=fluxesafter[i]-h[i,j]*(fi[i,j+1]-fi[i,j])
+	end
+ end
+end
+ 
+@show var(fluxes2-fluxesafter)
+@show var(fluxes2)
+
+
+# finally both directions
+
+@time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;topographyforfluxes=(h,h),fluxes=(fluxes1,fluxes2),epsfluxes=rfluxes,alphabc=1,alpha=[1, 0, 1]);
+
+# plotting of results
+
+ 
+figure()
+pcolor(xi,yi,fi);
+colorbar()
+
+title("Interpolated field");
+
+savefig("divand_simple_example_fluxes12.png")
+
+
+
+
+fluxesafter=zeros(size(h)[2])
+
+for j=1:size(h)[2]
+ for i=2:size(h)[1]-2
+	if mask[i,j]&& mask[i+1,j]
+ 		fluxesafter[j]=fluxesafter[j]+h[i,j]*(fi[i+1,j]-fi[i,j])
+	end
+ end
+end
+@show var(fluxes1-fluxesafter)
+@show var(fluxes1)
+
+fluxesafter=zeros(size(h)[1])
+
+for i=1:size(h)[1]
+ for j=2:size(h)[2]-2
+	if mask[i,j]&& mask[i,j+1]
+ 		fluxesafter[i]=fluxesafter[i]-h[i,j]*(fi[i,j+1]-fi[i,j])
+	end
+ end
+end
+ 
+@show var(fluxes2-fluxesafter)
+@show var(fluxes2)
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
@@ -82,6 +161,6 @@ var(fluxes-fluxesafter)
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
 # details.
-#
+#;
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, see <http://www.gnu.org/licenses/>.

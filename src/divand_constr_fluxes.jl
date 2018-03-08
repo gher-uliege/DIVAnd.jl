@@ -5,10 +5,12 @@
 #
 # Input:
 #   s: structure
-#   topographyforfluxes: 2D array with the bottom topography used for the flux calculations 
-#               DO NOT USE NaN in it. 
-#   fluxes: array of fluxes. The barotropic correction on elevation should be such that 
-#                         Sum over longitude at each latidute of Sum h \delta(eta)/\delta x   \delta x = fluxes
+#   topographyforfluxes: tuple of two 2D array with the bottom topography used for the flux calculations 
+#               DO NOT USE NaN in it. If an array is replaced by a scalar zero, the constraint is not used.
+#   fluxes: tuple of two arrays of fluxes. The barotropic correction on elevation should be such that 
+#                         Sum over longitude at each latidute of Sum h \delta(eta)/\delta x   \delta x = fluxes[1]
+#                         Sum over latitude  at each longitude of Sum h \delta(eta)/\delta y   \delta y = -fluxes[2]
+#             WARNING: Note the - in front of fluxes2 and think about coriolis :-)
 #   epsfluxes: error variance on constraint. Scaling to be verified
 #   pmnin: metrics from the calling routine
 #
@@ -29,30 +31,48 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 
     sz = size(mask);
 
-# JMB directly put the right number of constraints for the moment, one for each latitude. sz[2] in the present case
-# hardwired loop over all latitudes this is not a problem as long as only one direction is forced to have zero fluxes.
-# Just rotate the domain before calculations.     
+# JMB directly put the right number of constraints for the moment, one for each latitude. 
 
-    jmjmax=sz[2]
+    jmjmax=[0,0]
+	if topographyforfluxes[1]!=0
+	jmjmax[1]=sz[2]
+	end
+
+	if topographyforfluxes[2]!=0
+	jmjmax[2]=sz[1]
+	end
+
+	if sum(jmjmax)==0
+		warning("no constraint in _fluxes")
+		return 0
+	end
+	
 	
 #	A = spzeros(s.sv.n,s.sv.n)
-    A = spzeros(jmjmax,s.sv.n)
+    A = spzeros(sum(jmjmax),s.sv.n)
 	 l = size(A,1);
 	 yo = zeros(l)
-	 R = Diagonal(mean(topographyforfluxes)*epsfluxes.*ones(l))
+	 R = Diagonal((mean(topographyforfluxes[1])+mean(topographyforfluxes[2]))*epsfluxes.*ones(l))
 
-    for j=1:jmjmax
-
-    for i=1:1
+    
+     joffset=0
+    for i=1:2
         S = sparse_stagger(sz,i,iscyclic[i]);
         m = (S * mask[:]) .== 1;
 
-        d = topographyforfluxes
+        d = topographyforfluxes[i]
+		
+		
+	   for j=1:jmjmax[i]
 # JMB: Add here integrals by using pack of an array with dx at a given latitude
-# Take same shape as velocity array
+# Take same shape as topo array
         forintegral=zeros(d)
 # Use metrics
-        forintegral[:,j]=1.0./pmnin[1][:,j]
+        if i==1
+           forintegral[:,j]=1.0./pmnin[1][:,j]
+		else
+		   forintegral[j,:]=1.0./pmnin[2][j,:]
+		end
 #  Pack forintegral
 #
 #        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
@@ -63,12 +83,19 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 		 #@show size(jmw),size(A),size(A[j,:]),size(squeeze(jmw,1))
 		 
 		 
-         A[j,:] = A[j,:] + squeeze(jmw,1);
+         A[j+joffset,:] = A[j+joffset,:] + squeeze(jmw,1);
+		 if i==1
+         yo[j+joffset]=fluxes[i][j]
+		 else
+		 yo[j+joffset]=-fluxes[i][j]
+		 end
 
-# Simple test with fake value		 
-         #yo[j]=j*100*100
-    end
-   yo=fluxes
+        end
+		
+		
+		joffset=joffset+jmjmax[i]
+		
+   
    
 
 	end
