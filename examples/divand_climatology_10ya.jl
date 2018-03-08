@@ -1,4 +1,7 @@
 # Experimental
+#=
+Perform an analysis with a 10-year window 
+=#
 
 #SBATCH --mem-per-cpu=8000
 
@@ -95,22 +98,22 @@ function plotres(timeindex,sel,fit,erri)
     figure()
     subplot(2,1,1)
     title("$(timeindex) - surface")
-    
+
     selsurface = sel .& (depth .< 5)
     vmin = minimum(value[selsurface])
     vmax = maximum(value[selsurface])
-    
+
     scatter(lon[selsurface],lat[selsurface],10,value[selsurface];
             cmap = "jet", vmin = vmin, vmax = vmax)
     xlim(minimum(lonr),maximum(lonr))
     ylim(minimum(latr),maximum(latr))
-    
+
     colorbar()
     subplot(2,1,2)
     pcolor(lonr,latr,tmp[:,:,1]';
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
-    
+
     savefig(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex)))
 end
 

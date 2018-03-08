@@ -1,4 +1,4 @@
-#SBATCH --mem-per-cpu=32000
+#SBATCH --mem-per-cpu=4000
 
 using divand
 using PyPlot
