@@ -7,10 +7,11 @@
 #   s: structure
 #   topographyforfluxes: tuple of two 2D array with the bottom topography used for the flux calculations 
 #               DO NOT USE NaN in it. If an array is replaced by a scalar zero, the constraint is not used.
+#               for fluxes calculated with geostrophy apply g/f to h
 #   fluxes: tuple of two arrays of fluxes. The barotropic correction on elevation should be such that 
-#                         Sum over longitude at each latidute of Sum h \delta(eta)/\delta x   \delta x = fluxes[1]
+#                         Sum over longitude at each latidute of Sum h \delta(eta)/\delta x   \delta x = - fluxes[1]
 #                         Sum over latitude  at each longitude of Sum h \delta(eta)/\delta y   \delta y = -fluxes[2]
-#             WARNING: Note the - in front of fluxes2 and think about coriolis :-)
+#             WARNING: This has been coded to directly use geostrophy.jl output and flux directions
 #   epsfluxes: error variance on constraint. Scaling to be verified
 #   pmnin: metrics from the calling routine
 #
@@ -85,7 +86,7 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 		 
          A[j+joffset,:] = A[j+joffset,:] + squeeze(jmw,1);
 		 if i==1
-         yo[j+joffset]=fluxes[i][j]
+         yo[j+joffset]=-fluxes[i][j]
 		 else
 		 yo[j+joffset]=-fluxes[i][j]
 		 end

@@ -75,7 +75,7 @@ for j=1:size(h)[2]
 	end
  end
 end
-@show var(fluxes1-fluxesafter)
+@show var(fluxes1+fluxesafter)
 @show var(fluxes1)
 
 @time fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;topographyforfluxes=(0,h),fluxes=(0,fluxes2),epsfluxes=rfluxes,alphabc=1,alpha=[1, 0, 1]);
@@ -97,12 +97,12 @@ fluxesafter=zeros(size(h)[1])
 for i=1:size(h)[1]
  for j=2:size(h)[2]-2
 	if mask[i,j]&& mask[i,j+1]
- 		fluxesafter[i]=fluxesafter[i]-h[i,j]*(fi[i,j+1]-fi[i,j])
+ 		fluxesafter[i]=fluxesafter[i]+h[i,j]*(fi[i,j+1]-fi[i,j])
 	end
  end
 end
  
-@show var(fluxes2-fluxesafter)
+@show var(fluxes2+fluxesafter)
 @show var(fluxes2)
 
 
@@ -133,7 +133,7 @@ for j=1:size(h)[2]
 	end
  end
 end
-@show var(fluxes1-fluxesafter)
+@show var(fluxes1+fluxesafter)
 @show var(fluxes1)
 
 fluxesafter=zeros(size(h)[1])
@@ -141,12 +141,12 @@ fluxesafter=zeros(size(h)[1])
 for i=1:size(h)[1]
  for j=2:size(h)[2]-2
 	if mask[i,j]&& mask[i,j+1]
- 		fluxesafter[i]=fluxesafter[i]-h[i,j]*(fi[i,j+1]-fi[i,j])
+ 		fluxesafter[i]=fluxesafter[i]+h[i,j]*(fi[i,j+1]-fi[i,j])
 	end
  end
 end
  
-@show var(fluxes2-fluxesafter)
+@show var(fluxes2+fluxesafter)
 @show var(fluxes2)
 
 
