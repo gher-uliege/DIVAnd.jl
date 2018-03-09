@@ -6,6 +6,7 @@ using StringEncodings
 # Set logging level(DEBUG, INFO, WARNING, ERROR or CRITICAL)
 # loglevel = WARNING
 # Logging.configure(level=loglevel);
+debug(msg) = nothing
 
 # SeaDataNet Quality Flags
 # http://vocab.nerc.ac.uk/collection/L20/current/
