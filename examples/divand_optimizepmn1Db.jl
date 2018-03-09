@@ -2,10 +2,7 @@
 using divand
 using PyPlot
 
-figdir = "./figures/"
-outputdir = "./netCDF/"
-isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
-isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
+include("./prep_dirs.jl")
 
 xi=0
 xiref=0
@@ -44,10 +41,9 @@ figure("Reference")
 rmsdiff=sqrt(var(firef[901:1101]-firefl))
 title("Solution in infinite domain and finite domain, rms = $rmsdiff")
 plot(xiref[801:1201],firef[801:1201],"-",xirefl,firefl,".")
-
-
-
-
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_reference.png")))
+savefig(figname);
+info("Created figure " * figname)
 # Now try to optimize BC
 aj=zeros(500)
 vj=zeros(500)
@@ -125,11 +121,9 @@ plot(aj,vj,"-")
 subplot(1,2,2)
 title("rms(reference-analysis)")
 plot(aj,rj,"-")
-savefig(joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimisation.png"))));
-
-
-
-
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimisation.png")))
+savefig(figname);
+info("Created figure " * figname)
 
 # Finally solution with optimized parameter
 
@@ -153,10 +147,9 @@ subplot(2,1,2)
 bi=diag(s.P)
 title("B in infinite domain, finite domain and modified finite domain, Bversion")
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
-savefig(joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal1.png"))));
-
-
-
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal1.png")))
+savefig(figname);
+info("Created figure " * figname)
 
 figure("Optimal solution 2")
 alen=aj[indmin(rj)]
@@ -170,15 +163,16 @@ fi2,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2,alphabc=alen);
 rmsdiff=sqrt(var(firef[901:1101]-fi2))
 fi2b,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2large,alphabc=alen);
 subplot(2,1,1)
-title("Solution in infinite domain and modified finite domain, rmsversion, rms = $rmsdiff")
+title("Solution in infinite domain and modified finite domain, rmsversion, rms = $rmsdiff", fontsize=14)
 plot(xiref[801:1201],firef[801:1201],"-",xi,fi2,".")
 subplot(2,1,2)
 
 bi=diag(s.P)
-title("B in infinite domain, finite domain and modified finite domain, rmsversion")
+title("B in infinite domain, finite domain and modified finite domain, rmsversion", fontsize=14)
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
-savefig(joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal2.png"))));
-
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal2.png")))
+savefig(figname)
+info("Created figure " * figname)
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
