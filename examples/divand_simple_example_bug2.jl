@@ -5,6 +5,8 @@ using divand
 using PyPlot
 srand(77235445)
 
+include("./prep_dirs.jl")
+
 # observations
 x = -10+30*rand(150000);
 y = -10+30*rand(150000);
@@ -41,9 +43,12 @@ pcolor(xi,yi,fi);
 colorbar()
 clim(0,1)
 #plot(x,y,"k.");
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+savefig(figname)
+info("Saved figure as " * figname)
 
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
