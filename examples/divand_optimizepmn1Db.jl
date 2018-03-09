@@ -2,7 +2,11 @@
 using divand
 using PyPlot
 
-xiref=0
+figdir = "./figures/"
+outputdir = "./netCDF/"
+isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
+isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
+
 xi=0
 xiref=0
 
@@ -121,6 +125,7 @@ plot(aj,vj,"-")
 subplot(1,2,2)
 title("rms(reference-analysis)")
 plot(aj,rj,"-")
+savefig(joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimisation.png"))));
 
 
 
@@ -148,6 +153,7 @@ subplot(2,1,2)
 bi=diag(s.P)
 title("B in infinite domain, finite domain and modified finite domain, Bversion")
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
+savefig(joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal1.png"))));
 
 
 
@@ -171,9 +177,10 @@ subplot(2,1,2)
 bi=diag(s.P)
 title("B in infinite domain, finite domain and modified finite domain, rmsversion")
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
+savefig(joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal2.png"))));
 
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
