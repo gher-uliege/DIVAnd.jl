@@ -5,10 +5,15 @@ using divand
 using PyPlot
 using Interpolations
 
+figdir = "./figures/"
+outputdir = "./netCDF/"
+isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
+isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
+
 function interp!(xi::NTuple{N,Array{T,N}},fi::Array{T,N},x,f) where T where N
     # tuple of vector with the varying parts
     xivector = ntuple(j -> xi[j][[(i==j ? (:) : 1 ) for i in 1:N]...], N) :: NTuple{N,Vector{T}}
-    
+
     itp = interpolate(xivector,fi,Gridded(Linear()))
 
     xpos = zeros(N)
@@ -24,7 +29,7 @@ end
 """
     f = interp(xi,fi,x)
 
-Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of 
+Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
 n-dimensional arrays) onto grid `x` (tuble of n-dimensional arrays).
 The grid in `xi` must be align with the axis (e.g. produced by ndgrid).
 """
@@ -32,9 +37,9 @@ The grid in `xi` must be align with the axis (e.g. produced by ndgrid).
 function interp(xi,fi,x)
     # check size
     @assert all([size(xc) == size(fi) for xc in xi])
-    
+
     f = similar(x[1])
-    interp!(xi,fi,x,f)    
+    interp!(xi,fi,x,f)
     return f
 end
 
@@ -63,7 +68,7 @@ function detrend(mask,pm,xi,x,f,len,epsilon2;
                     tmp = f - interp(xi[j],fi[j],x)
                 end
             end
-            
+
             # analyse variations at scale k
             fi[k][:],s = divandrun(mask[k],pm[k],xi[k],x,tmp,len[k],epsilon2);
         end
@@ -132,13 +137,16 @@ epsilon2 = 1.;
 # fi[2] is x
 
 
-function plotiter(i,fi)    
+function plotiter(i,fi)
     figure(1)
-    for k = 1:nlevels 
+    for k = 1:nlevels
         subplot(nlevels,1,k)
         plot(xi[k][1],fi[k],"-",label="iteration $(i)");
         title("level $(k)")
-    end        
+    end
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",i))));
+    savefig(figname)
+    info("Saved figure as " * figname)
 end
 
 fa,fi = detrend(mask,pm,xi,x,f,len,epsilon2;
@@ -153,7 +161,9 @@ plot(xi[1][1],fi[1],"-",label="analysis (trend)")
 #plot(xi[2][1],fi[2],"-",label="analysis (variations)")
 plot(xi[2][1],fa,"-",label="analysis (total)")
 legend()
-
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
+savefig(figname)
+info("Saved figure as " * figname)
 
 
 # Copyright (C) 2018 Jean-Marie Beckers <jm.beckers@ulg.ac.be>
