@@ -1,6 +1,7 @@
-# Experimental
 #=
-Perform an analysis with a 10-year window
+Experimental
+
+Perform an analysis with a 10-year window from the sea floor
 =#
 
 #SBATCH --mem-per-cpu=8000

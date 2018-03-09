@@ -5,10 +5,7 @@ using divand
 using PyPlot
 using Interpolations
 
-figdir = "./figures/"
-outputdir = "./netCDF/"
-isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
-isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
+include("./prep_dirs.jl")
 
 function interp!(xi::NTuple{N,Array{T,N}},fi::Array{T,N},x,f) where T where N
     # tuple of vector with the varying parts
@@ -43,7 +40,6 @@ function interp(xi,fi,x)
     return f
 end
 
-
 function detrend(mask,pm,xi,x,f,len,epsilon2;
                  niter = 10,
                  progressiter = (i,fi) -> nothing
@@ -65,7 +61,7 @@ function detrend(mask,pm,xi,x,f,len,epsilon2;
             tmp[:] = f
             for j = 1:nlevels
                 if j != k
-                    tmp = f - interp(xi[j],fi[j],x)
+                    tmp = f - divand.interp(xi[j],fi[j],x)
                 end
             end
 
@@ -82,7 +78,7 @@ function detrend(mask,pm,xi,x,f,len,epsilon2;
     fa = copy(fi[nlevels])
 
     for i = 1:nlevels-1
-        fa = fa + interp(xi[i],fi[i],xi[nlevels])
+        fa = fa + divand.interp(xi[i],fi[i],xi[nlevels])
     end
 
     return fa,fi
@@ -144,9 +140,11 @@ function plotiter(i,fi)
         plot(xi[k][1],fi[k],"-",label="iteration $(i)");
         title("level $(k)")
     end
+
     figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",i))));
     savefig(figname)
     info("Saved figure as " * figname)
+
 end
 
 fa,fi = detrend(mask,pm,xi,x,f,len,epsilon2;
@@ -154,17 +152,16 @@ fa,fi = detrend(mask,pm,xi,x,f,len,epsilon2;
                 progressiter = plotiter,
                 )
 
-
 figure(2)
 plot(x[1],f,".",label="observation")
 plot(xi[1][1],fi[1],"-",label="analysis (trend)")
 #plot(xi[2][1],fi[2],"-",label="analysis (variations)")
 plot(xi[2][1],fa,"-",label="analysis (total)")
 legend()
+
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
 savefig(figname)
 info("Saved figure as " * figname)
-
 
 # Copyright (C) 2018 Jean-Marie Beckers <jm.beckers@ulg.ac.be>
 #               2018 Alexander Barth <a.barth@ulg.ac.be>

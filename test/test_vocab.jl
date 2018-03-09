@@ -29,6 +29,9 @@ concept = collection["PSALPR01"]
 @test contains(divand.Vocab.prefLabel(concept),"salinity")
 @test contains(divand.Vocab.notation(concept),"P01")
 @test contains(divand.Vocab.altLabel(concept),"sal")
+@test contains(divand.Vocab.definition(concept),"is")
+@test contains(divand.Vocab.URL(concept),key)
+
 @test typeof(divand.Vocab.date(concept)) == DateTime
 
 
@@ -63,5 +66,3 @@ name = divand.Vocab.name(divand.Vocab.resolve("SDN:EDMO::575"))
 
 name = divand.Vocab.name(divand.Vocab.urn"SDN:EDMO::575")
 @test name == "National Oceanographic Data Committee"
-
-

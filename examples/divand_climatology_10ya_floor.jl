@@ -11,16 +11,12 @@ using NCDatasets
 using Interpolations
 
 include("../src/override_ssmult.jl")
+include("./prep_dirs.jl")
 
 # if this script is in /some/path/divand.jl/examples, the data should be in
 # /some/path/divand-example-data (for Linux, Mac) and likewise for Windows.
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
-
-figdir = "./figures/"
-outputdir = "./netCDF/"
-isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
-isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
 
 bathisglobal = true
 
@@ -131,7 +127,7 @@ function plotres(timeindex,sel,fit,erri)
     pcolor(lonr,latr,tmp[:,:,1]';
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
-
+    
     figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))));
     savefig(figname)
     info("Saved figure as " * figname)

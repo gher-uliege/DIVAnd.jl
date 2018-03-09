@@ -43,6 +43,7 @@ build_script:
   - C:\projects\julia\bin\julia -e "versioninfo();
       Pkg.clone(pwd(), \"divand\"); Pkg.build(\"divand\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"NCDatasets.jl\")"
+  - C:\projects\julia\bin\julia -e "include(joinpath(Pkg.dir(\"divand\"),\"test\",\"download_data.jl\"))"
 
 test_script:
   - C:\projects\julia\bin\julia -e "Pkg.test(\"divand\")"

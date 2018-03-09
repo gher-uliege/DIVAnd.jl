@@ -1,7 +1,6 @@
 using Base.Test
 import divand
 using PyPlot
-import WorldOceanDatabase
 
 varname = "Salinity"
 filename = "WOD-Salinity.nc"
@@ -21,10 +20,37 @@ v = value[sel]
 z = [0.,10,100,200,300,400,500,700,1000,1500]
 
 
-srand(123);
-@time lenz,infoz = divand.fitvertlen(x,v,z,len0 = 300., nmean = 500, distbin = collect([0.:50:400; 500:100:600]))
+srand(1234);
+@time lenxy,infoxy = divand.fithorzlen(
+    x,v,z,
+    len0 = 3.,
+    nmean = 500,
+    distbin = collect(0.:0.1:6))
 
 
-srand(123);
-@time lenxy,infoxy = divand.fithorzlen(x,v,z,len0 = 3., nmean = 500, distbin = collect(0.:0.1:6))
+srand(1234);
+@time lenz,infoz = divand.fitvertlen(
+    x,v,z,
+    len0 = 300.,
+    nmean = 500,
+    distbin = collect([0.:50:400; 500:100:600])
+)
 
+distfun(xi,xj) = divand.distance(xi[2],xi[1],xj[2],xj[1])
+
+srand(1234);
+@time lenxy,infoxy = divand.fithorzlen(
+    x,v,z,
+    len0 = 3.,
+    nmean = 500,
+    distbin = collect(0.:0.1:6),
+    distfun = distfun    
+)
+
+srand(1234);
+@time lenz,infoz = divand.fitvertlen(
+    x,v,z,len0 = 300.,
+    nmean = 500,
+    distbin = collect([0.:50:400; 500:100:600]),
+    distfun = distfun
+)

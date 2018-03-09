@@ -1,3 +1,5 @@
 *.nc
 *.png
 .ipynb_checkpoints
+figures/
+netCDF/

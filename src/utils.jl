@@ -33,7 +33,7 @@ end
 function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     c2 = copy(c)
     # better way
-    valex = T(-9999.)
+    valex = T(-99999.)
     c2[.!mask] = valex
     
     return ufill(c2,valex)
@@ -430,4 +430,98 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
     ff = (F[:UP]) \ z;
     field = divand.unpackens(s.sv,ff)[1] :: Array{T,N+1}
     return field
+end
+
+
+"""
+    interp!(xi,fi,x,f)
+
+Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
+n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
+The interpolated field is stored in `f`.
+The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+"""
+
+
+
+function interp!(xi::NTuple{N,Vector{T}},
+                 fi::Array{T,N},
+                 x::NTuple{N,Array{T,Nf}},
+                 f::Array{T,Nf}) where {T,N,Nf}   
+    itp = interpolate(xi,fi,Gridded(Linear()))
+
+    xpos = zeros(N)
+    for i in eachindex(f)
+        # position of the i-th location in f
+        for j = 1:N
+            xpos[j] = x[j][i]
+        end
+        f[i] = itp[xpos...]
+    end
+end
+
+
+function interp!(xi::NTuple{N,Array{T,N}},
+                 fi::Array{T,N},
+                 x::NTuple{N,Array{T,Nf}},
+                 f::Array{T,Nf}) where {T,N,Nf}
+    
+    # check size
+    @assert all([size(xc) == size(fi) for xc in xi])
+
+    # tuple of vector with the varying parts
+    xivector = ntuple(j -> xi[j][[(i==j ? (:) : 1 ) for i in 1:N]...], N) :: NTuple{N,Vector{T}}
+    interp!(xivector,fi,x,f)
+end
+
+"""
+    f = interp(xi,fi,x)
+
+Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
+n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
+The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+"""
+
+function interp(xi,fi,x)
+    f = similar(x[1])
+    interp!(xi,fi,x,f)
+    return f
+end
+
+
+
+
+"""
+    fun = backgroundfile(fname,varname)
+
+Return a function `fun` which is used in DIVAnd to make 
+anomalies out of observations based relative to the field
+defined in the NetCDF variable `varname` in the NetCDF file 
+`fname`. It is assumed that the NetCDF variables has the variable
+`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the 
+same grid as the analysis.
+
+"""
+
+function backgroundfile(fname,varname)
+    ds = Dataset(fname)
+    lon = ds["lon"][:].data
+    lat = ds["lat"][:].data
+    depth = ds["depth"][:].data
+    #time = ds["time"][:].data
+    
+    v = ds[varname]
+    x = (lon,lat,depth)    
+    
+    return function (xi,n,value,trans)
+        
+        vn = zeros(size(v[:,:,:,n]))
+        vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
+
+        
+        vn .= trans.(divand.ufill(vn,.!isnan.(vn)))
+        fi = divand.interp(x,vn,xi)
+
+        return vn,value - fi
+    end
 end

@@ -123,7 +123,8 @@ end
 #            s = Vocab.$($tag)(urn::AbstractString)
 for (method,tag,docname) in [(:prefLabel,"prefLabel","preferred label"),
                              (:notation,"notation","identifier"),
-                             (:altLabel,"altLabel","alternative label")]
+                             (:altLabel,"altLabel","alternative label"),
+                             (:definition,"definition","definition")]
     @eval begin
         @doc """
             s = Vocab.$($tag)(c::Vocab.Concept)
@@ -138,6 +139,8 @@ for (method,tag,docname) in [(:prefLabel,"prefLabel","preferred label"),
         """ $method(urn::AbstractString) = $method(resolve(urn))
     end
 end
+
+URL(c::Concept) = findfirst(root(c.xdoc),"//skos:Concept",namespaces)["rdf:about"]
 
 date(c::Concept) = DateTime(
    nodecontent(findfirst(root(c.xdoc),"//dc:date",namespaces)),

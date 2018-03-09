@@ -334,6 +334,11 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     return originators,notfound
 end
 
+function labelandURL(s)
+    c = divand.Vocab.resolve(s)
+    return Dict("label" => divand.Vocab.prefLabel(c),
+                "URL" => divand.Vocab.URL(c))
+end
 
 
 function gettemplatevars(filepath,varname,project,cdilist;
@@ -444,10 +449,13 @@ function gettemplatevars(filepath,varname,project,cdilist;
     default_field_min,default_field_max = extrema(field[.!ismissing.(field)])
 
     rmprefix(urn) = split(urn,':')[end]
+    #P02_keywords = rmprefix.(split(ds.attrib["search_keywords_urn"]))
+    #P35_keywords = rmprefix.(split(ds.attrib["parameter_keyword_urn"]))
+    #C19_keywords = rmprefix.(split(ds.attrib["area_keywords_urn"]))
 
-    P02_keywords = rmprefix.(split(ds.attrib["search_keywords_urn"]))
-    P35_keywords = rmprefix.(split(ds.attrib["parameter_keyword_urn"]))
-    C19_keywords = rmprefix.(split(ds.attrib["area_keywords_urn"]))
+    P02_keywords = labelandURL.(split(ds.attrib["search_keywords_urn"]))
+    P35_keywords = labelandURL.(split(ds.attrib["parameter_keyword_urn"]))
+    C19_keywords = labelandURL.(split(ds.attrib["area_keywords_urn"]))
 
     area = divand.Vocab.resolve(split(ds.attrib["area_keywords_urn"])[1])
     domain = divand.Vocab.prefLabel(area)
@@ -531,7 +539,7 @@ contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
             db = loadoriginators(cdilist)
 
             #UPDATE!! fixme
-filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
+#filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
 
 originators = getoriginators(
     db,filepath,errname,
