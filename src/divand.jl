@@ -13,7 +13,7 @@ import HTTP
 using NLopt
 import Mustache
 import ZipFile
-
+using Missings
 
 const EarthRadius = 6372795.477598; # m
 
