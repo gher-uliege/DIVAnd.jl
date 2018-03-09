@@ -16,9 +16,9 @@ include("../src/override_ssmult.jl")
 # /some/path/divand-example-data (for Linux, Mac) and likewise for Windows.
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
+
 figdir = "./figures/"
 outputdir = "./netCDF/"
-logging
 isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
 isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
 
@@ -46,12 +46,12 @@ lonr = 27:dx:42
 latr = 40:dy:47
 
 #depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
-depthr = [0.,5, 10, 15, 20, 25, 30, 40, 50, 66, 75, 85, 100, 112, 125, 135, 150, 175, 200, 225, 250, 275, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1600, 1750, 1850, 2000];
+#depthr = [0.,5, 10, 15, 20, 25, 30, 40, 50, 66, 75, 85, 100, 112, 125, 135, 150, 175, 200, 225, 250, 275, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1600, 1750, 1850, 2000];
 
-#depthr = [0., 5., 10.];
+depthr = [-5., 0., 5.];
 #depthr = 0:10.:30.;
 
-depthr = [20.,50.];
+# depthr = [20.,50.];
 
 @show size(depthr)
 
@@ -89,12 +89,15 @@ monthlists = [
 
 TS = divand.TimeSelectorYW(years,year_window,monthlists)
 
-filename = replace(@__FILE__,r".jl$",".nc")
+filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$",".nc")))
+info("Output file: " * filename)
+
 varname = "Salinity"
 
 timeorigin = DateTime(1900,1,1,0,0,0)
 
-bx,by,b = divand.extract_bath(bathname,false,lonr,latr);
+info("Loading bathymetry")
+# bx,by,b = divand.extract_bath(bathname,false,lonr,latr);
 bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
 
 itp = interpolate((bxi,byi), bi, Gridded(Linear()))
@@ -129,9 +132,9 @@ function plotres(timeindex,sel,fit,erri)
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
 
-    figname = joinpath(figdir,replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex)));
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))));
     savefig(figname)
-    warn("Saved figure as " * figname)
+    info("Saved figure as " * figname)
 end
 
 #----------------
@@ -141,12 +144,37 @@ zlevel = :floor
 L = 5000; # m
 
 bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
+# b is positive in the water and negative in the air.
 
+figure()
+title("Original bathymetry")
+pcolor(lonr,latr,transpose(bi))
+colorbar()
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_bi0.png")));
+savefig(figname)
+
+# Remove the land values(negative)
 bi = -min.(bi,0)
 
+figure()
+title("Bathymetry")
+pcolor(lonr,latr,transpose(bi))
+colorbar()
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_bi1.png")));
+savefig(figname)
+
+# Compute topography gradients
 RL = divand.lengraddepth(divand.divand_metric(lonr,latr),bi, L;
                   hmin = 0.001 #m
                   )
+@show(size(RL))
+figure()
+title("RL")
+pcolor(lonr,latr,transpose(RL))
+colorbar()
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_RL.png")));
+savefig(figname)
+
 for k = 1:sz[3]
     for j = 1:sz[2]
         for i = 1:sz[1]

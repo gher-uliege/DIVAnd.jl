@@ -38,16 +38,23 @@ fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 isglobal = true
 
+figdir = "./figures/"
+outputdir = "./netCDF/"
+isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
+isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
+
 if !isdefined(:value)
-    value,lon,lat,depth,time,id = loadbigfile(fname)
+    value,lon,lat,depth,time,id = divand.loadbigfile(fname)
 end
 
 @show size(value)
 
 dx = dy = 0.1
-dx = dy = 0.2
 dx = dy = 0.07
 dx = dy = 0.04
+
+dx = dy = 0.2
+
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
 
@@ -55,9 +62,9 @@ lonr = 27:dx:42
 latr = 40:dy:47
 
 
-depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
+#depthr = [0., 10, 20, 30, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1750, 2000];
 #depthr = [0, 10, 20, 30, 50, 75, 100];
-#depthr = 0:10.:30.;
+depthr = 0:10.:30.;
 
 
 timer = 1:1.:12
@@ -69,12 +76,11 @@ epsilon2 = 1.
 
 time2 = Dates.month.(time)
 
-mxi,myi,mask2 = load_mask(bathname,isglobal,minimum(lonr),maximum(lonr),dx,minimum(latr),maximum(latr),dy,depthr)
-
+mxi,myi,mask2 = load_mask(bathname,isglobal,lonr,latr,depthr)
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 
-
 sz = size(mask)
+info("Size mask:" * sz)
 @show sz
 
 z = zeros(sz)
@@ -107,7 +113,12 @@ fi=fi+fmb+vm
 # Why is this filter necessary; sharedArray not supported ??
 #fi=divand_filter3(fi,NaN,2)
 #erri=divand_filter3(erri,NaN,2)
+outputfile1 = joinpath(outputdir, basename(replace(@__FILE__,r".jl$","hrS.nc")))
+outputfile2 = joinpath(outputdir, basename(replace(@__FILE__,r".jl$","hrE.nc")))
 
-divand_save(replace(@__FILE__,r".jl$","hrS.nc"),mask,"Salinity",fi)
-divand_save(replace(@__FILE__,r".jl$","hrE.nc"),mask,"Errorfield",erri)
+info("Salinity field written in file :" * outputfile1)
+info("Error field written in file :" * outputfile2)
+
+divand_save(outputfile1,mask,"Salinity",fi)
+divand_save(outputfile2,mask,"Errorfield",erri)
 nothing

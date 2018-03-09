@@ -1,6 +1,6 @@
 # Experimental
 #=
-Perform an analysis with a 10-year window 
+Perform an analysis with a 10-year window
 =#
 
 #SBATCH --mem-per-cpu=8000
@@ -17,8 +17,10 @@ fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
 
-#bathname = "/media/abarth/Alex_Data/Alex/Data/Europe/EMODNET-Bathymetry/combined_emodnet_bathymetry.nc"
-#bathisglobal = false
+figdir = "./figures/"
+outputdir = "./netCDF/"
+isdir(figdir) ? info("Directory already exists") : mkdir(figdir);
+isdir(outputdir) ? info("Directory already exists") : mkdir(outputdir);
 
 if !isdefined(:value)
     value,lon,lat,depth,time,ids = divand.loadbigfile(fname)
@@ -83,7 +85,9 @@ monthlists = [
 
 TS = divand.TimeSelectorYW(years,year_window,monthlists)
 
-filename = replace(@__FILE__,r".jl$",".nc")
+filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$",".nc")))
+info("Output file: " * filename)
+
 varname = "Salinity"
 
 timeorigin = DateTime(1900,1,1,0,0,0)
@@ -114,7 +118,9 @@ function plotres(timeindex,sel,fit,erri)
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
 
-    savefig(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex)))
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))));
+    savefig(figname)
+    info("Saved figure as " * figname)
 end
 
 # launch the analysis
