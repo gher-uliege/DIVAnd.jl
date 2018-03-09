@@ -10,7 +10,7 @@ using divand
 using PyPlot
 using NetCDF
 
-include("./prep_dirs.jl");
+include("./prep_dirs.jl")
 include("../src/override_ssmult.jl")
 
 # if this script is in /some/path/divand.jl/examples, the data should be in
