@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # observations
 x = rand(75);
 y = rand(75);
@@ -45,6 +47,8 @@ pcolor(xi[:,:,2],yi[:,:,2],fref[:,:,2]);
 colorbar()
 clim(-1,1)
 plot(x,y,"k.");
+title("Analytical field and obs.");
+
 
 subplot(1,2,2);
 pcolor(xi[:,:,2],yi[:,:,2],fi[:,:,2]);
@@ -52,9 +56,11 @@ colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-savefig("divand_simple_example_3D.png")
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")))
+savefig(figname)
+info("Created figure " * figname)
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
