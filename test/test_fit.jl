@@ -32,7 +32,7 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
 lenx = .05;
 leny = .05;
 Nens = 1
-distbin = 0:0.05:1
+distbin = 0:0.02:0.3
 mincount = 100
 
 srand(1234)
