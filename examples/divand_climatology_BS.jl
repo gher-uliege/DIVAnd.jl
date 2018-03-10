@@ -58,7 +58,6 @@ mxi,myi,mask2 = load_mask(bathname,isglobal,lonr,latr,depthr)
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
 
 sz = size(mask)
-info("Size mask:" * sz)
 @show sz
 
 z = zeros(sz)
@@ -99,6 +98,9 @@ fi=fi+fmb+vm
 # Why is this filter necessary; sharedArray not supported ??
 #fi=divand_filter3(fi,NaN,2)
 #erri=divand_filter3(erri,NaN,2)
+
+outputfile1 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$","_salinity.nc")));
+outputfile2 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$","_errorfield.nc")));
 
 info("Salinity field written in file :" * outputfile1)
 info("Error field written in file :" * outputfile2)
