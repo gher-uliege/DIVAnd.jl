@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 srand(1234)
 # observations
 nobs = 90
@@ -38,6 +40,8 @@ epsilon2 = 1.;
 bestfactore = 1
 cvval = 99999
 
+figure()
+
 for imeth=0:3
     bestfactore, cvval,cvvalues, x2Ddata,cvinter,xi2D = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,4,imeth);
 
@@ -49,13 +53,16 @@ for imeth=0:3
     title("Method $imeth")
 end
 
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")))
+savefig(figname)
+info("Created figure " * figname)
+
 # De Rosier type of approach
 
 figure("another one")
 
 epsbest1=epsilon2*bestfactore
 cvbest1=cvval
-
 
 cvbest2=zeros(20);
 eps2=zeros(20)
@@ -75,7 +82,11 @@ eps2
 
 plot(log10.(eps2),cvbest2,".",log10.(epsbest1),cvbest1,"o",log10.(eps2[end]),cvbest2[end],"+")
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")))
+savefig(figname)
+info("Created figure " * figname)
+
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
