@@ -19,7 +19,6 @@ y[2]=0.25
 
 f = sin.(x*2*pi) .* sin.(y*2*pi);
 
-
 f=f+0.5*randn(300);
 
 # Now fake some mix up in  two points coordinates
@@ -29,8 +28,6 @@ y[1]=0.75
 
 x[1]=0.75
 y[2]=0.25
-
-
 
 
 # final grid
@@ -62,13 +59,11 @@ qcval=divand_qc(fi,s,1)
 
 sp=find(x-> x.>10,qcval)
 
+@show suspectindexes=sortperm(qcval,rev=true)
 
 
-suspectindexes=sortperm(qcval,rev=true)
-
-
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
+#                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
