@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # observations
 x = [2  3  4];
 y = [2  3  4];
@@ -47,7 +49,6 @@ ly=0.5+yi/5
 finu,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(ly,lx),epsilon2);
 @show  sampler1=divand_sampler((pm,pn),(lx,ly))
 
-
 # plotting of results
 subplot(1,3,1);
 pcolor(xi,yi,fireg);
@@ -63,9 +64,12 @@ pcolor(xi,yi,finu);
 colorbar()
 clim(0,1)
 
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+savefig(figname)
+info("Saved figure as " * figname)
 
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
