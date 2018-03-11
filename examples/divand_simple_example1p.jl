@@ -13,6 +13,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # observations
 x = [150.];
 y = [150.];
@@ -20,8 +22,6 @@ f = [1.];
 
 # final grid
 xi,yi = ndgrid(linspace(1,299,299),linspace(1,299,299));
-
-
 
 # all points are valid points
 mask = trues(xi);
@@ -45,8 +45,6 @@ fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 @show fi[150,150]
 @show fi[150,179]
 
-
-
 # observations
 x = [30.];
 y = [30.];
@@ -54,8 +52,6 @@ f = [1.];
 
 # final grid
 xi,yi = ndgrid(linspace(1,59,59),linspace(1,59,59));
-
-
 
 # all points are valid points
 mask = trues(xi);
@@ -88,6 +84,11 @@ fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 pcolor(reshape(diag(s.P),59,59)')
 colorbar()
+
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")));
+savefig(figname)
+info("Saved figure as " * figname)
+
 @show fi2[30,30]
 @show fi2[30,59]
 
@@ -124,8 +125,6 @@ epsilon2 = 1.;
 
 # fi is the interpolated field
 fi3,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
-
-
 
 
 @show fi3[30,30]
