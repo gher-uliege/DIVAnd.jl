@@ -57,7 +57,7 @@ colorbar()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
 savefig(figname)
-info("Saved figure as " * figname)
+info("Saved figur   e as " * figname)
 
 # Copyright (C) 2014, 2018 Alexander Barth         <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
