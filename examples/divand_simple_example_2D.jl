@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # function to interpolate
 fun(x,y) = sin.(6x) * cos.(6y)
 
@@ -51,9 +53,11 @@ colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-savefig("divand_simple_example.png")
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_results.png")))
+savefig(figname)
+info("Created figure " * figname)
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
