@@ -7,6 +7,7 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
 
 x=[0.]
 y=[0.]
