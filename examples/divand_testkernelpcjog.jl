@@ -7,6 +7,7 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
 
 x=[0.]
 y=[0.]
@@ -53,7 +54,7 @@ var(fipca-fiiter)/var(fipca)
 
 
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
