@@ -11,13 +11,11 @@ bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global",
 
 bx,by,b = divand.extract_bath(bathname,true,lonr,latr)
 
-h = -b;
 mask = h .< 0
 h[h .< 0] = 0;
 
 x,y = divand.ndgrid(bx,by);
 pm,pn = divand.divand_metric(x,y)
-
 
 L = 10_000 # m
 
