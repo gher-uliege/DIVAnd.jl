@@ -142,7 +142,8 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
     # Analyse with semi-norm and larger length scales
     Bjmb,s1=divandrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/20; alpha=alpha, otherargs...)
-
+ 
+    Bjmb=max.(Bjmb,0)
 
     # Now do the same with normal snr to get real error at the "data" points
     # incidentally fa and sa are almost the real analysis
@@ -162,7 +163,7 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
     f1,s1=divandrun(mask,pmn,xi,xfake,ffake,len./1.70766,1.0/100.0; otherargs...);
 
     # Calculate final error
-    aexerr=Bjmb-f1;
+    aexerr=max.(Bjmb-f1,0);
 
 
 
