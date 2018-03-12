@@ -1,6 +1,8 @@
 using PyPlot
 import divand
 
+include("./prep_dirs.jl")
+
 dx = dy = 1.
 lonr = 2.5:dx:12.
 latr = 42.3:dy:44.6
@@ -22,3 +24,7 @@ L = 10_000 # m
 RL = divand.lengraddepth((pm,pn),h, L)
 
 pcolor(x,y,RL); colorbar()
+
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+savefig(figname)
+info("Saved figure as " * figname)
