@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # observations
 nobs=100
 x = 0.01+0.98*rand(nobs);
@@ -53,9 +55,11 @@ subplot(1,3,3)
 pcolor(xi,yi,fiex-fi)
 colorbar()
 
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+savefig(figname)
+info("Saved figure as " * figname)
 
-
-# Copyright (C) 2014, 2017 Alexander Barth         <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth         <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

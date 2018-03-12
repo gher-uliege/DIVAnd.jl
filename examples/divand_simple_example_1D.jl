@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # observations with some points outside
 x = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1]
 f = sin.(x*6);
@@ -30,10 +32,13 @@ epsilon2 = 0.1;
 # fi is the interpolated field
 fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=0);
 
-plot(x,f,".",label="observation")
+plot(x,f,".",label="observations")
 plot(xi,fi,"-",label="analysis")
 legend()
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_results.png")))
+savefig(figname)
+info("Created figure " * figname)
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

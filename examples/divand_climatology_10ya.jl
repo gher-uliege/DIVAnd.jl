@@ -11,15 +11,13 @@ using PyPlot
 using NCDatasets
 
 include("../src/override_ssmult.jl")
+include("./prep_dirs.jl")
 
 # if this script is in /some/path/divand.jl/examples, the data should be in
 # /some/path/divand-example-data (for Linux, Mac) and likewise for Windows.
 fname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","BlackSea","Salinity.bigfile")
 bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
-
-#bathname = "/media/abarth/Alex_Data/Alex/Data/Europe/EMODNET-Bathymetry/combined_emodnet_bathymetry.nc"
-#bathisglobal = false
 
 if !isdefined(:value)
     value,lon,lat,depth,time,ids = divand.loadbigfile(fname)
@@ -84,7 +82,9 @@ monthlists = [
 
 TS = divand.TimeSelectorYW(years,year_window,monthlists)
 
-filename = replace(@__FILE__,r".jl$",".nc")
+filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$",".nc")))
+info("Output file: " * filename)
+
 varname = "Salinity"
 
 timeorigin = DateTime(1900,1,1,0,0,0)
@@ -114,7 +114,8 @@ function plotres(timeindex,sel,fit,erri)
     pcolor(lonr,latr,tmp[:,:,1]';
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
-    figname = replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))
+
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))));
     savefig(figname)
     info("Saved figure as " * figname)
 end

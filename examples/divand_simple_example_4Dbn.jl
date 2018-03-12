@@ -1,4 +1,4 @@
-#SBATCH --mem-per-cpu=16000
+#SBATCH --mem-per-cpu=4000
 
 
 # A simple example of divand in 4 dimensions
@@ -6,6 +6,8 @@
 
 using divand
 using PyPlot
+
+include("./prep_dirs.jl")
 
 # function to interpolate
 fun(x,y,z,t) = sin.(6x) .* cos.(6y)+sin.(6z) .* cos.(6x) .* sin.(2*pi*t) ;
@@ -19,9 +21,9 @@ t = rand(nobs);
 f = fun.(x,y,z,t)
 
 # final grid
-testsizexy=40
-testsizez=40
-testsizet=40
+testsizexy=10
+testsizez=10
+testsizet=10
 
 # mask: all points are valid points
 # this problem has a simple cartesian metric
@@ -56,14 +58,12 @@ colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-subplot(1,2,2);
-pcolor(xi[:,:,1,3],yi[:,:,1,3],fi[:,:,1,3]);
-colorbar()
-clim(-.3,0.3)
-title("Interpolated field");
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")))
+savefig(figname)
+info("Created figure " * figname)
 
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

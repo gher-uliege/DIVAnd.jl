@@ -7,11 +7,13 @@
 using divand
 using PyPlot
 include("../src/override_ssmult.jl")
+include("./prep_dirs.jl")
+
 # final grid
 #
-testsizex=100
-testsizey=90
-testsizez=10
+testsizex=80
+testsizey=50
+testsizez=5
 testsizet=12
 # observations
 nobs=2000;
@@ -82,8 +84,10 @@ end
 # fi is the interpolated field
 @time fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12], pcargs..., inversion=:pcg,compPC = compPC, fi0 = fi);
 
-
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+outputfile = joinpath(outputdir,basename(replace(@__FILE__,r".jl$",".nc")));
+divand_save(outputfile,mask,"analysis",fi)
+info("Results written in $outputfile")
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

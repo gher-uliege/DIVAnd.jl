@@ -10,34 +10,7 @@ using divand
 using PyPlot
 using NetCDF
 
-include("./prep_dirs.jl");
-
-function loadbigfile(fname)
-
-    data = readlines(open(fname,"r"))
-    nobs = length(data)
-
-    lon = zeros(nobs)
-    lat = zeros(nobs)
-    depth = zeros(nobs)
-    time = Array{DateTime}(nobs)
-    value = zeros(nobs)
-    id = Array{String}(nobs)
-
-
-    for i in 1:nobs
-        rec = split(data[i])
-        lon[i] = parse(Float64,rec[1])
-        lat[i] = parse(Float64,rec[2])
-        value[i] = parse(Float64,rec[3])
-        depth[i] = parse(Float64,rec[4])
-        time[i] = DateTime(rec[10])
-        id[i] = rec[11]
-    end
-
-    return value,lon,lat,depth,time,id
-end
-
+include("./prep_dirs.jl")
 include("../src/override_ssmult.jl")
 
 # if this script is in /some/path/divand.jl/examples, the data should be in
@@ -47,7 +20,7 @@ bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global",
 isglobal = true
 
 if !isdefined(:value)
-    value,lon,lat,depth,time,id = loadbigfile(fname)
+    value,lon,lat,depth,time,id = divand.loadbigfile(fname)
 end
 
 @show size(value)
@@ -60,7 +33,6 @@ dx = dy = 1.
 # dx = dy = 0.04
 # dx = 15.0/(50*16)
 # dy = 6.0/(15*16)
-
 
 lonr = 27:dx:42
 latr = 40.4:dy:46.6
@@ -83,9 +55,7 @@ epsilon2 = 1.
 time2 = Dates.month.(time)
 
 mxi,myi,mask2 = load_mask(bathname,isglobal,lonr,latr,depthr)
-
 mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
-
 
 sz = size(mask)
 @show sz
@@ -128,9 +98,14 @@ fi=fi+fmb+vm
 # Why is this filter necessary; sharedArray not supported ??
 #fi=divand_filter3(fi,NaN,2)
 #erri=divand_filter3(erri,NaN,2)
-outputfile1 = joinpath(outputdir, basename(replace(@__FILE__,r".jl$","hrS.nc")));
-outputfile2 = joinpath(outputdir, basename(replace(@__FILE__,r".jl$","hrE.nc")));
+
+outputfile1 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$","_salinity.nc")));
+outputfile2 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$","_errorfield.nc")));
+
+info("Salinity field written in file :" * outputfile1)
+info("Error field written in file :" * outputfile2)
+
 divand_save(outputfile1,mask,"Salinity",fi)
 divand_save(outputfile2,mask,"Errorfield",erri)
-info("Results written in files\n"* outputfile1 * " and\n" * outputfile2)
+
 nothing

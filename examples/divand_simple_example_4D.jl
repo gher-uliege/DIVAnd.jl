@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # function to interpolate
 fun(x,y,z,t) = sin.(6x) .* cos.(6y)+sin.(6z) .* cos.(6x) .* sin.(2*pi*t) ;
 
@@ -42,20 +44,22 @@ epsilon2 = 1.;
 
 # plotting of results
 subplot(1,2,1);
-pcolor(xi[:,:,1,3],yi[:,:,1,3],fref[:,:,1,3]);
-colorbar()
+pcolor(xi[:,:,1,3],yi[:,:,1,3],fref[:,:,1,3],vmin=-1.,vmax=1.);
 clim(-1,1)
 plot(x,y,"k.");
+title("Analytical field and obs.");
 
 subplot(1,2,2);
-pcolor(xi[:,:,1,3],yi[:,:,1,3],fi[:,:,1,3]);
+pcolor(xi[:,:,1,3],yi[:,:,1,3],fi[:,:,1,3],vmin=-1.,vmax=1.);
 colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-savefig("divand_simple_example_4D.png")
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")))
+savefig(figname)
+info("Created figure " * figname)
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

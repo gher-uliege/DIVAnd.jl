@@ -244,6 +244,7 @@ end
                                maxvar0 = 10.,
                                tolrel = 1e-4,
                                maxpoints = 10000,
+                               nmean = 100,
                                distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj))),
                                progress = (iter,var,len,fitness) -> nothing
                            )
@@ -270,6 +271,8 @@ Optional input parameters:
 * `minvar0`, `maxvar0`: minimum and maximum value for the variance
 * `tolrel`: relative tolerance for the optimizer
 * `maxpoints`: maximum number of data points considered
+* `nmean`: the number of time an empirical covariance is estimated.
+   The average covariance is used for the fitting.
 * `distfun`: function to compute the distance between point `xi` (vector) and
    `xj`. Per default `distun` is the Eucedian distance
   `(xi,xj) -> sqrt(sum(abs2,xi-xj)))`.
@@ -279,6 +282,12 @@ Optional input parameters:
 The length-scale parameters and the variance have the corresponding units from
 the `x` and `v`. It is therefore often necessary to provide reasonable values
 for these default parameters.
+
+The algorithm used to estimate the correlation-length and variance is based on
+randomly choosen points. Therefore the result can be different if the function
+is invoked repeately. If `nmean` is increased, then these statistical
+fluctuations should decrease (for a not too large value of `mincount`, i.e.
+about 100 for most cases).
 
 If the lower bound `minlen` is too small, then you might get the following error:
 
@@ -300,7 +309,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                        tolrel::T = 1e-5,
                        maxeval::Int = 10000,
                        maxpoints::Int = 1000000,
-                       nmean::Int = 10,
+                       nmean::Int = 100,
                        stdcovar = zeros(T,length(distbin)-1),
                        distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                        progress = (iter,var,len,fitness) -> nothing,

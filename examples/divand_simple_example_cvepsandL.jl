@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 srand(1234)
 # observations
 nobs = 99
@@ -47,7 +49,11 @@ for imeth=0:3
     title("Method $imeth")
 end
 
-# Copyright (C) 2014, 2017 Alexander Barth    <a.barth@ulg.ac.be>
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")))
+savefig(figname)
+info("Created figure " * figname)
+
+# Copyright (C) 2014, 2018 Alexander Barth    <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
