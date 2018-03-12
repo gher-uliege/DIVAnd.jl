@@ -109,7 +109,6 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
             # fit correlation length            
             lenxy1,infoxy = divand.fithorzlen(
                 (lon[sel],lat[sel],depth[sel]),vaa,depthr,
-                len0 = 3.,
                 nmean = 500,
                 distbin = collect(0.:0.1:6),
                 distfun = distfun    
@@ -118,7 +117,6 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
             
             lenz1,infoz = divand.fitvertlen(
                 (lon[sel],lat[sel],depth[sel]),vaa,depthr,
-                len0 = 300.,
                 nmean = 500,
                 distbin = collect([0.:50:400; 500:100:600]),
                 distfun = distfun

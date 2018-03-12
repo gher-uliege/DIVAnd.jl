@@ -236,12 +236,8 @@ end
 """
     var0,len,distx,covar,fitcovar = fit_isotropic(x,v,distbin,mincount;
                                alpha = divand.alpha_default(length(x)),
-                               len = 1.,
-                               var0 = 1.,
                                minlen = 0.,
                                maxlen = 10.,
-                               minvar0 = 0.,
-                               maxvar0 = 10.,
                                tolrel = 1e-4,
                                maxpoints = 10000,
                                nmean = 100,
@@ -266,9 +262,7 @@ Optional input parameters:
   length to zero, then alpha should be set to `[1,2,1]`, otherwise alpha will be
   `[1,3,3,1]` (for for any proper 3D analysis).
 * `len`: initial value for the correlation length
-* `var0`: initial value of the variance
 * `minlen`, `maxlen`: minimum and maximum value for the correlation length
-* `minvar0`, `maxvar0`: minimum and maximum value for the variance
 * `tolrel`: relative tolerance for the optimizer
 * `maxpoints`: maximum number of data points considered
 * `nmean`: the number of time an empirical covariance is estimated.
@@ -300,9 +294,6 @@ In these case, increase `minlen`.
 """
 function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                        alpha = divand.alpha_default(length(x)),
-                       var0::T = 1.,
-                       minvar0::T = 0.,
-                       maxvar0::T = 10.,
                        len::T = 1.,
                        minlen::T = 1e-5,
                        maxlen::T = 10.,
@@ -511,7 +502,6 @@ Optional arguments:
  * `mincount` (default 50): minimum pairs per bins
  * `maxpoints` (default 10000): maximum number of pairs
  * `nmean` (default 100): number of empirical covariance to average
- * `len0` (default 0.3): initial value for the correlation length-scale
  * `maxlen` (default 3): maximum correlation length-scale
  * `minlen` (default 0.1): minimum correlation length-scale
  * `smoothz` (default 100): spatial filter for the correlation scale
@@ -524,12 +514,8 @@ function fithorzlen(x,value::Vector{T},z;
                     mincount::Int = 50,
                     maxpoints::Int = 10000,
                     nmean::Int = 100,
-                    len0::T = 0.3,
                     maxlen::T = 3.,
                     minlen::T = 0.1,
-                    var0::T = 1.,
-                    minvar0::T = 0.,
-                    maxvar0::T = 2.,                    
                     tolrel::T = 1e-4,
                     smoothz::T = 100.,
                     searchz::T = 300.,
@@ -555,12 +541,8 @@ function fithorzlen(x,value::Vector{T},z;
             xsel,v,distbin,mincount;
             maxpoints = maxpoints,
             nmean = nmean,
-            len = len0,
             minlen = minlen,
             maxlen = maxlen,
-            var0 = var0,
-            minvar0 = minvar0,
-            maxvar0 = maxvar0,
             tolrel = tolrel,
             progress = progress,
         )
@@ -595,12 +577,8 @@ function fitvertlen(x,value::Vector{T},z;
                      mincount::Int = 50,
                      maxpoints::Int = 10000,
                      nmean::Int = 100,
-                     len0::T = 50.,
                      minlen::T = 10.,
                      maxlen::T = 1000.,
-                     var0::T = 1.,
-                     minvar0::T = 0.,
-                     maxvar0::T = 2.,
                      tolrel::T = 1e-4,
                      smoothz::T = 100.,
                      searchz::T = 2.,
@@ -717,7 +695,6 @@ function fitvertlen(x,value::Vector{T},z;
     #         maxpoints = maxpoints,
     #         nmean = nmean,
     #         maxlen = maxlen,
-    #         len = len0,
     #         choose = vchoose)
 
 
@@ -732,12 +709,8 @@ function fitvertlen(x,value::Vector{T},z;
             (x[3],),value,distbin,mincount;
             maxpoints = maxpoints,
             nmean = nmean,
-            len = len0,
             minlen = minlen,
             maxlen = maxlen,
-            var0 = var0,
-            minvar0 = minvar0,
-            maxvar0 = maxvar0,
             choose = vchoose,
             tolrel = tolrel,
             progress = progress,
