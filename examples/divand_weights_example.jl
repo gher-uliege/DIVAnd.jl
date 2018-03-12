@@ -2,6 +2,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # fix seed of random number generator
 srand(12345)
 
@@ -23,3 +25,7 @@ colorbar()
 xlabel("x")
 ylabel("y")
 title("weight of observations\n based on their redundancy (method 'RtimesOne')")
+
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+savefig(figname)
+info("Saved figure as " * figname)
