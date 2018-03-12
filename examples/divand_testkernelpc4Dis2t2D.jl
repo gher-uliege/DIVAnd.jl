@@ -14,7 +14,7 @@ z=[0.]
 f=[1.]
 
 srand(876)
-nobs=5000
+nobs=100
 x=randn(nobs)
 y=randn(nobs)
 z=randn(nobs)
@@ -23,7 +23,7 @@ f=x+y.*z+t.*t.*x
 
 @show var(f)
 
-jsize=200
+jsize=100
 jsizez=7
 jsizet=12
 
@@ -131,7 +131,7 @@ end
 
 
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
