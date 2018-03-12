@@ -4,6 +4,8 @@
 using divand
 using PyPlot
 
+include("./prep_dirs.jl")
+
 # observations
 x = [-0.7,0.7,0.7,-0.7];
 y = [0.,-.7,0.7,0.7];
@@ -33,9 +35,6 @@ maskfin = trues(xifin);
 fifin,sfin = divandrun(maskfin,(pmfin,pnfin),(xifin,yifin),(x,y),f,len,epsilon2;alphabc=0);
 
 firef=fifin[401-40:401+40,401-40:401+40];
-
-
-
 
 
 # all points are valid points
@@ -93,6 +92,10 @@ subplot(1,2,2)
 plot(al,rms,"-")
 @show al[indmin(varr)]
 
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")));
+savefig(figname)
+info("Saved figure as " * figname)
+
 
 alphaopt=al[indmin(varr)]
 fi,swhat = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alphaopt);
@@ -117,7 +120,6 @@ pcolor(xi,yi,fi);
 colorbar()
 clim(-1,1)
 
-
 subplot(2,2,3);
 rmval=sqrt(var(fidir-firef))
 title("alpha=1.09  rms $rmval")
@@ -132,10 +134,12 @@ pcolor(xi,yi,fiold);
 colorbar()
 clim(-1,1)
 
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
+savefig(figname)
+info("Saved figure as " * figname)
 
 
-
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
