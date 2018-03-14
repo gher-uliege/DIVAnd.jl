@@ -159,7 +159,7 @@ RL = divand.lengraddepth(divand.divand_metric(lonr,latr),bi, L;
                   )
 
 figure()
-title("RL")
+title("relative correlation length")
 pcolor(lonr,latr,transpose(RL))
 colorbar()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_RL.png")));
