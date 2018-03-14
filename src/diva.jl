@@ -47,10 +47,13 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
             
 
     sz = size(mask)
-
+    #figure(),pcolor(Float64.(mask)'),figure()
+    @show mask[1,1,1]
+    
+    # change the depth of the observation
     if zlevel == :floor       
         depth = copy(depth)
-        @show "analysis from the sea floor"
+        info("analysis from the sea floor")
         
         bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
 
@@ -58,7 +61,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
         
         # shift the depth of the observations relative to the ocean floor
         for k = 1:length(depth)
-            depth[k] = -itp[lon[k],lat[k]] - depth[k]
+            depth[k] = itp[lon[k],lat[k]] - depth[k]
         end
     end
 

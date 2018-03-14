@@ -44,7 +44,7 @@ function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
         bxi,byi,bi = load_bath(bathname,bathisglobal,lonr,latr)
         
         for k = 1:size(mask,3)
-            mask[:,:,k] = bi + depthr[k] .< 0
+            mask[:,:,k] = depthr[k] .< bi
         end
     end
 
