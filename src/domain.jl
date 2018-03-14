@@ -35,7 +35,6 @@ function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
         pn[:,:,k] = pn[:,:,1]
     end
 
-    @show size(mask)
     dx = lonr[2] - lonr[1]
     dy = latr[2] - latr[1]
 
@@ -74,8 +73,6 @@ function domain(bathname,bathisglobal,lonr,latr,depthr,timer)
     #pm[:] = 4.15379e-5
     #pn[:] = 4.15379e-5
 
-
-    @show size(mask)
     dx = lonr[2] - lonr[1]
     dy = latr[2] - latr[1]
 

@@ -11,7 +11,6 @@ function divand_save(filename,mask::AbstractArray{Bool,N},varname,fi) where N
     ds.dim["lat"] = sz[2]
     ds.dim["lon"] = sz[1]
 
-    @show filename
     ncvar = defVar(ds, varname, Float32, ("lon", "lat", "depth", "time"))
     ncvar[:,:,:,:] = fi
     close(ds)

@@ -33,7 +33,7 @@ function divand_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
             B[I] = A[I]
             if !dvisvalue(A[I])
                 for J in CartesianRange(max(I1, I-3*I1), min(Iend, I+3*I1))
-                    @show J
+                    #@show J
                     if dvisvalue(A[J])
                         s += A[J]
                         if (I==J)

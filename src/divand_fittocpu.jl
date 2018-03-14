@@ -28,10 +28,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     #################################################################################
     # Number of dimensions
     n = size(Lpmnrange)[1]
-	
-	@show moddim
-	@show MEMTOFIT
-	
+		
 	fudgefac=MEMTOFIT/16.
 	#@show ENV["MEMTOFIT"]
 	#myval=tryparse(Float64,ENV["MEMTOFIT"])
@@ -150,12 +147,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     #problemsize=problemsize/prod(latercsteps[1:2])
 	
 	# Take into account overhead due to multiple storage
-    problemsize=problemsize/sqrt(prod(latercsteps[1:2]))
-    
-	
-	
-	@show problemsize
-
+    problemsize=problemsize/sqrt(prod(latercsteps[1:2]))    
 
     if nwd>0
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
@@ -164,7 +156,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
         warn("SO what $epsilon $problemsize $nwd $overlapping")
         epsilon=1E-6
     end
-    @show epsilon
+
     for i=1:minimum([n,2])
         # if length scale is small compared to domain size
         if Lpmnrange[i][2]<   lfactor*gridsize[i]
@@ -191,12 +183,8 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     #Force direct solver if you want by uncommenting next line
     # isdirect=(0<1)
 
-    @show stepsize
 
     return stepsize,overlapping,isdirect
-
-
-
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

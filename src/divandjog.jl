@@ -647,8 +647,6 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		#Method 1
 		if methodpccoarse==1
 		
-		@show methodpccoarse
-		
 			Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
 			# try classic 2D
 			lmask1=0.0.*lmask;
@@ -684,7 +682,6 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			scalef=(xr'*(HI*(HI'*xr)))./(xr'*xr)
 			scalef2=1./scalef[1]
 			
-            @show scalef2
 			scalef2=1.02
 			xguess=xguess*scalef2
             figuess,=statevector_unpack(svf,xguess)
@@ -696,7 +693,6 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			diagshift=0.04*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			diagshift=0.02*(sqrt(size(HI)[1]/size(HI)[2])-1);
 			
-			@show size(xguess)
 			#work1=0.*xguess # ::Array{Float64,1}
 			#work2=0.*xguess # ::Array{Float64,1}
 			#work3=0.*(HI'*xguess) # ::Array{Float64,1}
@@ -735,7 +731,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 								fx[:]=BLAS.axpy!(diagshift,x,fx)
                                 #fx[:] = diagshift*x+scalef2*HI*(scP*(HI'*x));
                             end
-							@show size(work3)
+
 							#@time gc()
                             return fun!
                         end
@@ -781,7 +777,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			scalef2=1./scalef[1]
 			scalef2=1.
 			xguess=xguess*scalef2
-            @show scalef2
+
             figuess,=statevector_unpack(svf,xguess)
 			
 
@@ -836,7 +832,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if n>3
 						lmask1[3]=1/1.42;
 						Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
-						@show lmask,lmask1,mean(Labsccut[1]),mean(Labsc[1]),mean(Labsccut[3]),mean(Labsc[3])
+
 						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000.; otherargsc...)
 			
 			
@@ -1055,7 +1051,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
 			PC1=1
 			sc=0
-			@show size(lmask)
+
 			if size(lmask)[2]> 2
 						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000.; otherargsc...)
 			end

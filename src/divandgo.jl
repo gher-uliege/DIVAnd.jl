@@ -67,12 +67,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
     Lpmnrange = divand_Lpmnrange(pmn,Labs)
 
-    # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
-	@show moddim,MEMTOFIT
-	
+    # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning	
     windowlist,csteps,lmask,alphanormpc = divand_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT)
-
-	@show size(mask),size(windowlist)
 
     # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
     # Seems to work with an addprocs(2); @everywhere using divand to start the main program. To save space use Float32 ?
@@ -100,14 +96,9 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 		windowpointssol=([isol1[i]:isol2[i] for i in 1:n]...);
 		windowpointsstore=([istore1[i]:istore2[i] for i in 1:n]...);
 
-
-
-        warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
-
-
+        #warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
+        
         windowpoints=([iw1[i]:iw2[i] for i in 1:n]...);
-
-        @show size(windowpoints[1])
 
         #################################################
         # Need to check how to work with aditional constraints...
@@ -237,15 +228,13 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                 sverr=s.sv
             end
             svn=size(sverr)[1]
-            @show size(sverr)
+
             errv=statevector_pack(sverr,(errw,))
             # Loop over window points. From grid index to statevector index so that ve is
             # zero exect one at that index. Then calculate the error and store it in the the
             # sv representation of the error
 
-            @show windowpoints[1]
             for gridindex in windowpoints
-                @show gridindex
                 ei=zeros(svn)
                 ind = statevector_sub2ind(svn,gridindex)
                 ei[ind]=1

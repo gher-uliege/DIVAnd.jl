@@ -60,7 +60,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
 			#csteps[i]=minimum([nsamp,1])
         end
     end
-    @show csteps
+
     #################################################################
     # Decide which directions are not coupled during preconditionning
     lmask=ones(n)
@@ -91,14 +91,12 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
 
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
-	@show moddim,MEMTOFIT
-
     stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,csteps,moddim,MEMTOFIT)
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows
         csteps=0*csteps
-        warn("Testing forced jog")
+        #warn("Testing forced jog")
     end
 
 
@@ -181,7 +179,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
         # end loop over all dimensions
 
         # Need a deepcopy here otherwise last values everywhere as only memory adress would be used
-        @show (iw1,iw2,isol1,isol2,istore1,istore2,)
+        #@show (iw1,iw2,isol1,isol2,istore1,istore2,)
         windowlist[iw]=deepcopy((iw1,iw2,isol1,isol2,istore1,istore2,))
 
     end

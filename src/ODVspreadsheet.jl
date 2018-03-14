@@ -577,14 +577,14 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
             if nametype == :P01
                 if !(dataname in sheet_P01names)
                     # ignore this file
-                    @show sheet_P01names
+                    #@show sheet_P01names
                     warn("no data in $(fname)")
                     continue
                 end
             elseif nametype == :localname
                 if !(dataname in localnames(sheet))
                     # ignore this file
-                    @show localnames(sheet)
+                    #@show localnames(sheet)
                     warn("no data in $(fname)")
                     continue
                 end

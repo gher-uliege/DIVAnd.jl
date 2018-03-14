@@ -302,7 +302,7 @@ Create the relative correlation length-scale field `RL` based on the bathymetry
 scale is close to zero if the relative bathymetry gradients (|∇h|/h) are smaller
  than the length-scale `L` (in consistent units as `pmn`).
 
-R_L = 1 / (1 + L |∇h| / h2)
+R_L = 1 / (1 + L |∇h| / max(h2,hmin))
 
 Per default `h2` is equal to `h`. The depth `h` must be positive. `hmin` must 
 have the same units as h (usually meters).
