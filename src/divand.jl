@@ -375,6 +375,7 @@ include("divand_factorize.jl");
 include("divand_solve.jl");
 include("divand_metric.jl");
 include("divand_constr_advec.jl");
+include("divand_constr_fluxes.jl");
 include("divandjog.jl");
 include("divandrun.jl");
 include("divandgo.jl");

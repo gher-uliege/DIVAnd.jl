@@ -125,7 +125,10 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    alphabc = 1.0,
                    scale_len = true,
                    btrunc=[],
-				   MEMTOFIT=16.
+				   MEMTOFIT=16.,
+				   topographyforfluxes = (),
+				   fluxes = (),
+				   epsfluxes = 0
                    )
 
     pmn,xi,len = divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
@@ -160,7 +163,11 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     # add advection constraint to cost function
     if !isempty(velocity)
-        s = divand_addc(s,divand_constr_advec(s,velocity));
+	   s = divand_addc(s,divand_constr_advec(s,velocity));
+	end
+	
+	if !isempty(topographyforfluxes)
+		s = divand_addc(s,divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin));
     end
 
     # add all additional constrains
