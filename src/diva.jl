@@ -45,10 +45,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
         # use mask in the following and not mask2
     end
             
-
     sz = size(mask)
-    #figure(),pcolor(Float64.(mask)'),figure()
-    @show mask[1,1,1]
     
     # change the depth of the observation
     if zlevel == :floor       
