@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.Vocab.CFVocab",
     "category": "type",
-    "text": "collection = Vocab.CFVocab(url)\n\nCreate a Dict-like object represeting the NetCDF CF Standard Name vocabulary. If the url is not provided then current CF Standard Name list http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml is used. Individual standard names are retirved by indexing which return an object of the type CFEntry:\n\ncollection = Vocab.CFVocab()\nentry = collection[\"sea_water_temperature\"]\n\n\n\n"
+    "text": "collection = Vocab.CFVocab()\ncollection = Vocab.CFVocab(url = url)\n\nCreate a Dict-like object represeting the NetCDF CF Standard Name vocabulary. If the url is not provided then current CF Standard Name list http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml is used. Individual standard names are retirved by indexing which return an object of the type CFEntry:\n\ncollection = Vocab.CFVocab()\nentry = collection[\"sea_water_temperature\"]\n\n\n\n"
 },
 
 {
