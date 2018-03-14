@@ -15,11 +15,16 @@ project = "SeaDataCloud"
 
 xmlfilename = "test.xml"
 
-# file CDI-list-export.zip is available at:
-# download("http://emodnet-chemistry.maris2.nl/download/export.zip","CDI-list-export.zip")
-
 cdilist = joinpath(basedir,"CDI-list-export.zip")
-cdilist = joinpath(basedir,"export.csv")
+
+# using the unzipped file is usually faster
+#cdilist = joinpath(basedir,"export.csv")
+
+if !isfile(cdilist)
+    # file CDI-list-export.zip is available at:
+    download("http://emodnet-chemistry.maris2.nl/download/export.zip",cdilist)
+end
+
 
 divand.divadoxml(filepath,varname,project,cdilist,xmlfilename,
           ignore_errors = ignore_errors)
