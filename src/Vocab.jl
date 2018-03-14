@@ -28,7 +28,8 @@ end
 
 
 """
-    collection = Vocab.CFVocab(url)
+    collection = Vocab.CFVocab()
+    collection = Vocab.CFVocab(url = url)
 
 Create a Dict-like object represeting the NetCDF CF Standard Name vocabulary.
 If the `url` is not provided then current CF Standard Name list
@@ -42,7 +43,7 @@ entry = collection["sea_water_temperature"]
 
 
 """
-function CFVocab(url = CFStandardNameURL)
+function CFVocab(; url = CFStandardNameURL)
     r = Requests.get(url)
     xdoc = EzXML.parsexml(readstring(r))
     return CFVocab(xdoc)
