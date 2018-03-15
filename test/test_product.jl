@@ -41,7 +41,7 @@ ids[4:end] = "101-125"
 dx = dy = 0.5
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
-depthr = [0.,20.,50.]
+depthr = [0.,20.]
 epsilon2 = 0.01
 
 
@@ -52,7 +52,7 @@ leny = fill(200_000,sz)
 lenz = [10+depthr[k]/15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
 
 @show mean(lenz)
-years = 1993:1994
+years = 1993:1993
 
 year_window = 10
 
