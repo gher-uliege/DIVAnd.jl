@@ -1,7 +1,33 @@
 """
-zlevel :surface or :floor
-mask: true of sea points
+    diva3d(xi,x,value,epsilon2,len,filename,varname)
+
+Create a 3D analysis (or a series of 3D analyses) with DIVAnd using the 
+observations `value` (vector) at the locations `x` (tuple of vector) onto
+the regular grid defined by the vectors `xi` using the scaled obs. error 
+variance  `epsilon2` and the correlation length `len`. The result will be saved in the 
+NetCDF file `filename` under the variable `varname`.
+
+Optional input arguments:
+
+* `bathname`: path to the NetCDF bathymetry (default ../../divand-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
+* `bathisglobal`: true (default) is the bahtymetry is a global data set
+* `plotres`: Call-back routine for plotting ((timeindex,sel,fit,erri) -> nothing)
+* `timeorigin`: Time origin (default DateTime(1900,1,1,0,0,0))
+* `moddim`: modulo for cyclic dimension (vector with n elements).
+     Zero is used for non-cyclic dimensions. Halo points should
+     not be included for cyclic dimensions. For example if the first dimension
+     is cyclic, then the grid point corresponding to `mask[1,j]` should be
+     between `mask[end,1]` (left neighbor) and `mask[2,j]` (right neighbor). The default is [0,0,0],
+* `zlevel`: :surface (default) for surface analysis and :floor for analysis from the bottom floor
+* `ncvarattrib`: Dict of NetCDF variable attributes
+* `ncglobalattrib`: Dict of NetCDF global attributes
+* `transform`: Anormphosis transformation function (default: `Anam.notransform()`)
+* `fitcorrlen`: true of the correlation length is determined from the observation (default `false`)
+* `distfun`: function to compute the distance (default `(xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1])`)
+* `mask`: if different from nothing, then this mask overrride land-sea mask based on the bathymetry (default `nothing`)
+* `background`: if different form, then this parameter allows to load the background from a call-back function (default `nothing`)
 """
+
 function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data"),
                 bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc"),

@@ -449,6 +449,7 @@ include("fit.jl");
 
 include("utils.jl");
 
+include("Quadtrees.jl");
 
 
 export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi

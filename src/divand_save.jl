@@ -38,8 +38,7 @@ Save the result of the analysis in a NetCDF file .
   * `ncglobalattrib`: a dictionary with the global attributes
   * `ncvarattrib`: a dictionary with the variable attributes
   * `relerr`: relative error
-  * `timeorigin`: time origin for the time units attribute (default is
-1900-01-01 00:00:00)
+  * `timeorigin`: time origin for the time units attribute (default is 1900-01-01 00:00:00)
 """
 
 

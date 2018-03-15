@@ -105,10 +105,13 @@ end
 
 
 """
+     weights = weight_RtimesOne(x,len)
+
 Compute the weight of the observations at location `x` to reduce the influence 
 of locally clustered data.  `x` is a tuple with n elements. Every element 
-represents a coordinate of the observations.
-`len` is the correlation length.
+represents a coordinate of the observations. `len` is a tuple of arrays
+representing the correlation length. `len[i]` is the correlation length in the 
+i-th dimension.
 """
 
 function weight_RtimesOne(x::NTuple{ndim,Vector{T}},len) where T where ndim

@@ -1,8 +1,8 @@
 """
-Computes the generalized residual yo- H xa  using the analysis on the grid fi and the solution structure s
+    dataresidual = divand_residual(s,fi)
 
-dataresidual = divand_residual(s,fi);
-
+Computes the generalized residual yo - H xa  using the analysis on the grid 
+`fi` and the solution structure `s`.
 """
 
 

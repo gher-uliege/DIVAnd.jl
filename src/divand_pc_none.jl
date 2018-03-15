@@ -1,7 +1,5 @@
 """
-No preconditioner is used.
-
-fun = divand_pc_none(iB,H,R)
+    fun = divand_pc_none(iB,H,R)
 
 Dummy function for requiring that no preconditioner is used in divand.
 

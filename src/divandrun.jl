@@ -49,8 +49,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. Halo points should
      not be included for cyclic dimensions. For example if the first dimension
-     is cyclic, then the grid point corresponding to mask(1,j) should be
-     between mask(end,1) (left neighbor) and mask(2,j) (right neighbor)
+     is cyclic, then the grid point corresponding to `mask[1,j]` should be
+     between `mask[end,1]` (left neighbor) and `mask[2,j]` (right neighbor)
 
 * `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.

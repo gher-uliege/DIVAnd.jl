@@ -187,16 +187,11 @@ function matfun_stagger(sz1,m,cyclic = false)
 end
 
 """
-Operator for trimming.
-
-T = matfun_trim(sz1,m)
+    T = matfun_trim(sz1,m)
 
 Create an operator which trim first and last row (or column) in
-The field is a "collapsed" matrix of the size sz1.
-
-Input:
-  sz1: size of rhs
-  m: dimension to trim
+The field is a "collapsed" matrix of the size `sz1`. `m` is the dimension 
+to trim.
 """
 
 function matfun_trim(sz1,m)
