@@ -6,7 +6,6 @@ Computes the cross validation estimator
 where the ``\\hat{d}`` is the analysis not using a data point.
 """
 
-
 function divand_cvestimator(s,residual)
     # Corrected to take into account only points in domain
 

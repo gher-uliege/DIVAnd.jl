@@ -2,7 +2,6 @@ module Quadtrees
 
 using Base.Test
 import Base.length
-using PyPlot
 
 """
 quadtree (of the higher-dimensional equivalent)
@@ -346,18 +345,18 @@ function withincount!(qt::QT{T,TA,N}, min, max, count) where {T,TA,N}
 end
 
 
-function qplot(qt::QT)
-    plot([qt.min[1], qt.max[1], qt.max[1], qt.min[1], qt.min[1]],
-         [qt.min[2], qt.min[2], qt.max[2], qt.max[2], qt.min[2]])
-end
+# function qplot(qt::QT)
+#     plot([qt.min[1], qt.max[1], qt.max[1], qt.min[1], qt.min[1]],
+#          [qt.min[2], qt.min[2], qt.max[2], qt.max[2], qt.min[2]])
+# end
 
-function rplot(qt::QT)
-    qplot(qt)
-    for child in qt.children
-        #@show child
-        rplot(child)
-    end
-end
+# function rplot(qt::QT)
+#     qplot(qt)
+#     for child in qt.children
+#         #@show child
+#         rplot(child)
+#     end
+# end
 
 function Base.show(io::IO,qt::QT; indent = "  ")
     if isleaf(qt)
