@@ -77,15 +77,16 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     #fi=SharedArray(Float64,size(mask));
     #erri=SharedArray(Float64,size(mask));
     fi=SharedArray{Float32}(size(mask));
-	fi[:]=0.0
+	fi[:]=0
 	if errormethod==:none
         erri=eye(1)
         else
-	    erri=
-		erri[:]=1.0;
+	    erri=SharedArray{Float32}(size(mask));
+		erri[:]=1.0
     end
 # Add now analysis at data points for further output
     fidata=SharedArray{Float32}(size(f)[1])
+	fidata[:]=0
 
     @sync @parallel for iwin=1:size(windowlist)[1]
 
@@ -291,7 +292,7 @@ end
 fi=divand_filter3(fi,NaN,2)
 erri=divand_filter3(erri,NaN,3)
 
-@show size(fidata)
+#@show size(fidata)
 return fi,erri,fidata
 
 
