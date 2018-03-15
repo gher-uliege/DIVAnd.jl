@@ -21,10 +21,14 @@ function divand_GCVKiiobs(s,nr=30;FIELD=())
 	#
 	
 	if nr<0
-	
-	Kii=s.yo'*((s.H)*statevector_pack(s.sv,(FIELD,)))/(s.yo'*s.yo)
 	nrealdata=sum(1-s.obsout);
     ndata=size(s.obsout)[1];
+	
+	#@show nrealdata,ndata,size(s.obsconstrain.yo)
+	
+	#@show size(s.yo),size(((s.H)*statevector_pack(s.sv,(FIELD,))))
+	Kii=s.yo'*((s.H)*statevector_pack(s.sv,(FIELD,)))/(s.yo'*s.yo)
+	
     if nrealdata==0
         Kii=0.0;
     else
