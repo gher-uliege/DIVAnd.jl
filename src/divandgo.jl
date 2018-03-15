@@ -242,7 +242,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 			fidata[winindex[winindexsol]]=finwinsol
 			
 			if doqc
-			 finwinqc=divand_qc(fw,s,QCMETHOD)
+			 warn("QC not possible in jogging, using residuals")
+			 finwinqc=divand_qc(fw,s,5)
 			 xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
 			 qcdata[winindex[winindexsol]]=finwinsol
 			end
