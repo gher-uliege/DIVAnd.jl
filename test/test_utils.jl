@@ -105,3 +105,11 @@ f = 2. * X1 + X2
 @test divand.interp((X1,X2),f,([3.],[1.])) ≈ [7.]
 @test divand.interp((x1,x2),f,([3.],[1.])) ≈ [7.]
 
+
+# weigts of observations
+
+# two observation close-by should have less weight than the 3rd observation
+# far away
+weight = divand.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
+@test weight[1] < weight[3]
+
