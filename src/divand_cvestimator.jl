@@ -1,8 +1,9 @@
 """
     theta = divand_cvestimator(s,residual)
 
-Computes the cross validation estimator (d-hat(d))' inv(R) (d-hat(d)) / ( 1' inv(R) 1)
-where the hat value is the analysis not using a data point.
+Computes the cross validation estimator
+``(d-\\hat{d})^T \\mathbf R^{-1} (d-\\hat{d}) / ( \\mathbf 1^T \\mathbf R^{-1} \\mathbf 1)``
+where the ``\\hat{d}`` is the analysis not using a data point.
 """
 
 
