@@ -47,9 +47,13 @@ vscale=0
 # fi is the interpolated field
 @time fiexOLD,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
-@time fiOLD,errOLD = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
+residue=divand_residualobs(s,fiexOLD)
+
+@time fiOLD,errOLD,residueGO = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
 
+@show size(residue),size(residueGO)
+@show norm(residue-residueGO)
 
 figure("P1")
 
@@ -75,7 +79,13 @@ info("Saved figure as " * figname)
 
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
-@time fi,erri = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+residue=divand_residualobs(s,fiex)
+
+@time fi,erri,residueGO = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+
+@show size(residue),size(residueGO)
+
+@show norm(residue-residueGO)
 
 figure("Pp")
 
@@ -114,6 +124,9 @@ colorbar()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_3.png")));
 savefig(figname)
 info("Saved figure as " * figname)
+
+figure
+scatter(residue,residueGO)
 
 # Copyright (C) 2014, 2018 Alexander Barth         <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>

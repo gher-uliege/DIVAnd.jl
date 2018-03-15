@@ -77,11 +77,15 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     #fi=SharedArray(Float64,size(mask));
     #erri=SharedArray(Float64,size(mask));
     fi=SharedArray{Float32}(size(mask));
+	fi[:]=0.0
 	if errormethod==:none
         erri=eye(1)
         else
-	    erri=SharedArray{Float32}(size(mask));
+	    erri=
+		erri[:]=1.0;
     end
+# Add now analysis at data points for further output
+    fidata=SharedArray{Float32}(size(f)[1])
 
     @sync @parallel for iwin=1:size(windowlist)[1]
 
@@ -187,26 +191,44 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                 otherargsw=vcat(otherargsw,(:alphabc,1))
             end
         end
+		# Work only on data which fall into bounding box
+		
+		xinwin,finwin,winindex,epsinwin=divand_datainboundingbox(xiw,x,f;Rmatrix=epsilon2)
+		
+		 # The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
+		if size(winindex)[1]>0
+		 
+		 # work only when data are there
+		
 
         # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
         # Verify if a direct solver was requested from the demain decomposer
         if sum(csteps)>0
-		    fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
+		    fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin,csteps,lmask;alphapc=alphanormpc, otherargsw... )
             fi[windowpointsstore...]= fw[windowpointssol...];
+			# Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
+			finwindata=divand_residualobs(s,fw)
+			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
+			fidata[winindex[winindexsol]]=finwinsol
+			
+			
 			if errormethod==:cpme
 			    fw=0
                 s=0
                 gc()
                 # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
-                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
+                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
             end
             # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
         else
             # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
-            fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
+            fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw...)
 			fi[windowpointsstore...]= fw[windowpointssol...];
+			finwindata=divand_residualobs(s,fw)
+			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
+			fidata[winindex[winindexsol]]=finwinsol
             if errormethod==:cpme
-                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
+                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw... )
             end
         end
 
@@ -259,6 +281,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 			else
 			erri[windowpointsstore...]=errw[windowpointssol...];
 		end
+		
+	end
 
 end
 
@@ -267,8 +291,8 @@ end
 fi=divand_filter3(fi,NaN,2)
 erri=divand_filter3(erri,NaN,3)
 
-
-return fi,erri
+@show size(fidata)
+return fi,erri,fidata
 
 
 
