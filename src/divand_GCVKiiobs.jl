@@ -1,5 +1,5 @@
 """
-Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysisand it structure s
+Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysis and it structure s
 
 Only using real data locations
 
@@ -9,13 +9,33 @@ Kii = divand_GCVKiiobs(s);
 """
 
 
-function divand_GCVKiiobs(s,nr=30)
+function divand_GCVKiiobs(s,nr=30;FIELD=())
 
     #the second, optional argument is the number of random vectors nr used for the estimate
 
 
     H = s.obsconstrain.H;
     R = s.obsconstrain.R;
+	
+	# if nr <0 use the data and analysis itself as random vector and KZ. Allows to use the function when s.P is not available
+	#
+	
+	if nr<0
+	
+	Kii=s.yo'*((s.H)*statevector_pack(s.sv,(FIELD,)))/(s.yo'*s.yo)
+	nrealdata=sum(1-s.obsout);
+    ndata=size(s.obsout)[1];
+    if nrealdata==0
+        Kii=0.0;
+    else
+        factorc=ndata/nrealdata;
+        # Now take average of the nr different estimates,
+        Kii=factorc*Kii;
+    end
+	return Kii
+	
+	end
+	
 
     #if optimisation is to be used, make sure to use the same reference random points
     srand(nr)

@@ -72,7 +72,7 @@ function divand_qc(fi, s, method=0)
 	
 	if mymethod==5
 
-        qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-0));
+        qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s,-1;FIELD=fi)));
         return qcval
     end
 	
