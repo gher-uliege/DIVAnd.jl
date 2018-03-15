@@ -57,8 +57,8 @@ function divand_cpme_go(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
 
     
-        cpme =  divandgo(mask,pmn,xi,x,ones(size(f)),len,epsilon2,:none; otherargs...);
-		
+        cpme,bidon,zut =  divandgo(mask,pmn,xi,x,ones(size(f)),len,epsilon2,:none; otherargs...);
+		@show size(cpme),size(bidon),size(zut)
         cpme=errorscale .* max.(-cpme.+1,0)
 
     return cpme

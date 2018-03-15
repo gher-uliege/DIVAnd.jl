@@ -58,6 +58,14 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         RTIMESONESCALES=kwargs_dict[:RTIMESONESCALES]
 		dothinning=true
     end
+	
+	QCMETHOD=()
+	doqc=false
+	if haskey(kwargs_dict,:QCMETHOD)
+        QCMETHOD=kwargs_dict[:QCMETHOD]
+		doqc=true
+    end
+	
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
@@ -91,6 +99,13 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 	    erri=SharedArray{Float32}(size(mask));
 		erri[:]=1.0
     end
+	
+	qcdata=()
+	if doqc
+	  qcdata=SharedArray{Float32}(size(f)[1])
+	  qcdata[:]=0
+	end
+	
 # Add now analysis at data points for further output
     fidata=SharedArray{Float32}(size(f)[1])
 	fidata[:]=0
@@ -203,6 +218,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 		
 		xinwin,finwin,winindex,epsinwin=divand_datainboundingbox(xiw,x,f;Rmatrix=epsilon2)
 		
+		if dothinning
+		
+		  epsinwin=epsinwin./weight_RtimesOne(xinwin,RTIMESONESCALES)
+		
+		end
+		
 		 # The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
 		if size(winindex)[1]>0
 		 
@@ -215,9 +236,17 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 		    fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin,csteps,lmask;alphapc=alphanormpc, otherargsw... )
             fi[windowpointsstore...]= fw[windowpointssol...];
 			# Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
+			
 			finwindata=divand_residualobs(s,fw)
 			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
 			fidata[winindex[winindexsol]]=finwinsol
+			
+			if doqc
+			 finwinqc=divand_qc(fw,s,QCMETHOD)
+			 xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
+			 qcdata[winindex[winindexsol]]=finwinsol
+			end
+			
 			
 			
 			if errormethod==:cpme
@@ -235,6 +264,13 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 			finwindata=divand_residualobs(s,fw)
 			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
 			fidata[winindex[winindexsol]]=finwinsol
+			
+			if doqc
+			 finwinqc=divand_qc(fw,s,QCMETHOD)
+			 xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
+			 qcdata[winindex[winindexsol]]=finwinsol
+			end
+			
             if errormethod==:cpme
                 errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw... )
             end
@@ -300,7 +336,7 @@ fi=divand_filter3(fi,NaN,2)
 erri=divand_filter3(erri,NaN,3)
 
 #@show size(fidata)
-return fi,erri,fidata
+return fi,erri,fidata,qcdata
 
 
 
