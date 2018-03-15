@@ -128,7 +128,8 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 				   MEMTOFIT=16.,
 				   topographyforfluxes = (),
 				   fluxes = (),
-				   epsfluxes = 0
+				   epsfluxes = 0,
+				   RTIMESONESCALES=()
                    )
 
     pmn,xi,len = divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)

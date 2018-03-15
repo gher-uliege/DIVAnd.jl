@@ -125,7 +125,7 @@ figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_3.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 
-figure
+figure()
 scatter(residue,residueGO)
 
 # Copyright (C) 2014, 2018 Alexander Barth         <a.barth@ulg.ac.be>

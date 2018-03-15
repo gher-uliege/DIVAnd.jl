@@ -51,6 +51,13 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 	if haskey(kwargs_dict,:MEMTOFIT)
         MEMTOFIT=kwargs_dict[:MEMTOFIT]
     end
+	
+	RTIMESONESCALES=()
+	dothinning=false
+	if haskey(kwargs_dict,:RTIMESONESCALES)
+        RTIMESONESCALES=kwargs_dict[:RTIMESONESCALES]
+		dothinning=true
+    end
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
