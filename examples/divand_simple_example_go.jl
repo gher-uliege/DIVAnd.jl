@@ -14,6 +14,8 @@ srand(1234)
 nobs=100
 x = 0.01+0.98*rand(nobs);
 y = 0.01+0.98*rand(nobs);
+x = -0.1+1.2*rand(nobs);
+y = -0.1+1.2*rand(nobs);
 f = sin.(x*6) .* cos.(y*6);
 #f=-1+2*x
 # x=[0.5,0.75]
@@ -28,6 +30,8 @@ fref = sin.(xi*6) .* cos.(yi*6);
 
 # all points are valid points
 mask = trues(xi);
+
+mask[300:600,400:600]=false
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
@@ -47,9 +51,13 @@ vscale=0
 # fi is the interpolated field
 @time fiexOLD,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
-@time fiOLD,errOLD = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
+residue=divand_residualobs(s,fiexOLD)
+
+@time fiOLD,errOLD,residueGO = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
 
 
+@show size(residue),size(residueGO)
+@show norm(residue-residueGO)
 
 figure("P1")
 
@@ -75,7 +83,13 @@ info("Saved figure as " * figname)
 
 @time fiex,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
-@time fi,erri = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+residue=divand_residualobs(s,fiex)
+
+@time fi,erri,residueGO = divandgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+
+@show size(residue),size(residueGO)
+
+@show norm(residue-residueGO)
 
 figure("Pp")
 
@@ -114,6 +128,9 @@ colorbar()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_3.png")));
 savefig(figname)
 info("Saved figure as " * figname)
+
+figure()
+scatter(residue,residueGO)
 
 # Copyright (C) 2014, 2018 Alexander Barth         <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>

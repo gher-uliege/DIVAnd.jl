@@ -18,7 +18,9 @@ it also include the definition of the errormethod
 # Output:
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
-
+* `fidata`: array of residuals at data points. For points not on the grid or on land: NaN
+* `qcdata`: if QCMETHOD is provided, the array contains the quality flags. For points on land or not on the grid: 0
+* `scalefactore`: Desroziers scale factor for epsilon2
 """
 
 
@@ -51,6 +53,21 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 	if haskey(kwargs_dict,:MEMTOFIT)
         MEMTOFIT=kwargs_dict[:MEMTOFIT]
     end
+	
+	RTIMESONESCALES=()
+	dothinning=false
+	if haskey(kwargs_dict,:RTIMESONESCALES)
+        RTIMESONESCALES=kwargs_dict[:RTIMESONESCALES]
+		dothinning=true
+    end
+	
+	QCMETHOD=()
+	doqc=false
+	if haskey(kwargs_dict,:QCMETHOD)
+        QCMETHOD=kwargs_dict[:QCMETHOD]
+		doqc=true
+    end
+	
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to divandrun
@@ -77,11 +94,23 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     #fi=SharedArray(Float64,size(mask));
     #erri=SharedArray(Float64,size(mask));
     fi=SharedArray{Float32}(size(mask));
+	fi[:]=0
 	if errormethod==:none
         erri=eye(1)
         else
 	    erri=SharedArray{Float32}(size(mask));
+		erri[:]=1.0
     end
+	
+	qcdata=()
+	if doqc
+	  qcdata=SharedArray{Float32}(size(f)[1])
+	  qcdata[:]=0
+	end
+	
+# Add now analysis at data points for further output
+    fidata=SharedArray{Float32}(size(f)[1])
+	fidata[:]=NaN
 
     @sync @parallel for iwin=1:size(windowlist)[1]
 
@@ -187,26 +216,66 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                 otherargsw=vcat(otherargsw,(:alphabc,1))
             end
         end
+		# Work only on data which fall into bounding box
+		
+		xinwin,finwin,winindex,epsinwin=divand_datainboundingbox(xiw,x,f;Rmatrix=epsilon2)
+		
+		if dothinning
+		
+		  epsinwin=epsinwin./weight_RtimesOne(xinwin,RTIMESONESCALES)
+		
+		end
+		
+		 # The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
+		if size(winindex)[1]>0
+		 
+		 # work only when data are there
+		
 
         # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
         # Verify if a direct solver was requested from the demain decomposer
         if sum(csteps)>0
-		    fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2,csteps,lmask;alphapc=alphanormpc, otherargsw... )
+		    fw,s=divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin,csteps,lmask;alphapc=alphanormpc, otherargsw... )
             fi[windowpointsstore...]= fw[windowpointssol...];
+			# Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
+			
+			finwindata=divand_residual(s,fw)
+			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
+			fidata[winindex[winindexsol]]=finwinsol
+			
+			if doqc
+			 warn("QC not fully implemented in jogging, using rough estimate of Kii")
+			 finwinqc=divand_qc(fw,s,5)
+			 xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
+			 qcdata[winindex[winindexsol]]=finwinsol
+			end
+			
+			
+			
 			if errormethod==:cpme
 			    fw=0
                 s=0
                 gc()
                 # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
-                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
+                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin;csteps=csteps,lmask=lmask,alphapc=alphanormpc, otherargsw... )
             end
             # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
         else
             # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
-            fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw...)
+            fw,s=divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw...)
 			fi[windowpointsstore...]= fw[windowpointssol...];
+			finwindata=divand_residualobs(s,fw)
+			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
+			fidata[winindex[winindexsol]]=finwinsol
+			
+			if doqc
+			 finwinqc=divand_qc(fw,s,QCMETHOD)
+			 xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
+			 qcdata[winindex[winindexsol]]=finwinsol
+			end
+			
             if errormethod==:cpme
-                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,x,f,Labsw,epsilon2; otherargsw... )
+                errw=divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw... )
             end
         end
 
@@ -259,6 +328,8 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 			else
 			erri[windowpointsstore...]=errw[windowpointssol...];
 		end
+		
+	end
 
 end
 
@@ -267,8 +338,29 @@ end
 fi=divand_filter3(fi,NaN,2)
 erri=divand_filter3(erri,NaN,3)
 
+#@show size(fidata)
+# Add desroziers type of correction
+        ongrid=find(~isnan(x) for x in fidata)
+		
+        #d0d=dot((1-s.obsout).*(s.yo),(s.yo));
+		d0d=dot(f[ongrid],f[ongrid])
+        #d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
+        d0dmd1d=d0d-dot(fidata[ongrid],f[ongrid])
+        ll1= d0d/(d0dmd1d)-1;
+        eps1=1/ll1;
+       
+	   if ndims(epsilon2) == 0
+            eps2=epsilon2;
+        elseif ndims(epsilon2) == 1
+            eps2 = mean(epsilon2);
+        else
+            eps2 = mean(diag(epsilon2));
+        end
+       
 
-return fi,erri
+
+
+return fi,erri,fidata,qcdata,eps1/eps2
 
 
 

@@ -5,8 +5,10 @@ using divand
 using PyPlot
 
 # observations
-x = rand(300);
-y = rand(300);
+srand(1234)
+# some points outside of box to check how this is dealt with
+x = -0.1+1.2*rand(300);
+y = -0.1*1.2*rand(300);
 
 # Put two points in specific locations
 
