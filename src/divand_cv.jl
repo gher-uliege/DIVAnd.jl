@@ -1,17 +1,11 @@
 """
 
-    bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,...);
-
-Calculate an estimate of the optimal value of epsilon2. This routine 
-performs an n-dimensional variational analysis of the observations `f` located at
-the coordinates `x`. The output `factors` represent multipliction factors applied to epsilon2 which have been tested and the cvvalues the corresponding cross validation values.
-
-The epsilon2 provided should be close the real one as the tests will be performed around
+    bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method;...);
 
 
-The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
-# Input:
+# Input: Same as for `divandrun` with three more parameters `nl`,`ne` and `method`
+
 * `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
@@ -31,18 +25,24 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
-* `nl`: number of testing points around the current value of l. One means an addition point on both sides of the current L. Zero is allowed and means the parameter is not optimised.
+* `nl`: number of testing points around the current value of L. `1` means one additional point on both sides of the current L. `0` is allowed and means the parameter is not optimised.
 
-* `ne`: number of testing points around the current value of epsilon2. Zero is allowed as for nl
+* `ne`: number of testing points around the current value of epsilon2. `0` is allowed as for `nl`
 
-# Optional input arguments specified as keyword arguments also as for divand
+* `method`: cross validation estimator method
+  1: full CV 
+  2: sampled CV
+  3: GCV
+  0: automatic choice between the three possible ones, default value
+
+* Optional input arguments specified via keyword arguments are the same as for `divand`
 
 
 # Output:
 
-* `bestfactorl`: best estimate of the multipliocation factor to apply to len
+* `bestfactorl`: best estimate of the multiplication factor to apply to len
 
-* `bestfactore`: best estimate of the multipliocation factor to apply to epsilon2
+* `bestfactore`: best estimate of the multiplication factor to apply to epsilon2
 
 * `cvvales` : the cross validation values calculated
 
@@ -50,9 +50,18 @@ The analysus is defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `cvinter` : interpolated cv values for final optimisation
 
-* `linter` : values of the factors at which the interpolation was done (in log scale)
+* `X2Data, Y2Data` : coordinates of sampled cross validation in `L,epsilon2` space . Normally only used for debugging or plotting
 
-* `epsilon2inter` : values of the factors at which the interpolation was done (in log scale)
+* `Xi2D, Yi2D` : coordinates of interpolated estimator . Normally only used for debugging or plotting
+
+
+
+
+The output `bestfactorl` and `bestfactore` represent multiplication factors which should be applied to `L` and `epsilon2`.
+
+
+The `len` and `epsilon2` provided should be close the real one as the tests will be performed around.
+
 
 """
 
