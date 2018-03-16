@@ -57,6 +57,8 @@ fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 qcval=divand_qc(fi,s,1)
 
+@show size(f),size(qcval)
+
 # Find suspect points
 
 sp=find(x-> x.>10,qcval)

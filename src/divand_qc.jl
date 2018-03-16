@@ -37,6 +37,7 @@ function divand_qc(fi, s, method=0)
 
     residual=(1-s.obsout).*divand_residualobs(s,fi);
 
+	
 
     if method==0
 
