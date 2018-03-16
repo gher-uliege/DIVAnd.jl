@@ -137,7 +137,7 @@ metadata = OrderedDict(
 
 # edit the bathymetry
 mask,(pm,pn,po),(xi,yi,zi) = divand.domain(bathname,bathisglobal,lonr,latr,depthr)
-mask[3,3,3] = false
+mask[3,3,1] = false
 
 ncglobalattrib,ncvarattrib = divand.SDNMetadata(metadata,filename,varname,lonr,latr)
 
@@ -176,7 +176,7 @@ data,header = readdlm(errname,'\t'; header = true)
 @test data[2] == "missing"
 
 # check if editing of the mask was successful
-@test ismissing(Dataset(filename)["Salinity"][3,3,3,1])
+@test ismissing(Dataset(filename)["Salinity"][3,3,1,1])
 
 xmlstr = readstring(open(xmlfilename));
 

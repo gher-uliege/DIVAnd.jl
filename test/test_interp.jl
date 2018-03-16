@@ -16,13 +16,13 @@ time = ds["time"][:].data
 v = ds["Salinity"]
 
 i = 3
-j = 3
+j = 2
 k = 2
 n = 2
 
 loni = [lon[i]]
 lati = [lat[j] ]
-depthi = [depth[k]]
+depthi = [10.]
 timei = [time[n]]
 
 
@@ -34,13 +34,17 @@ vn[:] = map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
 
 fi = divand.interp(x,vn,xi)
 
-@test fi ≈ [v[i,j,k,n]]
+
+firef = [(v[i,j,1,n] + v[i,j,2,n])/2]
+@test fi ≈ firef
+
+
 
 
 
 background = divand.backgroundfile(fname,varname)
-vn2,fi = background(xi,n,[v[i,j,k,n]],divand.Anam.notransform()[1])
+vn2,fi = background(xi,n,firef,divand.Anam.notransform()[1])
 
-@test fi ≈ [0]
+@test fi ≈ [0] atol=1e-5
 
 
