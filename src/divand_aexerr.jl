@@ -1,13 +1,10 @@
 """
-Compute a variational analysis of arbitrarily located observations to calculate the almost exact error and the analysis
+    aexerr,Bref,fa,sa = divand_aexerr(mask,pmn,xi,x,f,len,epsilon2;...);
 
-cpme = divand_aexerr(mask,pmn,xi,x,f,len,epsilon2,...);
 
-Perform an n-dimensional variational analysis of the observations `f` located at
-the coordinates `x`. The array `cpme` represent the error field at the grid
-defined by the coordinates `xi` and the scales factors `pmn`.
 
-# Input:
+# Input: same as for divandrun
+
 * `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
@@ -34,11 +31,14 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `aexerr`: the almost exact error
 
-* `Bjmb`: the background error
+* `Bref`: the background error for error scaling by background `aexerr./Bref`
 
-* `fa`: the analysis (with low impact fake data)
+* `fa`: the analysis (with low impact fake data): DO NOT USE UNLESS YOU KNOW WHAT YOU ARE DOING
 
 * `sa`: the associated structure
+
+Compute a variational analysis of arbitrarily located observations to calculate the almost exact error 
+
 """
 
 
