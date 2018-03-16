@@ -18,7 +18,9 @@ it also include the definition of the errormethod
 # Output:
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
-
+* `fidata`: array of residuals at data points. For points not on the grid or on land: NaN
+* `qcdata`: if QCMETHOD is provided, the array contains the quality flags. For points on land or not on the grid: 0
+* `scalefactore`: Desroziers scale factor for epsilon2
 """
 
 
@@ -108,7 +110,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 	
 # Add now analysis at data points for further output
     fidata=SharedArray{Float32}(size(f)[1])
-	fidata[:]=0
+	fidata[:]=NaN
 
     @sync @parallel for iwin=1:size(windowlist)[1]
 
@@ -237,12 +239,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
             fi[windowpointsstore...]= fw[windowpointssol...];
 			# Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 			
-			finwindata=divand_residualobs(s,fw)
+			finwindata=divand_residual(s,fw)
 			xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
 			fidata[winindex[winindexsol]]=finwinsol
 			
 			if doqc
-			 warn("QC not possible in jogging, using rough estimate of Kii")
+			 warn("QC not fully implemented in jogging, using rough estimate of Kii")
 			 finwinqc=divand_qc(fw,s,5)
 			 xinwinsol,finwinsol,winindexsol=divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
 			 qcdata[winindex[winindexsol]]=finwinsol
@@ -337,7 +339,28 @@ fi=divand_filter3(fi,NaN,2)
 erri=divand_filter3(erri,NaN,3)
 
 #@show size(fidata)
-return fi,erri,fidata,qcdata
+# Add desroziers type of correction
+        ongrid=find(~isnan(x) for x in fidata)
+		
+        #d0d=dot((1-s.obsout).*(s.yo),(s.yo));
+		d0d=dot(f[ongrid],f[ongrid])
+        #d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
+        d0dmd1d=d0d-dot(fidata[ongrid],f[ongrid])
+        ll1= d0d/(d0dmd1d)-1;
+        eps1=1/ll1;
+       
+	   if ndims(epsilon2) == 0
+            eps2=epsilon2;
+        elseif ndims(epsilon2) == 1
+            eps2 = mean(epsilon2);
+        else
+            eps2 = mean(diag(epsilon2));
+        end
+       
+
+
+
+return fi,erri,fidata,qcdata,eps1/eps2
 
 
 

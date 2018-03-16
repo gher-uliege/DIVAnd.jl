@@ -14,6 +14,8 @@ srand(1234)
 nobs=100
 x = 0.01+0.98*rand(nobs);
 y = 0.01+0.98*rand(nobs);
+x = -0.1+1.2*rand(nobs);
+y = -0.1+1.2*rand(nobs);
 f = sin.(x*6) .* cos.(y*6);
 #f=-1+2*x
 # x=[0.5,0.75]
@@ -28,6 +30,8 @@ fref = sin.(xi*6) .* cos.(yi*6);
 
 # all points are valid points
 mask = trues(xi);
+
+mask[300:600,400:600]=false
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
