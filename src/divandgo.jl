@@ -1,26 +1,29 @@
 """
-Compute a variational analysis of arbitrarily located observations.
 
-fi,s = divandgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);
+    fi, erri, residuals, qcvalues, scalefactore = divandgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);
 
-Perform an n-dimensional variational analysis of the observations `f` located at
-the coordinates `x`. The array `fi` represent the interpolated field at the grid
-defined by the coordinates `xi` and the scales factors `pmn`.
+
 
 # Input:
-
-As for divandrun but as a higher level routine which will automatically create windowing etc
-it also include the definition of the errormethod
-
-* errormethod : :cpme (clever poormans method), :none or :exact
-
+*  Same arguments as divandrun with in addition
+*  `errormethod` :   you have the choice between `:cpme` (clever poorman's method, default method if parameter not provided), `:none` or `:exact` (only available if windowed analysis are done with divandrun)
+*  `MEMTOFIT=`: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)
+*  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details 
+*  `QCMETHOD=` : if you provide a qc method parameter, quality flags are calculated. See `divand_cv` for details
 
 # Output:
 *  `fi`: the analysed field
-*  `s`: structure with an array `s.P` representing the analysed error covariance
-* `fidata`: array of residuals at data points. For points not on the grid or on land: NaN
-* `qcdata`: if QCMETHOD is provided, the array contains the quality flags. For points on land or not on the grid: 0
+*  `erri`: relative error field on the same grid as fi. () if errormethod is fixed to `:none`
+* `residuals`: array of residuals at data points. For points not on the grid or on land: `NaN`
+* `qcvalues`: if `QCMETHOD=` is provided, the output array contains the quality flags otherwise qcvalues is (). For points on land or not on the grid: 0
 * `scalefactore`: Desroziers scale factor for epsilon2
+
+Perform an n-dimensional variational analysis of the observations `f` located at
+the coordinates `x`. The array `fi` represent the interpolated field at the grid
+defined by the coordinates `xi` and the scales factors `pmn`. 
+
+IMPORTANT: divandgo is very similar to divandrun and is only interesting to use if divandrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see `addprocs` for example)
+
 """
 
 
@@ -345,7 +348,7 @@ erri=divand_filter3(erri,NaN,3)
         #d0d=dot((1-s.obsout).*(s.yo),(s.yo));
 		d0d=dot(f[ongrid],f[ongrid])
         #d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
-        d0dmd1d=d0d-dot(fidata[ongrid],f[ongrid])
+        d0dmd1d=dot(fidata[ongrid],f[ongrid])
         ll1= d0d/(d0dmd1d)-1;
         eps1=1/ll1;
        

@@ -1,13 +1,11 @@
 """
-Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error
 
-cpme = divand_cpme(mask,pmn,xi,x,f,len,epsilon2,...);
 
-Perform an n-dimensional variational analysis of the observations `f` located at
-the coordinates `x`. The array `cpme` represent the error field at the grid
-defined by the coordinates `xi` and the scales factors `pmn`.
+    cpme = divand_cpme(mask,pmn,xi,x,f,len,epsilon2;...);
 
-# Input:
+
+
+# Input: Same as for `divandrun`
 * `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
@@ -27,12 +25,19 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
+* `keywords` : undocumented for the moment how to use iterative solver with coarser grid as preconditionner. see `divandjog` for `csteps`, `lmask` and `alphapc`parameters
+
 # Optional input arguments specified as keyword arguments also as for divand
 
 
 # Output:
 
 * `cpme`: the clever poor mans error
+
+Perform an n-dimensional variational analysis of the observations `f` located at
+the coordinates `x`. The array `cpme` represent the error field at the grid
+defined by the coordinates `xi` and the scales factors `pmn`. If you cannot run `divandrun` you can use `divandgo` with error field calculation `:cpme`
+
 """
 
 

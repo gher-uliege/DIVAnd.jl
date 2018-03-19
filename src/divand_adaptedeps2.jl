@@ -1,8 +1,18 @@
 """
-Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
-estimate of the R matrix
 
- factor = divand_adaptedeps2(s,fi);
+    factor = divand_adaptedeps2(s,fi);
+
+# Input: 
+* `s`: structure returned by `divandrun`
+* `fi`: analysis returned by `divandrun`
+
+# Output:
+* `factor` : multiplicative factor to apply to epsilon2
+
+
+ Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
+estimate of the R matrix. If you cannot use `divandrun` but use `divandgo`, the latter provides automatically this pamater as result.
+
 
 """
 

@@ -1,16 +1,25 @@
 """
-Compute a variational analysis of arbitrarily located observations to calculate data quality estimators
-
-qcvalues,indexes = divand_qc(fi,s);
 
 
-If the optional argument it describes the method to be used:
+    qcvalues = divand_qc(fi,s,method);
 
-method=1 as for standard cross validation
-method=3 as for GCV
-method=4 with CV estimator to be used outside the routine
+# Input:
 
-use sortperm to find most suspect values
+* `fi` : interpolated field from a `divandrun` execution 
+* `s`: corresponding structure returned by `divand`
+* `method` : optional argument. which describes the method to be used:
+ 1  as for standard cross validation.
+ 3  as for GCV
+ 4  with CV estimator to be used outside the routine
+ 5  Poor man's GCV using data instead of random vector
+ 0  automatic selection of method
+
+
+# Output
+
+* `qcvalues`: quality check values, one for each data point. The higher the value the more suspect a data point is. Absolute values of qcvalues might be not robust when analysis parameters are uncertain. The ranking is however quite robust
+
+If you cannot run `divandrun` but use `divandgo` (which does not provide a structure s at the output), the latter provides `qcvalues` if you call `divandgo` with a keyword parameter `QCMETHOD=`
 
 """
 
@@ -37,6 +46,7 @@ function divand_qc(fi, s, method=0)
 
     residual=(1-s.obsout).*divand_residualobs(s,fi);
 
+	
 
     if method==0
 

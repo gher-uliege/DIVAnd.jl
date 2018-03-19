@@ -1,39 +1,22 @@
 """
 
 
-    cpme = divand_cpme_go(mask,pmn,xi,x,f,len,epsilon2,...);
+    erri = divand_cpme_go(mask,pmn,xi,x,f,len,epsilon2; ...);
 
 
 
 # Input:
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
-
-* `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
-       element represents the scale factor of the corresponding dimension. Its
-       inverse is the local resolution of the grid in a particular dimension.
-
-*  `xi`: tuple with n elements. Every element represents a coordinate
-  of the final grid on which the observations are interpolated
-
-* `x`: tuple with n elements. Every element represents a coordinate of
-  the observations
-
-* `f`: value of the observations *minus* the background estimate (m-by-1 array).
-    (see note)
-
-* `len`: correlation length
-
-* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
-
-# Optional input arguments specified as keyword arguments also as for divand
+*  Same arguments as divandrun with in addition
+*  `MEMTOFIT=`: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)
+*  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details 
 
 
 # Output:
+*  `erri`: relative error field using the clever poor man's error approach. Result on the same grid as fi. `
 
-* `cpme`: the clever poor mans error
 
 
-Compute a variational analysis of arbitrarily located observations to calculate the clever poor man's error. ONLY USE THIS VERSION IF YOU CANNOT RUN DIVANDGO with :cmpe activated (or directly divand_cpme)
+ ONLY USE THIS VERSION IF YOU CANNOT RUN `divandgo` with `:cmpe` activated (or directly `divand_cpme` if you can run `divandrun`)
 
 
 """
