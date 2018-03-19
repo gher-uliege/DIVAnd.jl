@@ -313,6 +313,28 @@ parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454142.) 
 
 
 """
+    v = myparse(T,s)
+
+Parse the string `s` as a type `T`. Unlike Julia's parse function 
+an error message contains the string `s` (which could not be parsed) for 
+debugging.
+"""
+function myparse(T,s)
+    try
+        return parse(T,s)
+    catch err
+        if isa(err,ArgumentError)
+            throw(ArgumentError("unable to parse $(s) as $(T)"))
+        else
+            rethrow(err)        
+        end
+    end
+end
+
+
+
+
+"""
     SDNparse!(col,fillmode,fillvalue,data)
 
 Parse the list of String `col` into the corresponding data type
@@ -339,7 +361,8 @@ function SDNparse!(col,fillmode,fillvalue,data)
             if eltype(data) <: AbstractString
                 data[i] = col[i]
             else
-                data[i] = parse(eltype(data),col[i])
+                data[i] = myparse(eltype(data),col[i])
+                #data[i] = parse(eltype(data),col[i])
             end
         end
     end
