@@ -1,6 +1,9 @@
 using Base.Test
-import Quadtrees
-    @testset "quadtree" begin
+import divand.Quadtrees
+
+Quadtrees = divand.Quadtrees
+
+@testset "quadtree" begin
 
         srand(123)
 
@@ -122,4 +125,4 @@ import Quadtrees
         dup = Quadtrees.checkduplicates((x,y),value,(x[1:2],y[1:2]),value[1:2],[0.1,0.1],0.01)
         @test dup == [[1],[2]]
 
-    end
+end
