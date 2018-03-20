@@ -31,6 +31,7 @@ Inside Julia, you can download and install the package by issuing:
 Pkg.clone("https://github.com/gher-ulg/divand.jl")
 ```
 
+It is not recommended to download the source of `divand.jl` directly (using the green Clone of Download button above) because this by-passes Julias the package manager and you would need to install the dependencies of `divand.jl` manually.
 
 # Testing
 
@@ -78,7 +79,7 @@ For every constrain, a structure with the following fields is passed to `divand`
 * `H`: the matrix **C**<sub>*i*</sub>
 * `R`: the matrix **Q**<sub>*i*</sub> (symmetric and positive defined)
 
-Internally the observations are also implemented as an additional constraint.
+Internally the observations are also implemented as constraint defined in this way.
 
 ## Example
 
@@ -90,7 +91,7 @@ See the file [divand_simple_example.jl](https://github.com/gher-ulg/divand.jl/bl
 The parameter `epsilon2` and parameter `len` are crucial for the analysis.  
 
 `epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.      
-`len` corresponds to the correlation length and its value of `len` can sometimes be determined by physical arguments. Note that there should be one correlation length per dimension of the analysis.
+`len` corresponds to the correlation length and the value of `len` can sometimes be determined by physical arguments. Note that there should be one correlation length per dimension of the analysis.
 
 One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
 

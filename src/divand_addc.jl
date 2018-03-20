@@ -1,18 +1,15 @@
-# Add a constraint to the cost function.
-#
-# s = divand_addc(s,constrain)
-#
-# Include in the structure s the specified constrain.
-#
-# Input:
-#   s: structure created by divand_background
-#   constrain: The parameter constrain has the following fields: R (a covariance
-#     matrix), H (extraction operator) and yo (specified value for the
-#     constrain).
-#
-# Output:
-#   s: structure to be used by divand_factorize
+"""
+   s = divand_addc(s,c)
 
+Add a constraint `c` to the cost function defined by `s`.
+The structure `s` is typically created by divand_background and the contrain `c` 
+has the following fields: R (a covariance matrix), H (extraction operator) and 
+yo (specified value for the constrain).
+The added contrain Jc(x) is quadratic and has the following structure.
+
+Jc(x) = (H x - yo)ᵀ R⁻¹ (H x - yo)
+
+"""
 
 function divand_addc(s,constrain)
     if isempty(s.H)
