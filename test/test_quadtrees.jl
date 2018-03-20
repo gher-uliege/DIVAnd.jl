@@ -11,7 +11,7 @@ X = [0  0;
      0  1;
      0  0]
 
-qt = divand.Quadtrees.QTnew(X',collect(1:size(X,1)))
+qt = divand.Quadtrees.QT(X',collect(1:size(X,1)))
 attribs_res = divand.Quadtrees.within(qt,[0,0],[0.1,0.1])
 @test attribs_res == [1,5]
 
@@ -42,7 +42,7 @@ divand.Quadtrees.split!(qt)
 
 X = rand(2,10000)
 attribs = collect(1:size(X,2))
-qt2 = divand.Quadtrees.QTnew(X,attribs)
+qt2 = divand.Quadtrees.QT(X,attribs)
 divand.Quadtrees.rsplit!(qt2,5)
 
 #rplot(qt2)
@@ -89,7 +89,7 @@ for n = 1:4
     X = rand(n,100)
     attribs = collect(1:size(X,2))
 
-    qtND = divand.Quadtrees.QTnew(X,attribs)
+    qtND = divand.Quadtrees.QT(X,attribs)
     #@show qtND.points[1:5,:]
 
     divand.Quadtrees.rsplit!(qtND)

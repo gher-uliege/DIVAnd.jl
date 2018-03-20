@@ -26,28 +26,14 @@ QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
 
 """create a quadtree"""
 
-# function QT(points::Array{T,2},attribs::Vector{TA}) where {T,TA}
-#     if length(attribs) != size(points,1)
-#         @show length(attribs), size(points,1)
-#         error("QT inconsistent size")
-#     end
 
-#     QT(QT{T,TA,size(points,2)}[],points',minimum(points,1)[:],maximum(points,1)[:],attribs)
-# end
-
-# QT(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA} =
-#     QT(QT{T,TA,size(points,2)}[],points',min,max,attribs)
-
-
-
-QTnew(points::Array{T,2},attribs::Vector{TA}) where {T,TA} =
+QT(points::Array{T,2},attribs::Vector{TA}) where {T,TA} =
     QT(QT{T,TA,size(points,1)}[],points,minimum(points,2)[:],maximum(points,2)[:],attribs)
 
-function QTnew(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA}
+function QT(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA}
     
     if length(attribs) != size(points,2)
-        @show length(attribs), size(points,2)
-        error("QT inconsistent size")
+        error("QT inconsistent size $(length(attribs)) versus $(size(points,2))")
     end
 
     return QT(QT{T,TA,size(points,1)}[],points,min,max,attribs)
@@ -254,7 +240,7 @@ function split!(qt::QT{T,TA,N}) where {T,TA,N}
                 end
             end
 
-            child = QTnew(qt.points[:,sel],copy(cmin),copy(cmax),qt.attribs[sel])
+            child = QT(qt.points[:,sel],copy(cmin),copy(cmax),qt.attribs[sel])
 
             # add only children with data
             if length(child) > 0
@@ -458,7 +444,7 @@ function checkduplicates(x::Tuple,value,delta,deltavalue;
         end
     end
 
-    qt = Quadtrees.QTnew(X,label)
+    qt = Quadtrees.QT(X,label)
     Quadtrees.rsplit!(qt, maxcap)
     
     #mult = Vector{Int}(size(X,1))
@@ -531,7 +517,7 @@ function checkduplicates(x1::Tuple,value1,
     Nobs1 = size(X1,2)
     Nobs2 = size(X2,2)
 
-    qt = Quadtrees.QTnew(X1,label1)
+    qt = Quadtrees.QT(X1,label1)
     Quadtrees.rsplit!(qt, maxcap)
     
     duplicates = Vector{Vector{Int}}(Nobs2)
