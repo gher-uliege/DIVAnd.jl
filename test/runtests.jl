@@ -3,6 +3,8 @@ using Base.Test
 import Base.LinAlg.BLAS
 
 @testset "divand" begin
+    include("test_quadtrees.jl");
+
     # ndgrid
     include("test_ndgrid.jl");
 
@@ -100,7 +102,6 @@ import Base.LinAlg.BLAS
     # interpolate background from a NetCDF file
     include("test_interp.jl");
 
-    include("test_quadtrees.jl");
     
     # test divand_filter3
     A = zeros(5,5,5,5,5)

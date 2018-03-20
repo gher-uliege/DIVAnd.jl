@@ -26,20 +26,32 @@ QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
 
 """create a quadtree"""
 
-QT(points::Array{T,2},attribs::Vector{TA}) where {T,TA} =
-    QT(QT{T,TA,size(points,2)}[],points',minimum(points,1)[:],maximum(points,1)[:],attribs)
+# function QT(points::Array{T,2},attribs::Vector{TA}) where {T,TA}
+#     if length(attribs) != size(points,1)
+#         @show length(attribs), size(points,1)
+#         error("QT inconsistent size")
+#     end
 
-QT(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA} =
-    QT(QT{T,TA,size(points,2)}[],points',min,max,attribs)
+#     QT(QT{T,TA,size(points,2)}[],points',minimum(points,1)[:],maximum(points,1)[:],attribs)
+# end
+
+# QT(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA} =
+#     QT(QT{T,TA,size(points,2)}[],points',min,max,attribs)
 
 
 
 QTnew(points::Array{T,2},attribs::Vector{TA}) where {T,TA} =
     QT(QT{T,TA,size(points,1)}[],points,minimum(points,2)[:],maximum(points,2)[:],attribs)
 
-QTnew(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA} =
-    QT(QT{T,TA,size(points,1)}[],points,min,max,attribs)
+function QTnew(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA}
+    
+    if length(attribs) != size(points,2)
+        @show length(attribs), size(points,2)
+        error("QT inconsistent size")
+    end
 
+    return QT(QT{T,TA,size(points,1)}[],points,min,max,attribs)
+end
 
 """       
              x1
@@ -145,6 +157,10 @@ Add point `x` with the attribute `attrib` to the quadtree `qt`.
 false and the point has not been added)
 """
 function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
+    if length(attrib) != size(x,2)
+        @show length(attrib), size(x,2)
+        error("QT inconsistent size")
+    end
 
     if !inside(qt,x)
         return false
@@ -152,6 +168,11 @@ function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
         if isleaf(qt)
             qt.points  = cat(2,qt.points,x)
             push!(qt.attribs,attrib)
+
+            if length(qt.attribs) != size(qt.points,2)
+                @show length(qt.attribs), size(qt.points,2)
+                error("QT inconsistent size")
+            end
             
             # split if necessary
             rsplit!(qt, max_cap)
@@ -232,7 +253,7 @@ function split!(qt::QT{T,TA,N}) where {T,TA,N}
                     cmax[j] = qt.max[j]
                 end
             end
-            
+
             child = QTnew(qt.points[:,sel],copy(cmin),copy(cmax),qt.attribs[sel])
 
             # add only children with data
@@ -247,6 +268,7 @@ function split!(qt::QT{T,TA,N}) where {T,TA,N}
 
         # remove points from node
         qt.points = Matrix{T}(N,0)
+        qt.attribs = Vector{T}(0)
     end
 end
 
@@ -500,7 +522,7 @@ function checkduplicates(x1::Tuple,value1,
                          x2::Tuple,value2,
                          delta, deltavalue;
                          maxcap = 100,
-                         label1 = collect(1:size(x1[1],1))
+                         label1 = collect(1:length(x1[1]))
                          )
     X1 = catx(x1)
     X2 = catx(x2)
