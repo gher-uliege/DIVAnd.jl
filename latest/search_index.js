@@ -281,11 +281,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#divand.ODVspreadsheet.myparse",
+    "page": "divand.jl documentation",
+    "title": "divand.ODVspreadsheet.myparse",
+    "category": "function",
+    "text": "v = myparse(T,s)\n\nParse the string s as a type T. Unlike Julia\'s parse function  an error message contains the string s (which could not be parsed) for  debugging.\n\n\n\n"
+},
+
+{
     "location": "index.html#Load-observations-1",
     "page": "divand.jl documentation",
     "title": "Load observations",
     "category": "section",
-    "text": "divand.saveobs\ndivand.loadobs\ndivand.NCSDN.load\ndivand.NCSDN.loadvar\ndivand.ODVspreadsheet.loaddata\ndivand.ODVspreadsheet.parsejd"
+    "text": "divand.saveobs\ndivand.loadobs\ndivand.NCSDN.load\ndivand.NCSDN.loadvar\ndivand.ODVspreadsheet.loaddata\ndivand.ODVspreadsheet.parsejd\ndivand.ODVspreadsheet.myparse"
 },
 
 {
@@ -849,6 +857,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#divand.divand_addc",
+    "page": "divand.jl documentation",
+    "title": "divand.divand_addc",
+    "category": "function",
+    "text": "s = divand_addc(s,c)\n\nAdd a constraint c to the cost function defined by s. The structure s is typically created by divand_background and the contrain c  has the following fields: R (a covariance matrix), H (extraction operator) and  yo (specified value for the constrain). The added contrain Jc(x) is quadratic and has the following structure.\n\nJc(x) = (H x - yo)ᵀ R⁻¹ (H x - yo)\n\n\n\n"
+},
+
+{
     "location": "index.html#divand.divand_erroratdatapoints",
     "page": "divand.jl documentation",
     "title": "divand.divand_erroratdatapoints",
@@ -942,6 +958,22 @@ var documenterSearchIndex = {"docs": [
     "title": "divand.divand_cpme",
     "category": "function",
     "text": "cpme = divand_cpme(mask,pmn,xi,x,f,len,epsilon2;...);\n\nInput: Same as for divandrun\n\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nxi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations minus the background estimate (m-by-1 array).   (see note)\nlen: correlation length\nepsilon2: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\nkeywords : undocumented for the moment how to use iterative solver with coarser grid as preconditionner. see divandjog for csteps, lmask and alphapcparameters\n\nOptional input arguments specified as keyword arguments also as for divand\n\nOutput:\n\ncpme: the clever poor mans error\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array cpme represent the error field at the grid defined by the coordinates xi and the scales factors pmn. If you cannot run divandrun you can use divandgo with error field calculation :cpme\n\n\n\n"
+},
+
+{
+    "location": "index.html#divand.divand_cpme_go",
+    "page": "divand.jl documentation",
+    "title": "divand.divand_cpme_go",
+    "category": "function",
+    "text": "erri = divand_cpme_go(mask,pmn,xi,x,f,len,epsilon2; ...);\n\nInput:\n\nSame arguments as divandrun with in addition\nMEMTOFIT=: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)\nRTIMESONESCALES= : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See weight_RtimesOne for details \n\nOutput:\n\nerri: relative error field using the clever poor man\'s error approach. Result on the same grid as fi. `\n\nONLY USE THIS VERSION IF YOU CANNOT RUN divandgo with :cmpe activated (or directly divand_cpme if you can run divandrun)\n\n\n\n"
+},
+
+{
+    "location": "index.html#divand.divand_datainboundingbox",
+    "page": "divand.jl documentation",
+    "title": "divand.divand_datainboundingbox",
+    "category": "function",
+    "text": "divand_datainboundingbox(xi,x,f;Rmatrix=())\n\nInput:\n\nxi: tuple with n elements. Every element represents a coordinate   of the final grid on which the observations are interpolated\n\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations\nRmatrix: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\n\nOutput:\n\nxn: tuple with n elements. Every element represents a coordinate of   the observations which falls in the bounding box defined by xi fn: the corresponding data indexes: the indexes in the original array retained  Rn: the new error variance \n\n\n\n"
 },
 
 {
@@ -1181,7 +1213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "Utility functions",
     "category": "section",
-    "text": "divand.divand_laplacian\ndivand.divand_obscovar\ndivand.divand_adaptedeps2\ndivand.divand_diagHKobs\ndivand.divand_residual\ndivand.divand_erroratdatapoints\ndivand.divand_iBpHtiRHx!\ndivand.divand_GCVKii\ndivand.divand_fittocpu\ndivand.divand_background\ndivand.divand_obs\ndivand.divand_bc_stretch\ndivand.divand_diagHK\ndivand.divand_kernel\ndivand.divand_residualobs\ndivand.divand_aexerr\ndivand.divand_cpme\ndivand.divand_Lpmnrange\ndivand.divand_pc_sqrtiB\ndivand.divand_pc_none\ndivand.divand_GCVKiiobs\ndivand.divand_cutter\ndivand.divand_qc\ndivand.divand_solve!\ndivand.divand_sampler\ndivand.divandjog\ndivand.divand_background_components\ndivand.stats\ndivand.statpos\ndivand.blkdiag\nBase.findfirst\ndivand.formatsize\ndivand.interp!\ndivand.ufill\ndivand.jmBix\ndivand.cgradient\ndivand.fzero\ndivand.localize_separable_grid\ndivand.decompB!\ndivand.varanalysis\ndivand.len_harmonize\ndivand.alpha_default\ndivand.ncfile\ndivand.writeslice\ndivand.encodeWMSStyle\ndivand.loadoriginators"
+    "text": "divand.divand_laplacian\ndivand.divand_obscovar\ndivand.divand_adaptedeps2\ndivand.divand_diagHKobs\ndivand.divand_residual\ndivand.divand_addc\ndivand.divand_erroratdatapoints\ndivand.divand_iBpHtiRHx!\ndivand.divand_GCVKii\ndivand.divand_fittocpu\ndivand.divand_background\ndivand.divand_obs\ndivand.divand_bc_stretch\ndivand.divand_diagHK\ndivand.divand_kernel\ndivand.divand_residualobs\ndivand.divand_aexerr\ndivand.divand_cpme\ndivand.divand_cpme_go\ndivand.divand_datainboundingbox\ndivand.divand_Lpmnrange\ndivand.divand_pc_sqrtiB\ndivand.divand_pc_none\ndivand.divand_GCVKiiobs\ndivand.divand_cutter\ndivand.divand_qc\ndivand.divand_solve!\ndivand.divand_sampler\ndivand.divandjog\ndivand.divand_background_components\ndivand.stats\ndivand.statpos\ndivand.blkdiag\nBase.findfirst\ndivand.formatsize\ndivand.interp!\ndivand.ufill\ndivand.jmBix\ndivand.cgradient\ndivand.fzero\ndivand.localize_separable_grid\ndivand.decompB!\ndivand.varanalysis\ndivand.len_harmonize\ndivand.alpha_default\ndivand.ncfile\ndivand.writeslice\ndivand.encodeWMSStyle\ndivand.loadoriginators"
 },
 
 {
@@ -1213,15 +1245,47 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "Troubleshooting",
     "category": "section",
-    "text": ""
+    "text": "If the installation of a package fails, it is recommended to update the local copy of the package list by issuing Pkg.update() to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.  Julia calls the local copy of the packge list METADATA. For example to retry the installation of EzXML issue the following command:Pkg.update()\nPkg.add(\"EzXML\")"
 },
 
 {
-    "location": "index.html#No-plot-windows-1",
+    "location": "index.html#No-plotting-window-appears-1",
     "page": "divand.jl documentation",
-    "title": "No plot windows",
+    "title": "No plotting window appears",
     "category": "section",
-    "text": "If the following command doesn\'t produce any figureusing PyPlot\nplot(0, 1)a possible solution is to modify the backend: this is done by editing the python configuration file matplotlibrc. The location of this file is obtained in python with:import matplotlib\nmatplotlib.matplotlib_fnamewhich, in my case, returns \'~/.config/matplotlib/matplotlibrc\'"
+    "text": "If the following command doesn\'t produce any figureusing PyPlot\nplot(1:10)A possible solution is to modify the backend: this is done by editing the python configuration file matplotlibrc. The location of this file is obtained in python with:import matplotlib\nmatplotlib.matplotlib_fnameUnder Linux, this returns \'~/.config/matplotlib/matplotlibrc\'. To use the TkAgg backend, add the following to the file:backend      : TkAggThe matplotlibrc need to be created if it does not exists."
+},
+
+{
+    "location": "index.html#Julia-cannot-connect-to-GitHub-on-Windows-7-and-Windows-Server-2012-1",
+    "page": "divand.jl documentation",
+    "title": "Julia cannot connect to GitHub on Windows 7 and Windows Server 2012",
+    "category": "section",
+    "text": "Cloning METADATA or downloading a julia packages fails with:GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the  \"Easy fix\" tool from the Microsoft support page"
+},
+
+{
+    "location": "index.html#MbedTLS.jl-does-not-install-on-Windows-7-1",
+    "page": "divand.jl documentation",
+    "title": "MbedTLS.jl does not install on Windows 7",
+    "category": "section",
+    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th \ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133The solution is to install the Windows Management Framework 4.0."
+},
+
+{
+    "location": "index.html#EzXML.jl-cannot-be-installed-on-RedHat-6-1",
+    "page": "divand.jl documentation",
+    "title": "EzXML.jl cannot be installed on RedHat 6",
+    "category": "section",
+    "text": "The zlib library of RedHat 6, is slightly older than the library which EzXML.jl and libxml2 requires.To verify this issue, you can type in JuliaLibdl.dlopen(joinpath(Pkg.dir(\"EzXML\"),\"deps/usr/lib/libxml2.so\"))It should not return an error message. On Redhat 6.6, the following error message is returned:ERROR: could not load library \"/home/username/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so\"\n\n/lib64/libz.so.1: version `ZLIB_1.2.3.3\' not found (required by /home/divahs1/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so)\n\nStacktrace:\n\n [1] dlopen(::String, ::UInt32) at ./libdl.jl:97 (repeats 2 times)However, the following command should work: LD_LIBRARY_PATH=\"$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH\" julia --eval  \'print(Libdl.dlopen(joinpath(Pkg.dir(\"EzXML\"),\"deps/usr/lib/libxml2.so\"))\'Lukily, EzZML.jl includes a newer version of the zlib library, but it does not load the library automatically. (see also https://github.com/JuliaLang/julia/issues/7004 and https://github.com/JuliaIO/HDF5.jl/issues/97)To make Julia use this library, a user on RedHat 6 should always start Julia with:LD_LIBRARY_PATH=\"$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH\" juliaOne can also create script with the following content:#!/bin/bash\nexport LD_LIBRARY_PATH=\"$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH\"\nexec /path/to/bin/julia \"$@\"by replacing /path/to/bin/julia to the full path of your installation directory. The script should be marked executable and it can be included in your Linux search PATH environement variable. Julia can then be started by calling directly this script."
+},
+
+{
+    "location": "index.html#The-DIVAnd-test-suite-fails-with-automatic-download-failed-1",
+    "page": "divand.jl documentation",
+    "title": "The DIVAnd test suite fails with automatic download failed",
+    "category": "section",
+    "text": "Running Pkg.test(\"divand\") fails with the error:automatic download failed (error: 2147500036)The test suite will download some sample data. You need to have internet access and run the test function from a directory with write access.You can change the directory to your home directory with the julia command cd(homedir()).You can check the current working directory with:pwd()"
 },
 
 ]}
