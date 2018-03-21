@@ -9,7 +9,7 @@ function test_sp(mask,pmn,nu,x0,Nmax=1)
 
     L = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
 
-    @time @inbounds for nt = 1:Nmax
+    @inbounds for nt = 1:Nmax
         x = L*x
     end
 
@@ -23,7 +23,7 @@ function test_lap8(mask,pmn,nu,x0,Nmax=1)
     ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
     x = copy(x0)
 
-    @time @inbounds for nt = 1:Nmax
+    @inbounds for nt = 1:Nmax
         x = divand.divand_laplacian_apply(ivol,nus,x)
     end
 

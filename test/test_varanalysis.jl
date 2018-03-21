@@ -40,8 +40,7 @@ tol = 1e-5
 
 
 
-@time xa,s = divand.varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
-@show maximum(xa) 
+xa,s = divand.varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
 
 @test maximum(xa) ≈ 0.5 atol=1e-3
 

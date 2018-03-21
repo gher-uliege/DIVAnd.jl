@@ -53,7 +53,7 @@ for imeth=0:3
     @test 1. < bestfactor < 1.3
     # @test 0.3 < bestfactorl*len/len_true < 3
 
-    @show bestfactor
+    #@show bestfactor
 
 end
 
