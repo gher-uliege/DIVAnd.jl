@@ -20,12 +20,12 @@ cdilist = joinpath(dirname(@__FILE__),"..","data","CDI-list-export.csv")
 
 
 if !isfile(bathname)
-    bathname = "gebco_30sec_16.nc"
+    bathname = joinpath(tempdir(),"gebco_30sec_16.nc")
     download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download",bathname)
 end
 
 if !isfile(obsname)
-    obsname = "WOD-Salinity.nc"
+    obsname = joinpath(tempdir(),"WOD-Salinity.nc")
     download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download",obsname)
 end
 
@@ -51,7 +51,6 @@ lenx = fill(200_000,sz)
 leny = fill(200_000,sz)
 lenz = [10+depthr[k]/15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
 
-@show mean(lenz)
 years = 1993:1993
 
 year_window = 10
@@ -169,11 +168,11 @@ divand.divadoxml(filename,varname,project,cdilist,xmlfilename,
 
 errname = "$(replace(filename,r"\.nc$","")).cdi_import_errors_test.csv"
 
-data,header = readdlm(errname,'\t'; header = true)
+errdata,header = readdlm(errname,'\t'; header = true)
 
 # check if the missing CDI was identified
-@test data[1] == 999
-@test data[2] == "missing"
+@test errdata[1] == 999
+@test errdata[2] == "missing"
 
 # check if editing of the mask was successful
 @test ismissing(Dataset(filename)["Salinity"][3,3,1,1])
