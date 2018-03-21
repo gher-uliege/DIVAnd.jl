@@ -5,8 +5,7 @@ bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global",
 bathisglobal = true
 
 if !isfile(bathname)
-    bathname = joinpath(tempdir(),"gebco_30sec_16.nc")
-    download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download",bathname)
+    bathname = download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download")
 end
 
 dx = dy = 0.1

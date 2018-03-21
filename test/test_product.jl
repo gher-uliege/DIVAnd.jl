@@ -20,13 +20,11 @@ cdilist = joinpath(dirname(@__FILE__),"..","data","CDI-list-export.csv")
 
 
 if !isfile(bathname)
-    bathname = joinpath(tempdir(),"gebco_30sec_16.nc")
-    download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download",bathname)
+    bathname = download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download")
 end
 
 if !isfile(obsname)
-    obsname = joinpath(tempdir(),"WOD-Salinity.nc")
-    download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download",obsname)
+    obsname = download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download")
 end
 
 value,lon,lat,depth,time,ids = divand.loadobs(Float64,obsname,"Salinity")
