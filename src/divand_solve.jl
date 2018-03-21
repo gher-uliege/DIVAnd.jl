@@ -55,8 +55,10 @@ function divand_solve!(s,fi0,f0;btrunc=[])
             # Compared to a general problem Ax=b we know that here we have a lot of zeros in b
             # so we scale the tolerance here
             # square root since tolance is squared before comparing b2 and r2
-            jmtol=s.tol*sqrt(size(H)[2]/size(H)[1])
-            @time fpi,success,s.niter = conjugategradient(fun!,HiRyo,tol = jmtol,
+
+            jmtol = s.tol*sqrt(size(H)[2]/size(H)[1])
+
+            fpi,success,s.niter = conjugategradient(fun!,HiRyo,tol = jmtol,
                                                           maxit = s.maxit,
                                                           minit = s.minit,
                                                           x0 = fi0,

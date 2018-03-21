@@ -59,9 +59,7 @@ epsilon2 = 1.;
 fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
 
-for method in [0 1 3 4]
-
-    @show method
+for method in [0, 1, 3, 4]
 
     qcval=divand_qc(fi,s,method)
 

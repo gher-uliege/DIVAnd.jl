@@ -44,14 +44,14 @@ for imeth=0:3
     @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     @test 0.3 < bestfactorl*len/len_true < 3
 
-    #    @show bestfactore*epsilon2
-    #    @show bestfactorl*len
+    #@show bestfactore*epsilon2
+    #@show bestfactorl*len
 end
 
 for imeth=0:3
     bestfactor, cvval,cvvalues, logfactorse,cvinter,epsilon2inter = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,3,imeth;alphabc=0);
     @test 1. < bestfactor < 1.3
-    # @test 0.3 < bestfactorl*len/len_true < 3
+    #@test 0.3 < bestfactorl*len/len_true < 3
 
     #@show bestfactor
 
@@ -60,20 +60,22 @@ end
 
 for imeth=0:3
     bestfactor, cvval,cvvalues, logfactorse,cvinter,epsilon2inter = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,0,imeth;alphabc=0);
-    #    @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
-    #    @test 0.3 < bestfactorl*len/len_true < 3
+    #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
+    #@test 0.3 < bestfactorl*len/len_true < 3
     @test 1.6 < bestfactor < 1.8
-    @show bestfactor
-    #    @show bestfactore*epsilon2
-    #    @show bestfactorl*len
+    
+    #@show bestfactor
+    #@show bestfactore*epsilon2
+    #@show bestfactorl*len
 end
 
 for imeth=0:3
     bestfactor,cvvalues = divand_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
-    @show bestfactor
+    #@show bestfactor
     @test 0.8 < bestfactor < 1.
-    #    @show bestfactore*epsilon2
-    #    @show bestfactorl*len
+
+    #@show bestfactore*epsilon2
+    #@show bestfactorl*len
 end
 
 
