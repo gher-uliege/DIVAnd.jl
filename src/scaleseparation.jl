@@ -4,26 +4,31 @@
 
 # Input: 
 
-* `K1andH1K1` : function, when called with a vector of data d, provides in return Kd,d-HK d ie the gridded analysis Kd an residual d-HKd for analysis tool 1
+* `K1andH1K1` : function, when called with a vector of data d, provides in return Kd,d-HK d ; i.e. the gridded analysis Kd an residual d-HKd for analysis tool 1
 
-* `K2andH2K2` : function, when called with a vector of data d, provides in return Kd,d-HK d ie the gridded analysis Kd an residual d-HKd for analysis tool 2
+* `K2andH2K2` : function, when called with a vector of data d, provides in return Kd,d-HK d ; i.e. the gridded analysis Kd an residual d-HKd for analysis tool 2
 
 * `d` : data array 
 
-* `niter=` : optional keyword parameter defining the number of iterations used to invers I - H2K2 H1K2. Default 10
+* `niter=` : optional keyword parameter defining the number of iterations used to invert I - H2K2 H1K2. Default is 10
 
 # Output: 
       	
-* `Phi1` : analysis for tool 1
-* `H1Phi1`  : analysis at data locations for tool 1
-* `Phi2` : analysis for tool 2
-* `H2Phi2`  : analysis at data locations for tool 2
+* `Phi1` : analysis for tool 1 in which analysis of scale 2 is taken out
+* `H1Phi1`  : analysis at data locations for tool 1 in which analysis of scale 2 is taken out
+* `Phi2` : analysis for tool 2 in which analysis of scale 1 is taken out
+* `H2Phi2`  : analysis at data locations for tool 2 in which analysis of scale 1 is taken out
  	
-Tool to separate scales using two different analysis 	
-K1 should be related to the larger scales (or scales with high signal/noise ratios)
-see 	Multi-scale optimal interpolation: application to DINEOF analysis spiced with a local optimal interpolation
+Tool to separate scales using two different analysis provided as two input functions
+
+K1 should be related to the larger scales (or scales with high signal/noise ratios) and K2 to smaller or less energetic scales. If in doubt invert both and test
+with different number of iterations while looking at convergence.
+
+see 	"Multi-scale optimal interpolation: application to DINEOF analysis spiced with a local optimal interpolation"
 	http://hdl.handle.net/2268/165394
-the two fields can have different supports. Only the observational operators must provide the same data array
+	
+	
+Here the two fields can have different supports (one could be a 3D analysis and the other one a season-depth analysis for example. Only the observational operators must provide the same data array at the output. In other words K1,HK1=K1andH1K1 should provide an output array HK1 of the same dimensions as the data array d and the output HK2 from K2,HK2=K2andH2K2
 	
 	
 """
