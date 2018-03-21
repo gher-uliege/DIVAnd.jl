@@ -61,8 +61,8 @@ label = divand.Vocab.prefLabel(divand.Vocab.resolve("SDN:P021:current:TEMP"))
 label = divand.Vocab.prefLabel(divand.Vocab.resolve("SDN:P021::TEMP"))
 @test label == "Temperature of the water column"
 
-name = divand.Vocab.name(divand.Vocab.resolve("SDN:EDMO::575"))
-@test name == "National Oceanographic Data Committee"
+edmoname = divand.Vocab.name(divand.Vocab.resolve("SDN:EDMO::575"))
+@test edmoname == "National Oceanographic Data Committee"
 
-name = divand.Vocab.name(divand.Vocab.urn"SDN:EDMO::575")
-@test name == "National Oceanographic Data Committee"
+edmoname = divand.Vocab.name(divand.Vocab.urn"SDN:EDMO::575")
+@test edmoname == "National Oceanographic Data Committee"
