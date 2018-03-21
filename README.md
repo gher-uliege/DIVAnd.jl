@@ -36,7 +36,9 @@ It is not recommended to download the source of `divand.jl` directly (using the 
 # Testing
 
 A test script is included to verify the correct functioning of the toolbox.
-The script should be run in a Julia session.
+The script should be run in a Julia session. 
+Make sure to be in a directory with write-access (for example your home directory).
+You can change the directory to your home directory with the `cd(homedir())` command.
 
 ```julia
 Pkg.test("divand")
@@ -50,6 +52,9 @@ Test Summary: | Pass  Total
   divand      |   100     100
 INFO: divand tests passed
 ```
+
+The test suite will download some sample data.
+You need to have internet access and run the test function from a directory with write access.
 
 
 # Documentation

@@ -49,6 +49,7 @@ divand.NCSDN.load
 divand.NCSDN.loadvar
 divand.ODVspreadsheet.loaddata
 divand.ODVspreadsheet.parsejd
+divand.ODVspreadsheet.myparse
 ```
 
 # Parameter optimization
@@ -157,6 +158,7 @@ divand.divand_obscovar
 divand.divand_adaptedeps2
 divand.divand_diagHKobs
 divand.divand_residual
+divand.divand_addc
 divand.divand_erroratdatapoints
 divand.divand_iBpHtiRHx!
 divand.divand_GCVKii
@@ -169,6 +171,8 @@ divand.divand_kernel
 divand.divand_residualobs
 divand.divand_aexerr
 divand.divand_cpme
+divand.divand_cpme_go
+divand.divand_datainboundingbox
 divand.divand_Lpmnrange
 divand.divand_pc_sqrtiB
 divand.divand_pc_none
@@ -228,19 +232,137 @@ Pkg.add("Documenter")
 
 # Troubleshooting
 
-## No plot windows
+
+If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package. 
+Julia calls the local copy of the packge list `METADATA`.
+For example to retry the installation of EzXML issue the following command:
+
+```julia
+Pkg.update()
+Pkg.add("EzXML")
+```
+
+
+
+## No plotting window appears
 
 If the following command doesn't produce any figure
 ```julia
 using PyPlot
-plot(0, 1)
+plot(1:10)
 ```
-a possible solution is to modify the *backend*: this is done by editing the python configuration file
+A possible solution is to modify the *backend*: this is done by editing the python configuration file
 [matplotlibrc](http://matplotlib.org/users/customizing.html#the-matplotlibrc-file). The location of this file is obtained in python with:
 
 ```python
 import matplotlib
 matplotlib.matplotlib_fname
 ```
-which, in my case, returns
-```'~/.config/matplotlib/matplotlibrc'```
+
+Under Linux, this returns ```'~/.config/matplotlib/matplotlibrc'```.
+To use the `TkAgg` backend, add the following to the file:
+
+```
+backend      : TkAgg
+```
+
+The `matplotlibrc` need to be created if it does not exists.
+
+## Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
+
+Cloning METADATA or downloading a julia packages fails with:
+
+```
+GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )
+```
+
+The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the 
+"Easy fix" tool from the [Microsoft support page](https://stackoverflow.com/questions/49065986/installation-of-julia-on-windows7-64-bit)
+
+## MbedTLS.jl does not install on Windows 7
+
+
+The installion of `MbedTLS.jl` fails with the error message:
+
+```
+INFO: Building MbedTLS                                                                                                                                    
+Info: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\Users\Jeremy\.julia\v0.6\MbedTLS
+\deps\usr\downloads\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  
+Exception setting "SecurityProtocol": "Cannot convert null to type "System.Net.SecurityProtocolType" due to invalid enumeration values. Specify one of th 
+e following enumeration values and try again. The possible enumeration values are "Ssl3, Tls"."                                                           
+At line:1 char:35                                                                                                                                         
++ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  
+    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 
+    [...]
+```
+
+See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133
+
+The solution is to install the [Windows Management Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=40855).
+
+## EzXML.jl cannot be installed on RedHat 6
+
+The `zlib` library of RedHat 6, is slightly older than the library which `EzXML.jl` and `libxml2` requires.
+
+To verify this issue, you can type in Julia
+
+```
+Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))
+```
+
+It should not return an error message. On Redhat 6.6, the following error message is returned:
+
+```
+ERROR: could not load library "/home/username/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so"
+
+/lib64/libz.so.1: version `ZLIB_1.2.3.3' not found (required by /home/divahs1/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so)
+
+Stacktrace:
+
+ [1] dlopen(::String, ::UInt32) at ./libdl.jl:97 (repeats 2 times)
+```
+
+However, the following command should work:
+
+```julia
+ LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH" julia --eval  'print(Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))'
+```
+
+Lukily, EzZML.jl includes a newer version of the `zlib` library, but it does not load the library automatically.
+(see also https://github.com/JuliaLang/julia/issues/7004 and https://github.com/JuliaIO/HDF5.jl/issues/97)
+
+To make Julia use this library, a user on RedHat 6 should always start Julia with:
+
+```bash
+LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH" julia
+```
+
+One can also create script with the following content:
+
+```bash
+#!/bin/bash
+export LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH"
+exec /path/to/bin/julia "$@"
+```
+
+by replacing `/path/to/bin/julia` to the full path of your installation directory.
+The script should be marked executable and it can be included in your Linux search [`PATH` environement variable](http://www.linfo.org/path_env_var.html). Julia can then be started by calling directly this script.
+
+## The DIVAnd test suite fails with `automatic download failed`
+
+Running `Pkg.test("divand")` fails with the error:
+
+```julia
+automatic download failed (error: 2147500036)
+```
+
+The test suite will download some sample data. You need to have internet access and run the test function from a directory with write access.
+
+You can change the directory to your home directory with the julia command `cd(homedir())`.
+
+You can check the current working directory with:
+
+```julia
+pwd()
+```
