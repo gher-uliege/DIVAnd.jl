@@ -110,7 +110,7 @@ end
 
 The structure `TS` handels the time arregation base on `years` and 
 `monthlists`. It is similar to `TimeSelectorYearListMonthList` except that 
-the elements of `yearlists` are centred around `years` and have a span 
+the elements of `yearlists` are centred around `years` and span 
 `yearwindow` years. `yearlists` is in fact constructed by additing and subtract 
 `yearwindow/2` to every  element of years.
 

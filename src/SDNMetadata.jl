@@ -639,3 +639,29 @@ function divadoxml(filepath,varname,project,cdilist,xmlfilename;
 
     rendertemplate(templatefile,templateVars,xmlfilename)
 end
+
+
+
+"""
+    SDNObsMetadata(id)
+
+Return a link to the SeaDataNet metadata page of the observation with the 
+identifier `id` (a combination of the EDMO code and local CDI ID).
+This works only in IJulia.
+"""
+
+
+function SDNObsMetadata(id)
+    edmo,local_CDI_ID = split(id,'-')
+    url = "http://seadatanet.maris2.nl/v_cdi_v3/print_wfs.asp" * string(
+        HTTP.URI(;query=
+                 OrderedDict(
+                     "popup" => "yes",
+                     "edmo" => edmo,
+                     "identifier" => local_CDI_ID)))
+    
+  display("text/html", """
+        Open in a new window <a target="blank" href="$(url)" >$(id)</a>
+        <iframe width="900" height="700" src="$(url)"</iframe>    
+""")
+end

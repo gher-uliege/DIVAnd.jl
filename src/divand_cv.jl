@@ -2,9 +2,9 @@
 
     bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method;...);
 
+# Input
 
-
-# Input: Same as for `divandrun` with three more parameters `nl`,`ne` and `method`
+Same as for `divandrun` with three more parameters `nl`,`ne` and `method`
 
 * `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
 

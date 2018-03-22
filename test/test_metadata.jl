@@ -71,3 +71,5 @@ ncglobalattrib,ncvarattrib = divand.SDNMetadata(metadata,filename,varname,1:10,1
                                          default_field_max = 123)
 
 @test contains(ncglobalattrib["preview"],"123")
+
+

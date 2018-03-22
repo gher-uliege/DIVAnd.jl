@@ -225,48 +225,6 @@ end
 """display size as a string """
 formatsize(sz) = join(sz,"×")
 
-"""
-mask,xyi,pmn = divand_squaredom(n,coord)
-
-Create a "square" domain in `n` dimensions with the coordinates `coord`
-assuming a Catersian metric. This functions returns
-the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
-
-# Example
-
-mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))
-"""
-function divand_squaredom(n,coord)
-    coords = ([coord for i = 1:n]...)
-    return divand_rectdom(coords...)
-end
-
-
-"""
-mask,xyi,pmn = divand_squaredom(n,coord)
-
-Create a "square" domain in `n` dimensions with the coordinates `coord`
-assuming a Catersian metric. This functions returns
-the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
-
-# Example
-
-mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
-"""
-function divand_rectdom(coords...)
-    # grid of background field
-    xyi = ndgrid(coords...)
-
-    # mask (all points are valid)
-    mask = trues(xyi[1])
-
-    # metric (inverse of the resolution)
-    pmn = ([ones(size(mask)) / (coords[i][2]-coords[i][1]) for i = 1:length(coords)]...)
-
-    return mask,pmn,xyi
-end
-
-
 function dvmaskexpand(x)
     z=deepcopy(x)
     sz=size(z)[1]
@@ -409,11 +367,13 @@ include("divand_save.jl");
 include("varanalysis.jl");
 
 include("load_mask.jl");
+export extract_bath, load_bath, load_mask
+
 include("load_obs.jl");
-export loadbigfile
+export loadbigfile, loadobs
 
 include("domain.jl");
-export domain
+export domain, divand_rectdom, divand_squaredom
 
 # high-level interface
 include("diva.jl");
@@ -441,12 +401,16 @@ export Vocab
 export urn_str
 
 include("SDNMetadata.jl");
-export SDNMetadata
+export SDNMetadata, SDNObsMetadata
 
 include("select_time.jl");
-
+export TimeSelectorYW, TimeSelectorYearListMonthList, TimeSelectorRunningAverage
+    
 include("fit.jl");
-
+export fit_isotropic
+export fitvertlen
+export fithorzlen
+    
 include("utils.jl");
 
 include("Quadtrees.jl");
@@ -460,7 +424,7 @@ export divand_laplacian_prepare, divand_laplacian_apply, divandrunfi
 # statevector
 export packens, unpackens
 
-export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, divand_rectdom, divand_squaredom, load_mask, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save, varanalysis, dvmaskexpand, jmBix, divand_iBpHtiRHx!
+export MatFun,divand_obscovar,divand_pc_sqrtiB,divand_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, divand_save, varanalysis, dvmaskexpand, jmBix, divand_iBpHtiRHx!
 
 export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, divand_laplacian,
 statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, divandrun, divand_metric, distance, CovarIS, factorize!, divand_kernel, divand_cpme, divand_aexerr, divand_GCVKii, divand_diagHK, divand_GCVKiiobs, divand_diagHKobs, diagMtCM, diagLtCM, divand_residual, divand_residualobs,
