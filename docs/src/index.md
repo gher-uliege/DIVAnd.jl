@@ -366,3 +366,16 @@ You can check the current working directory with:
 ```julia
 pwd()
 ```
+
+
+## Convert error in `divand_obs`
+
+The full error message:
+
+```
+MethodError: Cannot `convert` an object of type divand.divand_constrain{Float32,Diagonal{Float64},SparseMatrixCSC{Float64,Int64}} to an object of type divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)
+This may have arisen from a call to the constructor divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)(...),
+since type constructors fall back to convert methods.
+```
+
+The solution is to use the same type of all input parameters: all Float32 or all Float64.
