@@ -1,16 +1,14 @@
 """
+    s = divand_obs(s,xi,x,R,I)
+
 Include the constrain from the observations.
-
-s = divand_obs(s,xi,x,R,I)
-
-Set observations of variational problem.
 It is assumed that the each coordinate depends only on one
 index. If this is not the case, then matrix I must be provided.
 
 Input:
   s: structure created by divand_background
-  xi: coordinates of observations*
-  x: coordinates of grid*
+  xi: coordinates of observations (tuple of vectors)
+  x: coordinates of grid (tuple of arrays)
   R: obs. error covariance matrix (normalized)
   I (optional): fractional indexes of location of observation
     within the grid
@@ -18,32 +16,22 @@ Input:
 Output:
   s: structure to be used by divand_factorize
 
-Note:
-  *these parameters can either be specified as a cell
-  array of all dimenions:
-  xi = {Xi,Yi,Zi}
-  or as n+1 dimensional array
+Note make sure not to mix Float32 and Float64 for divand_constrain.
 """
 function divand_obs(s,xi,x,yo,R; I = [])
-
-
-    #xi = cat_cell_array(xi);
-    #x = cat_cell_array(x);
-
-    mask = s.mask;
-    iscyclic = s.iscyclic;
-    moddim = s.moddim;
-
+    mask = s.mask
+    iscyclic = s.iscyclic
+    moddim = s.moddim
 
     if isempty(I)
-        I = localize_separable_grid(x,mask,xi);
+        I = localize_separable_grid(x,mask,xi)
     end
 
-    H,out,outbbox = sparse_interp(mask,I,iscyclic);
+    H,out,outbbox = sparse_interp(mask,I,iscyclic)
 
-    nout = sum(out);
+    nout = sum(out)
     if nout != 0
-        noutbbox = sum(outbbox);
+        noutbbox = sum(outbbox)
         #warn("Observations out of bounding box: $(noutbbox) and touching land $(nout-noutbbox)")
     end
 
@@ -57,10 +45,10 @@ function divand_obs(s,xi,x,yo,R; I = [])
         warn("Observations equal to NaN: $(nnanobs)")
     end
 
-    H = H * sparse_pack(mask)';
+    H = H * sparse_pack(mask)'
 
+    s.obsout = out
 
-    s.obsout = out;
     constrain = divand_constrain(yo,R,H)
     s.obsconstrain = constrain
 
