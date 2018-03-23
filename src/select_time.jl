@@ -34,9 +34,8 @@ function ctimes(TS::TimeSelectorYearListMonthList)
     timeclim = DateTime[]
 
     for yearrange in TS.yearlists
-        yearc = mean(yearrange)
-
         @assert(length(yearrange) > 0)
+        yearc = yearrange[end ÷ 2]
         
         for monthrange in TS.monthlists
             @assert(length(monthrange) > 0)
