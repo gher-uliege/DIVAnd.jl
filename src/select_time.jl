@@ -142,10 +142,10 @@ Base.length(TS::TimeSelectorRunningAverage) = length(TS.times)
 ctimes(TS::TimeSelectorRunningAverage) = TS.times
 
 timesstart(TS::TimeSelectorRunningAverage) =
-    TS.times - Dates.Millisecond(round(Int64,TS.window * 24*60*60*1000/2))
+    TS.times - Dates.Millisecond(round(Int64,Int64(TS.window) * 24*60*60*1000/2))
 
 timesend(TS::TimeSelectorRunningAverage) =
-    TS.times + Dates.Millisecond(round(Int64,TS.window * 24*60*60*1000/2))
+    TS.times + Dates.Millisecond(round(Int64,Int64(TS.window) * 24*60*60*1000/2))
 
 function select(TS::TimeSelectorRunningAverage,index,obstime)   
     # convertion to Int is necessary on 32-bit systems
