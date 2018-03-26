@@ -1,11 +1,11 @@
 module ODVspreadsheet
 
-# using Logging
+using Logging
 using StringEncodings
 
 # Set logging level(DEBUG, INFO, WARNING, ERROR or CRITICAL)
-# loglevel = WARNING
-# Logging.configure(level=loglevel);
+loglevel = WARNING
+Logging.configure(level=loglevel);
 debug(msg) = nothing
 
 # SeaDataNet Quality Flags
