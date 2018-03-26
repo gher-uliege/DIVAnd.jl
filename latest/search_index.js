@@ -909,7 +909,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.divand_obs",
     "category": "function",
-    "text": "Include the constrain from the observations.\n\ns = divand_obs(s,xi,x,R,I)\n\nSet observations of variational problem. It is assumed that the each coordinate depends only on one index. If this is not the case, then matrix I must be provided.\n\nInput:   s: structure created by divand_background   xi: coordinates of observations*   x: coordinates of grid*   R: obs. error covariance matrix (normalized)   I (optional): fractional indexes of location of observation     within the grid\n\nOutput:   s: structure to be used by divand_factorize\n\nNote:   *these parameters can either be specified as a cell   array of all dimenions:   xi = {Xi,Yi,Zi}   or as n+1 dimensional array\n\n\n\n"
+    "text": "s = divand_obs(s,xi,x,R,I)\n\nInclude the constrain from the observations. It is assumed that the each coordinate depends only on one index. If this is not the case, then matrix I must be provided.\n\nInput:   s: structure created by divand_background   xi: coordinates of observations (tuple of vectors)   x: coordinates of grid (tuple of arrays)   R: obs. error covariance matrix (normalized)   I (optional): fractional indexes of location of observation     within the grid\n\nOutput:   s: structure to be used by divand_factorize\n\nNote make sure not to mix Float32 and Float64 for divand_constrain.\n\n\n\n"
 },
 
 {
@@ -1286,6 +1286,14 @@ var documenterSearchIndex = {"docs": [
     "title": "The DIVAnd test suite fails with automatic download failed",
     "category": "section",
     "text": "Running Pkg.test(\"divand\") fails with the error:automatic download failed (error: 2147500036)The test suite will download some sample data. You need to have internet access and run the test function from a directory with write access.You can change the directory to your home directory with the julia command cd(homedir()).You can check the current working directory with:pwd()"
+},
+
+{
+    "location": "index.html#Convert-error-in-divand_obs-1",
+    "page": "divand.jl documentation",
+    "title": "Convert error in divand_obs",
+    "category": "section",
+    "text": "The full error message:MethodError: Cannot `convert` an object of type divand.divand_constrain{Float32,Diagonal{Float64},SparseMatrixCSC{Float64,Int64}} to an object of type divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)\nThis may have arisen from a call to the constructor divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)(...),\nsince type constructors fall back to convert methods.The solution is to use the same type of all input parameters: all Float32 or all Float64."
 },
 
 ]}
