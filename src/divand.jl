@@ -401,7 +401,7 @@ export Vocab
 export urn_str
 
 include("SDNMetadata.jl");
-export SDNMetadata, SDNObsMetadata
+export SDNMetadata, SDNObsMetadata, divadoxml
 
 include("select_time.jl");
 export TimeSelectorYW, TimeSelectorYearListMonthList, TimeSelectorRunningAverage
