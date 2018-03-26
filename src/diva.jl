@@ -91,12 +91,14 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
     
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
-    
+    climatologybounds = climatology_bounds(TS)
+        
     # create the NetCDF file
     ds, ncvar, ncvar_relerr, ncvar_Lx = divand.ncfile(
         filename,(lonr,latr,depthr,timeclim),varname;
         ncvarattrib = ncvarattrib,
         ncglobalattrib = ncglobalattrib,
+        climatology_bounds = climatologybounds,
         relerr = true)
 
     # Prepare background as mean vertical profile and time evolution.

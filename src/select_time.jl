@@ -35,7 +35,7 @@ function ctimes(TS::TimeSelectorYearListMonthList)
 
     for yearrange in TS.yearlists
         @assert(length(yearrange) > 0)
-        yearc = yearrange[end ÷ 2]
+        yearc = yearrange[(end+1) ÷ 2]
         
         for monthrange in TS.monthlists
             @assert(length(monthrange) > 0)
@@ -50,6 +50,54 @@ function ctimes(TS::TimeSelectorYearListMonthList)
                 end
             
             push!(timeclim,timecentral)
+        end
+    end
+    
+    return timeclim
+end
+
+
+"""
+    timecim = timestart(TS::TimeSelectorYearListMonthList)
+
+Return the start date of all intervals defined by `TS`.
+"""
+function timesstart(TS::TimeSelectorYearListMonthList)
+    timeclim = DateTime[]
+
+    for yearrange in TS.yearlists
+        @assert(length(yearrange) > 0)
+        
+        for monthrange in TS.monthlists
+            @assert(length(monthrange) > 0)
+
+            # start time instance
+            time0 = DateTime(yearrange[1],monthrange[1],1,0,0,0)
+            push!(timeclim,time0)
+        end
+    end
+    
+    return timeclim
+end
+
+"""
+    timecim = timeend(TS::TimeSelectorYearListMonthList)
+
+Return the end date of all intervals defined by `TS`.
+"""
+
+function timesend(TS::TimeSelectorYearListMonthList)
+    timeclim = DateTime[]
+
+    for yearrange in TS.yearlists
+        @assert(length(yearrange) > 0)
+        
+        for monthrange in TS.monthlists
+            @assert(length(monthrange) > 0)
+
+            # end time instance
+            time0 = Dates.lastdayofmonth(DateTime(yearrange[end],monthrange[end],1,0,0,0))
+            push!(timeclim,time0)
         end
     end
     
@@ -90,7 +138,14 @@ struct TimeSelectorRunningAverage
 end
 
 Base.length(TS::TimeSelectorRunningAverage) = length(TS.times)
+
 ctimes(TS::TimeSelectorRunningAverage) = TS.times
+
+timesstart(TS::TimeSelectorRunningAverage) =
+    TS.times - Dates.Millisecond(round(Int,TS.window * 24*60*60*1000/2))
+
+timesend(TS::TimeSelectorRunningAverage) =
+    TS.times + Dates.Millisecond(round(Int,TS.window * 24*60*60*1000/2))
 
 function select(TS::TimeSelectorRunningAverage,index,obstime)   
     # convertion to Int is necessary on 32-bit systems
@@ -119,3 +174,29 @@ function TimeSelectorYW(years,yearwindow,monthlists)
     return TimeSelectorYearListMonthList(yearlists,monthlists)
 end
 
+
+
+"""
+    cbounds = climatology_bounds(TS)
+
+Produce an matrix for DateTimes where `cbounds[i,1]` is the start time of 
+all sub-intervals defined by this `i`-th time instance and 
+`cbounds[i,2]` is the end time of all sub-intervals defined by this `i`-th time 
+instance.
+"""
+# https://web.archive.org/web/20180326074452/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html
+
+# it has a climatology attribute, which names a variable with
+# dimensions (n,2), n being the dimension of the climatological time
+# axis. Using the units and calendar of the time coordinate variable,
+# element (i,0) of the climatology variable specifies the beginning of
+# the first subinterval and element (i,1) the end of the last
+# subinterval used to evaluate the climatological statistics with
+# index i in the time dimension.
+
+function climatology_bounds(TS)
+    b = Array{DateTime}(length(TS),2)
+    b[:,1] = timesstart(TS)
+    b[:,2] = timesend(TS)
+    return b
+end
