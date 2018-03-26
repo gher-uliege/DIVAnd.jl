@@ -14,10 +14,16 @@ function loadbigfile(fname)
     lon = zeros(nobs)
     lat = zeros(nobs)
     depth = zeros(nobs)
-    time = Array{DateTime}(nobs)
+    timeval = Array{DateTime}(nobs)
     value = zeros(nobs)
     id = Array{String}(nobs)
-
+        
+		mydate(x) = try
+            DateTime(x)
+           catch
+		    @show x
+            DateTime(Date(1900))
+        end
 
     for i in 1:nobs
         rec = split(data[i])
@@ -25,11 +31,15 @@ function loadbigfile(fname)
         lat[i] = parse(Float64,rec[2])
         value[i] = parse(Float64,rec[3])
         depth[i] = parse(Float64,rec[4])
-        time[i] = DateTime(rec[10])
+		
+		
+		
+        #timeval[i] = DateTime(rec[10])
+		timeval[i]=mydate(rec[10])
         id[i] = rec[11]
     end
 
-    return value,lon,lat,depth,time,id
+    return value,lon,lat,depth,timeval,id
 end
 
 
