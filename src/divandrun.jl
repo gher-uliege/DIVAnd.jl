@@ -10,8 +10,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
    element represents the scale factor of the corresponding dimension. Its
-   inverse is the local resolution of the grid in a particular dimension. 
-   For example, in two dimensions, `pmn` is a tuple `(pm,pn)` where `pm` is 
+   inverse is the local resolution of the grid in a particular dimension.
+   For example, in two dimensions, `pmn` is a tuple `(pm,pn)` where `pm` is
    the inverse of the local resolution in first dimension and `pn` is the the inverse
    of the local resolution in second dimension.
 
@@ -21,7 +21,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `x`: tuple with n elements. Every element represents a coordinate of
   the observations
 
-* `f`: value of the observations *minus* the background estimate (vector of 
+* `f`: value of the observations *minus* the background estimate (vector of
   `m` elements where `m` is the number of observations). See also note.
 
 * `len`: tuple with n elements. Every element represents the correlation length
@@ -51,7 +51,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `constraints`: a structure with user specified constraints (see `divand_addc`)
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
-     Zero is used for non-cyclic dimensions. One should not include a boundary 
+     Zero is used for non-cyclic dimensions. One should not include a boundary
      zone (sometimes called a ghost zone or halo) for cyclic dimensions.
      For example if the first dimension
      is cyclic, then the grid point corresponding to `mask[1,j]` should be
@@ -83,19 +83,19 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions
     to define the constrains.
 
-* `scale_len`: true (default) if the correlation length-scale should be scaled 
+* `scale_len`: true (default) if the correlation length-scale should be scaled
     such that the analytical
-    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance 
+    kernel reaches 0.6019072301972346 (besselk(1.,1.)) at the same distance
     than in 2D. The kernel behaves thus similar to
     the default kernel in two dimensions (alpha = [1,2,1]).
 
-* `alphabc` : numerical value defining how the last grid points are stretched outward. 
+* `alphabc` : numerical value defining how the last grid points are stretched outward.
    If `alphabc` is 1, the default value mimics an infinite domain.
    To have previous behaviour of finite domain use alphabc equal to `0`.
 
-* `btrunc` : if provided defines where to truncate the calculation of the 
-    covariance matrix B. Only values up and including alpha[btrunc] will be 
-    calculated. If the iterative solution is calculated, the missing terms will 
+* `btrunc` : if provided defines where to truncate the calculation of the
+    covariance matrix B. Only values up and including alpha[btrunc] will be
+    calculated. If the iterative solution is calculated, the missing terms will
     be calculated on the fly during the conjugate gradient calulcations. Default value is none and full covariance calculation.
 
 # Output:
@@ -177,7 +177,7 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
     if !isempty(velocity)
 	   s = divand_addc(s,divand_constr_advec(s,velocity));
 	end
-	
+
 	if !isempty(topographyforfluxes)
 		s = divand_addc(s,divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin));
     end

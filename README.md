@@ -13,7 +13,7 @@
 
 Please cite this paper as follows if you use `divand` in a publication:
 
-Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: divand-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, [doi:10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
+Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: divand-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
 
 
 # Installing
@@ -31,12 +31,12 @@ Inside Julia, you can download and install the package by issuing:
 Pkg.clone("https://github.com/gher-ulg/divand.jl")
 ```
 
-It is not recommended to download the source of `divand.jl` directly (using the green Clone of Download button above) because this by-passes Julias the package manager and you would need to install the dependencies of `divand.jl` manually.
+It is not recommended to download the source of `divand.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `divand.jl` manually.
 
 # Testing
 
 A test script is included to verify the correct functioning of the toolbox.
-The script should be run in a Julia session. 
+The script should be run in a Julia session.
 Make sure to be in a directory with write-access (for example your home directory).
 You can change the directory to your home directory with the `cd(homedir())` command.
 
@@ -56,7 +56,6 @@ INFO: divand tests passed
 The test suite will download some sample data.
 You need to have internet access and run the test function from a directory with write access.
 
-
 # Documentation
 
 The main routine of this toolbox is called `divand` which performs an n-dimensional variational analysis of arbitrarily located observations. Type the following in Julia to view a list of parameters:
@@ -66,9 +65,45 @@ using divand
 ?divandrun
 ```
 
+## Example
+
+[divand_simple_example_4D.jl](https://github.com/gher-ulg/divand.jl/blob/master/examples/divand_simple_example_4D.jl) is a basic example in fours dimensions. The call to `divandrun` looks like this:
+
+```julia
+fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
+
+```
+where
+`mask` is the land-sea mask, usually obtained from the bathymetry/topography,     
+`(pm,pn,po,pq)` is a *n*-element tuple (4 in this case) containing the scale factors of the grid,     
+`(xi,yi,zi,ti)` is a *n*-element tuple containing the coordinates of the final grid,       
+`(x,y,z,t)` is a *n*-element tuple containing the coordinates of the observations,        
+`f` is the data anomalies (with respect to a background field),         
+`len` is the correlation length and      
+`epsilon2` is the error variance of the observations.
+
+The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
+
 ## Note about the background field
 
 If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling divand and then add the first guess back in.
+
+## Determining the analysis parameters
+
+The parameter `epsilon2` and parameter `len` are crucial for the analysis.  
+
+`epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.      
+`len` corresponds to the correlation length and the value of `len` can sometimes be determined by physical arguments. Note that there should be one correlation length per dimension of the analysis.
+
+One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
+
+1. choose, at random, a relatively small subset of observations (about 5%). This is the validation data set.
+2. make the analysis without your validation data set
+3. compare the analysis to your validation data set and compute the RMS difference
+4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
+
+You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
+Tools to help you are included in  ([divand_cv.jl](https://github.com/gher-ulg/divand.jl/blob/master/src/divand_cv.jl)).
 
 ## Advanced usage
 
@@ -86,33 +121,11 @@ For every constrain, a structure with the following fields is passed to `divand`
 
 Internally the observations are also implemented as constraint defined in this way.
 
-## Example
-
-See the file [divand_simple_example.jl](https://github.com/gher-ulg/divand.jl/blob/master/examples/divand_simple_example.jl).
-
-
-## Determining the parameters
-
-The parameter `epsilon2` and parameter `len` are crucial for the analysis.  
-
-`epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.      
-`len` corresponds to the correlation length and the value of `len` can sometimes be determined by physical arguments. Note that there should be one correlation length per dimension of the analysis.
-
-One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
-
-1. choose, at random, a relatively small subset of observations (about 5%). This is the validation data set.
-2. make the analysis without your validation data set
-3. compare the analysis to your validation data set and compute the RMS difference
-4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
-
-You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
-Tools to help you are included in  ([divand_cv.jl](https://github.com/gher-ulg/divand.jl/blob/master/src/divand_cv.jl)).
-
 # Example data
 
-Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed through git. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
+Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
 
 
 # Fun
 
-A [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by divand based on these observations is as close as possible to the original field.
+An [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
