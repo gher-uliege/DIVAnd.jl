@@ -6,7 +6,7 @@ using StringEncodings
 # Set logging level(DEBUG, INFO, WARNING, ERROR or CRITICAL)
 loglevel = WARNING
 Logging.configure(level=loglevel);
-debug(msg) = nothing
+#debug(msg) = nothing
 
 # SeaDataNet Quality Flags
 # http://vocab.nerc.ac.uk/collection/L20/current/
@@ -315,8 +315,8 @@ parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454142.) 
 """
     v = myparse(T,s)
 
-Parse the string `s` as a type `T`. Unlike Julia's parse function 
-an error message contains the string `s` (which could not be parsed) for 
+Parse the string `s` as a type `T`. Unlike Julia's parse function
+an error message contains the string `s` (which could not be parsed) for
 debugging.
 """
 function myparse(T,s)
@@ -326,7 +326,7 @@ function myparse(T,s)
         if isa(err,ArgumentError)
             throw(ArgumentError("unable to parse $(s) as $(T)"))
         else
-            rethrow(err)        
+            rethrow(err)
         end
     end
 end
