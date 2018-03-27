@@ -345,6 +345,8 @@ function gettemplatevars(filepath,varname,project,cdilist;
                 errname = split(filepath,".nc")[1] * ".cdi_import_errors.csv",
                 ignore_errors = false)
 
+    const isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
+
     baseurl_wms = PROJECTS[project]["baseurl_wms"]
     filename = basename(filepath)
 
@@ -482,8 +484,8 @@ function gettemplatevars(filepath,varname,project,cdilist;
         "latitude_max" => maximum(lat),
         "elevation_min" => minimum(depth),
         "elevation_max" => maximum(depth),
-        "time_min" => string(minimum(obstime)),
-        "time_max" => string(maximum(obstime)),
+        "time_min" => Dates.format(minimum(obstime),isodateformat),
+        "time_max" => Dates.format(maximum(obstime),isodateformat),
         "default_field_min" => default_field_min,
         "default_field_max" => default_field_max,
         # fix me
