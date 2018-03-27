@@ -1,5 +1,5 @@
 """
-    diva3d(xi,x,value,epsilon2,len,filename,varname)
+    diva3d(xi,x,value,len,epsilon2,filename,varname)
 
 Create a 3D analysis (or a series of 3D analyses) with DIVAnd using the 
 observations `value` (vector) at the locations `x` (tuple of vector) onto
@@ -7,7 +7,28 @@ the regular grid defined by the vectors `xi` using the scaled obs. error
 variance  `epsilon2` and the correlation length `len`. The result will be saved in the 
 NetCDF file `filename` under the variable `varname`.
 
-Optional input arguments:
+## Inputs
+
+*  `xi`: tuple with n elements. Every element represents a coordinate
+  of the final grid on which the observations are interpolated
+
+* `x`: tuple with n elements. Every element represents a coordinate of
+  the observations
+
+* `value`: value of the observations
+
+* `len`: tuple with n elements. Every element represents the correlation length.
+   If `fitcorrlen`, then `len` can be the emply tuple `()` or a tuple containing
+   3 arrays of normalized correlation length which will be multiplied by the 
+   horizontal and vertical correlation length.
+
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
+
+* `filename`: The output NetCDF filename
+
+* `varname`: The name of the variable (used in the NetCDF file)
+
+## Optional input arguments:
 
 * `bathname`: path to the NetCDF bathymetry (default ../../divand-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
 * `bathisglobal`: true (default) is the bahtymetry is a global data set
@@ -26,9 +47,16 @@ Optional input arguments:
 * `distfun`: function to compute the distance (default `(xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1])`)
 * `mask`: if different from nothing, then this mask overrride land-sea mask based on the bathymetry (default `nothing`)
 * `background`: if different form, then this parameter allows to load the background from a call-back function (default `nothing`)
+* `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.)
+* `background_lenx_factor`: multiplication for `lenx` when computing the background (default 1.)
+* `background_leny_factor`: multiplication for `lenx` when computing the background (default 1.)
+* `background_lenz_factor`: multiplication for `lenx` when computing the background (default 4.)
+* `memtofit`: keyword controlling how to cut the domain depending on the memory 
+    remaining available for inversion. It is not total memory. (default 3)
+
 """
 
-function diva3d(xi,x,value,epsilon2,len,filename,varname;
+function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data"),
                 bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc"),
                 bathisglobal = true,
@@ -42,6 +70,12 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 distfun = (xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1]),
                 mask = nothing,
                 background = nothing,
+                background_espilon2_factor::Float64 = 10.,
+                background_lenx_factor::Float64 = 1.,
+                background_leny_factor::Float64 = 1.,
+                background_lenz_factor::Float64 = 4.,
+                background_len = (len[1],len[2],4*len[3]),
+                memtofit = 3,
                 )
 
     # metadata of grid
@@ -49,10 +83,7 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
     
     # metadata of observations
     lon,lat,depth,time = x
-
-    # correlation length
-    lenx,leny,lenz = map(x -> Float64.(x),len)
-
+       
     # anamorphosis transform
     trans,invtrans = transform
     
@@ -88,6 +119,23 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
         end
     end
 
+    # allocate residuals
+    residuals = similar(value)
+    
+    # correlation length
+    if len == ()
+        if !fitcorrlen
+            error("if len is () (the empty tuple) then fitcorrlen must be true")
+        end
+        
+        lenx = ones(sz)
+        leny = ones(sz)
+        lenz = ones(sz)        
+    else        
+        lenx,leny,lenz = map(x -> Float64.(x),len)
+    end
+    # unscaled copy
+    len0 = deepcopy((lenx,leny,lenz))
     
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
@@ -120,10 +168,14 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
                 va = value_trans - vm
             
                 # background profile
-                fi,vaa = divand.divand_averaged_bg(mask,(pm,pn,po),(xi,yi,zi),
-                                                   (lon[sel],lat[sel],depth[sel]),va,
-                                                   (lenx,leny,4*lenz),epsilon2*10,toaverage;
-                                                   moddim = moddim)
+                fi,vaa = divand.divand_averaged_bg(
+                    mask,(pm,pn,po),(xi,yi,zi),
+                    (lon[sel],lat[sel],depth[sel]),va,
+                    background_len,
+                    epsilon2*background_espilon2_factor,
+                    toaverage;
+                    moddim = moddim)
+                
                 fbackground = fi + vm
                 
                 fbackground,vaa
@@ -154,18 +206,20 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
             for k = 1:size(lenx,3)
                 for j = 1:size(lenx,2)
                     for i = 1:size(lenx,1)
-                        lenx[i,j,k] = leny[i,j,k] = lenxy1[k] * pi/180 * EarthRadius
-                        lenz[i,j,k] = lenz1[k]
+                        lenx[i,j,k] = len0[1][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
+                        leny[i,j,k] = len0[2][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
+                        lenz[i,j,k] = len0[2][i,j,k] * lenz1[k]
                     end
                 end
             end
         end
-        
+
         # analysis
-        fi2,erri = divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
-                                   (lon[sel],lat[sel],depth[sel]),vaa,
-                                   (lenx,leny,lenz),epsilon2,:cpme;
-                                   moddim = moddim, MEMTOFIT = 3.0)
+        fi2, erri, residuals[sel] =
+            divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
+                            (lon[sel],lat[sel],depth[sel]),vaa,
+                            (lenx,leny,lenz),epsilon2,:cpme;
+                            moddim = moddim, MEMTOFIT = memtofit)
     
         #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)   
         
@@ -185,6 +239,8 @@ function diva3d(xi,x,value,epsilon2,len,filename,varname;
     end
 
     close(ds)
+ 
+    return residuals
 end    
 
 

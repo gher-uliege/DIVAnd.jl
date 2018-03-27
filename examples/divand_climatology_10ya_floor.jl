@@ -177,8 +177,9 @@ end
 
 divand.diva3d((lonr,latr,depthr,TS),
               (lon,lat,depth,time),
-              value,epsilon2,
+              value,
               (lenx,leny,lenz),
+              epsilon2,
               filename,varname,
               bathname = bathname,
               bathisglobal = bathisglobal,

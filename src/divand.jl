@@ -363,6 +363,7 @@ include("jmBix.jl");
 include("divand_iBpHtiRHx!.jl")
 
 include("divand_save.jl");
+export saveobs
 
 include("varanalysis.jl");
 

@@ -24,7 +24,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 * `f`: value of the observations *minus* the background estimate (vector of 
   `m` elements where `m` is the number of observations). See also note.
 
-* `len`: correlation length
+* `len`: tuple with n elements. Every element represents the correlation length
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
