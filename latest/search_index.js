@@ -285,7 +285,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.ODVspreadsheet.myparse",
     "category": "function",
-    "text": "v = myparse(T,s)\n\nParse the string s as a type T. Unlike Julia\'s parse function  an error message contains the string s (which could not be parsed) for  debugging.\n\n\n\n"
+    "text": "v = myparse(T,s)\n\nParse the string s as a type T. Unlike Julia\'s parse function an error message contains the string s (which could not be parsed) for debugging.\n\n\n\n"
 },
 
 {
