@@ -1289,6 +1289,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#METADATA-cannot-be-updated-1",
+    "page": "divand.jl documentation",
+    "title": "METADATA cannot be updated",
+    "category": "section",
+    "text": "Pkg.update fails with the error message METADATA cannot be updated.If you have git installed, you can issue the command:cd ~/.julia/v0.6/METADATA\ngit reset --hardand then in Julia run Pkg.update() again.If this does not work, then, you can also delete ~/.julia (https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521) and in Julia enter Pkg.init(); Pkg.update()."
+},
+
+{
     "location": "index.html#Convert-error-in-divand_obs-1",
     "page": "divand.jl documentation",
     "title": "Convert error in divand_obs",
