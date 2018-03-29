@@ -502,8 +502,8 @@ Optional arguments:
  * `mincount` (default 50): minimum pairs per bins
  * `maxpoints` (default 10000): maximum number of pairs
  * `nmean` (default 100): number of empirical covariance to average
- * `maxlen` (default 3): maximum correlation length-scale
  * `minlen` (default 0.1): minimum correlation length-scale
+ * `maxlen` (default 3): maximum correlation length-scale
  * `smoothz` (default 100): spatial filter for the correlation scale
  * `searchz` (default 300): vertical search distance
 
@@ -514,8 +514,8 @@ function fithorzlen(x,value::Vector{T},z;
                     mincount::Int = 50,
                     maxpoints::Int = 10000,
                     nmean::Int = 100,
-                    maxlen::T = 3.,
                     minlen::T = 0.1,
+                    maxlen::T = 3.,
                     tolrel::T = 1e-4,
                     smoothz::T = 100.,
                     searchz::T = 300.,

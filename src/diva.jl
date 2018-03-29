@@ -1,10 +1,10 @@
 """
-    diva3d(xi,x,value,len,epsilon2,filename,varname)
+    residuals = diva3d(xi,x,value,len,epsilon2,filename,varname)
 
-Create a 3D analysis (or a series of 3D analyses) with DIVAnd using the 
+Create a 3D analysis (or a series of 3D analyses) with DIVAnd using the
 observations `value` (vector) at the locations `x` (tuple of vector) onto
-the regular grid defined by the vectors `xi` using the scaled obs. error 
-variance  `epsilon2` and the correlation length `len`. The result will be saved in the 
+the regular grid defined by the vectors `xi` using the scaled obs. error
+variance  `epsilon2` and the correlation length `len`. The result will be saved in the
 NetCDF file `filename` under the variable `varname`.
 
 ## Inputs
@@ -19,7 +19,7 @@ NetCDF file `filename` under the variable `varname`.
 
 * `len`: tuple with n elements. Every element represents the correlation length.
    If `fitcorrlen`, then `len` can be the emply tuple `()` or a tuple containing
-   3 arrays of normalized correlation length which will be multiplied by the 
+   3 arrays of normalized correlation length which will be multiplied by the
    horizontal and vertical correlation length.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
@@ -44,15 +44,15 @@ NetCDF file `filename` under the variable `varname`.
 * `ncglobalattrib`: Dict of NetCDF global attributes
 * `transform`: Anormphosis transformation function (default: `Anam.notransform()`)
 * `fitcorrlen`: true of the correlation length is determined from the observation (default `false`)
+* `fithorz_param`: is a dictionary with additional optional parameters for `fithorzlen`
+* `fitvert_param`: is a dictionary with additional optional parameters for `fitvertlen`
 * `distfun`: function to compute the distance (default `(xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1])`)
 * `mask`: if different from nothing, then this mask overrride land-sea mask based on the bathymetry (default `nothing`)
 * `background`: if different form, then this parameter allows to load the background from a call-back function (default `nothing`)
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.)
-* `background_lenx_factor`: multiplication for `lenx` when computing the background (default 1.)
-* `background_leny_factor`: multiplication for `lenx` when computing the background (default 1.)
-* `background_lenz_factor`: multiplication for `lenx` when computing the background (default 4.)
-* `memtofit`: keyword controlling how to cut the domain depending on the memory 
+* `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory. (default 3)
+
 
 """
 
@@ -64,36 +64,42 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 timeorigin = DateTime(1900,1,1,0,0,0),
                 moddim = [0,0,0],
                 zlevel = :surface,
-                ncvarattrib = Dict(), ncglobalattrib = Dict(),
+                ncvarattrib = Dict(),
+                ncglobalattrib = Dict(),
                 transform = Anam.notransform(),
-                fitcorrlen::Bool = false,
                 distfun = (xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1]),
                 mask = nothing,
                 background = nothing,
                 background_espilon2_factor::Float64 = 10.,
-                background_lenx_factor::Float64 = 1.,
-                background_leny_factor::Float64 = 1.,
-                background_lenz_factor::Float64 = 4.,
                 background_len = (len[1],len[2],4*len[3]),
+                fitcorrlen::Bool = false,
+                fithorz_param = Dict(
+                    :distbin => collect(0.:0.1:6),
+                    :nmean => 500,
+                ),
+                fitvert_param = Dict(
+                    :distbin => collect([0.:50:400; 500:100:600]),
+                    :nmean => 500,
+                ),
                 memtofit = 3,
                 )
 
     # metadata of grid
     lonr,latr,depthr,TS = xi
-    
+
     # metadata of observations
     lon,lat,depth,time = x
-       
+
     # anamorphosis transform
     trans,invtrans = transform
-    
+
     mask2,(pm,pn,po),(xi,yi,zi) = divand.domain(
         bathname,bathisglobal,lonr,latr,depthr;
         zlevel = zlevel)
 
     # allow to the user to override the mask
     if mask == nothing
-        mask = mask2        
+        mask = mask2
     else
         if size(mask) != size(mask2)
             error("expecting a mask of the size $(size(mask)), " *
@@ -101,18 +107,18 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         end
         # use mask in the following and not mask2
     end
-            
+
     sz = size(mask)
-    
+
     # change the depth of the observation
-    if zlevel == :floor       
+    if zlevel == :floor
         depth = copy(depth)
         info("analysis from the sea floor")
-        
+
         bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
 
         itp = interpolate((bxi,byi), bi, Gridded(Linear()))
-        
+
         # shift the depth of the observations relative to the ocean floor
         for k = 1:length(depth)
             depth[k] = itp[lon[k],lat[k]] - depth[k]
@@ -121,26 +127,26 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # allocate residuals
     residuals = similar(value)
-    
+
     # correlation length
     if len == ()
         if !fitcorrlen
             error("if len is () (the empty tuple) then fitcorrlen must be true")
         end
-        
+
         lenx = ones(sz)
         leny = ones(sz)
-        lenz = ones(sz)        
-    else        
+        lenz = ones(sz)
+    else
         lenx,leny,lenz = map(x -> Float64.(x),len)
     end
     # unscaled copy
     len0 = deepcopy((lenx,leny,lenz))
-    
+
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
     climatologybounds = climatology_bounds(TS)
-        
+
     # create the NetCDF file
     ds, ncvar, ncvar_relerr, ncvar_Lx = divand.ncfile(
         filename,(lonr,latr,depthr,timeclim),varname;
@@ -151,8 +157,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # Prepare background as mean vertical profile and time evolution.
     # Just call divand in two dimensions forgetting x and y ...
-    toaverage = [true,true,false]   
-    
+    toaverage = [true,true,false]
+
     for timeindex = 1:length(TS)
         # select observation to be used for the time instance timeindex
         sel = select(TS,timeindex,time)
@@ -166,7 +172,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 # spatial mean of observations
                 vm = mean(value_trans)
                 va = value_trans - vm
-            
+
                 # background profile
                 fi,vaa = divand.divand_averaged_bg(
                     mask,(pm,pn,po),(xi,yi,zi),
@@ -175,31 +181,29 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     epsilon2*background_espilon2_factor,
                     toaverage;
                     moddim = moddim)
-                
+
                 fbackground = fi + vm
-                
+
                 fbackground,vaa
             else
                 # anamorphosis transform must already be included to the
                 # background
                 background((lon[sel],lat[sel],depth[sel]),timeindex,value_trans,trans)
             end
-        
+
         if fitcorrlen
-            # fit correlation length            
+            # fit correlation length
             lenxy1,infoxy = divand.fithorzlen(
-                (lon[sel],lat[sel],depth[sel]),vaa,depthr,
-                nmean = 500,
-                distbin = collect(0.:0.1:6),
-                distfun = distfun    
+                (lon[sel],lat[sel],depth[sel]),vaa,depthr;
+                distfun = distfun,
+                fithorz_param...
             )
-            
-            
+
+
             lenz1,infoz = divand.fitvertlen(
-                (lon[sel],lat[sel],depth[sel]),vaa,depthr,
-                nmean = 500,
-                distbin = collect([0.:50:400; 500:100:600]),
-                distfun = distfun
+                (lon[sel],lat[sel],depth[sel]),vaa,depthr;
+                distfun = distfun,
+                fitvert_param...
             )
 
             # propagate
@@ -220,28 +224,25 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                             (lon[sel],lat[sel],depth[sel]),vaa,
                             (lenx,leny,lenz),epsilon2,:cpme;
                             moddim = moddim, MEMTOFIT = memtofit)
-    
-        #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)   
-        
+
+        #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)
+
         # sum analysis and backgrounds
         fit = fi2 + fbackground
 
         # inverse anamorphosis transformation
         fit .= invtrans.(fit)
-        
+
         plotres(timeindex,sel,fit,erri)
-        
+
         divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                           fit, erri, (:,:,:,timeindex))
-        
+
         # write to file
         sync(ds)
     end
 
     close(ds)
- 
+
     return residuals
-end    
-
-
-
+end

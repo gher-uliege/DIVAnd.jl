@@ -4,7 +4,7 @@ using DataStructures
 using Missings
 using NCDatasets
 
-# 
+#
 varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
@@ -201,5 +201,17 @@ divand.diva3d((lonr,latr,depthr,TS),
               background = divand.backgroundfile(filename,varname),
               fitcorrlen = true,
               background_len = (lenx,leny,lenz),
+              fithorz_param = Dict(
+                  :distbin => collect(0.:0.1:6),
+                  :nmean => 500,
+                  :minlen => 1.
+              ),
+              fitvert_param = Dict(
+                  :distbin => collect([0.:50:400; 500:100:600]),
+                  :nmean => 500,
+                  :minlen => 10.
+              ),
               mask = mask,
-       )
+              )
+
+nothing
