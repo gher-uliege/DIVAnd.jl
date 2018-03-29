@@ -65,6 +65,8 @@ using divand
 ?divandrun
 ```
 
+see also https://gher-ulg.github.io/divand.jl/latest/index.html
+
 ## Example
 
 [divand_simple_example_4D.jl](https://github.com/gher-ulg/divand.jl/blob/master/examples/divand_simple_example_4D.jl) is a basic example in fours dimensions. The call to `divandrun` looks like this:
