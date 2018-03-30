@@ -188,7 +188,7 @@ if isfile(filename2)
    rm(filename2) # delete the previous analysis
 end
 
-divand.diva3d((lonr,latr,depthr,TS),
+dbinfo = divand.diva3d((lonr,latr,depthr,TS),
               (lon,lat,depth,time),
               value,
               (),

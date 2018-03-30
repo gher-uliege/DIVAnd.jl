@@ -45,7 +45,13 @@ entry = collection["sea_water_temperature"]
 """
 function CFVocab(; url = CFStandardNameURL)
     r = Requests.get(url)
-    xdoc = EzXML.parsexml(readstring(r))
+    data = readstring(r)
+    try
+        xdoc = EzXML.parsexml(data)
+    catch
+        @show data[1:100]
+        error("unable to parse XML file")
+    end
     return CFVocab(xdoc)
 end
 

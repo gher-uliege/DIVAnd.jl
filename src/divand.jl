@@ -415,7 +415,8 @@ export fithorzlen
 include("utils.jl");
 
 include("Quadtrees.jl");
-
+export checkduplicates
+    
 include("divand_datainboundingbox.jl")
 
 include("divand_cpme_go.jl")

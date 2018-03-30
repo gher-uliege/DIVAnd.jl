@@ -546,6 +546,6 @@ function checkduplicates(x1::Tuple,value1,
 end
 
 
-export  QT, rsplit!, add!, show, ndims, count
+export  QT, rsplit!, add!, show, ndims, count, checkduplicates
     
 end # module

@@ -159,6 +159,37 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     # Just call divand in two dimensions forgetting x and y ...
     toaverage = [true,true,false]
 
+    # fit fitting
+    dbinfo = Dict{Symbol,Any}()
+
+    if fitcorrlen
+        kmax = length(depthr)
+
+        # horizontal info
+        pmax = length(fithorz_param[:distbin])-1
+        dbinfo[:fithorzlen] = Dict{Symbol,Any}(
+            :len => zeros(kmax,length(TS)),
+            :var0 => zeros(kmax,length(TS)),
+            :covar => zeros(pmax,kmax,length(TS)),
+            :stdcovar => zeros(pmax,kmax,length(TS)),
+            :fitcovar => zeros(pmax,kmax,length(TS)),
+            :distx => zeros(pmax)
+        )
+
+        # vertical info
+        pmax = length(fitvert_param[:distbin])-1
+        dbinfo[:fitvertlen] = Dict{Symbol,Any}(
+            :len => zeros(kmax,length(TS)),
+            :var0 => zeros(kmax,length(TS)),
+            :covar => zeros(pmax,kmax,length(TS)),
+            :stdcovar => zeros(pmax,kmax,length(TS)),
+            :fitcovar => zeros(pmax,kmax,length(TS)),
+            :distx => zeros(pmax)
+        )
+    end
+    
+
+    
     for timeindex = 1:length(TS)
         # select observation to be used for the time instance timeindex
         sel = select(TS,timeindex,time)
@@ -199,13 +230,28 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 fithorz_param...
             )
 
+            dbinfo[:fithorzlen][:len][:,timeindex] = infoxy[:len]
+            dbinfo[:fithorzlen][:var0][:,timeindex] = infoxy[:var0]
+            dbinfo[:fithorzlen][:distx][:] = infoxy[:distx]
+            for key in [:covar,:fitcovar,:stdcovar]
+                dbinfo[:fithorzlen][key][:,:,timeindex] = infoxy[key]
+            end
 
+            
             lenz1,infoz = divand.fitvertlen(
                 (lon[sel],lat[sel],depth[sel]),vaa,depthr;
                 distfun = distfun,
                 fitvert_param...
             )
 
+            dbinfo[:fitvertlen][:len][:,timeindex] = infoz[:len]
+            dbinfo[:fitvertlen][:var0][:,timeindex] = infoz[:var0]
+            dbinfo[:fitvertlen][:distx][:] = infoz[:distx]
+            for key in [:covar,:fitcovar,:stdcovar]
+                dbinfo[:fitvertlen][key][:,:,timeindex] = infoz[key]
+            end
+
+            
             # propagate
             for k = 1:size(lenx,3)
                 for j = 1:size(lenx,2)
@@ -243,6 +289,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     end
 
     close(ds)
+    dbinfo[:residuals] = residuals
 
-    return residuals
+    return dbinfo
 end
