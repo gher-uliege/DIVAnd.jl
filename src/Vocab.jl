@@ -48,11 +48,11 @@ function CFVocab(; url = CFStandardNameURL)
     data = readstring(r)
     try
         xdoc = EzXML.parsexml(data)
+        return CFVocab(xdoc)
     catch
         @show data[1:100]
         error("unable to parse XML file")
     end
-    return CFVocab(xdoc)
 end
 
 function Base.getindex(c::CFVocab,stdname::AbstractString)

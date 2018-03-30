@@ -1,12 +1,12 @@
 module ODVspreadsheet
 
-using Logging
+#using Logging
 using StringEncodings
 
 # Set logging level(DEBUG, INFO, WARNING, ERROR or CRITICAL)
-loglevel = WARNING
-Logging.configure(level=loglevel);
-#debug(msg) = nothing
+#loglevel = WARNING
+#Logging.configure(level=loglevel);
+debug(msg) = nothing
 
 # SeaDataNet Quality Flags
 # http://vocab.nerc.ac.uk/collection/L20/current/
@@ -198,6 +198,10 @@ function readODVspreadsheet(datafile)
             end
             line = split(chomp(row), "\t");
 
+            if length(line) != ncols
+                error("Expecting $(ncols) columns but $(length(line)) found at in line $(line).")
+            end
+            
             # Count empty values
             nonempty_ind = getNonEmptyInd(line);
             debug("Indices of the non-empty columns :")
@@ -416,6 +420,11 @@ function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) wher
         data[:] = fillvalue
         data_qv[:] = MISSING_VALUE
     else
+        if cn_data > length(profile)
+            @show profile,cn_data
+            error("incomplete profile record")
+        end
+        
         SDNparse!(profile[cn_data],fillmode,fillvalue,data)
 
         if (cn_data < length(locnames)) && (locnames[cn_data+1] == "QV:SEADATANET")
