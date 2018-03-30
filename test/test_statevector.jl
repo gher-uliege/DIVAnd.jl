@@ -31,11 +31,11 @@ Ezeta2,Eu2,Ev2 = unpack(sv,E);
 @test Ev2 ≈ var_v
 
 
-data = randn(sv.n,5)
-Ezeta2,Eu2,Ev2 = unpackens(sv,data)
+data0 = randn(sv.n,5)
+Ezeta2,Eu2,Ev2 = unpackens(sv,data0)
 data2 = packens(sv,(Ezeta2,Eu2,Ev2))
 @test size(Ezeta2,3) == 5
-@test data ≈ data2
+@test data0 ≈ data2
 
 
 ind = sub2ind(sv,(1,3,5))

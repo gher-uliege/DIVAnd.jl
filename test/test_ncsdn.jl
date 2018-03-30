@@ -14,7 +14,7 @@ param = "TEMPPR01"
 T = Float64
 fnames = [fname]
 
-data,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
+value,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
      qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
 
 fnames = [
@@ -26,12 +26,12 @@ fnames = [
     joinpath(basedir,"netCDF_vertical_profiles_ctd_with_instruments.nc"),
     joinpath(basedir,"netCDF_vertical_profiles_xbt_with_fall_rate_and_instruments.nc")]
 
-data,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
+value,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
      qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
 
 
 param = "TEMPET01"
 
-data,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
-     qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
+value,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
+    qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
 

@@ -8,13 +8,13 @@ fname = joinpath(dirname(@__FILE__),"..","data","sample_ODV.txt")
 odv = ODV.readODVspreadsheet(fname)
 
 T = Float64
-data,data_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID = ODV.loadprofile(T,odv,1,"SDN:P01::PSSTTS01")
+value,value_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID = ODV.loadprofile(T,odv,1,"SDN:P01::PSSTTS01")
 
 @test EDMO[1] == "1234"
 
-data,data_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID = ODV.loadprofile(T,odv,1,"SDN:P01::SLCAAAZX")
+value,value_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID = ODV.loadprofile(T,odv,1,"SDN:P01::SLCAAAZX")
 
-@test data[1] == 37.5
+@test value[1] == 37.5
 @test EDMO[1] == "1234"
 
 fnames = [joinpath(dirname(@__FILE__),"..","data",n) for n in ["sample_ODV.txt","sample_ODV2.txt"]]
