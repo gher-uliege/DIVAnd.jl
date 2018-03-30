@@ -579,7 +579,7 @@ If the ODV does not contain a semantic header (e.g. for the aggregated ODV files
 then local names must be used.
 
 ```julia-repl
-julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float32,["data_from_med_profiles_non-restricted_v2.txt"],
+julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
       ["Water body salinity"]; nametype = :localname );
 ```
 
