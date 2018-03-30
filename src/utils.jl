@@ -386,8 +386,8 @@ Smooth the function `f` defined on `x` by solving the diffusion equation
 `scale` is the spatial scales of the removed length-scales.
 It is defined as 2Tν  where T is the integration time.
 
-# Greens functions for 1D diffusion
-# 1/sqrt(4 π ν t) * exp(-x^2 / (4νt))
+It uses the Greens functions for 1D diffusion:
+1/sqrt(4 π ν t) * exp(-x^2 / (4νt))
 
 
 """
@@ -405,7 +405,7 @@ end
 Create `Nens` random fields with the correlation length `len` in 
 a domain with the mask `mask` and the metric `pmn`.
 
-See divand.divandrun for more information about these parameters.
+See `divand.divandrun` for more information about these parameters.
 """
 
 function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;

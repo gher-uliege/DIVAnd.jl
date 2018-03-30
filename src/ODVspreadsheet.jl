@@ -300,7 +300,7 @@ colnumber(sheet,localname) = findfirst(localnames(sheet) .== localname)
 
 Convert a Chronological Julian Day Number to a DateTime object. The
 reference value is taken from
-https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm
+[Chronological Julian Date](https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm)
 
 From the SDN standard:
 "A real number representing the Chronological Julian Date, which is defined as the time

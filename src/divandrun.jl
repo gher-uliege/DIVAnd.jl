@@ -61,7 +61,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
      then x and xi are not used.
 
 * `inversion`: direct solver (:chol for Cholesky factorization) or an
-     interative solver (:pcg for preconditioned conjugate gradient) can be
+     interative solver (:pcg for preconditioned conjugate gradient [1]) can be
      used.
 
 * `compPC`: function that returns a preconditioner for the primal formulation

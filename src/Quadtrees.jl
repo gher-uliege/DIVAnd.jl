@@ -422,7 +422,7 @@ end
     dupl = checkduplicates(x,value,delta,deltavalue)
 
 Based the coordinates `x` (a tuple of longitude `lons`, latitudes `lats`, depth (`zs`) 
-and time (`times` vector of DateTime)) check of points who are in the same spatio-temporal bounding
+and time (`times` vector of `DateTime`)) check of points who are in the same spatio-temporal bounding
  box of a length `delta`. `delta` is a vector with 4 elements corresponding to 
 longitude, latitude, depth and time
 (in days). `dupl` a vector of vectors containing indices of the duplicates.

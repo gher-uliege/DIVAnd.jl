@@ -1,5 +1,5 @@
 """
-mask,xyi,pmn = divand_squaredom(n,coord)
+    mask,xyi,pmn = divand_squaredom(n,coord)
 
 Create a "square" domain in `n` dimensions with the coordinates `coord`
 assuming a Catersian metric. This functions returns
@@ -16,15 +16,17 @@ end
 
 
 """
-mask,xyi,pmn = divand_squaredom(n,coord)
+    mask,xyi,pmn = divand_squaredom(n,coord)
 
 Create a "square" domain in `n` dimensions with the coordinates `coord`
 assuming a Catersian metric. This functions returns
 the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
 
-# Example
+For example:
 
-mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
+```julia-repl
+julia> mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))
+```
 """
 function divand_rectdom(coords...)
     # grid of background field
@@ -62,10 +64,9 @@ end
     mask,(pm,pn,po),(xi,yi,zi) = domain(bathname,bathisglobal,lonr,latr,depthr)
 
 Generate a 3D geospatial domain based on the topography from the NetCDF file
-`bathname`.
-if zlevel = :surface, then depthr is zero for the sea surface and positive in water (positive is down)
-if zlevel = :floor, then depthr is zero for the sea floor and positive in water (positive is up)
-
+`bathname`. If `zlevel` is `:surface`, then `depthr` is zero for the sea surface and 
+positive in water (positive is down). If `zlevel` is `:floor`, then `depthr` is 
+zero for the sea floor and positive in water (positive is up)
 """
 
 function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
