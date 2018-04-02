@@ -4,7 +4,7 @@ NCDatasets
 SpecialFunctions
 DataArrays
 DataStructures
-HTTP
+HTTP 0.6 0.6.8
 Requests
 EzXML
 StringEncodings
