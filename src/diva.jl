@@ -53,6 +53,8 @@ NetCDF file `filename` under the variable `varname`.
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory. (default 3)
 
+Any additional keywoard arguments understood by divandgo can also be used here 
+(e.g. velocity constrain)
 
 """
 
@@ -82,6 +84,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     :nmean => 500,
                 ),
                 memtofit = 3,
+                kwargs...
                 )
 
     # metadata of grid
@@ -269,7 +272,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
                             (lon[sel],lat[sel],depth[sel]),vaa,
                             (lenx,leny,lenz),epsilon2,:cpme;
-                            moddim = moddim, MEMTOFIT = memtofit)
+                            moddim = moddim, MEMTOFIT = memtofit, kwargs...)
 
         #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)
 
