@@ -407,7 +407,10 @@ The same as `loaddata`, but now the quality flag are also loaded.
 profile[i][j] is the j-th column of the i-th row of a profile.
 """
 
-function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where T
+function loaddataqv(sheet,profile,locname,fillvalue::T;
+                    fillmode = :repeat,
+                    qvlocalname = "QV:SEADATANET"
+                    ) where T
     locnames = localnames(sheet)
     lenprof = maximum(length.(profile))
 
@@ -427,7 +430,7 @@ function loaddataqv(sheet,profile,locname,fillvalue::T; fillmode = :repeat) wher
         
         SDNparse!(profile[cn_data],fillmode,fillvalue,data)
 
-        if (cn_data < length(locnames)) && (locnames[cn_data+1] == "QV:SEADATANET")
+        if (cn_data < length(locnames)) && (locnames[cn_data+1] == qvlocalname)
             data_qv[:] = profile[cn_data+1]
         end
     end
@@ -447,7 +450,10 @@ dataname is the P01 vocabulary name with the SDN prefix. If nametype is
 (expect the quality flag and `obstime`) .
 """
 
-function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
+function loadprofile(T,sheet,iprofile,dataname;
+                     nametype = :P01,
+                     qvlocalname = "QV:SEADATANET"
+                     )
     const fillvalue = T(NaN)
     const filldate_jd = 0.
     const filldate = parsejd(filldate_jd)
@@ -465,13 +471,24 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
             error("nametype should be :P01 or :localname and not $(nametype)")
         end
 
-    data,data_qv = loaddataqv(sheet,profile,localname,fillvalue)
+    data,data_qv = loaddataqv(sheet,profile,localname,fillvalue;
+                              qvlocalname = qvlocalname)
     sz = size(data)
 
     #cruise = loaddata(sheet,profile,"Cruise","")
     #station = loaddata(sheet,profile,"Station","")
     #ptype = loaddata(sheet,profile,"Type","")
-    EDMO = loaddata(sheet,profile,"EDMO_code","")
+
+    # look for EDMO_code and EDMO_CODE
+    # is both are absent return an empty value
+
+    EDMO =
+        if "EDMO_code" in locnames
+            loaddata(sheet,profile,"EDMO_code","")
+        else
+            loaddata(sheet,profile,"EDMO_CODE","")
+        end
+
     LOCAL_CDI_ID = loaddata(sheet,profile,"LOCAL_CDI_ID","")
 
     lon = loaddata(sheet,profile,"Longitude",fillvalue)
@@ -481,9 +498,11 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
     depth_qv = fill("",sz)
     if "SDN:P01::ADEPZZ01" in P01names
         localname_depth = localnames(sheet,"SDN:P01::ADEPZZ01")
-        depth[:],depth_qv[:] = loaddataqv(sheet,profile,localname_depth,fillvalue)
+        depth[:],depth_qv[:] = loaddataqv(sheet,profile,localname_depth,fillvalue;
+                                          qvlocalname = qvlocalname)
     elseif "Depth" in locnames
-        depth[:],depth_qv[:] = loaddataqv(sheet,profile,"Depth",fillvalue)
+        depth[:],depth_qv[:] = loaddataqv(sheet,profile,"Depth",fillvalue;
+                                          qvlocalname = qvlocalname)
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
@@ -503,13 +522,15 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
     # chronological julian day
     if "SDN:P01::CJDY1101" in P01names
         locname_time = localnames(sheet,"SDN:P01::CJDY1101")[1]
-        timedata,time_qv = loaddataqv(sheet,profile,locname_time,filldate_jd)
+        timedata,time_qv = loaddataqv(sheet,profile,locname_time,filldate_jd;
+                                      qvlocalname = qvlocalname)
         time = parsejd.(timedata)
     elseif "SDN:P01::DTUT8601" in P01names
         # ISO8601 format, e.g. yyyy-mm-ddThh:mm:ss.sss
 
         locname_time = localnames(sheet,"SDN:P01::DTUT8601")
-        time,time_qv = loaddataqv(sheet,profile,locname_time,filldate)
+        time,time_qv = loaddataqv(sheet,profile,locname_time,filldate;
+                                  qvlocalname = qvlocalname)
     else
         # hopefully not necessary
         for header in ["yyyy-mm-ddThh:mm:ss.sss",
@@ -518,7 +539,8 @@ function loadprofile(T,sheet,iprofile,dataname; nametype = :P01)
                        "yyyy-mm-ddThh",
                        "yyyy-mm-dd"]
             if header in locnames
-                time,time_qv = loaddataqv(sheet,profile,header,filldate)
+                time,time_qv = loaddataqv(sheet,profile,header,filldate;
+                                          qvlocalname = qvlocalname)
                 break
             end
         end
@@ -545,7 +567,8 @@ end
      profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
         qv_flags = [divand.ODVspreadsheet.GOOD_VALUE,
                     divand.ODVspreadsheet.PROBABLY_GOOD_VALUE],
-        nametype = :P01)
+        nametype = :P01,
+        qvlocalname = "QV:SEADATANET")
 
 Load all profiles in all file from the array `fnames` corresponding to
 one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
@@ -559,6 +582,9 @@ quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings
 (based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. "1" means "good value").
 One can also use the constants these constants (prefixed with
 `divand.ODVspreadsheet.`):
+
+`qvlocalname` is the column name to denote quality flags. It is assumed that the 
+quality flags follow immediatly the data column.
 
 |                    constant | value |
 |-----------------------------|-------|
@@ -589,7 +615,9 @@ No checks are done if the units are consistent.
 
 function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
-              nametype = :P01)
+              nametype = :P01,
+              qvlocalname = "QV:SEADATANET")
+
     profiles = T[]
     lons = T[]
     lats = T[]
@@ -624,7 +652,9 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
             for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
-                    obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname; nametype = nametype)
+                       obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
+                                                                  nametype = nametype,
+                                                                  qvlocalname = qvlocalname)
 
                     # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
                     obsids = String[e * "-" * l for (e,l) in zip(EDMO,LOCAL_CDI_ID)]
