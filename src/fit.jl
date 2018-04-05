@@ -581,7 +581,7 @@ function fitvertlen(x,value::Vector{T},z;
                      maxlen::T = 1000.,
                      tolrel::T = 1e-4,
                      smoothz::T = 100.,
-                     searchz::T = 2.,
+                     searchz::T = 500.,
                      searchxy::T = 0.5,
                      maxntries::Int = 10000,
                      progress = (iter,var,len,fitness) -> nothing,
@@ -716,7 +716,7 @@ function fitvertlen(x,value::Vector{T},z;
             progress = progress,
         )
 
-        println("Data points at z=$(z[k]): $(length(value)), correlation length: $(lenopt[k])")
+        println("Correlation length at z=$(z[k]): $(lenopt[k])")
         #plot(distx,covar, label = "empirical covariance")
         #plot(distx,fitcovar, label = "fitted function")
     end
