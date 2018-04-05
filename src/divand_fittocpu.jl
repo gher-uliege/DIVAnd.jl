@@ -153,7 +153,9 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
     end
     if epsilon<=0
-        warn("SO what $epsilon $problemsize $nwd $overlapping")
+	    if nwd>0
+        warn("So what $epsilon $problemsize $nwd $overlapping")
+		end
         epsilon=1E-6
     end
 

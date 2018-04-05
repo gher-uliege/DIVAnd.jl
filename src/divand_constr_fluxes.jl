@@ -80,9 +80,11 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
          packedline=statevector_pack(s.sv,(forintegral,))
 		
 		 jmw=packedline'*sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i] 
-		 #@show jmw
+		 #@show sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i] 
+		 #@show mean(sparse_diag(d[mask]))
 		 #@show size(jmw),size(A),size(A[j,:]),size(squeeze(jmw,1))
 		 
+		 #@show squeeze(jmw,1),fluxes[i][j]
 		 
          A[j+joffset,:] = A[j+joffset,:] + squeeze(jmw,1);
 		 # test is kept in case flux signs are changed to x,y instead normal direction
