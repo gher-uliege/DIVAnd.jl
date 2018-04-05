@@ -146,6 +146,13 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     # unscaled copy
     len0 = deepcopy((lenx,leny,lenz))
 
+
+    # episilon
+    epsilon2 = 
+        if ndims(epsilon2) == 0
+            fill(epsilon2,size(value))
+        end
+    
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
     climatologybounds = climatology_bounds(TS)
@@ -271,7 +278,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         fi2, erri, residuals[sel] =
             divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
                             (lon[sel],lat[sel],depth[sel]),vaa,
-                            (lenx,leny,lenz),epsilon2,:cpme;
+                            (lenx,leny,lenz),epsilon2[sel],:cpme;
                             moddim = moddim, MEMTOFIT = memtofit, kwargs...)
 
         #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)
