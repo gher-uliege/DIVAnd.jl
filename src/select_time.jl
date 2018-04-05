@@ -195,8 +195,8 @@ instance.
 # index i in the time dimension.
 
 function climatology_bounds(TS)
-    b = Array{DateTime}(length(TS),2)
-    b[:,1] = timesstart(TS)
-    b[:,2] = timesend(TS)
+    b = Array{DateTime}(2,length(TS))
+    b[1,:] = timesstart(TS)
+    b[2,:] = timesend(TS)
     return b
 end
