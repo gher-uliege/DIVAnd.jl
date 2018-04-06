@@ -394,3 +394,26 @@ since type constructors fall back to convert methods.
 ```
 
 The solution is to use the same type of all input parameters: all Float32 or all Float64.
+
+
+
+## Monthlist issue
+
+Using comments inside list can lead to unexpected results.
+
+This 
+
+```julia
+ monthlist = [
+       [1,2,3]
+       #[4,5,6]
+       ]
+```
+
+should be written as
+
+```julia
+ monthlist = [
+       [1,2,3]
+       ]
+```
