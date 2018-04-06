@@ -204,6 +204,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         # select observation to be used for the time instance timeindex
         sel = select(TS,timeindex,time)
 
+        if sum(sel) == 0
+            warning("no data at $(timeindex)")
+        end
+
         # apply the transformation
         value_trans = trans.(value[sel])
 
