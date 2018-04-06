@@ -32,3 +32,18 @@ mask,(pm,pn,po),(xi,yi,zi) = divand.domain(
 # (in fact, for this domain, all points are masked at the boundary)
 @test sum(mask[:,1,1]) < size(mask,1)/2
 
+
+
+@test divand.localresolution([0.,10.,20.]) ≈ [10.,10.,10.]
+
+@test divand.localresolution([0.,10.,20.,100,200,500]) ≈ [10.0,  10.0,  45.0,  90.0, 200.0, 300.0]
+
+
+
+mask,pmn,xyi = divand.divand_rectdom(1:5,1:2:10,[10,20,30,100,200,300])
+
+
+@test all(pmn[1] .== 1)
+@test all(pmn[2] .== 1./2)
+@test all(pmn[3][:,:,1] .== 1/10)
+@test all(pmn[3][:,:,end] .== 1/100)

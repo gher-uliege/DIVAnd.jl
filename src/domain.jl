@@ -1,3 +1,27 @@
+
+"""
+    Δcoord = localresolution(coord)
+
+Estimate the local resolution of the coordinate `coord` by finite differences.
+"""
+
+function localresolution(coord)
+    Δcoord = similar(coord)
+
+    if length(coord) == 1
+        error("coord has just one element $(coord)")
+    end
+
+    for i = 2:length(coord)-1
+        Δcoord[i] = (coord[i+1] - coord[i-1])/2
+    end
+    Δcoord[1] = coord[2] - coord[1]
+    Δcoord[end] = coord[end] - coord[end-1]
+
+    return Δcoord
+end
+
+
 """
     mask,xyi,pmn = divand_squaredom(n,coord)
 
@@ -16,10 +40,10 @@ end
 
 
 """
-    mask,xyi,pmn = divand_squaredom(n,coord)
+    mask,pmn,xyi = divand_rectdom(coord1,coord2,...)
 
-Create a "square" domain in `n` dimensions with the coordinates `coord`
-assuming a Catersian metric. This functions returns
+Create a "rectangular" domain in `n` dimensions with the coordinates `coord1`
+`coord2`... assuming a Catersian metric. This functions returns
 the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
 
 For example:
@@ -36,7 +60,7 @@ function divand_rectdom(coords...)
     mask = trues(xyi[1])
 
     # metric (inverse of the resolution)
-    pmn = ([ones(size(mask)) / (coords[i][2]-coords[i][1]) for i = 1:length(coords)]...)
+    pmn = ndgrid([1./localresolution(coords[i]) for i = 1:length(coords)]...)
 
     return mask,pmn,xyi
 end
