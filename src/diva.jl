@@ -72,7 +72,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 distfun = (xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1]),
                 mask = nothing,
                 background = nothing,
-                background_espilon2_factor::Float64 = 10.,
+                background_epsilon2_factor::Float64 = 10.,
                 background_len = (len[1],len[2],4*len[3]),
                 fitcorrlen::Bool = false,
                 fithorz_param = Dict(
@@ -219,7 +219,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     mask,(pm,pn,po),(xi,yi,zi),
                     (lon[sel],lat[sel],depth[sel]),va,
                     background_len,
-                    epsilon2*background_espilon2_factor,
+                    epsilon2[sel]*background_epsilon2_factor,
                     toaverage;
                     moddim = moddim)
 
@@ -281,7 +281,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                             (lenx,leny,lenz),epsilon2[sel],:cpme;
                             moddim = moddim, MEMTOFIT = memtofit, kwargs...)
 
-        #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2;                          progress = divand.cgprogress, tol = tol)
+        #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2[sel];                          progress = divand.cgprogress, tol = tol)
 
         # sum analysis and backgrounds
         fit = fi2 + fbackground
