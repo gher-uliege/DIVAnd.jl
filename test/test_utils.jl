@@ -113,3 +113,8 @@ f = 2. * X1 + X2
 weight = divand.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
 @test weight[1] < weight[3]
 
+
+# days since
+
+@test divand.dayssince(DateTime(1900,1,1); t0 = DateTime(1900,1,1)) == 0
+@test divand.dayssince(DateTime(1900,1,2); t0 = DateTime(1900,1,1)) == 1

@@ -525,3 +525,6 @@ function backgroundfile(fname,varname)
         return vn,value - fi
     end
 end
+
+
+dayssince(dt; t0 = DateTime(1900,1,1)) = Dates.value.(dt - t0)/1000/60/60/24;
