@@ -197,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.divand_rectdom",
     "category": "function",
-    "text": "mask,xyi,pmn = divand_squaredom(n,coord)\n\nCreate a \"square\" domain in n dimensions with the coordinates coord assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nFor example:\n\njulia> mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))\n\n\n\n"
+    "text": "mask,pmn,xyi = divand_rectdom(coord1,coord2,...)\n\nCreate a \"rectangular\" domain in n dimensions with the coordinates coord1 coord2... assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nFor example:\n\njulia> mask,(pm,pn),(xi,yi) = divand_rectdom(linspace(0,1,50),linspace(0,1,50))\n\n\n\n"
 },
 
 {
@@ -1302,6 +1302,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Convert error in divand_obs",
     "category": "section",
     "text": "The full error message:MethodError: Cannot `convert` an object of type divand.divand_constrain{Float32,Diagonal{Float64},SparseMatrixCSC{Float64,Int64}} to an object of type divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)\nThis may have arisen from a call to the constructor divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)(...),\nsince type constructors fall back to convert methods.The solution is to use the same type of all input parameters: all Float32 or all Float64."
+},
+
+{
+    "location": "index.html#Monthlist-issue-1",
+    "page": "divand.jl documentation",
+    "title": "Monthlist issue",
+    "category": "section",
+    "text": "Using comments inside list can lead to unexpected results.This  monthlist = [\n       [1,2,3]\n       #[4,5,6]\n       ]should be written as monthlist = [\n       [1,2,3]\n       ]"
 },
 
 ]}
