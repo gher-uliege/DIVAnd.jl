@@ -52,6 +52,9 @@ NetCDF file `filename` under the variable `varname`.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.)
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory. (default 3)
+* `niter_e`: Number of uterations to estimate the optimal scale factor of 
+   `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
+    is 1 (i.e. no optimization is done).
 
 Any additional keywoard arguments understood by divandgo can also be used here 
 (e.g. velocity constrain)
@@ -84,6 +87,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     :nmean => 500,
                 ),
                 memtofit = 3,
+                niter_e::Int = 1,
                 kwargs...
                 )
 
@@ -198,7 +202,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         )
     end
     
-
+    dbinfo[:factore] = zeros(niter_e,length(TS))
     
     for timeindex = 1:length(TS)
         # select observation to be used for the time instance timeindex
@@ -278,12 +282,29 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             end
         end
 
-        # analysis
-        fi2, erri, residuals[sel] =
-            divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
-                            (lon[sel],lat[sel],depth[sel]),vaa,
-                            (lenx,leny,lenz),epsilon2[sel],:cpme;
-                            moddim = moddim, MEMTOFIT = memtofit, kwargs...)
+
+        # factore is the total (cumulative) scale factor for
+        # espilon2 (Desroziers)
+
+        factore = 1.
+        fi2 = zeros(sz)
+        erri = zeros(sz)
+
+        for i = 1:niter_e
+            # analysis
+            fi2, erri, residuals[sel], qcvalues, scalefactore =
+                divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
+                                (lon[sel],lat[sel],depth[sel]),
+                                vaa,
+                                (lenx,leny,lenz),
+                                factore * epsilon2[sel],
+                                :cpme;
+                                moddim = moddim, MEMTOFIT = memtofit, kwargs...)
+
+            factore = scalefactore * factore
+
+            dbinfo[:factore][i,timeindex] = factore
+        end
 
         #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2[sel];                          progress = divand.cgprogress, tol = tol)
 

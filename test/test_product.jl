@@ -188,30 +188,32 @@ if isfile(filename2)
    rm(filename2) # delete the previous analysis
 end
 
-dbinfo = divand.diva3d((lonr,latr,depthr,TS),
-              (lon,lat,depth,time),
-              value,
-              (),
-              epsilon2,
-              filename2,varname,
-              bathname = bathname,
-              bathisglobal = bathisglobal,
-              ncvarattrib = ncvarattrib,
-              ncglobalattrib = ncglobalattrib,
-              background = divand.backgroundfile(filename,varname),
-              fitcorrlen = true,
-              background_len = (lenx,leny,lenz),
-              fithorz_param = Dict(
-                  :distbin => collect(0.:0.1:6),
-                  :nmean => 500,
-                  :minlen => 1.
-              ),
-              fitvert_param = Dict(
-                  :distbin => collect([0.:50:400; 500:100:600]),
-                  :nmean => 500,
-                  :minlen => 10.
-              ),
-              mask = mask,
-              )
+dbinfo = divand.diva3d(
+    (lonr,latr,depthr,TS),
+    (lon,lat,depth,time),
+    value,
+    (),
+    epsilon2,
+    filename2,varname,
+    bathname = bathname,
+    bathisglobal = bathisglobal,
+    ncvarattrib = ncvarattrib,
+    ncglobalattrib = ncglobalattrib,
+    background = divand.backgroundfile(filename,varname),
+    fitcorrlen = true,
+    background_len = (lenx,leny,lenz),
+    fithorz_param = Dict(
+        :distbin => collect(0.:0.1:6),
+        :nmean => 50,
+        :minlen => 1.
+    ),
+    fitvert_param = Dict(
+        :distbin => collect([0.:50:400; 500:100:600]),
+        :nmean => 50,
+        :minlen => 10.
+    ),
+    mask = mask,
+    niter_e = 2,
+)
 
 nothing

@@ -16,7 +16,7 @@
 *  `erri`: relative error field on the same grid as fi. () if errormethod is fixed to `:none`
 * `residuals`: array of residuals at data points. For points not on the grid or on land: `NaN`
 * `qcvalues`: if `QCMETHOD=` is provided, the output array contains the quality flags otherwise qcvalues is (). For points on land or not on the grid: 0
-* `scalefactore`: Desroziers scale factor for epsilon2
+* `scalefactore`: Desroziers et al. 2005 (doi: 10.1256/qj.05.108) scale factor for `epsilon2`
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
