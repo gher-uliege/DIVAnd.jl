@@ -358,8 +358,7 @@ function SDNparse!(col,fillmode,fillvalue,data)
 
                 data[i] = data[i-1]
             else
-                #@show length(data),i
-                data[i] == fillvalue
+                data[i] = fillvalue
             end
         else
             if eltype(data) <: AbstractString
@@ -472,6 +471,7 @@ function loadprofile(T,sheet,iprofile,dataname;
         end
 
     data,data_qv = loaddataqv(sheet,profile,localname,fillvalue;
+                              fillmode = :fill,
                               qvlocalname = qvlocalname)
     sz = size(data)
 
