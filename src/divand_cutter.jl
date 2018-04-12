@@ -78,10 +78,6 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     end
 
 
-
-
-
-
     #####################################################################################
     # Define overlapping and stepsize
 
@@ -103,19 +99,6 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     #####################################################################################
     # Now prepare the window infos
 
-    # Keep pointers to place where solution is found in output grid
-
-    # window corners in main problem
-    iw1=zeros(Int,n)
-    iw2=zeros(Int,n)
-
-    # Solution indexes in submodel
-    isol1=zeros(Int,n)
-    isol2=zeros(Int,n)
-
-    # Range for final storage
-    istore1=zeros(Int,n)
-    istore2=zeros(Int,n)
 
     # Running pointer
     ij=ones(Int,n)
@@ -129,14 +112,28 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
 
     ntiles=prod(subsz)
 
-
-    windowlist=Array{Tuple}(ntiles)
+    windowlist = Vector{NTuple{6,Vector{Int}}}(ntiles)
 
     iw=0
     for cr in CartesianRange(subsz)
         ij = [[(cr[i]-1)*stepsize[i]+1  for i = 1:n]...]
 
         iw=iw+1
+
+        # Keep pointers to place where solution is found in output grid
+
+        # window corners in main problem
+        iw1=zeros(Int,n)
+        iw2=zeros(Int,n)
+        
+        # Solution indexes in submodel
+        isol1=zeros(Int,n)
+        isol2=zeros(Int,n)
+
+        # Range for final storage
+        istore1=zeros(Int,n)
+        istore2=zeros(Int,n)
+
         #
         for nd=1:n
 
@@ -178,9 +175,8 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
         end
         # end loop over all dimensions
 
-        # Need a deepcopy here otherwise last values everywhere as only memory adress would be used
         #@show (iw1,iw2,isol1,isol2,istore1,istore2,)
-        windowlist[iw]=deepcopy((iw1,iw2,isol1,isol2,istore1,istore2,))
+        windowlist[iw]=(iw1,iw2,isol1,isol2,istore1,istore2,)
 
     end
     # end loop over all windows

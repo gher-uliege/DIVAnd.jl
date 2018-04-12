@@ -491,7 +491,8 @@ function fit(x,v,distbin,mincount;
 end
 
 
-debug(x...) = nothing
+#debug(x...) = nothing
+debug = info
 
 
 function distfun_euclid(x0,x1)
@@ -726,7 +727,7 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
 
         # if not working force simple use of variance
         if ((ifo == 0) && (iw[nn] != 0) && (covar[nn] < 0) && (nn > 4))
-            debug("First zero crossing: ",nn,ddist,nn*ddist)
+            debug("First zero crossing: ",nn," ",ddist," ",nn*ddist)
 
             RLz=ddist*nn
             ifo=1
@@ -749,7 +750,6 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
     np=floor(Int,ncross*0.95-0*nstart)
     range = nstart:(nstart+np-1)
 
-
     distx = (0:nbmax-1) * dx
 
    # only the distance range to be used for the optimization
@@ -758,11 +758,12 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
    covarweight_range = view(covarweight,range)
 
     if (np < 10)
-        warn("Too few data. Will use guesses")
+        @show nbmax, n, nsamp
+        warn("Too few data. Will use guesses (np = $(np), RLz = $(RLz), )")
         RL=RLz
         VAR=0.01*variance
         SN=VAR/(variance-VAR+1.E-10)
-        VARBAK=0.99*variance
+        varbak = 0.99*variance
         range = nstart:(nstart+np-1)
         range = 1:0 # empty range
     else
@@ -797,18 +798,19 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
     fitcovar = VAR * (distx./RL) .* besselk.(1,distx./RL)
 
     dbinfo = Dict{Symbol,Any}(
-#        :covar => covar,
-#        :fitcovar => fitcovar,
-#        :distx => distx,
+        :covar => covar,
+        :fitcovar => fitcovar,
+        :distx => distx,
         :rqual => rqual,
         :range => range,
         :covarweight => covarweight,
+        :distx => distx,
         :sn => SN
     )
     #return RL,SN,varbak,dbinfo
     stdcovar = 1./sqrt.(covarweight)
 
-    return varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo
+    return varbak,RL,dbinfo
 end
 
 # this function used to be called forfit in fitlsn.f
@@ -889,6 +891,7 @@ function fithorzlen(x,value::Vector{T},z;
     stdcovar = Array{T,2}(pmax,kmax)
     covar = Array{T,2}(pmax,kmax)
     distx = Vector{T}(pmax)
+    fitinfos = Vector{Dict{Symbol,Any}}(pmax)
 
     for k = 1:length(z)
         sel = (abs.(x[3] - z[k]) .< searchz)
@@ -904,7 +907,7 @@ function fithorzlen(x,value::Vector{T},z;
         #     tolrel = tolrel,
         #     progress = progress,
         # )
-        var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fitlen(
+        var0opt[k],lenopt[k],fitinfos[k] = divand.fitlen(
             xsel,v,nsamp
         )
 
@@ -922,7 +925,9 @@ function fithorzlen(x,value::Vector{T},z;
         :distx => distx,
         :covar => covar,
         :stdcovar => stdcovar,
-        :fitcovar => fitcovar)
+        :fitcovar => fitcovar,
+        :fitinfos => fitinfos,
+   )
 end
 
 

@@ -248,12 +248,12 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 fithorz_param...
             )
 
-            dbinfo[:fithorzlen][:len][:,timeindex] = infoxy[:len]
-            dbinfo[:fithorzlen][:var0][:,timeindex] = infoxy[:var0]
-            dbinfo[:fithorzlen][:distx][:] = infoxy[:distx]
-            for key in [:covar,:fitcovar,:stdcovar]
-                dbinfo[:fithorzlen][key][:,:,timeindex] = infoxy[key]
-            end
+            # dbinfo[:fithorzlen][:len][:,timeindex] = infoxy[:len]
+            # dbinfo[:fithorzlen][:var0][:,timeindex] = infoxy[:var0]
+            # dbinfo[:fithorzlen][:distx][:] = infoxy[:distx]
+            # for key in [:covar,:fitcovar,:stdcovar]
+            #     dbinfo[:fithorzlen][key][:,:,timeindex] = infoxy[key]
+            # end
 
             
             lenz1,infoz = divand.fitvertlen(
