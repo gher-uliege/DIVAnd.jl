@@ -50,6 +50,9 @@ maxlen = 0.1
 
 var0opt = covar[1]
 L = linspace(minlen,maxlen,100);
+
+mu,K,len_scale = divand.divand_kernel(2,[1,2,1])
+
 J(L) = sum(((covar - var0opt * K.(distx * len_scale/L))./stdcovar).^2)
 Jmin,imin = findmin(J.(L))
 lenopt = L[imin]
@@ -61,3 +64,36 @@ var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
 
 @test lensopt ≈ lenx rtol=0.2
 @test var0opt ≈ 1 rtol=0.5
+
+
+# port of DIVA fit from Fortran
+
+A = readdlm(joinpath(dirname(@__FILE__),"..","data","testdata.txt")) :: Array{Float64,2}
+n = size(A,1)
+x = A[:,1]
+y = A[:,2]
+d = A[:,3]
+weight = A[:,4]
+
+# use all pairs
+nsamp = 0
+varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
+                                                        nsamp)
+
+# reference value are  from DIVA fit (Fortran version)
+
+@test 1.5600269181532382 ≈ RL
+@test 1.3645324462297863 ≈ dbinfo[:sn]
+@test 25.431167981407523 ≈ varbak
+@test 0.81123489141464233 ≈ dbinfo[:rqual]
+
+# random samples
+nsamp = 1000
+varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
+                                                        nsamp)
+
+@test 1.5534502062950533 ≈ RL         rtol=0.01
+@test 1.366798995586233 ≈ dbinfo[:sn] rtol=0.01
+@test 25.449015845245974 ≈ varbak     rtol=0.01
+@test 0.8042635826058093 ≈ dbinfo[:rqual] rtol=0.01
+

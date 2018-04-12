@@ -490,6 +490,358 @@ function fit(x,v,distbin,mincount;
     return var0opt,lensopt,distx,covar,fitcovar
 end
 
+
+debug(x...) = nothing
+
+
+function distfun_euclid(x0,x1)
+    dist = zero(x0[1])
+    for i = 1:length(x0)
+        dist += (x0[i] - x1[i])^2
+    end
+    return dist = sqrt(dist)
+end
+
+
+"""
+  varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo =
+     fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
+"""
+# this function used to be called lfit in fitlsn.f
+
+function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
+    # number of dimensions
+    ndims = length(x)
+
+    # number of samples
+    n = length(d)
+
+    # per default operate on all data
+    nop = n
+
+    if nsamp != 0
+        srand(n)
+        nop = nsamp
+
+        debug("will generate random couples")
+
+        if (nsamp > n)
+            warn("Strange to ask for more samples than available from data; will proceed")
+        end
+    end
+
+    # number of couples
+    ncouples = nop*(nop-1) ÷ 2
+
+    distcouples = Vector{Float64}(ncouples)
+    icouples = Vector{Int}(ncouples)
+    jcouples = Vector{Int}(ncouples)
+
+    rqual = 0.
+    maxdist = 0.
+    meandist = 0.
+    dist = 0.
+    rjjj = 0.
+
+    if (n > 10000) && (nsamp != 0)
+        warn("Be patient big data set: ",n)
+    end
+
+    # compute mean and variance using the weights
+    datamean = 0.
+    datavar = 0.
+    rn = 0.
+
+    for i=1:n
+        datamean=datamean+d[i]*weight[i]
+        datavar=datavar+d[i]*d[i]*weight[i]
+        rn=rn+weight[i]
+    end
+
+    datamean=datamean/rn
+    variance=datavar/rn - datamean^2
+    debug("Number of data points: ", n)
+    debug("data mean: ", datamean)
+    debug("data variance: ",variance)
+
+    debug("Now calculating distance distribution")
+
+    x0 = zeros(ndims)
+    x1 = zeros(ndims)
+
+    if (nsamp == 0)
+        iiii=0
+        for i=1:n
+
+            nww=max((n ÷ 10),1)
+            if (mod(i,nww) == 0)
+                debug(i," out of ", n)
+            end
+
+            for j=i+1:n
+                for l = 1:ndims
+                    x0[l] = x[l][i]
+                    x1[l] = x[l][j]
+                end
+                dist = distfun(x0,x1)
+
+                iiii=iiii+1
+                distcouples[iiii]=dist
+                icouples[iiii]=i
+                jcouples[iiii]=j
+
+                meandist=meandist+dist
+                if (dist > maxdist)
+                    maxdist = dist
+                end
+            end
+        end
+        #@show iiii, nop*(nop-1) ÷ 2
+
+        rjjj = rn*(rn-1.)*0.5
+    else
+        for iiii = 1:(nsamp*(nsamp-1)) ÷ 2
+
+            # pick two random points
+            j = rand(1:n)
+            i = j
+            while (i == j)
+                i = rand(1:n)
+            end
+
+            # compute the distance
+            for l = 1:ndims
+                x0[l] = x[l][i]
+                x1[l] = x[l][j]
+            end
+
+            dist = distfun(x0,x1)
+
+            distcouples[iiii]=dist
+            icouples[iiii]=i
+            jcouples[iiii]=j
+
+            meandist = meandist+dist
+            if (dist > maxdist)
+                maxdist = dist
+            end
+        end
+        rjjj = nsamp*(nsamp-1) / 2
+    end
+
+    debug("Number of data couples considered: ",rjjj)
+    meandist=meandist/rjjj
+
+    debug("maximum distance between points: ",maxdist)
+
+    debug("Mean distance between points: ",meandist)
+
+    rnbins =
+        if (nsamp == 0)
+            min(80.,rn^2 / maxdist * meandist / 20.)
+        else
+            min(80.,nsamp^2 / maxdist * meandist / 20.)
+        end
+
+    debug("Number of probable active bins: ",rnbins)
+
+    ddist = meandist/rnbins
+    nbmax = floor(Int,maxdist / ddist + 1)
+    debug("distance for binning: ",ddist)
+    debug("maximum number of bins: ",nbmax)
+
+    if (nsamp == 0)
+        debug("Average number of pairs in each bin: ", rn*rn/nbmax/2)
+    else
+        debug("Average number of pairs in each bin: ", nsamp*nsamp/nbmax/2)
+    end
+
+    # d_i' are anomalies (d_i - datamean)
+
+    # sum of d_i' * d_j' * w_i  * w_j
+    covar = zeros(nbmax)
+
+    # sum of (d_i' * d_j')² * w_i  * w_j
+    w2 = zeros(nbmax)
+
+    # sum of w_i  * w_j
+    iw = zeros(nbmax)
+
+    covarweight = zeros(nbmax)
+
+    for iiii = 1:ncouples
+        dist=distcouples[iiii]
+        i=icouples[iiii]
+        j=jcouples[iiii]
+        nb=floor(Int,dist/ddist+1)
+        covar[nb]=covar[nb] + (d[i]-datamean)*(d[j]-datamean) * weight[i]*weight[j]
+        w2[nb]=w2[nb] +((d[i]-datamean)*(d[j]-datamean))^2 * weight[i]*weight[j]
+        iw[nb]=iw[nb] + weight[i]*weight[j]
+    end
+
+    ifo = 0
+    covarweightmean = 0.
+    for nn=1:nbmax
+        covarweight[nn] = 0.
+        if (iw[nn] > 0)
+            covar[nn]=covar[nn]/iw[nn]
+            w2[nn]=w2[nn]/iw[nn]-covar[nn]^2
+            if (w2[nn] > 1E-8*covar[nn]^2)
+                covarweight[nn]=1/w2[nn]^2*(iw[nn]-1)
+            end
+            # Uniform weight
+            covarweightmean=covarweightmean+covarweight[nn]
+        end
+    end
+
+    for nn=1:nbmax
+        #     @show "??",nn,covarweight[nn],covarweightmean,nbmax
+        covarweight[nn]=covarweightmean/nbmax+covarweight[nn]
+        if (iw[nn] < 1)
+            covarweight[nn]=0
+        end
+    end
+
+
+    # 3 iterations of a Laplacian smoother
+    for jj=1:3
+        covarm=covar[1]
+        for nn=1:nbmax
+            nnp=min(nbmax,nn+1)
+            covarf=covar[nn]+0.25*(covar[nnp]+covarm-2*covar[nn])
+            covarm=covar[nn]
+            covar[nn]=covarf
+        end
+    end
+
+    ncross = 5
+    RLz = -1.
+    for nn=1:nbmax
+        nnp=min(nbmax,nn+1)
+
+        # if not working force simple use of variance
+        if ((ifo == 0) && (iw[nn] != 0) && (covar[nn] < 0) && (nn > 4))
+            debug("First zero crossing: ",nn,ddist,nn*ddist)
+
+            RLz=ddist*nn
+            ifo=1
+            ncross=nn
+        end
+    end
+
+
+    # Now try to fit Bessel function using only the data from ddist to zero-crossing.
+    # extrapolate to zero to get S/N ratio
+    debug("Now trying to fit Bessel covariance function")
+    errmin = 1.E35
+    VAR = variance
+    RL=RLz
+
+    x0=RLz/20
+    dx=ddist
+    nstart=max(floor(Int,x0 / dx)+1,2)
+    x0=(nstart-1)*dx
+    np=floor(Int,ncross*0.95-0*nstart)
+    range = nstart:(nstart+np-1)
+
+
+    distx = (0:nbmax-1) * dx
+
+   # only the distance range to be used for the optimization
+   distx_range = distx[range]
+   covar_range = view(covar,range)
+   covarweight_range = view(covarweight,range)
+
+    if (np < 10)
+        warn("Too few data. Will use guesses")
+        RL=RLz
+        VAR=0.01*variance
+        SN=VAR/(variance-VAR+1.E-10)
+        VARBAK=0.99*variance
+        range = nstart:(nstart+np-1)
+        range = 1:0 # empty range
+    else
+        for ii=1:1000
+            VARtest=variance      # 17/03/2015
+            RLtest=RLz/10+(ii-1)*RLz/500.
+
+            err,VARtest = misfit(distx_range,covar_range,covarweight_range,RLtest)
+
+            #     @show "RL??",RLtest,VARtest,err,errmin
+            if (err < errmin)
+                RL=RLtest
+                VAR=VARtest
+                errmin=err
+            end
+        end
+
+        debug("Best fit: ",RL," ",VAR)
+        if (VAR > 0.9999*variance)
+            VAR = variance
+            SN = 10000.
+            varbak = VAR
+        else
+            SN=VAR/(variance-VAR+1.E-10)
+        end
+        debug("S/N: ",SN)
+        debug("Relative misfit of fit: ",sqrt(errmin)/VAR)
+        rqual=1-sqrt(errmin)/VAR
+        varbak=VAR
+    end
+
+    fitcovar = VAR * (distx./RL) .* besselk.(1,distx./RL)
+
+    dbinfo = Dict{Symbol,Any}(
+#        :covar => covar,
+#        :fitcovar => fitcovar,
+#        :distx => distx,
+        :rqual => rqual,
+        :range => range,
+        :covarweight => covarweight,
+        :sn => SN
+    )
+    #return RL,SN,varbak,dbinfo
+    stdcovar = 1./sqrt.(covarweight)
+
+    return varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo
+end
+
+# this function used to be called forfit in fitlsn.f
+# this function used to be called forfit in fitlsn.f
+function misfit(distx,covar,covarweight,RL)
+    n = length(covar)
+    err = 0.
+    errb = 0.
+
+    # integrate the covariance and the theoretical correlation
+    # over all distances
+    # Their ratio is the variance
+
+    for i=1:n
+        eps = distx[i]/RL
+        errb = errb + eps*besselk(1,eps) * covarweight[i]
+        err = err + covar[i]*covarweight[i]
+    end
+
+    var=err/errb
+
+    # compute the missfit
+    err = 0.
+    ww3=0.
+
+    for i=1:n
+        eps = distx[i]/RL
+        covardiff = covar[i] - var*eps*besselk(1,eps)
+        err = err + (covardiff^2) * covarweight[i]
+        ww3 = ww3 + covarweight[i]
+      end
+
+    err=err/ww3
+    return err,var
+end
+
+
+
 """
     lenz,dbinfo = divand.fithorzlen(x,value,z)
 
