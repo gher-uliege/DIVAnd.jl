@@ -68,7 +68,10 @@ var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
 
 # port of DIVA fit from Fortran
 
+#fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/smalltestdata.txt"
+#A = readdlm(fname) :: Array{Float64,2}
 A = readdlm(joinpath(dirname(@__FILE__),"..","data","testdata.txt")) :: Array{Float64,2}
+
 n = size(A,1)
 x = A[:,1]
 y = A[:,2]
@@ -81,19 +84,28 @@ varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
                                                         nsamp)
 
 # reference value are  from DIVA fit (Fortran version)
+# git commit
+# cb243004ffca6b49797f53dc3ccc357d71759cd1 (Fri Mar 30 16:48:10 2018 +0200)
 
-@test 1.5600269181532382 ≈ RL
-@test 1.3645324462297863 ≈ dbinfo[:sn]
-@test 25.431167981407523 ≈ varbak
-@test 0.81123489141464233 ≈ dbinfo[:rqual]
+@test 1.43710339 ≈ RL                       rtol=1e-6
+@test 1.39825165 ≈ dbinfo[:sn]              rtol=1e-6
+@test 24.1159477 ≈ varbak                   rtol=1e-6
+@test 0.75906783342361450 ≈ dbinfo[:rqual]  rtol=1e-6
 
 # random samples
-nsamp = 1000
+nsamp = 150
 varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
                                                         nsamp)
 
-@test 1.5534502062950533 ≈ RL         rtol=0.01
-@test 1.366798995586233 ≈ dbinfo[:sn] rtol=0.01
-@test 25.449015845245974 ≈ varbak     rtol=0.01
-@test 0.8042635826058093 ≈ dbinfo[:rqual] rtol=0.01
+# reference value from Julia implementation with seed set to 150
+# fluctuations are large for different seeds
 
+@test 2.6803941824646085  ≈ RL             rtol=0.1
+@test 0.8076378487032164  ≈ dbinfo[:sn]    rtol=0.1
+@test 18.48072398826336   ≈ varbak         rtol=0.1
+@test 0.7338792203547216  ≈ dbinfo[:rqual] rtol=0.1
+
+  
+  
+  
+       
