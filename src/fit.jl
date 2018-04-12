@@ -503,6 +503,11 @@ function distfun_euclid(x0,x1)
 end
 
 
+function fitlen(x::Tuple,d,nsamp; kwargs...)
+    weight = ones(size(d))    
+    return fitlen(x,d,weight,nsamp; kwargs...)
+end
+
 """
   varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo =
      fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
@@ -873,6 +878,7 @@ function fithorzlen(x,value::Vector{T},z;
                     searchz::T = 300.,
                     progress = (iter,var,len,fitness) -> nothing,
                     distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
+                    nsamp = 0
                     ) where T
 
     pmax = length(distbin)-1
@@ -889,14 +895,17 @@ function fithorzlen(x,value::Vector{T},z;
         xsel = (x[1][sel],x[2][sel]);
         v = value[sel] - mean(value[sel]);
 
-        var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
-            xsel,v,distbin,mincount;
-            maxpoints = maxpoints,
-            nmean = nmean,
-            minlen = minlen,
-            maxlen = maxlen,
-            tolrel = tolrel,
-            progress = progress,
+        # var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
+        #     xsel,v,distbin,mincount;
+        #     maxpoints = maxpoints,
+        #     nmean = nmean,
+        #     minlen = minlen,
+        #     maxlen = maxlen,
+        #     tolrel = tolrel,
+        #     progress = progress,
+        # )
+        var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fitlen(
+            xsel,v,nsamp
         )
 
         println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
