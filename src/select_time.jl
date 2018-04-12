@@ -20,6 +20,14 @@ If a month range spans beyond December, then all Months must be specified, e.g.
 example `[2:4,5:6,7:9,[10,11,12,1]]` or `[2:4,5:6,7:9,[10:12;1]]`.
 However using `[2:4,5:6,7:9,10:1]` (bug!) will result in
 an empty month range.
+
+## Example
+
+# seasonal climatology using all data from 1900 to 2017
+# for winter (December-February), spring, summer, autumn
+
+TS = divand.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
+
 """
 
 
