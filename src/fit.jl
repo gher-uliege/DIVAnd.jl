@@ -939,7 +939,7 @@ function fitvertlen(x,value::Vector{T},z;
                      maxpoints::Int = 10000,
                      nmean::Int = 100,
                      minlen::T = 10.,
-                     maxlen::T = 1000.,
+                     maxlen::T = 100.,
                      tolrel::T = 1e-4,
                      smoothz::T = 100.,
                      searchz::T = 500.,
