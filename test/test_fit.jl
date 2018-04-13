@@ -1,6 +1,7 @@
 using Base.Test
-import divand
-
+#import divand
+include("../src/fit.jl")
+#=
 # test data for basic statistics
 x = [1.,2.,3.,4.]
 y = -[1.,2.,3.,4.]
@@ -64,12 +65,14 @@ var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
 
 @test lensopt ≈ lenx rtol=0.2
 @test var0opt ≈ 1 rtol=0.5
-
-
+=#
 # port of DIVA fit from Fortran
 
 #fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/smalltestdata.txt"
 #A = readdlm(fname) :: Array{Float64,2}
+
+#const fitlen = divand.fitlen
+
 A = readdlm(joinpath(dirname(@__FILE__),"..","data","testdata.txt")) :: Array{Float64,2}
 
 n = size(A,1)
@@ -80,8 +83,8 @@ weight = A[:,4]
 
 # use all pairs
 nsamp = 0
-varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
-                                                        nsamp)
+@time varbak,RL,dbinfo = fitlen((x,y),d,weight,nsamp)
+@time varbak,RL,dbinfo = fitlen((x,y),d,weight,nsamp)
 
 # reference value are  from DIVA fit (Fortran version)
 # git commit
@@ -94,7 +97,7 @@ varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
 
 # random samples
 nsamp = 150
-varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
+varbak,RL,dbinfo = fitlen((x,y),d,weight,
                                                         nsamp)
 
 # reference value from Julia implementation with seed set to 150
@@ -109,3 +112,19 @@ varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo = divand.fitlen((x,y),d,weight,
   
   
        
+fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/testdata.txt"
+A = readdlm(fname) :: Array{Float64,2}
+
+n = size(A,1)
+x = A[:,1]
+y = A[:,2]
+d = A[:,3]
+weight = A[:,4]
+
+# use all pairs
+nsamp = 0
+@time varbak,RL,dbinfo = fitlen((x,y),d,weight,nsamp)
+@test 1.56002688           ≈ RL                       rtol=1e-6
+@test 1.36453283           ≈ dbinfo[:sn]              rtol=1e-6
+@test 25.4311714           ≈ varbak                   rtol=1e-6
+@test 0.81123489141464233  ≈ dbinfo[:rqual]  rtol=1e-6

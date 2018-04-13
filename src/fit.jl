@@ -504,6 +504,47 @@ function distfun_euclid(x0,x1)
 end
 
 
+type AllCoupels
+    n:: Int
+end
+
+function Base.start(iter::AllCoupels)
+    return (1,1)
+end
+
+function Base.next(iter::AllCoupels,state)
+    i,j = state
+    if j < iter.n
+        return ((i,j+1),(i,j+1))
+    end
+    return ((i+1,i+2),(i+1,i+2))
+end
+    
+function Base.done(iter::AllCoupels,state)
+    i,j = state
+    return (i == iter.n-1) && (j == iter.n)
+end
+
+type RandomCoupels
+    n::Int
+    count::Int
+end
+
+Base.start(iter::RandomCoupels) = 0
+
+function Base.next(iter::RandomCoupels,state)
+    # pick two random points
+    j = rand(1:iter.n)
+    i = j
+    while (i == j)
+        i = rand(1:iter.n)
+    end
+
+    return ((i,j),state+1)
+end
+Base.done(iter::RandomCoupels,state) = state == iter.count
+
+
 function fitlen(x::Tuple,d,nsamp; kwargs...)
     weight = ones(size(d))    
     return fitlen(x,d,weight,nsamp; kwargs...)
@@ -516,6 +557,21 @@ end
 # this function used to be called lfit in fitlsn.f
 
 function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
+    # number of samples
+    n = length(d)
+
+    iter = 
+        if (nsamp == 0)
+            AllCoupels(n)
+        else
+            RandomCoupels(n,(nsamp*(nsamp-1)) ÷ 2)            
+        end
+
+    return fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
+end
+
+
+function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
     # number of dimensions
     ndims = length(x)
 
@@ -575,16 +631,10 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
     x0 = zeros(ndims)
     x1 = zeros(ndims)
 
+    
     if (nsamp == 0)
         iiii=0
-        for i=1:n
-
-            nww=max((n ÷ 10),1)
-            if (mod(i,nww) == 0)
-                debug(i," out of ", n)
-            end
-
-            for j=i+1:n
+        for (i,j) in iter
                 for l = 1:ndims
                     x0[l] = x[l][i]
                     x1[l] = x[l][j]
@@ -600,21 +650,12 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
                 if (dist > maxdist)
                     maxdist = dist
                 end
-            end
         end
-        #@show iiii, nop*(nop-1) ÷ 2
-
         rjjj = rn*(rn-1.)*0.5
     else
-        for iiii = 1:(nsamp*(nsamp-1)) ÷ 2
-
-            # pick two random points
-            j = rand(1:n)
-            i = j
-            while (i == j)
-                i = rand(1:n)
-            end
-
+        iiii = 0
+        for (i,j) in iter
+            iiii = iiii + 1
             # compute the distance
             for l = 1:ndims
                 x0[l] = x[l][i]
