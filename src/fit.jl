@@ -515,9 +515,12 @@ end
 function Base.next(iter::AllCoupels,state)
     i,j = state
     if j < iter.n
-        return ((i,j+1),(i,j+1))
+        nextstate = (i,j+1)
+    else
+        nextstate = (i+1,i+2)
     end
-    return ((i+1,i+2),(i+1,i+2))
+    
+    return (nextstate,nextstate)
 end
     
 function Base.done(iter::AllCoupels,state)
@@ -564,8 +567,17 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
         if (nsamp == 0)
             AllCoupels(n)
         else
+            debug("will generate random couples")
+            if (nsamp > n)
+                warn("Strange to ask for more samples than available from data; will proceed")
+            end
+            
             RandomCoupels(n,(nsamp*(nsamp-1)) ÷ 2)            
         end
+
+    if (n > 10000) && (nsamp != 0)
+        warn("Be patient big data set: ",n)
+    end
 
     return fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
 end
@@ -581,33 +593,12 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     # per default operate on all data
     nop = n
 
-    if nsamp != 0
-        srand(n)
-        nop = nsamp
-
-        debug("will generate random couples")
-
-        if (nsamp > n)
-            warn("Strange to ask for more samples than available from data; will proceed")
-        end
-    end
-
-    # number of couples
-    ncouples = nop*(nop-1) ÷ 2
-
-    distcouples = Vector{Float64}(ncouples)
-    icouples = Vector{Int}(ncouples)
-    jcouples = Vector{Int}(ncouples)
-
     rqual = 0.
     maxdist = 0.
     meandist = 0.
     dist = 0.
     rjjj = 0.
 
-    if (n > 10000) && (nsamp != 0)
-        warn("Be patient big data set: ",n)
-    end
 
     # compute mean and variance using the weights
     datamean = 0.
@@ -631,7 +622,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     x0 = zeros(ndims)
     x1 = zeros(ndims)
     
-    iiii=0
+    srand(n)
     for (i,j) in iter
         # compute the distance
         for l = 1:ndims
@@ -640,12 +631,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         end
         dist = distfun(x0,x1)
         
-        iiii=iiii+1
-        distcouples[iiii]=dist
-        icouples[iiii]=i
-        jcouples[iiii]=j
-        
-        meandist=meandist+dist
+        meandist = meandist+dist
         if (dist > maxdist)
             maxdist = dist
         end
@@ -698,7 +684,6 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     covarweight = zeros(nbmax)
 
     srand(n)
-    iiii = 0
     for (i,j) in iter
         # compute the distance
         for l = 1:ndims
@@ -707,14 +692,13 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         end
         dist = distfun(x0,x1)
 
-        iiii = iiii+1
-        #dist=distcouples[iiii]
-        #i=icouples[iiii]
-        #j=jcouples[iiii]
-        nb=floor(Int,dist/ddist+1)
-        covar[nb]=covar[nb] + (d[i]-datamean)*(d[j]-datamean) * weight[i]*weight[j]
-        w2[nb]=w2[nb] +((d[i]-datamean)*(d[j]-datamean))^2 * weight[i]*weight[j]
-        iw[nb]=iw[nb] + weight[i]*weight[j]
+        if dist > maxdist
+            error("dist $(dist) is larger than maxdist $(maxdist)")
+        end
+        nb = floor(Int,dist/ddist+1)
+        covar[nb] = covar[nb] + (d[i]-datamean)*(d[j]-datamean) * weight[i]*weight[j]
+        w2[nb] = w2[nb] +((d[i]-datamean)*(d[j]-datamean))^2 * weight[i]*weight[j]
+        iw[nb] = iw[nb] + weight[i]*weight[j]
     end
 
     ifo = 0
@@ -846,7 +830,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
 end
 
 # this function used to be called forfit in fitlsn.f
-# this function used to be called forfit in fitlsn.f
+
 function misfit(distx,covar,covarweight,RL)
     n = length(covar)
     err = 0.
@@ -939,6 +923,7 @@ function fithorzlen(x,value::Vector{T},z;
         #     tolrel = tolrel,
         #     progress = progress,
         # )
+        @show  nsamp
         var0opt[k],lenopt[k],fitinfos[k] = divand.fitlen(
             xsel,v,nsamp
         )

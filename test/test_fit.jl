@@ -1,7 +1,7 @@
 using Base.Test
-#import divand
-include("../src/fit.jl")
-#=
+import divand
+#include("../src/fit.jl")
+
 # test data for basic statistics
 x = [1.,2.,3.,4.]
 y = -[1.,2.,3.,4.]
@@ -65,7 +65,7 @@ var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
 
 @test lensopt ≈ lenx rtol=0.2
 @test var0opt ≈ 1 rtol=0.5
-=#
+
 # port of DIVA fit from Fortran
 
 #fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/smalltestdata.txt"
@@ -83,8 +83,7 @@ weight = A[:,4]
 
 # use all pairs
 nsamp = 0
-@time varbak,RL,dbinfo = fitlen((x,y),d,weight,nsamp)
-@time varbak,RL,dbinfo = fitlen((x,y),d,weight,nsamp)
+varbak,RL,dbinfo = divand.fitlen((x,y),d,weight,nsamp)
 
 # reference value are  from DIVA fit (Fortran version)
 # git commit
@@ -97,8 +96,7 @@ nsamp = 0
 
 # random samples
 nsamp = 150
-varbak,RL,dbinfo = fitlen((x,y),d,weight,
-                                                        nsamp)
+varbak,RL,dbinfo = divand.fitlen((x,y),d,weight,nsamp)
 
 # reference value from Julia implementation with seed set to 150
 # fluctuations are large for different seeds
@@ -111,7 +109,7 @@ varbak,RL,dbinfo = fitlen((x,y),d,weight,
   
   
   
-       
+#=       
 fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/testdata.txt"
 A = readdlm(fname) :: Array{Float64,2}
 
@@ -128,3 +126,4 @@ nsamp = 0
 @test 1.36453283           ≈ dbinfo[:sn]              rtol=1e-6
 @test 25.4311714           ≈ varbak                   rtol=1e-6
 @test 0.81123489141464233  ≈ dbinfo[:rqual]  rtol=1e-6
+=#
