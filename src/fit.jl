@@ -630,49 +630,30 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
 
     x0 = zeros(ndims)
     x1 = zeros(ndims)
-
+    
+    iiii=0
+    for (i,j) in iter
+        # compute the distance
+        for l = 1:ndims
+            x0[l] = x[l][i]
+            x1[l] = x[l][j]
+        end
+        dist = distfun(x0,x1)
+        
+        iiii=iiii+1
+        distcouples[iiii]=dist
+        icouples[iiii]=i
+        jcouples[iiii]=j
+        
+        meandist=meandist+dist
+        if (dist > maxdist)
+            maxdist = dist
+        end
+    end
     
     if (nsamp == 0)
-        iiii=0
-        for (i,j) in iter
-                for l = 1:ndims
-                    x0[l] = x[l][i]
-                    x1[l] = x[l][j]
-                end
-                dist = distfun(x0,x1)
-
-                iiii=iiii+1
-                distcouples[iiii]=dist
-                icouples[iiii]=i
-                jcouples[iiii]=j
-
-                meandist=meandist+dist
-                if (dist > maxdist)
-                    maxdist = dist
-                end
-        end
         rjjj = rn*(rn-1.)*0.5
     else
-        iiii = 0
-        for (i,j) in iter
-            iiii = iiii + 1
-            # compute the distance
-            for l = 1:ndims
-                x0[l] = x[l][i]
-                x1[l] = x[l][j]
-            end
-
-            dist = distfun(x0,x1)
-
-            distcouples[iiii]=dist
-            icouples[iiii]=i
-            jcouples[iiii]=j
-
-            meandist = meandist+dist
-            if (dist > maxdist)
-                maxdist = dist
-            end
-        end
         rjjj = nsamp*(nsamp-1) / 2
     end
 
@@ -716,10 +697,20 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
 
     covarweight = zeros(nbmax)
 
-    for iiii = 1:ncouples
-        dist=distcouples[iiii]
-        i=icouples[iiii]
-        j=jcouples[iiii]
+    srand(n)
+    iiii = 0
+    for (i,j) in iter
+        # compute the distance
+        for l = 1:ndims
+            x0[l] = x[l][i]
+            x1[l] = x[l][j]
+        end
+        dist = distfun(x0,x1)
+
+        iiii = iiii+1
+        #dist=distcouples[iiii]
+        #i=icouples[iiii]
+        #j=jcouples[iiii]
         nb=floor(Int,dist/ddist+1)
         covar[nb]=covar[nb] + (d[i]-datamean)*(d[j]-datamean) * weight[i]*weight[j]
         w2[nb]=w2[nb] +((d[i]-datamean)*(d[j]-datamean))^2 * weight[i]*weight[j]
