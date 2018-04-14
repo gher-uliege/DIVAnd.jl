@@ -148,6 +148,7 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 	
 	# Take into account overhead due to multiple storage
     problemsize=problemsize/sqrt(prod(latercsteps[1:2]))    
+    epsilon = -1.
 
     if nwd>0
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
