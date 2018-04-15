@@ -210,6 +210,18 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         if sum(sel) == 0
             warning("no data at $(timeindex)")
+
+            fit = zeros(sz)
+            erri = ones(sz)
+
+            divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                              fit, erri, (:,:,:,timeindex))
+
+            # write to file
+            sync(ds)
+
+            # next iteration
+            continue
         end
 
         # apply the transformation
@@ -291,6 +303,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         erri = zeros(sz)
 
         for i = 1:niter_e
+            # error only require at the last iterations
+            errortype = (i == niter_e ? :cpme : :none)
+
             # analysis
             fi2, erri, residuals[sel], qcvalues, scalefactore =
                 divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
@@ -298,7 +313,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                                 vaa,
                                 (lenx,leny,lenz),
                                 factore * epsilon2[sel],
-                                :cpme;
+                                errortype;
                                 moddim = moddim, MEMTOFIT = memtofit, kwargs...)
 
             factore = scalefactore * factore
