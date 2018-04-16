@@ -38,6 +38,9 @@ type Spreadsheet
     # //<subject>SDN:LOCAL:Chronological Julian Date</subject><object>SDN:P01::CJDY1101</object><units>SDN:P06::UTAA</units>
     SDN_parameter_mapping::Dict{String,Dict{String,String}}
     columnLabels::Array{SubString{String},1}
+    # profileList[k][i,j]
+    # is the k-th profile, the i-th column (parameter) and
+    # the j-th row (often depth or time)
     profileList::Array{Any,1}
 end
 
@@ -50,52 +53,8 @@ Return the number of profiles in a ODV Spreadsheet `ODVData` loaded by
 
 nprofiles(ODVData) = length(ODVData.profileList)
 
-function initProfileList(line)
-    """
-    Create an empty list of lists,
-    the number of internal lists is the number of columns
-    found in the ODV spreadsheet.
 
-    Input:
-
-    * `line`: Array{SubString{String},1} as obtained by applying `split`
-            to a text line read from an ODV spreadsheet.
-
-    Output:
-
-    * `profile`: an Array of Arrays (one per column of ODV spreadsheet).
-
-    List of lists is preferred because the length of each list is
-    not always the same:
-    * the columns storing ocean variables (e.g., temperature, depth) will
-    contain several values for a given profile;
-    * the columns storing information about the profile (e.g., coordinates,
-    station) only have one value.
-    """
-
-    debug("Creating new profile (list of lists)")
-
-    # Compute number of columns
-    ncolumns = length(line);
-    debug("No. of columns: " * string(ncolumns))
-
-    profile = []
-    for i in 1:ncolumns
-        push!(profile, [line[i]])
-    end
-
-    return profile
-end
-
-function getNonEmptyInd(line)
-    nonempty(x) = length(x) > 0;
-    nonempty_ind = find(nonempty, line);
-    return nonempty_ind;
-end
-
-
-function readODVspreadsheet(datafile)
-    """
+"""
     The function will return a composite type that will store:
     1. The general metadata of the spreadsheet
     2. The labels of the columns
@@ -110,26 +69,28 @@ function readODVspreadsheet(datafile)
 
     *`ODVdata`: a "Spreadsheet" composite type.
 
-    """
+"""
+function readODVspreadsheet(datafile)
 
     # metadata will be stored in a dictionary
     # ODV doc: Comment lines start with two slashes  // as first two characters
     metadata = Dict{String, String}()
     SDN_parameter_mapping = Dict{String,Dict{String,String}}()
 
-    # Context manager
-    open(datafile, enc"Latin1", "r") do f
+    # using the encoding Latin-1 degrates significantly the performance
+    open(datafile, "r") do f
         line = readline(f)
 
-        # Byte Order Mark (BOM) as Latin-1
-        if startswith(line,"ï»¿")
+        # Byte Order Mark (BOM)
+        if startswith(line,"\uFEFF")
             # ignore BOM
-            line = line[7:end]
+            line = line[2:end]
         end
 
         # Read the metadata (lines starting with //)
         # unfortunately, there are also some files with empty line in the
         # header
+
         while startswith(line,"//") || (length(line) == 0)
             # Identify metadata fields using regex
             # (name of the field is between < > and </ >)
@@ -172,75 +133,75 @@ function readODVspreadsheet(datafile)
         ncols = length(columnLabels);
         debug("No. of columns: " * string(ncols))
 
-        # Create an array that will store all the profiles
-        profileList = []
+        # number of total lines
+        pos = position(f)
+        totallines = 0
+        for line in eachline(f)
+            totallines += 1
+        end
+        seek(f,pos)
 
-        # Loop on the lines
-        nlines = 0
-        profile = [];
-        nprofiles = 0;
+        # load all data
+        alldata = Array{SubString{String},2}(ncols,totallines)
+        i = 0
 
-        # Read the first data line to initiate the loop
-        line = split(chomp(readline(f)), "\t");
-        nprofiles += 1;
-        debug("Working with a header line")
-        debug("Create a new, empty profile")
-        profile = initProfileList(line)
+        for row in eachline(f; chomp = true)
+            i = i+1
 
-        while !eof(f)
-            nlines += 1;
-
-            row = readline(f)
             if startswith(row,"//")
                 # ignore lines starting with e.g.
                 # //<History> ...
                 continue
             end
-            line = split(chomp(row), "\t");
 
-            if length(line) != ncols
-                error("Expecting $(ncols) columns but $(length(line)) found at in line $(line).")
-            end
+            line = split(row, "\t");
             
-            # Count empty values
-            nonempty_ind = getNonEmptyInd(line);
-            debug("Indices of the non-empty columns :")
-            debug(nonempty_ind);
 
             # some files have only white space on the last line
-            if length(nonempty_ind) == 0
+            if all.(isempty(line))
                 continue
             end
 
-            # If the first value (Station) is not empty,
-            # then it's a header line
-            if (nonempty_ind[1] == 1)
-                debug("Working with a header line")
-                debug("Adding the profile to the array")
-                push!(profileList, profile)
-
-                # Initiate a profile (list of lists)
-                nprofiles += 1;
-                debug("Create a new, empty profile")
-                profile = initProfileList(line)
-            else
-                debug("Adding values to the existing profile")
-
-                # section 2.3
-                # If there is no data value then the data value column is left blank with the flag field set to ‘9’
-
-                #for ii in nonempty_ind
-
-                # keep all
-                for ii in 1:length(line)
-                    push!(profile[ii], line[ii]);
-                end
+            if length(line) != ncols
+                error("Expecting $(ncols) columns but $(length(line)) found in line $(line) (line number $i).")
             end
 
+            alldata[:,i] = line
         end
 
-        # Add the last profile to the list
-        push!(profileList, profile);
+        # trim unused lines (comments, ...)
+        alldata = alldata[:,1:i]
+
+        # count profiles
+        nprofiles = 0
+        for i = 1:size(alldata,2)
+            # If the first value (Station) is not empty,
+            # then it's a profile
+            if alldata[1,i] != ""
+                nprofiles += 1
+            end
+        end
+
+        # count each profiles length
+        profile_start_index = Vector{Int}(nprofiles+1)
+        j = 0
+        for i = 1:size(alldata,2)
+            # If the first value (Station) is not empty,
+            # then it's a profile
+            if alldata[1,i] != ""
+                j += 1
+                profile_start_index[j] = i
+            end
+        end
+        profile_start_index[end] = size(alldata,2)+1
+
+        # split into profiles
+        iprofile = 1
+        profileList = Vector{Array{SubString{String},2}}(nprofiles)
+        j = 1
+        for i = 1:nprofiles
+            profileList[i] = alldata[:,profile_start_index[i]:profile_start_index[i+1]-1]
+        end
 
         info("No. of profiles in the file: " * string(nprofiles))
         ODVdata = Spreadsheet(metadata, SDN_parameter_mapping, columnLabels, profileList)
@@ -384,7 +345,7 @@ is :repeat)
 """
 
 function loaddata(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where T
-    lenprof = maximum(length.(profile))
+    lenprof = size(profile,2)
 
     cn_data = colnumber(sheet,locname)
     data = Vector{T}(lenprof)
@@ -392,7 +353,7 @@ function loaddata(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where 
     if cn_data == 0
         data[:] = fillvalue
     else
-        SDNparse!(profile[cn_data],fillmode,fillvalue,data)
+        SDNparse!(profile[cn_data,:],fillmode,fillvalue,data)
     end
 
     return data
@@ -404,6 +365,7 @@ end
 The same as `loaddata`, but now the quality flag are also loaded.
 
 profile[i][j] is the j-th column of the i-th row of a profile.
+profile[i,j] is the i-th column of the j-th row of a profile.
 """
 
 function loaddataqv(sheet,profile,locname,fillvalue::T;
@@ -411,7 +373,7 @@ function loaddataqv(sheet,profile,locname,fillvalue::T;
                     qvlocalname = "QV:SEADATANET"
                     ) where T
     locnames = localnames(sheet)
-    lenprof = maximum(length.(profile))
+    lenprof = size(profile,2)
 
     cn_data = colnumber(sheet,locname)
     data = Vector{T}(lenprof)
@@ -426,11 +388,11 @@ function loaddataqv(sheet,profile,locname,fillvalue::T;
             @show profile,cn_data
             error("incomplete profile record")
         end
-        
-        SDNparse!(profile[cn_data],fillmode,fillvalue,data)
+
+        SDNparse!(profile[cn_data,:],fillmode,fillvalue,data)
 
         if (cn_data < length(locnames)) && (locnames[cn_data+1] == qvlocalname)
-            data_qv[:] = profile[cn_data+1]
+            data_qv[:] = profile[cn_data+1,:]
         end
     end
 
@@ -583,7 +545,7 @@ quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings
 One can also use the constants these constants (prefixed with
 `divand.ODVspreadsheet.`):
 
-`qvlocalname` is the column name to denote quality flags. It is assumed that the 
+`qvlocalname` is the column name to denote quality flags. It is assumed that the
 quality flags follow immediatly the data column.
 
 |                    constant | value |
