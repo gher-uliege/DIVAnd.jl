@@ -148,16 +148,16 @@ function divand_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 	
 	# Take into account overhead due to multiple storage
     problemsize=problemsize/sqrt(prod(latercsteps[1:2]))    
-    epsilon = -1.
+    epsilon = 1E-6
 
     if nwd>0
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
     end
 
     if epsilon<=0
-	if nwd>0
+	    if nwd>0
             warn("So what $epsilon $problemsize $nwd $overlapping")
-	end
+	    end
         epsilon=1E-6
     end
 
