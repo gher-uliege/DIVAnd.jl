@@ -78,8 +78,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 background_epsilon2_factor::Float64 = 10.,
                 background_len = (len[1],len[2],4*len[3]),
                 fitcorrlen::Bool = false,
-                fithorz_param = Dict(
-                ),
+                fithorz_param = Dict(),
                 fitvert_param = Dict(
                     :distbin => collect([0.:50:400; 500:100:600]),
                     :nmean => 500,

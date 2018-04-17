@@ -821,7 +821,8 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         :range => range,
         :covarweight => covarweight,
         :distx => distx,
-        :sn => SN
+        :sn => SN,
+        :meandist => meandist
     )
     #return RL,SN,varbak,dbinfo
     stdcovar = 1./sqrt.(covarweight)
@@ -881,6 +882,8 @@ Optional arguments:
  * `maxlen` (default 3): maximum correlation length-scale
  * `smoothz` (default 100): spatial filter for the correlation scale
  * `searchz` (default 300): vertical search distance
+ * `maxnsamp` (default 5000): maximum number of samples
+ * `limitlen` (default false): limit correlation length by mean distance between observations
 
 """
 
@@ -896,7 +899,8 @@ function fithorzlen(x,value::Vector{T},z;
                     searchz::T = 300.,
                     progress = (iter,var,len,fitness) -> nothing,
                     distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
-                    nsamp = 0
+                    maxnsamp = 5000,
+                    limitlen = false,
                     ) where T
 
     pmax = length(distbin)-1
@@ -908,6 +912,13 @@ function fithorzlen(x,value::Vector{T},z;
     covar = Array{T,2}(pmax,kmax)
     distx = Vector{T}(pmax)
     fitinfos = Vector{Dict{Symbol,Any}}(pmax)
+
+    nsamp =
+        if length(value) > maxnsamp
+            maxnsamp
+        else
+            0 # all samples
+        end
 
     for k = 1:length(z)
         sel = (abs.(x[3] - z[k]) .< searchz)
@@ -925,8 +936,13 @@ function fithorzlen(x,value::Vector{T},z;
         # )
         #@show  nsamp
         var0opt[k],lenopt[k],fitinfos[k] = divand.fitlen(
-            xsel,v,nsamp
+            xsel,v,nsamp;
+            distfun = distfun
         )
+
+        if limitlen
+            lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
+        end
 
         println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
     end
