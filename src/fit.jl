@@ -961,7 +961,7 @@ function fitvertlen(x,value::Vector{T},z;
                      maxpoints::Int = 10000,
                      nmean::Int = 100,
                      minlen::T = 10.,
-                     maxlen::T = 100.,
+                     maxlen::T = 200.,
                      tolrel::T = 1e-4,
                      smoothz::T = 100.,
                      searchz::T = 500.,
@@ -1084,6 +1084,10 @@ function fitvertlen(x,value::Vector{T},z;
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
         zindex = find(abs.(zlevel2 - x[3]) .< searchz)
+
+        if length(zindex) == 0
+            error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
+        end
         
         #@show zlevel2,maxpoints,nmean
         #@show length(zindex) 
