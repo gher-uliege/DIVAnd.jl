@@ -79,8 +79,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 background_len = (len[1],len[2],4*len[3]),
                 fitcorrlen::Bool = false,
                 fithorz_param = Dict(
-                    :distbin => collect(0.:0.1:6),
-                    :nmean => 500,
                 ),
                 fitvert_param = Dict(
                     :distbin => collect([0.:50:400; 500:100:600]),
@@ -179,17 +177,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     if fitcorrlen
         kmax = length(depthr)
 
-        # horizontal info
-        pmax = length(fithorz_param[:distbin])-1
-        dbinfo[:fithorzlen] = Dict{Symbol,Any}(
-            :len => zeros(kmax,length(TS)),
-            :var0 => zeros(kmax,length(TS)),
-            :covar => zeros(pmax,kmax,length(TS)),
-            :stdcovar => zeros(pmax,kmax,length(TS)),
-            :fitcovar => zeros(pmax,kmax,length(TS)),
-            :distx => zeros(pmax)
-        )
-
         # vertical info
         pmax = length(fitvert_param[:distbin])-1
         dbinfo[:fitvertlen] = Dict{Symbol,Any}(
@@ -259,14 +246,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 distfun = distfun,
                 fithorz_param...
             )
-
-            # dbinfo[:fithorzlen][:len][:,timeindex] = infoxy[:len]
-            # dbinfo[:fithorzlen][:var0][:,timeindex] = infoxy[:var0]
-            # dbinfo[:fithorzlen][:distx][:] = infoxy[:distx]
-            # for key in [:covar,:fitcovar,:stdcovar]
-            #     dbinfo[:fithorzlen][key][:,:,timeindex] = infoxy[key]
-            # end
-
             
             lenz1,infoz = divand.fitvertlen(
                 (lon[sel],lat[sel],depth[sel]),vaa,depthr;
