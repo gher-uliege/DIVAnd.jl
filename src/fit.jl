@@ -491,8 +491,8 @@ function fit(x,v,distbin,mincount;
 end
 
 
-#debug(x...) = nothing
-debug = info
+debug(x...) = nothing
+#debug = info
 
 
 function distfun_euclid(x0,x1)
@@ -923,7 +923,7 @@ function fithorzlen(x,value::Vector{T},z;
         #     tolrel = tolrel,
         #     progress = progress,
         # )
-        @show  nsamp
+        #@show  nsamp
         var0opt[k],lenopt[k],fitinfos[k] = divand.fitlen(
             xsel,v,nsamp
         )
