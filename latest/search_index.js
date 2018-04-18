@@ -333,7 +333,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.fithorzlen",
     "category": "function",
-    "text": "lenz,dbinfo = divand.fithorzlen(x,value,z)\n\nDetermines the horizontal correlation length lenz based on the  measurments value at the location x (tuple of 3 vectors corresponding to longitude, latitude and depth).\n\nOptional arguments:\n\ndistbin (default 0:0.5:5): distance bins to compute the empirical covariance functions\nmincount (default 50): minimum pairs per bins\nmaxpoints (default 10000): maximum number of pairs\nnmean (default 100): number of empirical covariance to average\nminlen (default 0.1): minimum correlation length-scale\nmaxlen (default 3): maximum correlation length-scale\nsmoothz (default 100): spatial filter for the correlation scale\nsearchz (default 300): vertical search distance\n\n\n\n"
+    "text": "lenz,dbinfo = divand.fithorzlen(x,value,z)\n\nDetermines the horizontal correlation length lenz based on the  measurments value at the location x (tuple of 3 vectors corresponding to longitude, latitude and depth).\n\nOptional arguments:\n\ndistbin (default 0:0.5:5): distance bins to compute the empirical covariance functions\nmincount (default 50): minimum pairs per bins\nmaxpoints (default 10000): maximum number of pairs\nnmean (default 100): number of empirical covariance to average\nminlen (default 0.1): minimum correlation length-scale\nmaxlen (default 3): maximum correlation length-scale\nsmoothz (default 100): spatial filter for the correlation scale\nsearchz (default 300): vertical search distance\nmaxnsamp (default 5000): maximum number of samples\nlimitlen (default false): limit correlation length by mean distance between observations\n\n\n\n"
 },
 
 {
