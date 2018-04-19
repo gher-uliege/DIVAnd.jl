@@ -199,6 +199,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             fit = zeros(sz)
             erri = ones(sz)
+            fit[.!mask] = NaN
+            erri[.!mask] = NaN
 
             divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                               fit, erri, (:,:,:,timeindex))
@@ -309,6 +311,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         plotres(timeindex,sel,fit,erri)
 
+        fit[.!mask] = NaN
+        erri[.!mask] = NaN
         divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                           fit, erri, (:,:,:,timeindex))
 
