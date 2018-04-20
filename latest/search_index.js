@@ -1225,6 +1225,30 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Performance-considerations-1",
+    "page": "divand.jl documentation",
+    "title": "Performance considerations",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "index.html#Tuning-the-domain-decomposition-1",
+    "page": "divand.jl documentation",
+    "title": "Tuning the domain decomposition",
+    "category": "section",
+    "text": "The functions diva3d and divandgo split the domain into overlapping subdomains to reduce the required amount of memory. In some circumstances (in particular few vertical levels), this can unnecessarily degrade the performance. The CPU time of the analysis can be improved by increasing the diva3d option memtofit from 3 (default) to higher values (as long as one does not run out of memory). If this parameter is set to a very high value then the domain decomposition is effectively disabled."
+},
+
+{
+    "location": "index.html#Multiple-CPU-system-1",
+    "page": "divand.jl documentation",
+    "title": "Multiple CPU system",
+    "category": "section",
+    "text": "Per default julia tries to use all CPUs on your system when doing matrix operations. The number of CPUs is controlled by the call to BLAS.set_num_threads. Using multiple CPUs can result in overhead and it can be beneficial to reduce the number of CPUs:BLAS.set_num_threads(2)"
+},
+
+{
     "location": "index.html#Information-for-developers-1",
     "page": "divand.jl documentation",
     "title": "Information for developers",
