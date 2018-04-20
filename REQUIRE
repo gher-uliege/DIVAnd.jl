@@ -3,7 +3,7 @@ Interpolations
 NCDatasets
 SpecialFunctions
 DataArrays
-DataStructures 0.7.4
+DataStructures 0.7 0.8
 HTTP 0.6 0.6.8
 Requests
 EzXML
