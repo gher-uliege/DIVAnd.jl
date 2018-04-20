@@ -67,7 +67,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 bathisglobal = true,
                 plotres = (timeindex,sel,fit,erri) -> nothing,
                 timeorigin = DateTime(1900,1,1,0,0,0),
-                moddim = [],
+                moddim = zeros(length(xi)-1),
                 zlevel = :surface,
                 ncvarattrib = Dict(),
                 ncglobalattrib = Dict(),
