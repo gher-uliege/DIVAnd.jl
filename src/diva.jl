@@ -161,7 +161,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             end
 
             # unscaled copy
-            ntuple(i -> ones(sz),n)
+            ntuple(i -> ones(sz),n-1)
         else
             map(x -> Float64.(x),len)
         end

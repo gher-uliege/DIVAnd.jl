@@ -145,6 +145,8 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     pmn,xi,len = divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
+    # check pmn .* len > 4
+    
     # observation error covariance (scaled)
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
     # boundary
