@@ -921,7 +921,14 @@ function fithorzlen(x,value::Vector{T},z;
         end
 
     for k = 1:length(z)
-        sel = (abs.(x[3] - z[k]) .< searchz)
+        
+        sel =
+            if length(x) == 3
+                (abs.(x[3] - z[k]) .< searchz)
+            else
+                trues(size(x[1]))
+            end
+        
         xsel = (x[1][sel],x[2][sel]);
         v = value[sel] - mean(value[sel]);
 
