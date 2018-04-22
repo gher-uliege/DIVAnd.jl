@@ -911,7 +911,7 @@ function fithorzlen(x,value::Vector{T},z;
     stdcovar = Array{T,2}(pmax,kmax)
     covar = Array{T,2}(pmax,kmax)
     distx = Vector{T}(pmax)
-    fitinfos = Vector{Dict{Symbol,Any}}(pmax)
+    fitinfos = Vector{Dict{Symbol,Any}}(kmax)
 
     nsamp =
         if length(value) > maxnsamp
