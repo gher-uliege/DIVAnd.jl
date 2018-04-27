@@ -215,6 +215,7 @@ dbinfo = divand.diva3d(
     ),
     mask = mask,
     niter_e = 2,
+    QCMETHOD = 0,
 )
 
 nothing

@@ -947,7 +947,7 @@ function fithorzlen(x,value::Vector{T},z;
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
 
-        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
+        println("Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])")
     end
 
     lenoptf = copy(lenopt)
@@ -1122,7 +1122,7 @@ function fitvertlen(x,value::Vector{T},z;
             progress = progress,
         )
 
-        println("Correlation length at z=$(z[k]): $(lenopt[k])")
+        println("Vert. correlation length at z=$(z[k]): $(lenopt[k])")
         #plot(distx,covar, label = "empirical covariance")
         #plot(distx,fitcovar, label = "fitted function")
     end
