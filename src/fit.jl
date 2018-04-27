@@ -559,7 +559,7 @@ end
 """
 # this function used to be called lfit in fitlsn.f
 
-function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
+function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
     # number of samples
     n = length(d)
 
@@ -579,7 +579,7 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
         warn("Be patient big data set: ",n)
     end
 
-    return fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
+    return fitlen(x::Tuple,d,weight,nsamp,iter; kwargs...)
 end
 
 
