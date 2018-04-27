@@ -504,6 +504,9 @@ function distfun_euclid(x0,x1)
 end
 
 
+distfun_m(x0,x1) = EarthRadius * distance(x0[2],x0[1],x1[2],x1[1]) * pi/180
+
+
 type AllCoupels
     n:: Int
 end
