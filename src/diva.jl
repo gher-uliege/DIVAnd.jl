@@ -106,8 +106,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         mask = mask2
     else
         if size(mask) != size(mask2)
-            error("expecting a mask of the size $(size(mask)), " *
-                  "but got a mask of the size $(size(mask2))")
+            error("expecting a mask of the size $(size(mask2)), " *
+                  "but got a mask of the size $(size(mask))")
         end
         # use mask in the following and not mask2
     end
