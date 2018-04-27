@@ -131,6 +131,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # allocate residuals
     residuals = similar(value)
+    qcvalues = similar(value)
 
     # correlation length
     if len == ()
@@ -287,7 +288,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             errortype = (i == niter_e ? :cpme : :none)
 
             # analysis
-            fi2, erri, residuals[sel], qcvalues, scalefactore =
+            fi2, erri, residuals[sel], qcvalues[sel], scalefactore =
                 divand.divandgo(mask,(pm,pn,po),(xi,yi,zi),
                                 (lon[sel],lat[sel],depth[sel]),
                                 vaa,
@@ -322,6 +323,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     close(ds)
     dbinfo[:residuals] = residuals
+    dbinfo[:qcvalues] = qcvalues
 
     return dbinfo
 end
