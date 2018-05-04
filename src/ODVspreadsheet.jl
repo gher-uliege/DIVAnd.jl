@@ -105,7 +105,7 @@ function readODVspreadsheet(datafile)
 
             if line == "//SDN_parameter_mapping"
                 line = readline(f);
-
+                info("Length line SDN_parameter_mapping: $(length(line))")
                 # The semantic descriptions are terminated by an empty comment
                 # record (i.e. a record containing the // characters and nothing else)
 
@@ -130,19 +130,46 @@ function readODVspreadsheet(datafile)
         #ODV doc: must provide columns for all mandatory meta-variables
         columnline = line
         columnLabels = split(chomp(columnline), '\t')
+        debug("Column labels: $(columnLabels)");
         ncols = length(columnLabels);
-        debug("No. of columns: " * string(ncols))
+        info("No. of columns before selection: $ncols")
+
+        # Discard columns that won't be used (should be extended)
+        column2discard = ["QF", "Instrument Info",
+                          "Reference", "Data set name", "Discipline",
+                          "Category", "Variables measured"]
+        goodcols = setdiff(columnLabels, column2discard);
+        # Get indices of the good columns
+        index2keep = findin(columnLabels, goodcols);
+        ncols2 = length(index2keep);
+        info("No. of columns after selection: $ncols2")
 
         # number of total lines
         pos = position(f)
         totallines = 0
-        for line in eachline(f)
+        # count the lines "cleverly", without the comments
+        # or the empty lines
+        for row in eachline(f)
+
+            if startswith(row,"//")
+                # ignore lines starting with e.g.
+                # //<History> ...
+                continue
+            end
+
+            line = split(row, "\t");
+
+            # some files have only white space on the last line
+            if all.(isempty(line))
+                continue
+            end
             totallines += 1
         end
+        info("Total no. of lines: $totallines")
         seek(f,pos)
 
         # load all data
-        alldata = Array{SubString{String},2}(ncols,totallines)
+        alldata = Array{SubString{String},2}(ncols2,totallines)
         i = 0
 
         for row in eachline(f; chomp = true)
@@ -154,23 +181,24 @@ function readODVspreadsheet(datafile)
                 continue
             end
 
-            line = split(row, "\t");
-            
+            line = split(row, "\t")[index2keep];
 
             # some files have only white space on the last line
             if all.(isempty(line))
                 continue
             end
 
-            if length(line) != ncols
-                error("Expecting $(ncols) columns but $(length(line)) found in line $(line) (line number $i).")
+            if length(line) != ncols2
+                error("Expecting $(ncols2) columns but $(length(line)) found in line $(line) (line number $i).")
             end
 
             alldata[:,i] = line
         end
 
+        info("Size of data matrix: " * string(size(alldata)))
+
         # trim unused lines (comments, ...)
-        alldata = alldata[:,1:i]
+        #alldata = alldata[:,1:i]
 
         # count profiles
         nprofiles = 0
@@ -204,7 +232,7 @@ function readODVspreadsheet(datafile)
         end
 
         info("No. of profiles in the file: " * string(nprofiles))
-        ODVdata = Spreadsheet(metadata, SDN_parameter_mapping, columnLabels, profileList)
+        ODVdata = Spreadsheet(metadata, SDN_parameter_mapping, columnLabels[index2keep], profileList)
         return ODVdata
     end
 end
@@ -589,7 +617,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
 
     for fname in fnames
-        debug("Loading $(fname)")
+        info("Loading file $(fname)")
 
         sheet = readODVspreadsheet(fname);
         sheet_P01names = listSDNparams(sheet)
@@ -612,6 +640,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                 end
             end
 
+            info("Starting loop on the $(nprofiles(sheet)) profiles")
             for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                        obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
