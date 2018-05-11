@@ -78,6 +78,7 @@ function readODVspreadsheet(datafile)
     SDN_parameter_mapping = Dict{String,Dict{String,String}}()
 
     # using the encoding Latin-1 degrates significantly the performance
+    info("Reading data from file $(datafile)")
     open(datafile, "r") do f
         line = readline(f)
 
@@ -132,12 +133,21 @@ function readODVspreadsheet(datafile)
         columnLabels = split(chomp(columnline), '\t')
         debug("Column labels: $(columnLabels)");
         ncols = length(columnLabels);
-        info("No. of columns before selection: $ncols")
+        info("Total no. of columns (before selection): $ncols")
 
         # Discard columns that won't be used (should be extended)
         column2discard = ["QF", "Instrument Info",
                           "Reference", "Data set name", "Discipline",
-                          "Category", "Variables measured"]
+                          "Category", "Variables measured",
+                          "Data format", "Data format version",
+                          "Data size", "Data set creation date",
+                          "Measuring area type", "Track resolution",
+                          "Track resolution unit", "Frequency",
+                          "Frequency unit", "Cruise name",
+                          "Alternative cruise name", "Cruise start date",
+                          "Station name", "Alternative station name",
+                          "Station start date"];
+
         goodcols = setdiff(columnLabels, column2discard);
         # Get indices of the good columns
         index2keep = findin(columnLabels, goodcols);
@@ -169,7 +179,8 @@ function readODVspreadsheet(datafile)
         seek(f,pos)
 
         # load all data
-        alldata = Array{SubString{String},2}(ncols2,totallines)
+        alldata = Array{SubString{String},2}(ncols2,totallines);
+        ##info("Size (in GB) of data matrix (OLD): " * string(sizeof(alldataold)))
         i = 0
 
         for row in eachline(f; chomp = true)
@@ -196,7 +207,7 @@ function readODVspreadsheet(datafile)
         end
 
         info("Size of data matrix: " * string(size(alldata)))
-
+        # info("Size (in GB) of data matrix: " * string(sizeof(alldata / 1024 / 1024)))
         # trim unused lines (comments, ...)
         #alldata = alldata[:,1:i]
 
@@ -323,8 +334,6 @@ function myparse(T,s)
         end
     end
 end
-
-
 
 
 """
@@ -617,7 +626,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
 
     for fname in fnames
-        info("Loading file $(fname)")
+        info("Loading data from file $(fname)")
 
         sheet = readODVspreadsheet(fname);
         sheet_P01names = listSDNparams(sheet)
