@@ -626,7 +626,6 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
 
     for fname in fnames
-        info("Loading data from file $(fname)")
 
         sheet = readODVspreadsheet(fname);
         sheet_P01names = listSDNparams(sheet)
@@ -678,6 +677,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                     append!(times,obstime[good])
                     append!(ids,obsids[good])
             end
+            info("Done reading the profiles")
         end
     end
 
