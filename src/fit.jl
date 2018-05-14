@@ -504,6 +504,9 @@ function distfun_euclid(x0,x1)
 end
 
 
+distfun_m(x0,x1) = EarthRadius * distance(x0[2],x0[1],x1[2],x1[1]) * pi/180
+
+
 type AllCoupels
     n:: Int
 end
@@ -559,7 +562,7 @@ end
 """
 # this function used to be called lfit in fitlsn.f
 
-function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
+function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
     # number of samples
     n = length(d)
 
@@ -579,7 +582,7 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
         warn("Be patient big data set: ",n)
     end
 
-    return fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
+    return fitlen(x::Tuple,d,weight,nsamp,iter; kwargs...)
 end
 
 
@@ -911,7 +914,7 @@ function fithorzlen(x,value::Vector{T},z;
     stdcovar = Array{T,2}(pmax,kmax)
     covar = Array{T,2}(pmax,kmax)
     distx = Vector{T}(pmax)
-    fitinfos = Vector{Dict{Symbol,Any}}(pmax)
+    fitinfos = Vector{Dict{Symbol,Any}}(kmax)
 
     nsamp =
         if length(value) > maxnsamp
@@ -951,7 +954,7 @@ function fithorzlen(x,value::Vector{T},z;
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
 
-        println("Data points at z=$(z[k]): $(length(v)), correlation length: $(lenopt[k])")
+        println("Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])")
     end
 
     lenoptf = copy(lenopt)
@@ -1126,7 +1129,7 @@ function fitvertlen(x,value::Vector{T},z;
             progress = progress,
         )
 
-        println("Correlation length at z=$(z[k]): $(lenopt[k])")
+        println("Vert. correlation length at z=$(z[k]): $(lenopt[k])")
         #plot(distx,covar, label = "empirical covariance")
         #plot(distx,fitcovar, label = "fitted function")
     end

@@ -151,6 +151,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # allocate residuals
     residuals = similar(value)
+    qcvalues = similar(value)
 
     # correlation length
 
@@ -331,23 +332,34 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         fi2 = zeros(sz)
         erri = zeros(sz)
 
+        kwargs_without_qcm = [(p,v) for (p,v) in kwargs if p !== :QCMETHOD]
+        
         for i = 1:niter_e
-            # error only require at the last iterations
-            errortype = (i == niter_e ? :cpme : :none)
+            # error and QCMETHOD is only required at the last iterations
+            errortype,kwargs2 =
+                if i == niter_e
+                    :cpme,kwargs
+                else
+                    :none,kwargs_without_qcm
+                end
 
             # analysis
-            fi2, erri, residuals[sel], qcvalues, scalefactore =
+            fi2, erri, residuals[sel], qcdata, scalefactore =
                 divand.divandgo(mask,pmn,xyi,
                                 xsel,
                                 vaa,
                                 len_scaled,
                                 factore * epsilon2[sel],
                                 errortype;
-                                moddim = moddim, MEMTOFIT = memtofit, kwargs...)
+                                moddim = moddim, MEMTOFIT = memtofit, kwargs2...)
 
             factore = scalefactore * factore
 
             dbinfo[:factore][i,timeindex] = factore
+
+            if qcdata != ()
+                qcvalues[sel] = qcdata
+            end
         end
 
         #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2[sel];                          progress = divand.cgprogress, tol = tol)
@@ -376,6 +388,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     close(ds)
     dbinfo[:residuals] = residuals
+    if haskey(Dict(kwargs), :QCMETHOD)
+       dbinfo[:qcvalues] = qcvalues
+    end
 
     return dbinfo
 end

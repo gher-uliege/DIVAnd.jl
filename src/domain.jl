@@ -23,7 +23,7 @@ end
 
 
 """
-    mask,xyi,pmn = divand_squaredom(n,coord)
+    mask,pmn,xyi = divand_squaredom(n,coord)
 
 Create a "square" domain in `n` dimensions with the coordinates `coord`
 assuming a Catersian metric. This functions returns

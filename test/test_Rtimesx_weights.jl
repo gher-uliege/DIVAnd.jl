@@ -9,6 +9,7 @@ LS = (0.1,0.1)
 
 dist2(x,y,len) = sum(((x-y)./len).^2)
 
+ndata = size(coord,2)
 x = ones(ndata)
 Rx1 = zeros(ndata)
 Rx = zeros(ndata)
@@ -32,6 +33,44 @@ function Rtimesx1!(coord,LS,x,Rx)
 end
 
 
+function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
+    factor = 3
+    
+    n = size(coord,1)
+    Nobs = size(coord,2)
+
+    maxcap = 10
+    qt = divand.Quadtrees.QT(coord,collect(1:Nobs)) :: divand.Quadtrees.QT{T,Int,ndim}
+    divand.Quadtrees.rsplit!(qt, maxcap)
+
+    xmin = zeros(ndim)
+    xmax = zeros(ndim)
+    
+    ilen = 1./len
+
+    @fastmath @inbounds for i = 1:Nobs
+        for j = 1:ndim
+            xmin[j] = coord[j,i] - factor * len[j]
+            xmax[j] = coord[j,i] + factor * len[j]
+        end
+        
+        index = divand.Quadtrees.within(qt,xmin,xmax)    
+        Rx[i] = 0.
+        
+        for ii in index
+            
+            dist = 0.                
+            for j = 1:ndim
+                dist += ((coord[j,i]-coord[j,ii]) * ilen[j])^2
+            end
+            
+            cov = exp(-dist)
+            Rx[i] += cov * w[ii]
+        end    
+    end   
+end
+
+
 
 # compare naive and optimized method
 Rtimesx1!(coord,LS,x,Rx1)
@@ -39,6 +78,8 @@ divand.Rtimesx!(coord,LS,x,Rx)
 
 @test Rx1 ≈ Rx
 
+Rtimesx2!(coord,LS,x,Rx)
+@test Rx1 ≈ Rx rtol=1e-4
 
 # fix seed of random number generator
 srand(12345)
@@ -59,17 +100,26 @@ weight = divand.weight_RtimesOne((x,y),len)
 # should be smaller than outside
 @test mean(weight[1:75]) > mean(weight[76:end])
 
+
+
+
 # "large" benchmark
 
-# # large
-# ndata = 20000
-# ndim = 2
+# large
+ndata = 70000
+ndim = 2
 
-# coord = randn(ndata,ndim)'
-# x = zeros(ndata)
-# Rx = zeros(ndata)
-# LS = ntuple(i -> 0.1,ndim)
-# @time Rtimesx!(coord,LS,x,Rx)
+ndata = 30000
+ndim = 4
+
+coord = randn(ndata,ndim)'
+x = ones(ndata)
+Rx = zeros(ndata)
+LS = ntuple(i -> 0.1,ndim)
+@time divand.Rtimesx!(coord,LS,x,Rx)
+
+Rx2 = zeros(ndata)
+@time Rtimesx2!(coord,LS,x,Rx2)
 
 # large 2D
 #=
@@ -85,3 +135,4 @@ weight = divand.weight_RtimesOne((x,y),len)
   evals/sample:     1
 
 =#
+
