@@ -6,7 +6,8 @@ the coordinates `x`. The array `fi` represent the interpolated field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`.
 
 # Input:
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+For oceanographic application, this is the land-sea mask where sea is true and land is false.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
    element represents the scale factor of the corresponding dimension. Its
@@ -16,15 +17,15 @@ defined by the coordinates `xi` and the scales factors `pmn`.
    of the local resolution in second dimension.
 
 *  `xi`: tuple with n elements. Every element represents a coordinate
-  of the final grid on which the observations are interpolated
+  of the final grid on which the observations are interpolated.
 
 * `x`: tuple with n elements. Every element represents a coordinate of
-  the observations
+  the observations.
 
 * `f`: value of the observations *minus* the background estimate (vector of
   `m` elements where `m` is the number of observations). See also note.
 
-* `len`: tuple with n elements. Every element represents the correlation length
+* `len`: tuple with n elements. Every element represents the correlation length for a given dimension.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
@@ -48,14 +49,14 @@ defined by the coordinates `xi` and the scales factors `pmn`.
           m=2   1   3   3   1   (n=3,4)
           ...
 
-* `constraints`: a structure with user specified constraints (see `divand_addc`)
+* `constraints`: a structure with user specified constraints (see `divand_addc`).
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. One should not include a boundary
      zone (sometimes called a ghost zone or halo) for cyclic dimensions.
      For example if the first dimension
      is cyclic, then the grid point corresponding to `mask[1,j]` should be
-     between `mask[end,1]` (left neighbor) and `mask[2,j]` (right neighbor)
+     between `mask[end,1]` (left neighbor) and `mask[2,j]` (right neighbor).
 
 * `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
@@ -76,9 +77,9 @@ defined by the coordinates `xi` and the scales factors `pmn`.
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
 
-* `fi0`: starting field for iterative primal algorithm (same size as `mask`)
+* `fi0`: starting field for iterative primal algorithm (same size as `mask`).
 
-* `f0`: starting field for iterative dual algorithm (same size as the observations `f`)
+* `f0`: starting field for iterative dual algorithm (same size as the observations `f`).
 
 * `operatortype`: Val{:sparse} for using sparse matrices (default) or Val{:MatFun} or using functions
     to define the constrains.
@@ -153,7 +154,7 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     # check inputs
     if !any(mask[:])
-        warn("no sea points in mask, will return NaN");
+        warn("No sea points in mask, will return NaN");
         return fill(NaN,size(mask)),s
     end
 
@@ -168,32 +169,38 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
     s.compPC = compPC;
     s.progress = progress
 
+    info("Creating observation error covariance matrix")
     R = divand_obscovar(epsilon2,length(f));
 
     # add observation constrain to cost function
+    info("Adding observation constraint to cost function")
     s = divand_addc(s,divand_obs(s,xi,x,f,R,I = fracindex));
 
     # add advection constraint to cost function
     if !isempty(velocity)
-	   s = divand_addc(s,divand_constr_advec(s,velocity));
+        info("Adding advection constraint to cost function")
+        s = divand_addc(s,divand_constr_advec(s,velocity));
 	end
 
 	if !isempty(topographyforfluxes)
+        info("Adding integral constraints")
 		s = divand_addc(s,divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin));
     end
 
     # add all additional constrains
     for i=1:length(constraints)
+        info("Adding additional constrain - $(i)")
         s = divand_addc(s,constraints[i]);
     end
 
-    # factorize a posteori error covariance matrix
+    # factorize a posteriori error covariance matrix
     # or compute preconditioner
-
+    info("Factorizing a posteriori error covariance matrix")
     divand_factorize!(s);
 
+    info("Solving...")
     fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
-
+    info("Done solving")
     return fi,s
 end
 
