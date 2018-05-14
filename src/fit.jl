@@ -33,7 +33,7 @@ end
 
 Computes the mean `meanx` and the standard deviation `stdx` from the sum
 (`sumx`) and the sum of squares (`sumx2`) from `N` numbers and
-similarily for the variable `y`. The function computes also the
+similarly for the variable `y`. The function computes also the
 Pearson correlation `corr` and covariance `covar` between `x` and `y`.
 """
 
@@ -249,7 +249,7 @@ Determines the optimal correlation length `len` and variance (for a separation
 distance approaching zero) `var0` of a cloud of data points with value `v` and coordiantes
 `x` (tuple of vectors with the coordinates).
 
-The function can find the solution corresponding to  a local minimum
+The function can find the solution corresponding to a local minimum
 which is not necessarily the global minimum.
 
 See also `empiriccovar` for future information about the output parameters.
@@ -260,15 +260,15 @@ Optional input parameters:
   the values of alpha sould be set using the effective dimension.
   For example, if a 2D-analysis is simulated by forcing the vertical correlation
   length to zero, then alpha should be set to `[1,2,1]`, otherwise alpha will be
-  `[1,3,3,1]` (for for any proper 3D analysis).
-* `len`: initial value for the correlation length
-* `minlen`, `maxlen`: minimum and maximum value for the correlation length
-* `tolrel`: relative tolerance for the optimizer
-* `maxpoints`: maximum number of data points considered
-* `nmean`: the number of time an empirical covariance is estimated.
+  `[1,3,3,1]` (for any proper 3D analysis).
+* `len`: initial value for the correlation length.
+* `minlen`, `maxlen`: minimum and maximum values for the correlation length.
+* `tolrel`: relative tolerance for the optimizer.
+* `maxpoints`: maximum number of data points considered.
+* `nmean`: the number of times an empirical covariance is estimated.
    The average covariance is used for the fitting.
 * `distfun`: function to compute the distance between point `xi` (vector) and
-   `xj`. Per default `distun` is the Eucedian distance
+   `xj`. Per default `distfun` is the Euclidian distance:
   `(xi,xj) -> sqrt(sum(abs2,xi-xj)))`.
 * `progress`: call-back function to show the progress of the optimization with
   the input parameters `iter`, `var`, `len` and `fitness` (all scalars).
@@ -335,7 +335,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     J(L) = sum(((covar - var0opt * K.(distx * len_scale/L))./stdcovar).^2)
     Jmin,imin = findmin(J.(L))
     lenopt = L[imin]
-    
+
     fitcovar = var0opt *  (K.(distx * len_scale/lenopt):: Vector{Float64})
 
     #return distx
@@ -378,10 +378,10 @@ function fitprogress(iter,var0,lens,fitness)
         end
 
         print_with_color(:light_magenta,@sprintf(" %10g ",fitness))
-        
+
         println("|")
     end
-    
+
     return nothing
 end
 """
@@ -400,11 +400,11 @@ end
              )
 
 The same as the function `fit_isotropic` except that now the correlation
-length-scale `lens0`, `minlen`, `maxlen`, `lensopt` are a vectors
+length-scale `lens0`, `minlen`, `maxlen`, `lensopt` are vectors
 (one value per dimension). The distance function `distfun` uses an additional
 parameter to compute the normalized distance.
 
-The note of the optional parameters in `divafit` which also applies here.
+The note of the optional parameters in `divafit` also applies here.
 """
 function fit(x,v,distbin,mincount;
              alpha = divand.alpha_default(length(x)),
@@ -519,10 +519,10 @@ function Base.next(iter::AllCoupels,state)
     else
         nextstate = (i+1,i+2)
     end
-    
+
     return (nextstate,nextstate)
 end
-    
+
 function Base.done(iter::AllCoupels,state)
     i,j = state
     return (i == iter.n-1) && (j == iter.n)
@@ -549,7 +549,7 @@ Base.done(iter::RandomCoupels,state) = state == iter.count
 
 
 function fitlen(x::Tuple,d,nsamp; kwargs...)
-    weight = ones(size(d))    
+    weight = ones(size(d))
     return fitlen(x,d,weight,nsamp; kwargs...)
 end
 
@@ -563,7 +563,7 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
     # number of samples
     n = length(d)
 
-    iter = 
+    iter =
         if (nsamp == 0)
             AllCoupels(n)
         else
@@ -571,8 +571,8 @@ function fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
             if (nsamp > n)
                 warn("Strange to ask for more samples than available from data; will proceed")
             end
-            
-            RandomCoupels(n,(nsamp*(nsamp-1)) ÷ 2)            
+
+            RandomCoupels(n,(nsamp*(nsamp-1)) ÷ 2)
         end
 
     if (n > 10000) && (nsamp != 0)
@@ -621,7 +621,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
 
     x0 = zeros(ndims)
     x1 = zeros(ndims)
-    
+
     srand(n)
     for (i,j) in iter
         # compute the distance
@@ -630,13 +630,13 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
             x1[l] = x[l][j]
         end
         dist = distfun(x0,x1)
-        
+
         meandist = meandist+dist
         if (dist > maxdist)
             maxdist = dist
         end
     end
-    
+
     if (nsamp == 0)
         rjjj = rn*(rn-1.)*0.5
     else
@@ -869,7 +869,7 @@ end
 """
     lenz,dbinfo = divand.fithorzlen(x,value,z)
 
-Determines the horizontal correlation length `lenz` based on the 
+Determines the horizontal correlation length `lenz` based on the
 measurments `value` at the location `x` (tuple of 3 vectors corresponding to
 longitude, latitude and depth).
 
@@ -990,7 +990,7 @@ function fitvertlen(x,value::Vector{T},z;
     zlevel2 = zero(T)
     zindex = Vector{Int}(length(value))
     nzindex = 0
-    
+
     function pickone(mask)
         ii = find(mask)
         jindex = rand(1:length(ii))
@@ -1001,14 +1001,14 @@ function fitvertlen(x,value::Vector{T},z;
 
     function vertchoose(x,zlevel)
         #mask = abs.(zlevel - x[3]) .< searchz
-        #j = pickone(mask);        
+        #j = pickone(mask);
 
         j = -1
         jindex = -1
 
-        
-        for ntries = 1:maxntries  
-            
+
+        for ntries = 1:maxntries
+
             j = zindex[rand(1:length(zindex))] :: Int
 
 
@@ -1019,10 +1019,10 @@ function fitvertlen(x,value::Vector{T},z;
             #         mask[k] = distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < searchxy
             #     end
             #     jindex = pickone(mask)
-                
-            #     return j,jindex            
+
+            #     return j,jindex
             # end
-            
+
             jindex = -1
 
             for ntries2 = 1:maxntries
@@ -1104,9 +1104,9 @@ function fitvertlen(x,value::Vector{T},z;
         if length(zindex) == 0
             error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
         end
-        
+
         #@show zlevel2,maxpoints,nmean
-        #@show length(zindex) 
+        #@show length(zindex)
 
         var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
             (x[3],),value,distbin,mincount;
@@ -1138,4 +1138,3 @@ function fitvertlen(x,value::Vector{T},z;
         :fitcovar => fitcovar)
 
 end
-
