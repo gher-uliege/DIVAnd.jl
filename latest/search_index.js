@@ -1269,7 +1269,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "Troubleshooting",
     "category": "section",
-    "text": "If the installation of a package fails, it is recommended to update the local copy of the package list by issuing Pkg.update() to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.  Julia calls the local copy of the packge list METADATA. For example to retry the installation of EzXML issue the following command:Pkg.update()\nPkg.add(\"EzXML\")"
+    "text": "If the installation of a package fails, it is recommended to update the local copy of the package list by issuing Pkg.update() to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package. Julia calls the local copy of the packge list METADATA. For example to retry the installation of EzXML issue the following command:Pkg.update()\nPkg.add(\"EzXML\")"
 },
 
 {
@@ -1285,7 +1285,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "Julia cannot connect to GitHub on Windows 7 and Windows Server 2012",
     "category": "section",
-    "text": "Cloning METADATA or downloading a julia packages fails with:GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the  \"Easy fix\" tool from the Microsoft support page"
+    "text": "Cloning METADATA or downloading a julia packages fails with:GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the \"Easy fix\" tool from the Microsoft support page"
 },
 
 {
@@ -1293,7 +1293,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "MbedTLS.jl does not install on Windows 7",
     "category": "section",
-    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th \ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133The solution is to install the Windows Management Framework 4.0."
+    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133The solution is to install the Windows Management Framework 4.0."
 },
 
 {
@@ -1333,7 +1333,15 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "Monthlist issue",
     "category": "section",
-    "text": "Using comments inside list can lead to unexpected results.This  monthlist = [\n       [1,2,3]\n       #[4,5,6]\n       ]should be written as monthlist = [\n       [1,2,3]\n       ]"
+    "text": "Using comments inside list can lead to unexpected results.This monthlist = [\n       [1,2,3]\n       #[4,5,6]\n       ]should be written as monthlist = [\n       [1,2,3]\n       ]"
+},
+
+{
+    "location": "index.html#Error-in-the-factorisation-1",
+    "page": "divand.jl documentation",
+    "title": "Error in the factorisation",
+    "category": "section",
+    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with: julia Stacktrace:  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360  .................  [9] divandrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/divand/src/divandrun.jl:147might be due to a wrong choice in the analysis parameters, for example a too long  correlation length."
 },
 
 ]}
