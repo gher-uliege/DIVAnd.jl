@@ -86,6 +86,15 @@ where
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
 
+## Note on which analysis function to use
+
+`divandrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when muliplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
+
+`divandgo` is only needed for very large problems when a call to `divandrun` leads to memory or CPU time problems. This functions tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `divandrun` are available.
+
+`diva3D` is higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `divandrun`.
+
+
 ## Note about the background field
 
 If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling divand and then add the first guess back in.
