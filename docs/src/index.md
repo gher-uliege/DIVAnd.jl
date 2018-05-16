@@ -247,7 +247,7 @@ Pkg.add("Documenter")
 # Troubleshooting
 
 
-If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package. 
+If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.
 Julia calls the local copy of the packge list `METADATA`.
 For example to retry the installation of EzXML issue the following command:
 
@@ -290,7 +290,7 @@ Cloning METADATA or downloading a julia packages fails with:
 GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )
 ```
 
-The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the 
+The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the
 "Easy fix" tool from the [Microsoft support page](https://stackoverflow.com/questions/49065986/installation-of-julia-on-windows7-64-bit)
 
 ## MbedTLS.jl does not install on Windows 7
@@ -302,7 +302,7 @@ The installion of `MbedTLS.jl` fails with the error message:
 INFO: Building MbedTLS                                                                                                                                    
 Info: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\Users\Jeremy\.julia\v0.6\MbedTLS
 \deps\usr\downloads\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  
-Exception setting "SecurityProtocol": "Cannot convert null to type "System.Net.SecurityProtocolType" due to invalid enumeration values. Specify one of th 
+Exception setting "SecurityProtocol": "Cannot convert null to type "System.Net.SecurityProtocolType" due to invalid enumeration values. Specify one of th
 e following enumeration values and try again. The possible enumeration values are "Ssl3, Tls"."                                                           
 At line:1 char:35                                                                                                                                         
 + [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              
@@ -409,13 +409,11 @@ since type constructors fall back to convert methods.
 
 The solution is to use the same type of all input parameters: all Float32 or all Float64.
 
-
-
 ## Monthlist issue
 
 Using comments inside list can lead to unexpected results.
 
-This 
+This
 
 ```julia
  monthlist = [
@@ -431,3 +429,22 @@ should be written as
        [1,2,3]
        ]
 ```
+
+## Error in the factorisation
+
+The following message
+
+```julia
+Base.LinAlg.PosDefException(95650)
+```
+
+followed by the stack-trace starting with:
+```julia
+Stacktrace:
+ [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360
+ .................
+ [9] divandrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/divand/src/divandrun.jl:147
+ ```
+
+ might be due to a wrong choice in the analysis parameters, for example a too long
+ correlation length.
