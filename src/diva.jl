@@ -180,12 +180,13 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     climatologybounds = climatology_bounds(TS)
 
     # create the NetCDF file
-    ds, ncvar, ncvar_relerr, ncvar_Lx = divand.ncfile(
-        filename,(lonr,latr,depthr,timeclim),varname;
-        ncvarattrib = ncvarattrib,
-        ncglobalattrib = ncglobalattrib,
-        climatology_bounds = climatologybounds,
-        relerr = true)
+    ds, ncvar, ncvar_relerr, ncvar_Lx =
+            divand.ncfile(
+                filename,(xi[1:end-1]...,timeclim),varname;
+                ncvarattrib = ncvarattrib,
+                ncglobalattrib = ncglobalattrib,
+                climatology_bounds = climatologybounds,
+                relerr = true)    
 
     # Prepare background as mean vertical profile and time evolution.
     # Just call divand in two dimensions forgetting x and y ...

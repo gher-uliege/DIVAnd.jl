@@ -47,7 +47,7 @@ function ncfile(filename,xyi,varname;
                 ncvarattrib = Dict(), ncglobalattrib = Dict(),
                 thresholds = [("L1",0.3),("L2",0.5)],
                 deflatelevel = 5,
-                chunksizes = [100,100,1,1],
+                chunksizes = [100,100,1,1][1:length(xyi)],
                 type_save = Float32,
                 timeorigin = DateTime(1900,1,1,0,0,0),
                 kwargs...)
@@ -67,8 +67,10 @@ function ncfile(filename,xyi,varname;
         return ncvar
     end
 
-    def4D(ds,varname,ncvarattrib) = defnD(ds,varname,("lon", "lat", "depth", "time"),ncvarattrib)
-    def3D(ds,varname,ncvarattrib) = defnD(ds,varname,("lon", "lat", "time"),ncvarattrib)
+    def4D(ds,varname,ncvarattrib) = defnD(ds,varname,dimnames,ncvarattrib)
+
+    # unused
+    # def3D(ds,varname,ncvarattrib) = defnD(ds,varname,("lon", "lat", "time"),ncvarattrib)
 
     kw = Dict(kwargs)
 
@@ -78,8 +80,27 @@ function ncfile(filename,xyi,varname;
     # chunksizes should not exceed the size of fi
     chunksizes = min.(chunksizes,collect(sz))
 
-    (xi,yi,zi,ti) = xyi
+    # index of depth and time (-1 mean no depth/time dimension)
+    idepth = -1
+    itime = -1
+    dimnames = ("lon","lat")
+    
+    if length(xyi) == 4
+        idepth = 3
+        itime = 4
+        dimnames = ("lon","lat","depth","time")
+    elseif length(xyi) == 3
+        if eltype(xyi[3]) <: DateTime
+            itime = 3
+            dimnames = ("lon","lat","time")
+        else
+            idepth = 3
+            dimnames = ("lon","lat","depth")
+        end
+    end
 
+    @show itime, idepth
+    
     units = get(ncvarattrib,"units","")
     longname = get(ncvarattrib,"long_name","")
     validmin = get(ncvarattrib,"valid_min","")
@@ -89,13 +110,20 @@ function ncfile(filename,xyi,varname;
     fillval = NC_FILL_FLOAT
 
     ds = Dataset(filename,"c")
-
+    
     # Dimensions
 
     ds.dim["lon"] = sz[1]
     ds.dim["lat"] = sz[2]
-    ds.dim["depth"] = sz[3]
-    ds.dim["time"] = sz[4]
+
+    if idepth != -1
+        ds.dim["depth"] = sz[idepth]
+    end
+    
+    if itime != -1
+        ds.dim["time"] = sz[itime]
+    end
+    
     ds.dim["nv"] = 2
 
     # Declare variables
@@ -111,24 +139,29 @@ function ncfile(filename,xyi,varname;
     nclat.attrib["standard_name"] = "latitude"
     nclat.attrib["long_name"] = "latitude"
 
-    ncdepth = defVar(ds,"depth", Float64, ("depth",))
-    ncdepth.attrib["units"] = "meters"
-    ncdepth.attrib["positive"] = "down"
-    ncdepth.attrib["standard_name"] = "depth"
-    ncdepth.attrib["long_name"] = "depth below sea level"
-
-    nctime = defVar(ds,"time", Float64, ("time",))
-    nctime.attrib["units"] = "days since " *
-        Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
-    nctime.attrib["standard_name"] = "time"
-    nctime.attrib["long_name"] = "time"
-    nctime.attrib["calendar"] = "standard"
-
-    if haskey(kw,:climatology_bounds)
-        nctime.attrib["climatology"] = "climatology_bounds"
-        ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64, ("nv", "time"))
-        ncclimatology_bounds.attrib["units"] = "days since " *
+        
+    if idepth != -1
+        ncdepth = defVar(ds,"depth", Float64, ("depth",))
+        ncdepth.attrib["units"] = "meters"
+        ncdepth.attrib["positive"] = "down"
+        ncdepth.attrib["standard_name"] = "depth"
+        ncdepth.attrib["long_name"] = "depth below sea level"
+    end
+    
+    if itime != -1
+        nctime = defVar(ds,"time", Float64, ("time",))
+        nctime.attrib["units"] = "days since " *
             Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
+        nctime.attrib["standard_name"] = "time"
+        nctime.attrib["long_name"] = "time"
+        nctime.attrib["calendar"] = "standard"
+
+        if haskey(kw,:climatology_bounds)
+            nctime.attrib["climatology"] = "climatology_bounds"
+            ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64, ("nv", "time"))
+            ncclimatology_bounds.attrib["units"] = "days since " *
+                Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
+        end
     end
 
 
@@ -180,7 +213,7 @@ function ncfile(filename,xyi,varname;
         # ncvar_err.attrib["_FillValue"] = type_save(fillval)
         # ncvar_err.attrib["missing_value"] = type_save(fillval)
 
-        ncvar_relerr = defVar(ds,"$(varname)_relerr", type_save, ("lon", "lat", "depth", "time");
+        ncvar_relerr = defVar(ds,"$(varname)_relerr", type_save, dimnames;
                               deflatelevel = deflatelevel,
                               chunksizes = chunksizes)
 
@@ -230,16 +263,22 @@ function ncfile(filename,xyi,varname;
 
 nclon[:]   = xyi[1]
 nclat[:]   = xyi[2]
-ncdepth[:] = xyi[3]
-nctime[:]  = xyi[4]
+
+if idepth != -1
+    ds["depth"][:]  = xyi[idepth]
+end
+
+if itime != -1
+    ds["time"][:]  = xyi[itime]
+end
 
 # ncCLfield[:] = ...
 # ncCORRLEN[:] = ...
 # ncSNR[:] = ...
 # ncVARBACK[:] = ...
 
-if haskey(kw,:climatology_bounds)
-    ncclimatology_bounds[:] = kw[:climatology_bounds]
+if itime != -1 && haskey(kw,:climatology_bounds)
+    ds["climatology_bounds"][:] = kw[:climatology_bounds]
 end
 
 sync(ds)
