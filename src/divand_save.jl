@@ -100,8 +100,6 @@ function ncfile(ds,filename,xyi,varname;
         end
     end
 
-    @show itime, idepth
-    
     units = get(ncvarattrib,"units","")
     longname = get(ncvarattrib,"long_name","")
     validmin = get(ncvarattrib,"valid_min","")

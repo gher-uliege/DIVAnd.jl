@@ -175,10 +175,13 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             fill(epsilon2,size(value))
         end
 
+    # fit fitting
+    dbinfo = Dict{Symbol,Any}()
+    
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
     climatologybounds = climatology_bounds(TS)
-
+    
     # create the NetCDF file
     # make sure that the file is closed even if there is an error
     Dataset(filename,"c") do ds
@@ -198,10 +201,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             else
                 [true,true]
             end
-
-
-        # fit fitting
-        dbinfo = Dict{Symbol,Any}()
 
         if fitcorrlen
             kmax = length(depthr)
