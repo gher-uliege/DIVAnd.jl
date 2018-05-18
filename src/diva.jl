@@ -52,11 +52,11 @@ NetCDF file `filename` under the variable `varname`.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.)
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory. (default 3)
-* `niter_e`: Number of uterations to estimate the optimal scale factor of 
+* `niter_e`: Number of uterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
 
-Any additional keywoard arguments understood by divandgo can also be used here 
+Any additional keywoard arguments understood by divandgo can also be used here
 (e.g. velocity constrain)
 
 """
@@ -90,7 +90,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # dimension of the analysis
     n = length(xi)
-    
+
     # metadata of grid
     lonr,latr,depthr,TS =
         if length(xi) == 4
@@ -118,7 +118,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 bathname,bathisglobal,xi[1],xi[2],xi[3];
                 zlevel = zlevel)
         else
-            divand.domain(bathname,bathisglobal,xi[1],xi[2])            
+            divand.domain(bathname,bathisglobal,xi[1],xi[2])
         end
 
     # allow to the user to override the mask
@@ -155,7 +155,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # correlation length
 
-    len0 = 
+    len0 =
         if len == ()
             if !fitcorrlen
                 error("if len is () (the empty tuple) then fitcorrlen must be true")
@@ -168,226 +168,228 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         end
     # scaling comes later
     len_scaled = deepcopy(len0)
-    
+
     # episilon
-    epsilon2 = 
+    epsilon2 =
         if ndims(epsilon2) == 0
             fill(epsilon2,size(value))
         end
-    
+
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
     climatologybounds = climatology_bounds(TS)
 
     # create the NetCDF file
-    ds, ncvar, ncvar_relerr, ncvar_Lx =
+    # make sure that the file is closed even if there is an error
+    Dataset(filename,"c") do ds
+        ncvar, ncvar_relerr, ncvar_Lx =
             divand.ncfile(
-                filename,(xi[1:end-1]...,timeclim),varname;
+                ds,filename,(xi[1:end-1]...,timeclim),varname;
                 ncvarattrib = ncvarattrib,
                 ncglobalattrib = ncglobalattrib,
                 climatology_bounds = climatologybounds,
-                relerr = true)    
+                relerr = true)
 
-    # Prepare background as mean vertical profile and time evolution.
-    # Just call divand in two dimensions forgetting x and y ...
-    toaverage =
-        if n == 4
-            [true,true,false]
-        else
-            [true,true]            
+        # Prepare background as mean vertical profile and time evolution.
+        # Just call divand in two dimensions forgetting x and y ...
+        toaverage =
+            if n == 4
+                [true,true,false]
+            else
+                [true,true]
+            end
+
+
+        # fit fitting
+        dbinfo = Dict{Symbol,Any}()
+
+        if fitcorrlen
+            kmax = length(depthr)
+
+            if n == 4
+                # vertical info
+                pmax = length(fitvert_param[:distbin])-1
+                dbinfo[:fitvertlen] = Dict{Symbol,Any}(
+                    :len => zeros(kmax,length(TS)),
+                    :var0 => zeros(kmax,length(TS)),
+                    :covar => zeros(pmax,kmax,length(TS)),
+                    :stdcovar => zeros(pmax,kmax,length(TS)),
+                    :fitcovar => zeros(pmax,kmax,length(TS)),
+                    :distx => zeros(pmax)
+                )
+            end
         end
-    
 
-    # fit fitting
-    dbinfo = Dict{Symbol,Any}()
+        dbinfo[:factore] = zeros(niter_e,length(TS))
 
-    if fitcorrlen
-        kmax = length(depthr)
+        for timeindex = 1:length(TS)
+            # select observation to be used for the time instance timeindex
+            sel = select(TS,timeindex,time)
 
-        if n == 4
-            # vertical info
-            pmax = length(fitvert_param[:distbin])-1
-            dbinfo[:fitvertlen] = Dict{Symbol,Any}(
-                :len => zeros(kmax,length(TS)),
-                :var0 => zeros(kmax,length(TS)),
-                :covar => zeros(pmax,kmax,length(TS)),
-                :stdcovar => zeros(pmax,kmax,length(TS)),
-                :fitcovar => zeros(pmax,kmax,length(TS)),
-                :distx => zeros(pmax)
-            )
-        end
-    end
-    
-    dbinfo[:factore] = zeros(niter_e,length(TS))
-    
-    for timeindex = 1:length(TS)
-        # select observation to be used for the time instance timeindex
-        sel = select(TS,timeindex,time)
+            if sum(sel) == 0
+                warning("no data at $(timeindex)")
 
-        if sum(sel) == 0
-            warning("no data at $(timeindex)")
+                fit = zeros(sz)
+                erri = ones(sz)
+                fit[.!mask] = NaN
+                erri[.!mask] = NaN
 
-            fit = zeros(sz)
-            erri = ones(sz)
+                if n == 4
+                    divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                                      fit, erri, (:,:,:,timeindex))
+                else
+                    divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                                      fit, erri, (:,:,timeindex))
+                end
+
+                # write to file
+                sync(ds)
+
+                # next iteration
+                continue
+            end
+
+            # apply the transformation
+            value_trans = trans.(value[sel])
+
+
+            # obs. coordinate matching selection
+            xsel = map(xc -> xc[sel],x[1:end-1])
+
+            fbackground,vaa =
+                if background == nothing
+                    # spatial mean of observations
+                    vm = mean(value_trans)
+                    va = value_trans - vm
+
+                    # background profile
+                    fi,vaa = divand.divand_averaged_bg(
+                        mask,pmn,xyi,
+                        xsel,
+                        va,
+                        background_len,
+                        epsilon2[sel]*background_epsilon2_factor,
+                        toaverage;
+                        moddim = moddim)
+
+                    fbackground = fi + vm
+
+                    fbackground,vaa
+                else
+                    # anamorphosis transform must already be included to the
+                    # background
+                    background(xsel,timeindex,value_trans,trans)
+                end
+
+            if fitcorrlen
+                # fit correlation length
+                lenxy1,infoxy = divand.fithorzlen(
+                    xsel,vaa,depthr;
+                    distfun = distfun,
+                    fithorz_param...
+                )
+
+                if n == 3
+                    # propagate
+                    for j = 1:sz[2]
+                        for i = 1:sz[1]
+                            len_scaled[1][i,j] = len0[1][i,j] * lenxy1[1] * pi/180 * EarthRadius
+                            len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1] * pi/180 * EarthRadius
+                        end
+                    end
+                end
+
+                if n == 4
+                    lenz1,infoz = divand.fitvertlen(
+                        xsel,vaa,depthr;
+                        distfun = distfun,
+                        fitvert_param...
+                    )
+
+                    dbinfo[:fitvertlen][:len][:,timeindex] = infoz[:len]
+                    dbinfo[:fitvertlen][:var0][:,timeindex] = infoz[:var0]
+                    dbinfo[:fitvertlen][:distx][:] = infoz[:distx]
+                    for key in [:covar,:fitcovar,:stdcovar]
+                        dbinfo[:fitvertlen][key][:,:,timeindex] = infoz[key]
+                    end
+
+
+                    # propagate
+                    for k = 1:sz[3]
+                        for j = 1:sz[2]
+                            for i = 1:sz[1]
+                                len_scaled[1][i,j,k] = len0[1][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
+                                len_scaled[2][i,j,k] = len0[2][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
+                                len_scaled[3][i,j,k] = len0[3][i,j,k] * lenz1[k]
+                            end
+                        end
+                    end
+                end
+            end
+
+
+            # factore is the total (cumulative) scale factor for
+            # espilon2 (Desroziers)
+
+            factore = 1.
+            fi2 = zeros(sz)
+            erri = zeros(sz)
+
+            kwargs_without_qcm = [(p,v) for (p,v) in kwargs if p !== :QCMETHOD]
+
+            for i = 1:niter_e
+                # error and QCMETHOD is only required at the last iterations
+                errortype,kwargs2 =
+                    if i == niter_e
+                        :cpme,kwargs
+                    else
+                        :none,kwargs_without_qcm
+                    end
+
+                # analysis
+                fi2, erri, residuals[sel], qcdata, scalefactore =
+                    divand.divandgo(mask,pmn,xyi,
+                                    xsel,
+                                    vaa,
+                                    len_scaled,
+                                    factore * epsilon2[sel],
+                                    errortype;
+                                    moddim = moddim, MEMTOFIT = memtofit, kwargs2...)
+
+                factore = scalefactore * factore
+
+                dbinfo[:factore][i,timeindex] = factore
+
+                if qcdata != ()
+                    qcvalues[sel] = qcdata
+                end
+            end
+
+            # sum analysis and backgrounds
+            fit = fi2 + fbackground
+
+            # inverse anamorphosis transformation
+            fit .= invtrans.(fit)
+
+            plotres(timeindex,sel,fit,erri)
+
             fit[.!mask] = NaN
             erri[.!mask] = NaN
-
             if n == 4
                 divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                   fit, erri, (:,:,:,timeindex))
             else
                 divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                  fit, erri, (:,:,timeindex))                
+                                  fit, erri, (:,:,timeindex))
             end
 
             # write to file
             sync(ds)
 
-            # next iteration
-            continue
-        end
+        end # time loop
 
-        # apply the transformation
-        value_trans = trans.(value[sel])
+    end # implictly closing the NetCDF file
 
-
-        # obs. coordinate matching selection
-        xsel = map(xc -> xc[sel],x[1:end-1])
-
-        fbackground,vaa =
-            if background == nothing
-                # spatial mean of observations
-                vm = mean(value_trans)
-                va = value_trans - vm
-
-                # background profile
-                fi,vaa = divand.divand_averaged_bg(
-                    mask,pmn,xyi,
-                    xsel,
-                    va,
-                    background_len,
-                    epsilon2[sel]*background_epsilon2_factor,
-                    toaverage;
-                    moddim = moddim)
-
-                fbackground = fi + vm
-
-                fbackground,vaa
-            else
-                # anamorphosis transform must already be included to the
-                # background
-                background(xsel,timeindex,value_trans,trans)
-            end
-
-        if fitcorrlen
-            # fit correlation length
-            lenxy1,infoxy = divand.fithorzlen(
-                xsel,vaa,depthr;
-                distfun = distfun,
-                fithorz_param...
-            )            
-
-            if n == 3
-                # propagate
-                for j = 1:sz[2]
-                    for i = 1:sz[1]
-                        len_scaled[1][i,j] = len0[1][i,j] * lenxy1[1] * pi/180 * EarthRadius
-                        len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1] * pi/180 * EarthRadius
-                    end
-                end
-            end
-
-            if n == 4
-                lenz1,infoz = divand.fitvertlen(
-                    xsel,vaa,depthr;
-                    distfun = distfun,
-                    fitvert_param...
-                )
-
-                dbinfo[:fitvertlen][:len][:,timeindex] = infoz[:len]
-                dbinfo[:fitvertlen][:var0][:,timeindex] = infoz[:var0]
-                dbinfo[:fitvertlen][:distx][:] = infoz[:distx]
-                for key in [:covar,:fitcovar,:stdcovar]
-                    dbinfo[:fitvertlen][key][:,:,timeindex] = infoz[key]
-                end
-
-                
-                # propagate
-                for k = 1:sz[3]
-                    for j = 1:sz[2]
-                        for i = 1:sz[1]
-                            len_scaled[1][i,j,k] = len0[1][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
-                            len_scaled[2][i,j,k] = len0[2][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
-                            len_scaled[3][i,j,k] = len0[3][i,j,k] * lenz1[k]
-                        end
-                    end
-                end
-            end
-        end
-
-
-        # factore is the total (cumulative) scale factor for
-        # espilon2 (Desroziers)
-
-        factore = 1.
-        fi2 = zeros(sz)
-        erri = zeros(sz)
-
-        kwargs_without_qcm = [(p,v) for (p,v) in kwargs if p !== :QCMETHOD]
-        
-        for i = 1:niter_e
-            # error and QCMETHOD is only required at the last iterations
-            errortype,kwargs2 =
-                if i == niter_e
-                    :cpme,kwargs
-                else
-                    :none,kwargs_without_qcm
-                end
-
-            # analysis
-            fi2, erri, residuals[sel], qcdata, scalefactore =
-                divand.divandgo(mask,pmn,xyi,
-                                xsel,
-                                vaa,
-                                len_scaled,
-                                factore * epsilon2[sel],
-                                errortype;
-                                moddim = moddim, MEMTOFIT = memtofit, kwargs2...)
-
-            factore = scalefactore * factore
-
-            dbinfo[:factore][i,timeindex] = factore
-
-            if qcdata != ()
-                qcvalues[sel] = qcdata
-            end
-        end
-
-        #fi2,s = divand.varanalysis(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(lon,lat,depth,time2),vaa,(lenx,leny,lenz,lent),epsilon2[sel];                          progress = divand.cgprogress, tol = tol)
-
-        # sum analysis and backgrounds
-        fit = fi2 + fbackground
-
-        # inverse anamorphosis transformation
-        fit .= invtrans.(fit)
-
-        plotres(timeindex,sel,fit,erri)
-
-        fit[.!mask] = NaN
-        erri[.!mask] = NaN
-        if n == 4
-            divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                              fit, erri, (:,:,:,timeindex))
-        else
-            divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                              fit, erri, (:,:,timeindex))
-        end
-
-        # write to file
-        sync(ds)
-    end
-
-    close(ds)
     dbinfo[:residuals] = residuals
     if haskey(Dict(kwargs), :QCMETHOD)
        dbinfo[:qcvalues] = qcvalues

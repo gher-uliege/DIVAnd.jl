@@ -20,13 +20,14 @@ end
 
 
 """
-    divand_save(filename,xyi,fi,varname;
+    divand_save(ds,filename,xyi,fi,varname;
                       ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)
 
 Save the result of the analysis in a NetCDF file .
 
 # Input arguments
 
+* `ds`: the NetCDF dataset 
 * `filename`: the name of the NetCDF file
 * `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.
 *  `xyi`: tuple with n elements. Every element represents a coordinate
@@ -43,7 +44,7 @@ Save the result of the analysis in a NetCDF file .
 
 
 
-function ncfile(filename,xyi,varname;
+function ncfile(ds,filename,xyi,varname;
                 ncvarattrib = Dict(), ncglobalattrib = Dict(),
                 thresholds = [("L1",0.3),("L2",0.5)],
                 deflatelevel = 5,
@@ -106,11 +107,8 @@ function ncfile(filename,xyi,varname;
     validmin = get(ncvarattrib,"valid_min","")
     validmax = get(ncvarattrib,"valid_max",0.)
 
-
     fillval = NC_FILL_FLOAT
 
-    ds = Dataset(filename,"c")
-    
     # Dimensions
 
     ds.dim["lon"] = sz[1]
@@ -282,7 +280,7 @@ if itime != -1 && haskey(kw,:climatology_bounds)
 end
 
 sync(ds)
-return ds, ncvar, ncvar_relerr, ncvar_Lx
+return ncvar, ncvar_relerr, ncvar_Lx
 end
 
 
@@ -347,12 +345,12 @@ function save(filename,xyi,fi,varname;
     # write the whole array
     index = (:,)
 
-    ds, ncvar, ncvar_relerr, ncvar_Lx = ncfile(filename,xyi,varname;
+    Dataset(filename,"c") do ds
+        ncvar, ncvar_relerr, ncvar_Lx = ncfile(ds,filename,xyi,varname;
                                            kwargs...)
-    writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-               fi, get(kw,:relerr,nothing), index)
-
-    close(ds)
+        writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                   fi, get(kw,:relerr,nothing), index)
+    end
 
     return nothing
 end
