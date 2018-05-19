@@ -5,31 +5,35 @@
 
 # Input:
 
-* `fi` : interpolated field from a `divandrun` execution 
+* `fi` : interpolated field from a `divandrun` execution
 * `s`: corresponding structure returned by `divand`
-* `method` : optional argument. which describes the method to be used:
- 1  as for standard cross validation.
- 3  as for GCV
- 4  with CV estimator to be used outside the routine
- 5  Poor man's GCV using data instead of random vector
- 0  automatic selection of method
+* `method` : optional argument, which describes the method to be used:
+ 1  as for standard cross validation,
+ 3  as for GCV,
+ 4  with CV estimator to be used outside the routine,
+ 5  Poor man's GCV using data instead of random vector,
+ 0  automatic selection of method.
 
 
 # Output
 
-* `qcvalues`: quality check values, one for each data point. The higher the value the more suspect a data point is. Absolute values of qcvalues might be not robust when analysis parameters are uncertain. The ranking is however quite robust
+* `qcvalues`: quality check values, one for each data point.
+The higher the value, the more suspect a data point is.
+Absolute values of `qcvalues` might be not robust when analysis parameters are uncertain.
+The ranking is however quite robust.
 
-If you cannot run `divandrun` but use `divandgo` (which does not provide a structure s at the output), the latter provides `qcvalues` if you call `divandgo` with a keyword parameter `QCMETHOD=`
+If you cannot run `divandrun` but use `divandgo` (which does not provide a structure s at the output),
+the latter provides `qcvalues` if you call `divandgo` with a keyword parameter `QCMETHOD=`
 
 """
 
 
 function divand_qc(fi, s, method=0)
 
-
+    info("Applying quality check based on the analysis")
     # For the moment, hardwired values
     # Make sure to work only with real observations
-    switchvalue1=130;;
+    switchvalue1=130;
 
     H = s.obsconstrain.H;
     R = s.obsconstrain.R;
@@ -46,7 +50,7 @@ function divand_qc(fi, s, method=0)
 
     residual=(1-s.obsout).*divand_residualobs(s,fi);
 
-	
+
 
     if method==0
 
@@ -79,15 +83,15 @@ function divand_qc(fi, s, method=0)
         qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)));
         return qcval
     end
-	
+
 	if mymethod==5
 
         qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s,-1;FIELD=fi)));
         return qcval
     end
-	
-	
-	
+
+
+
     warn("divand_qc not defined for method  $method")
 
     return 0

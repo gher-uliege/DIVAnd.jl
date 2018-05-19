@@ -3,14 +3,20 @@
     bx,by,b = divand.extract_bath(bath_name,isglobal,xi,yi)
 
 Extract the bathymetry from the NetCDF file `bathname`. The parameter `isglobal`
- is true if the NetCDF file covers the whole globe and thus the last longitude 
+ is true if the NetCDF file covers the whole globe and thus the last longitude
 point can be considered to be right next to the first longitude point.
-`xi` and `yi` are vectors defining the bounding box of the data. No 
+`xi` and `yi` are vectors defining the bounding box of the data. No
 interpolation is performed.
 
-b is positive in the water and negative in the air.
+**Convention:** b is positive in the water and negative in the air.
 """
 function extract_bath(bath_name,isglobal,xi,yi)
+
+    info("Extracting bathymetry from file: $(bath_name)")
+    if isglobal == true
+        info("Working with a global bathymetry");
+    end;
+
     dxi = xi[2] - xi[1]
     dyi = yi[2] - yi[1]
 
@@ -58,14 +64,15 @@ end
 """
     xi,yi,bath = divand.load_bath(bath_name,isglobal,xi,yi)
 
-Load the bathymetry from the NetCDF file `bathname`. The parameter `isglobal` is true if the NetCDF file covers the whole globe and 
-thus the last longitude point can be considered to be right next to the first longitude point.
-`xi` and `yi` is a vector of the longitude and latitude grid onto which the bathymetry should be 
+Load the bathymetry from the NetCDF file `bathname`. The parameter `isglobal` is true if the NetCDF file covers
+the whole globe and thus the last longitude point can be considered to be right next to the first longitude point.
+`xi` and `yi` are vectors containing the longitude and latitude grid onto which the bathymetry should be
 interpolated.
 
 """
 
 function load_bath(bath_name,isglobal,xi,yi)
+
     bx,by,b = extract_bath(bath_name,isglobal,xi,yi)
 
     # hack
@@ -102,15 +109,18 @@ end
     xi,yi,mask = load_mask(bath_name,isglobal,xi,yi,level::Number)
 
 Generate a land-sea mask based on the topography from the NetCDF file
-`bathname`. The parameter `isglobal` is true if the NetCDF file covers the whole globe and 
+`bathname`. The parameter `isglobal` is true if the NetCDF file covers the whole globe and
 thus the last longitude point can be considered to be right next to the first longitude point.
-`xi` and `yi` is a vector of the longitude and latitude grid onto which the bathymetry should be 
+`xi` and `yi` are vectors containing the longitude and latitude grid onto which the bathymetry should be
 interpolated.
-In the water, `level` is postive and in the air `level` is negative.
+
+**Convention:** in the water, `level` is positive and in the air `level` is negative.
 
 """
 
 function load_mask(bath_name,isglobal,xi,yi,level::Number)
+
+    info("Creating land-sea mask on level: $(level)")
 
     bx,by,b = extract_bath(bath_name,isglobal,xi,yi)
 

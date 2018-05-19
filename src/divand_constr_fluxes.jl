@@ -1,21 +1,21 @@
-# Creates integral constraints for each latitude so that a barotropic correction step leads 
-# to an additional flux prescribed. 
+# Creates integral constraints for each latitude so that a barotropic correction step leads
+# to an additional flux prescribed.
 #
 # c = divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 #
 # Input:
 #   s: structure
-#   topographyforfluxes: tuple of two 2D array with the bottom topography used for the flux calculations 
+#   topographyforfluxes: tuple of two 2D arrays with the bottom topography used for the flux calculations
 #               DO NOT USE NaN in it. If an array is replaced by a scalar zero, the constraint is not used.
 #               for fluxes calculated with geostrophy apply g/f to h
-#   fluxes: tuple of two arrays of fluxes. The barotropic correction on elevation should be such that 
+#   fluxes: tuple of two arrays of fluxes. The barotropic correction on elevation should be such that
 #                         Sum over longitude at each latidute of Sum h \delta(eta)/\delta x   \delta x = - fluxes[1]
 #                         Sum over latitude  at each longitude of Sum h \delta(eta)/\delta y   \delta y = -fluxes[2]
 #             WARNING: This has been coded to directly use geostrophy.jl output and flux directions
 #   epsfluxes: error variance on constraint. Scaling to be verified
 #   pmnin: metrics from the calling routine
 #
-# 
+#
 # Output:
 #   c: structure to be used by divand_addc with the following fields: R (a
 #     covariance matrix), H (extraction operator) and yo (specified value for
@@ -23,7 +23,7 @@
 
 function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 
-    
+
 
     mask = s.mask;
 
@@ -32,7 +32,7 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 
     sz = size(mask);
 
-# JMB directly put the right number of constraints for the moment, one for each latitude. 
+# JMB directly put the right number of constraints for the moment, one for each latitude.
 
     jmjmax=[0,0]
 	if topographyforfluxes[1]!=0
@@ -47,23 +47,23 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 		warning("no constraint in _fluxes")
 		return 0
 	end
-	
-	
+
+
 #	A = spzeros(s.sv.n,s.sv.n)
     A = spzeros(sum(jmjmax),s.sv.n)
 	 l = size(A,1);
 	 yo = zeros(l)
 	 R = Diagonal((mean(topographyforfluxes[1])+mean(topographyforfluxes[2]))*epsfluxes.*ones(l))
 
-    
+
      joffset=0
     for i=1:2
         S = sparse_stagger(sz,i,iscyclic[i]);
         m = (S * mask[:]) .== 1;
 
         d = topographyforfluxes[i]
-		
-		
+
+
 	   for j=1:jmjmax[i]
 # JMB: Add here integrals by using pack of an array with dx at a given latitude
 # Take same shape as topo array
@@ -78,14 +78,14 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 #
 #        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
          packedline=statevector_pack(s.sv,(forintegral,))
-		
-		 jmw=packedline'*sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i] 
-		 #@show sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i] 
+
+		 jmw=packedline'*sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i]
+		 #@show sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i]
 		 #@show mean(sparse_diag(d[mask]))
 		 #@show size(jmw),size(A),size(A[j,:]),size(squeeze(jmw,1))
-		 
+
 		 #@show squeeze(jmw,1),fluxes[i][j]
-		 
+
          A[j+joffset,:] = A[j+joffset,:] + squeeze(jmw,1);
 		 # test is kept in case flux signs are changed to x,y instead normal direction
 		 if i==1
@@ -95,19 +95,19 @@ function divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 		 end
 
         end
-		
-		
+
+
 		joffset=joffset+jmjmax[i]
-		
-   
-   
+
+
+
 
 	end
 # end loop o j
-	
+
     H = A;
-    
-    
+
+
     #R = speye(size(H,1));
 
     return divand_constrain(yo,R,H)

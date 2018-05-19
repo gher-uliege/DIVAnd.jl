@@ -8,6 +8,7 @@ A list string identifiers is also returned.
 
 function loadbigfile(fname)
 
+    info("Loading data from 'big file' $(fname)")
     data = readlines(open(fname,"r"))
     nobs = length(data)
 
@@ -17,7 +18,7 @@ function loadbigfile(fname)
     timeval = Array{DateTime}(nobs)
     value = zeros(nobs)
     id = Array{String}(nobs)
-        
+
 		mydate(x) = try
             DateTime(x)
            catch
@@ -31,9 +32,9 @@ function loadbigfile(fname)
         lat[i] = parse(Float64,rec[2])
         value[i] = parse(Float64,rec[3])
         depth[i] = parse(Float64,rec[4])
-		
-		
-		
+
+
+
         #timeval[i] = DateTime(rec[10])
 		timeval[i]=mydate(rec[10])
         id[i] = rec[11]
@@ -58,21 +59,21 @@ function loadobs(T,filename,varname)
         v2[.!ismissing.(v)] = v[.!ismissing.(v)]
         return v2
     end
-        
-    
+
+
     ds = Dataset(filename,"r")
     time = ds["obstime"][:].data;
-    
+
     lon = missingasNaN(ds["obslon"][:])
     lat = missingasNaN(ds["obslat"][:])
     depth = missingasNaN(ds["obsdepth"][:])
     value = missingasNaN(ds[varname][:])
-    
-    
+
+
     obsids = ds["obsid"][:]
-    
+
     obsid = Vector{String}(size(obsids,2))
-    
+
     for i = 1:size(obsids,2)
         obsid[i] = strip(join(obsids[:,i]),'\0')
     end
