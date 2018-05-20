@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.divand_squaredom",
     "category": "function",
-    "text": "mask,xyi,pmn = divand_squaredom(n,coord)\n\nCreate a \"square\" domain in n dimensions with the coordinates coord assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nExample\n\nmask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))\n\n\n\n"
+    "text": "mask,pmn,xyi = divand_squaredom(n,coord)\n\nCreate a \"square\" domain in n dimensions with the coordinates coord assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nExample\n\nmask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))\n\n\n\n"
 },
 
 {
@@ -1181,7 +1181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "divand.jl documentation",
     "title": "divand.ncfile",
     "category": "function",
-    "text": "divand_save(filename,xyi,fi,varname;\n                  ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nfilename: the name of the NetCDF file\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.\nxyi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\ntimeorigin: time origin for the time units attribute (default is 1900-01-01 00:00:00)\n\n\n\n"
+    "text": "divand_save(ds,filename,xyi,fi,varname;\n                  ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nds: the NetCDF dataset \nfilename: the name of the NetCDF file\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.\nxyi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\ntimeorigin: time origin for the time units attribute (default is 1900-01-01 00:00:00)\n\n\n\n"
 },
 
 {
