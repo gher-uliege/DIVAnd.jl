@@ -1,15 +1,13 @@
 # Testing divand in 2 dimensions with advection.
+using divand
+using Base.Test
 
 # grid of background field
-xi,yi = ndgrid(linspace(-1,1,30),linspace(-1,1,30));
+mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(-1,1,30))
 
 x = [.4]
 y = [.4]
 f = [1.]
-
-mask = trues(xi);
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
 
 a = 5;
 u = a*yi;
