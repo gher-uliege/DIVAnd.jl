@@ -22,7 +22,7 @@ end
 
 
 function ufill(c::Array{T,2},valex::Number) where T
-    return ufill(reshape(c,(size(c,1), size(c,2), 1)),valex)
+    return ufill(reshape(c,(size(c,1), size(c,2), 1)),valex)[:,:,1]
 end
 
 """
