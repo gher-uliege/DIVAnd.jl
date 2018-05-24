@@ -561,6 +561,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Constraints-1",
+    "page": "divand.jl documentation",
+    "title": "Constraints",
+    "category": "section",
+    "text": "divand_constr_fluxes\ndivand_constr_constcoast"
+},
+
+{
     "location": "index.html#divand.ODVspreadsheet.listSDNparams",
     "page": "divand.jl documentation",
     "title": "divand.ODVspreadsheet.listSDNparams",
