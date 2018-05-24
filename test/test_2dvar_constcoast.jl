@@ -4,61 +4,31 @@ using Base.Test
 
 # grid of background field
 mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(-1,1,30))
-mask[5:10,5:10] = false
 
+# island at these location
+mi0 = 12
+mi1 = 13
 
-#mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(-1,1,3))
-#mask[2,2:3] = false
-#mask[3,2] = false
+mj0 = 12
+mj1 = 13
 
-x = [.4]
-y = [.4]
+mask[mi0:mi1,mj0:mj1] = false
+
+x = [0.]
+y = [0.]
 f = [1.]
 
-a = 5;
-u = a*yi;
-v = -a*xi;
 epsilon2 = 1/200
-len = 0.2
+len = 0.3
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;velocity = (u,v),alphabc=0);
+fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
-Dxfi = fi[2:end,:] - fi[1:end-1,:]
-Dyfi = fi[:,2:end] - fi[:,1:end-1]
-
-#boundary_u, boundary_v, boundary_psi = stagger_mask(mask,xor)
-#Dxfi[
-
-function boundaryu(mask)
-
-    bu = falses(size(mask,1)-1,size(mask,2))
-    
-    for j = 1:size(bu,2)
-        for i = 1:size(bu,1)
-            
-            if j > 1
-                if !mask[i,j-1] || !mask[i+1,j-1]
-                    bu[i,j] = true
-                end
-            end
-            
-            if j < size(bu,2)
-                if !mask[i,j+1] || !mask[i+1,j+1]
-                    bu[i,j] = true
-                end            
-            end
-        end
-        
-    end
-    return bu
-end
-
-bu = boundaryu(mask)
-bv = boundaryu(mask')'
 
 #=
 
-  |                 |                 |                 |                 |
+The gradient in drection x at the point > should be close to zero if one 
+of the grid cell denoted by * is a land point.
+
   +-----------------+-----------------+-----------------+-----------------+
   |                 |                 |                 |                 |
   |                 |                 |                 |                 |
@@ -71,7 +41,7 @@ bv = boundaryu(mask')'
   |                 |      (i,j)      |                 |                 |
   |                 |                 |                 |                 |
   |                 |                 |                 |                 |
-  |                 |        *        >                 |                 |
+  |                 |        .        >                 |                 |
   |                 |      (i,j)    (i,j)               |                 |
   |                 |                 |                 |                 |
   |                 |                 |                 |                 |
@@ -85,17 +55,44 @@ bv = boundaryu(mask')'
   |                 |                 |                 |                 |
   +-----------------+-----------------+-----------------+-----------------+
 
-
-
-
-
-
 =#
+
+function boundaryu(mask)
+
+    bu = falses(size(mask,1)-1,size(mask,2))
+    
+    for j = 1:size(bu,2)
+        for i = 1:size(bu,1)
+            # check if i+½,j is a see point
+            
+            if mask[i,j] && mask[i+1,j]
+            
+                if j > 1
+                    if !mask[i,j-1] || !mask[i+1,j-1]
+                        bu[i,j] = true
+                    end
+                end
+            
+                if j < size(bu,2)
+                    if !mask[i,j+1] || !mask[i+1,j+1]
+                        bu[i,j] = true
+                    end            
+                end
+            end
+        end
+        
+    end
+    return bu
+end
+
+boundaryv(mask) = boundaryu(mask')'
+
+
 function normalvel(mask,fip)
     fi = zeros(size(mask))
     fi[mask] = fip
     bu = boundaryu(mask)
-    bv = boundaryu(mask')'
+    bv = boundaryv(mask)
     Dxfi = fi[2:end,:] - fi[1:end-1,:]
     Dyfi = fi[:,2:end] - fi[:,1:end-1]
 
@@ -103,41 +100,71 @@ function normalvel(mask,fip)
 end
 
 
-function normalvelsp(mask,fip)
+"""
+    H = normalvelsp(mask)
+
+Return a sparse matrix `H` computing the
+gradient of the values along the coastline defined by `mask`.
+Land points correspond to the value `false` and sea points to the value `true`
+in `mask`.
+"""
+function normalvelsp(mask)
     sz = size(mask)
-    fi = zeros(size(mask))
-    fi[mask] = fip
-
     Hunpack = divand.sparse_pack(mask)'
-    fi = reshape(divand.sparse_pack(mask)' * fip,size(mask))
     bu = boundaryu(mask)
-    bv = boundaryu(mask')'
+    bv = boundaryv(mask)
 
-    divand.sparse_pack(mask)
     diffx = sparse_diff(sz,1)
     diffy = sparse_diff(sz,2)
     
-    Dxfi = fi[2:end,:] - fi[1:end-1,:]
-    @show size(Dxfi)
-    
-    Dxfi2 = divand.sparse_pack(bu) * diffx * Hunpack * fip
-    Dyfi2 = divand.sparse_pack(bv) * diffy * Hunpack * fip
-    @show size(Dxfi2)
-    Dyfi = fi[:,2:end] - fi[:,1:end-1]
-
-
     H = [divand.sparse_pack(bu) * diffx * Hunpack;
          divand.sparse_pack(bv) * diffy * Hunpack]
     
-    #return [Dxfi2; Dyfi2]
-    return H*fip
+    return H
 end
 
-@test normalvel(mask,fi[mask]) ≈ normalvelsp(mask,fi[mask])
+function divand_constcoast(mask,eps2)
+    H = normalvelsp(mask)
+    m = size(H,1)
+    yo = zeros(m)
+    R = Diagonal(fill(eps2,(m,)))
+    
+    return divand.divand_constrain(yo,R,H)
+end
+
+eps2 = 1e-7
+
+c = divand_constcoast(mask,eps2)
+
+@test normalvel(mask,fi[mask]) ≈ normalvelsp(mask) * fi[mask]
 
 
-#nothing
-#@test abs(fi[18,24] - 0.8993529043140029) < 1e-2
+fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
+                  constraints = [c]);
+
+
+# extract boundary values around the island and check
+# if the standard deviation is small
+
+@test std(fi2[mi0-1:mi1+1,mj0-1:mj1+1][mask[mi0-1:mi1+1,mj0-1:mj1+1]]) < 1e-5
+
+
+# more complex example
+
+srand(1234)
+mask0,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,100))
+mask = divand.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
+x = rand(100)
+y = rand(size(x))
+f = sin.(2*π*x) .* sin.(2*π*y)
+
+len = 0.1
+
+fi3,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
+                  constraints = [divand_constcoast(mask,eps2)]);
+
+
+nothing
 
 
 
