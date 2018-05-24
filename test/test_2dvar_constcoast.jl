@@ -88,7 +88,7 @@ end
 boundaryv(mask) = boundaryu(mask')'
 
 
-function normalvel(mask,fip)
+function gradcoast(mask,fip)
     fi = zeros(size(mask))
     fi[mask] = fip
     bu = boundaryu(mask)
@@ -101,14 +101,14 @@ end
 
 
 """
-    H = normalvelsp(mask)
+    H = sparse_gradcoast(mask)
 
 Return a sparse matrix `H` computing the
 gradient of the values along the coastline defined by `mask`.
 Land points correspond to the value `false` and sea points to the value `true`
 in `mask`.
 """
-function normalvelsp(mask)
+function sparse_gradcoast(mask)
     sz = size(mask)
     Hunpack = divand.sparse_pack(mask)'
     bu = boundaryu(mask)
@@ -123,8 +123,18 @@ function normalvelsp(mask)
     return H
 end
 
-function divand_constcoast(mask,eps2)
-    H = normalvelsp(mask)
+"""
+    c = divand_constr_constcoast(mask,eps2)
+
+Constrain imposing that the gradients along the coastline defined
+by `mask` are close to zero constrolled by the parameter `eps2` which
+represents the scalled error variance on the gradients.
+
+This constrain is useful to indirectly impose that a stream function
+does not have a current component perpendicular to the coast line.
+"""
+function divand_constr_constcoast(mask,eps2)
+    H = sparse_gradcoast(mask)
     m = size(H,1)
     yo = zeros(m)
     R = Diagonal(fill(eps2,(m,)))
@@ -134,9 +144,9 @@ end
 
 eps2 = 1e-7
 
-c = divand_constcoast(mask,eps2)
+c = divand_constr_constcoast(mask,eps2)
 
-@test normalvel(mask,fi[mask]) ≈ normalvelsp(mask) * fi[mask]
+@test gradcoast(mask,fi[mask]) ≈ sparse_gradcoast(mask) * fi[mask]
 
 
 fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
@@ -161,7 +171,7 @@ f = sin.(2*π*x) .* sin.(2*π*y)
 len = 0.1
 
 fi3,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
-                  constraints = [divand_constcoast(mask,eps2)]);
+                  constraints = [divand_constr_constcoast(mask,eps2)]);
 
 
 nothing
