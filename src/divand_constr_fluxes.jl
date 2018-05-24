@@ -1,8 +1,8 @@
 """
+    c = divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
+
 Creates integral constraints for each latitude so that a barotropic correction step leads
 to an additional flux prescribed.
-
-c = divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 
 Input:
   s: structure

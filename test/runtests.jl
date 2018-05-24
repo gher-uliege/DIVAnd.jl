@@ -23,8 +23,10 @@ import Base.LinAlg.BLAS
     include("test_1dvar.jl");
     include("test_1D_seminormed.jl");
 
-
+    # dynamical constraints
     include("test_2dvar_adv.jl");
+    include("test_2dvar_constcoast.jl");
+    
     include("test_2dvar_iter.jl");
     include("test_2dvar_jog.jl");
     include("test_2dvar_error.jl");

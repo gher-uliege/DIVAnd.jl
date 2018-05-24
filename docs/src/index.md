@@ -100,6 +100,12 @@ Base.ind2sub
 Base.length
 ```
 
+## Constraints
+
+```@docs
+divand_constr_fluxes
+divand_constr_constcoast
+```
 
 ## ODV files
 
