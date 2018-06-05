@@ -4,9 +4,9 @@
 
 # Input: 
 
-* `K1andH1K1` : function, when called with a vector of data d, provides in return Kd,d-HK d ; i.e. the gridded analysis Kd an residual d-HKd for analysis tool 1
+* `K1andH1K1` : function, when called with a vector of data d, provides in return Kd,HK d ; i.e. the gridded analysis Kd and analysis HKd at data points for analysis tool 1
 
-* `K2andH2K2` : function, when called with a vector of data d, provides in return Kd,d-HK d ; i.e. the gridded analysis Kd an residual d-HKd for analysis tool 2
+* `K2andH2K2` : function, when called with a vector of data d, provides in return Kd,HK d ; i.e. the gridded analysis Kd and analysis HKd at data points for analysis tool 2
 
 * `d` : data array 
 
