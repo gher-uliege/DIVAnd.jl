@@ -202,7 +202,7 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     # info("Solving...")
     fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
-    info("Done solving")
+    # info("Done solving")
     return fi,s
 end
 

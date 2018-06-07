@@ -648,7 +648,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                 end
             end
 
-            info("Starting loop on the $(nprofiles(sheet)) profiles")
+            # info("Starting loop on the $(nprofiles(sheet)) profiles")
             for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                        obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
@@ -677,7 +677,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                     append!(times,obstime[good])
                     append!(ids,obsids[good])
             end
-            info("Done reading the profiles")
+            # info("Done reading the profiles")
         end
     end
 

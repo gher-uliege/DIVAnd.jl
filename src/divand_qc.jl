@@ -30,7 +30,7 @@ the latter provides `qcvalues` if you call `divandgo` with a keyword parameter `
 
 function divand_qc(fi, s, method=0)
 
-    info("Applying quality check based on the analysis")
+    # info("Applying quality check based on the analysis")
     # For the moment, hardwired values
     # Make sure to work only with real observations
     switchvalue1=130;
