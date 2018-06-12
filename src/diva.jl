@@ -228,7 +228,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         info("Starting loop on time indices")
         for timeindex = 1:length(TS)
             info("Time step $(timeindex) / $(length(TS))")
-            info("------------")
 
             # select observation to be used for the time instance timeindex
             sel = select(TS,timeindex,time)
