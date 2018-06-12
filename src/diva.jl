@@ -75,7 +75,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 ncvarattrib = Dict(),
                 ncglobalattrib = Dict(),
                 transform = Anam.notransform(),
-                distfun = (xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1]),
+                distfun = distfun_m,
                 mask = nothing,
                 background = nothing,
                 background_epsilon2_factor::Float64 = 10.,
@@ -301,8 +301,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     # propagate
                     for j = 1:sz[2]
                         for i = 1:sz[1]
-                            len_scaled[1][i,j] = len0[1][i,j] * lenxy1[1] * pi/180 * EarthRadius
-                            len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1] * pi/180 * EarthRadius
+                            len_scaled[1][i,j] = len0[1][i,j] * lenxy1[1]
+                            len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1]
                         end
                     end
                 end
@@ -325,8 +325,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     for k = 1:sz[3]
                         for j = 1:sz[2]
                             for i = 1:sz[1]
-                                len_scaled[1][i,j,k] = len0[1][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
-                                len_scaled[2][i,j,k] = len0[2][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
+                                len_scaled[1][i,j,k] = len0[1][i,j,k] * lenxy1[k]
+                                len_scaled[2][i,j,k] = len0[2][i,j,k] * lenxy1[k]
                                 len_scaled[3][i,j,k] = len0[3][i,j,k] * lenz1[k]
                             end
                         end
