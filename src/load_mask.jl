@@ -13,9 +13,9 @@ interpolation is performed.
 function extract_bath(bath_name,isglobal,xi,yi)
 
     info("Extracting bathymetry from file: $(bath_name)")
-    if isglobal == true
-        info("Working with a global bathymetry");
-    end;
+    # if isglobal == true
+        #info("Working with a global bathymetry");
+    # end;
 
     dxi = xi[2] - xi[1]
     dyi = yi[2] - yi[1]

@@ -180,11 +180,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # fit fitting
     dbinfo = Dict{Symbol,Any}()
-    
+
     # days since timeorigin
     timeclim = [Dates.Millisecond(tc - timeorigin).value/(1000*60*60*24) for tc in ctimes(TS)]
     climatologybounds = climatology_bounds(TS)
-    
+
     # create the NetCDF file
     # make sure that the file is closed even if there is an error
     info("Creating netCDF file")
@@ -227,7 +227,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         info("Starting loop on time indices")
         for timeindex = 1:length(TS)
-            info("Step $(timeindex) / $(length(TS))")
+            info("Time step $(timeindex) / $(length(TS))")
             info("------------")
 
             # select observation to be used for the time instance timeindex
@@ -262,7 +262,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             # obs. coordinate matching selection
             xsel = map(xc -> xc[sel],x[1:end-1])
 
-            info("Computing background profile")
+            # info("Computing background profile")
             fbackground,vaa =
                 if background == nothing
                     # spatial mean of observations
@@ -289,7 +289,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 end
 
             if fitcorrlen
-                info("Applying fit of the correlation length")
+                # info("Applying fit of the correlation length")
                 # fit correlation length
                 lenxy1,infoxy = divand.fithorzlen(
                     xsel,vaa,depthr;
@@ -345,7 +345,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             kwargs_without_qcm = [(p,v) for (p,v) in kwargs if p !== :QCMETHOD]
 
             for i = 1:niter_e
-                info("Estimating the optimal scale factor of epsilon2")
+                #info("Estimating the optimal scale factor of epsilon2")
                 # error and QCMETHOD is only required at the last iterations
                 errortype,kwargs2 =
                     if i == niter_e

@@ -147,7 +147,7 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
     pmn,xi,len = divand_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
     # check pmn .* len > 4
-    
+
     # observation error covariance (scaled)
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
     # boundary
@@ -171,38 +171,38 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
     s.compPC = compPC;
     s.progress = progress
 
-    info("Creating observation error covariance matrix")
+    #info("Creating observation error covariance matrix")
     R = divand_obscovar(epsilon2,length(f));
 
     # add observation constrain to cost function
-    info("Adding observation constraint to cost function")
+    #info("Adding observation constraint to cost function")
     s = divand_addc(s,divand_obs(s,xi,x,f,R,I = fracindex));
 
     # add advection constraint to cost function
     if !isempty(velocity)
-        info("Adding advection constraint to cost function")
+        #info("Adding advection constraint to cost function")
         s = divand_addc(s,divand_constr_advec(s,velocity));
 	end
 
 	if !isempty(topographyforfluxes)
-        info("Adding integral constraints")
+        #info("Adding integral constraints")
 		s = divand_addc(s,divand_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin));
     end
 
     # add all additional constrains
     for i=1:length(constraints)
-        info("Adding additional constrain - $(i)")
+        #info("Adding additional constrain - $(i)")
         s = divand_addc(s,constraints[i]);
     end
 
     # factorize a posteriori error covariance matrix
     # or compute preconditioner
-    info("Factorizing a posteriori error covariance matrix")
+    #info("Factorizing a posteriori error covariance matrix")
     divand_factorize!(s);
 
-    info("Solving...")
+    # info("Solving...")
     fi = divand_solve!(s,statevector_pack(s.sv,(fi0,))[:,1],f0;btrunc=btrunc);
-    info("Done solving")
+    # info("Done solving")
     return fi,s
 end
 

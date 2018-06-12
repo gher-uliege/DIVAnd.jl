@@ -106,7 +106,7 @@ function readODVspreadsheet(datafile)
 
             if line == "//SDN_parameter_mapping"
                 line = readline(f);
-                info("Length line SDN_parameter_mapping: $(length(line))")
+                # info("Length line SDN_parameter_mapping: $(length(line))")
                 # The semantic descriptions are terminated by an empty comment
                 # record (i.e. a record containing the // characters and nothing else)
 
@@ -133,7 +133,7 @@ function readODVspreadsheet(datafile)
         columnLabels = split(chomp(columnline), '\t')
         debug("Column labels: $(columnLabels)");
         ncols = length(columnLabels);
-        info("Total no. of columns (before selection): $ncols")
+        # info("Total no. of columns (before selection): $ncols")
 
         # Discard columns that won't be used (should be extended)
         column2discard = ["QF", "Instrument Info",
@@ -152,7 +152,7 @@ function readODVspreadsheet(datafile)
         # Get indices of the good columns
         index2keep = findin(columnLabels, goodcols);
         ncols2 = length(index2keep);
-        info("No. of columns after selection: $ncols2")
+        # info("No. of columns after selection: $ncols2")
 
         # number of total lines
         pos = position(f)
@@ -175,7 +175,7 @@ function readODVspreadsheet(datafile)
             end
             totallines += 1
         end
-        info("Total no. of lines: $totallines")
+        # info("Total no. of lines: $totallines")
         seek(f,pos)
 
         # load all data
@@ -206,7 +206,7 @@ function readODVspreadsheet(datafile)
             alldata[:,i] = line
         end
 
-        info("Size of data matrix: " * string(size(alldata)))
+        # info("Size of data matrix: " * string(size(alldata)))
         # info("Size (in GB) of data matrix: " * string(sizeof(alldata / 1024 / 1024)))
         # trim unused lines (comments, ...)
         #alldata = alldata[:,1:i]
@@ -648,7 +648,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                 end
             end
 
-            info("Starting loop on the $(nprofiles(sheet)) profiles")
+            # info("Starting loop on the $(nprofiles(sheet)) profiles")
             for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                        obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
@@ -677,7 +677,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                     append!(times,obstime[good])
                     append!(ids,obsids[good])
             end
-            info("Done reading the profiles")
+            # info("Done reading the profiles")
         end
     end
 

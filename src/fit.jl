@@ -311,7 +311,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     n = length(x)
 
     # compute the empirical covariance
-    info("Making empirical covariance")
+    # info("Making empirical covariance")
 
     distx,covar,corr,varx,count,stdcovar[:] =
         empiriccovarmean(x,v,distbin,mincount;
@@ -321,9 +321,9 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
                          distfun = distfun)
 
     if all(count .< mincount)
-        error("Not enought pairs at all distances (count = $(count), mincount = $(mincount))")
+        error("Not enough pairs at all distances (count = $(count), mincount = $(mincount))")
     end
-    info("Fitting empirical covariance")
+    # info("Fitting empirical covariance")
 
     distx2 = copy(distx)
 
@@ -924,14 +924,14 @@ function fithorzlen(x,value::Vector{T},z;
         end
 
     for k = 1:length(z)
-        
+
         sel =
             if length(x) == 3
                 (abs.(x[3] - z[k]) .< searchz)
             else
                 trues(size(x[1]))
             end
-        
+
         xsel = (x[1][sel],x[2][sel]);
         v = value[sel] - mean(value[sel]);
 
