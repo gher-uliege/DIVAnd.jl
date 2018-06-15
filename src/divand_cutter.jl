@@ -20,7 +20,13 @@ windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim,MEMTOF
 
 # Output:
 
-* `windowlist`: Array of tuples (iw1 iw2 ...)
+* `windowlist`: vector of tuples (iw1,iw2,isol1,isol2,istore1,istore2,)
+    where `(iw1,iw2)` correspond to the start and end indices in the (global)
+    grid `(isol1,isol2)` correspond to the start and end indices solution
+    to be retained in the window (not all is retained due to overlapping)
+    and `(istore1,istore2)` correspond to the start and end indices of the solution
+    relative to the global grid. They define thus where the local solution has to be
+    stored in the combined global solution.
 * `csteps` : Array of steps for the coarse grid preconditionner
 * `lmask` : Array of multiplication factors for length scale of preconditionner
 * `alphapc` : Norm defining coefficients for preconditionner
