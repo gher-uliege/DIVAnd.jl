@@ -35,8 +35,8 @@ windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim,MEMTOF
 
 
 function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
-
-
+    #JLD.save("divand_cutter.jld", "Lpmnrange", Lpmnrange, 
+    #         "gridsize", gridsize,"moddim",moddim,"MEMTOFIT",MEMTOFIT)
 
 
     # Some tweaking parameters #####
@@ -94,6 +94,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
     stepsize,overlapping,isdirect=divand_fittocpu(Lpmnrange,gridsize,csteps,moddim,MEMTOFIT)
+    #@show stepsize,overlapping,isdirect
 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows

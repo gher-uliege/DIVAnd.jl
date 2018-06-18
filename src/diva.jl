@@ -225,7 +225,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         dbinfo[:factore] = zeros(niter_e,length(TS))
 
-        info("Starting loop on time indices")
+        #info("Starting loop on time indices")
         for timeindex = 1:length(TS)
             info("Time step $(timeindex) / $(length(TS))")
 
@@ -279,7 +279,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         moddim = moddim)
 
                     fbackground = fi + vm
-
                     fbackground,vaa
                 else
                     # anamorphosis transform must already be included to the
@@ -287,9 +286,19 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     background(xsel,timeindex,value_trans,trans)
                 end
 
+            # the background is not computed for points outside of the domain
+            # exclude those in vaa and xsel
+            selbackground = isfinite.(vaa)
+            vaa = vaa[selbackground]
+            xsel = map(xc -> xc[selbackground],xsel)
+            # unselect the data points out of the domain
+            view(sel,sel)[.!selbackground] = false
+
+
             if fitcorrlen
                 # info("Applying fit of the correlation length")
                 # fit correlation length
+
                 lenxy1,infoxy = divand.fithorzlen(
                     xsel,vaa,depthr;
                     distfun = distfun,

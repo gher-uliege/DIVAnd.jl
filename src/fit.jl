@@ -159,6 +159,7 @@ function empiriccovar(x,v,distbin,mincount;
 
         #meanx,stdx = stats(sumvi[i] + sumvj[i],sumvi2[i] + sumvj2[i],2*count[i])
         #@show i, stdx, sqrt(varx[i])
+        #@show i,distbin[i],distbin[i+1],covar[i],corr[i],sumvivj[i],count[i]
     end
 
 
@@ -216,7 +217,7 @@ function empiriccovarmean(x,v::Vector{T},distbin,mincount;
                      distfun = distfun)
 
 
-    for k = 1:nmean
+    for k = 2:nmean
         distx,covar[:,k],corr[:,k],varx[:,k],count[:,k] =
             empiriccovar(x,v,distbin,mincount;
                          maxpoints = maxpoints,
@@ -551,6 +552,63 @@ end
 Base.done(iter::RandomCoupels,state) = state == iter.count
 
 
+
+type VertRandomCoupels
+    zlevel::Float64 # depth in meters
+    zindex::Vector{Int}
+    x::NTuple{3,Vector{Float64}}
+    searchxy::Float64 # in meters
+    maxntries::Int
+    count::Int
+end
+
+Base.start(iter::VertRandomCoupels) = 0
+
+function Base.next(iter::VertRandomCoupels,state)
+    # pick two random points
+    j = -1
+    jindex = -1
+
+    for ntries = 1:iter.maxntries
+        j = iter.zindex[rand(1:length(iter.zindex))]
+
+        # # for few data, this is faster
+        # if length(zindex) < 10000
+        #     mask = falses(size(x[1]))
+        #     for k = 1:length(x[1])
+        #         mask[k] = distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < searchxy
+        #     end
+        #     jindex = pickone(mask)
+        #     return j,jindex
+        # end
+
+        jindex = -1
+
+        for ntries2 = 1:iter.maxntries
+                k = rand(1:length(iter.x[1]))
+                if distfun_m([iter.x[1][k],iter.x[2][k]],[iter.x[1][j],iter.x[2][j]]) < iter.searchxy
+                    jindex = k
+                    break
+                end
+            end
+
+            if jindex != -1
+                break
+            end
+        end
+
+        if (j == -1) || (jindex == -1)
+            error("fail to find enought pairs at z = $(iter.zlevel)")
+        end
+        #@show iter.zlevel,iter.x[3][j],iter.x[3][jindex]
+        return ((j,jindex),state+1)
+end
+
+Base.done(iter::VertRandomCoupels,state) = state == iter.count
+
+
+
+
 function fitlen(x::Tuple,d,nsamp; kwargs...)
     weight = ones(size(d))
     return fitlen(x,d,weight,nsamp; kwargs...)
@@ -704,7 +762,6 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         iw[nb] = iw[nb] + weight[i]*weight[j]
     end
 
-    ifo = 0
     covarweightmean = 0.
     for nn=1:nbmax
         covarweight[nn] = 0.
@@ -742,31 +799,35 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     ncross = 5
     RLz = -1.
     for nn=1:nbmax
-        nnp=min(nbmax,nn+1)
-
         # if not working force simple use of variance
-        if ((ifo == 0) && (iw[nn] != 0) && (covar[nn] < 0) && (nn > 4))
+        if (iw[nn] != 0) && (covar[nn] < 0) && (nn > 4)
             debug("First zero crossing: ",nn," ",ddist," ",nn*ddist)
 
-            RLz=ddist*nn
-            ifo=1
-            ncross=nn
+            RLz = ddist*nn
+            ncross = nn
+            break
         end
     end
 
+    # if no zero crossing, use minimum value of covar
+    if RLz == -1.
+        ncross = findmin(covar)[2]
+        RLz = ddist*ncross
+        debug("No zero crossing, use minimum value at a distance of ",RLz)
+    end
 
     # Now try to fit Bessel function using only the data from ddist to zero-crossing.
     # extrapolate to zero to get S/N ratio
     debug("Now trying to fit Bessel covariance function")
     errmin = 1.E35
     VAR = variance
-    RL=RLz
+    RL = RLz
 
-    x0=RLz/20
-    dx=ddist
-    nstart=max(floor(Int,x0 / dx)+1,2)
-    x0=(nstart-1)*dx
-    np=floor(Int,ncross*0.95-0*nstart)
+    x0 = RLz/20
+    dx = ddist
+    nstart = max(floor(Int,x0 / dx)+1,2)
+    x0 = (nstart-1)*dx
+    np = floor(Int,ncross*0.95-0*nstart)
     range = nstart:(nstart+np-1)
 
     distx = (0:nbmax-1) * dx
@@ -777,7 +838,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
    covarweight_range = view(covarweight,range)
 
     if (np < 10)
-        @show nbmax, n, nsamp
+        @show nbmax, n, nsamp, nstart, ncross
         warn("Too few data. Will use guesses (np = $(np), RLz = $(RLz), )")
         RL=RLz
         VAR=0.01*variance
@@ -915,7 +976,7 @@ function fithorzlen(x,value::Vector{T},z;
     covar = Array{T,2}(pmax,kmax)
     distx = Vector{T}(pmax)
     fitinfos = Vector{Dict{Symbol,Any}}(kmax)
-
+    
     nsamp =
         if length(value) > maxnsamp
             maxnsamp
@@ -982,7 +1043,7 @@ See also divand.fithorzlen
 """
 
 function fitvertlen(x,value::Vector{T},z;
-                     distbin::Vector{T} = collect([0.:50:400; 500:100:1000]),
+                     distbin::Vector{T} = collect(0.:5.:100.),
                      mincount::Int = 50,
                      maxpoints::Int = 10000,
                      nmean::Int = 100,
@@ -990,9 +1051,10 @@ function fitvertlen(x,value::Vector{T},z;
                      maxlen::T = 200.,
                      tolrel::T = 1e-4,
                      smoothz::T = 100.,
-                     searchz::T = 500.,
-                     searchxy::T = 0.5,
+                     searchz::T = 10.,
+                     searchxy::T = 1_000., # meters
                      maxntries::Int = 10000,
+                     maxnsamp = 5000,
                      progress = (iter,var,len,fitness) -> nothing,
                      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                      ) where T
@@ -1051,7 +1113,9 @@ function fitvertlen(x,value::Vector{T},z;
         if (j == -1) || (jindex == -1)
             error("fail to find enought pairs at z = $(zlevels2)")
         end
-        #@show j,jindex
+        #@show j,jindex,(x[1][j],x[2][j],x[3][j])
+        #@show j,jindex,(x[1][jindex],x[2][jindex],x[3][jindex])
+        #@show x[3][j],x[3][jindex],value[j],value[jindex]
         return j,jindex
     end
 
@@ -1071,7 +1135,11 @@ function fitvertlen(x,value::Vector{T},z;
     stdcovar = Array{T,2}(pmax,kmax)
     covar = Array{T,2}(pmax,kmax)
     distx = Vector{T}(pmax)
+    fitinfos = Vector{Dict{Symbol,Any}}(kmax)
 
+    #nsamp = min(5000,length(value))
+    nsamp = min(maxnsamp,length(value))
+    count = (nsamp*(nsamp-1)) ÷ 2
 
     # @time distx,covar,corr,varx,count = divand.empiriccovarmean(
     #      (depth[sel],),value[sel],distbin,mincount;
@@ -1118,6 +1186,7 @@ function fitvertlen(x,value::Vector{T},z;
         #@show zlevel2,maxpoints,nmean
         #@show length(zindex)
 
+        #=
         var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
             (x[3],),value,distbin,mincount;
             maxpoints = maxpoints,
@@ -1128,10 +1197,15 @@ function fitvertlen(x,value::Vector{T},z;
             tolrel = tolrel,
             progress = progress,
         )
+        =#
+
+        iter = VertRandomCoupels(z[k],zindex,x,searchxy,maxntries,count)
+        #state = start(iter)
+        #@code_warntype next(iter,state)
+        #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
+        var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,ones(size(value)),nsamp,iter)
 
         println("Vert. correlation length at z=$(z[k]): $(lenopt[k])")
-        #plot(distx,covar, label = "empirical covariance")
-        #plot(distx,fitcovar, label = "fitted function")
     end
 
     lenoptf = copy(lenopt)
@@ -1139,12 +1213,15 @@ function fitvertlen(x,value::Vector{T},z;
         divand.smoothfilter!(z,lenoptf,smoothz)
     end
 
+    # TODO remove unused fields
     return lenoptf,Dict(
         :var0 => var0opt,
         :len => lenopt,
         :distx => distx,
         :covar => covar,
         :stdcovar => stdcovar,
-        :fitcovar => fitcovar)
+        :fitcovar => fitcovar,
+        :fitinfos => fitinfos,
+   )
 
 end
