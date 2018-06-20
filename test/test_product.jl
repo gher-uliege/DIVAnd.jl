@@ -209,9 +209,7 @@ dbinfo = divand.diva3d(
         :maxnsamp => 500,
     ),
     fitvert_param = Dict(
-        :distbin => collect([0.:50:400; 500:100:600]),
-        :nmean => 50,
-        :minlen => 10.,
+        :maxnsamp => 100,
     ),
     mask = mask,
     niter_e = 2,
