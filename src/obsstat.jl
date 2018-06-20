@@ -1,3 +1,27 @@
+
+
+
+"""
+    ulon,ulat = statpos(lon,lat)
+
+Return unique positions (`ulon`, `ulat`) as well their mean,
+standard deviation and count of the vector of observations `val` located
+at the positions `lon` and `lat`.
+
+"""
+
+function statpos(lon,lat)
+    allpos = collect(zip(lon,lat))
+    uniquepos = collect(Set(allpos))
+
+    ulon = [p[1] for p in uniquepos];
+    ulat = [p[2] for p in uniquepos];
+
+    return ulon,ulat
+end
+
+
+
 """
     ulon,ulat,meanval,stdval,count = statpos(val,lon,lat)
 

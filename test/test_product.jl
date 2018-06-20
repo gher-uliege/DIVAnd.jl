@@ -203,9 +203,6 @@ dbinfo = divand.diva3d(
     fitcorrlen = true,
     background_len = (lenx,leny,lenz),
     fithorz_param = Dict(
-        :distbin => collect(0.:0.1:6),
-        :nmean => 50,
-        :minlen => 1.,
         :maxnsamp => 500,
     ),
     fitvert_param = Dict(

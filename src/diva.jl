@@ -82,10 +82,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 background_len = (len[1],len[2],4*len[3]),
                 fitcorrlen::Bool = false,
                 fithorz_param = Dict(),
-                fitvert_param = Dict(
-                    :distbin => collect([0.:50:400; 500:100:600]),
-                    :nmean => 500,
-                ),
+                fitvert_param = Dict(),
                 memtofit = 3,
                 niter_e::Int = 1,
                 kwargs...
@@ -211,14 +208,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             if n == 4
                 # vertical info
-                pmax = length(fitvert_param[:distbin])-1
                 dbinfo[:fitvertlen] = Dict{Symbol,Any}(
                     :len => zeros(kmax,length(TS)),
                     :var0 => zeros(kmax,length(TS)),
-                    :covar => zeros(pmax,kmax,length(TS)),
-                    :stdcovar => zeros(pmax,kmax,length(TS)),
-                    :fitcovar => zeros(pmax,kmax,length(TS)),
-                    :distx => zeros(pmax)
+                    :fitinfos => Array{Dict{Symbol,Any},2}(kmax,length(TS))
                 )
             end
         end
@@ -324,10 +317,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
                     dbinfo[:fitvertlen][:len][:,timeindex] = infoz[:len]
                     dbinfo[:fitvertlen][:var0][:,timeindex] = infoz[:var0]
-                    dbinfo[:fitvertlen][:distx][:] = infoz[:distx]
-                    for key in [:covar,:fitcovar,:stdcovar]
-                        dbinfo[:fitvertlen][key][:,:,timeindex] = infoz[key]
-                    end
+                    dbinfo[:fitvertlen][:fitinfos][:,timeindex] = infoz[:fitinfos]
 
                     # propagate
                     for k = 1:sz[3]

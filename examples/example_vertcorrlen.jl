@@ -21,36 +21,9 @@ z = [0.,10,100,200,300,400,500,700,1000,1500]
 
 
 srand(1234);
-@time lenxy,infoxy = divand.fithorzlen(
-    x,v,z,
-    len0 = 3.,
-    nmean = 500,
-    distbin = collect(0.:0.1:6))
+@time lenxy,infoxy = divand.fithorzlen(x,v,z)
 
 
 srand(1234);
-@time lenz,infoz = divand.fitvertlen(
-    x,v,z,
-    len0 = 300.,
-    nmean = 500,
-    distbin = collect([0.:50:400; 500:100:600])
-)
+@time lenz,infoz = divand.fitvertlen(x,v,z; maxnsamp = 50)
 
-distfun(xi,xj) = divand.distance(xi[2],xi[1],xj[2],xj[1])
-
-srand(1234);
-@time lenxy,infoxy = divand.fithorzlen(
-    x,v,z,
-    len0 = 3.,
-    nmean = 500,
-    distbin = collect(0.:0.1:6),
-    distfun = distfun    
-)
-
-srand(1234);
-@time lenz,infoz = divand.fitvertlen(
-    x,v,z,len0 = 300.,
-    nmean = 500,
-    distbin = collect([0.:50:400; 500:100:600]),
-    distfun = distfun
-)

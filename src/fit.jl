@@ -938,43 +938,26 @@ measurments `value` at the location `x` (tuple of 3 vectors corresponding to
 longitude, latitude and depth).
 
 Optional arguments:
- * `distbin` (default 0:0.5:5): distance bins to compute the empirical covariance functions
- * `mincount` (default 50): minimum pairs per bins
- * `maxpoints` (default 10000): maximum number of pairs
- * `nmean` (default 100): number of empirical covariance to average
- * `minlen` (default 0.1): minimum correlation length-scale
- * `maxlen` (default 3): maximum correlation length-scale
  * `smoothz` (default 100): spatial filter for the correlation scale
- * `searchz` (default 300): vertical search distance
+ * `searchz` (default 50): vertical search distance
  * `maxnsamp` (default 5000): maximum number of samples
  * `limitlen` (default false): limit correlation length by mean distance between observations
 
 """
 
 function fithorzlen(x,value::Vector{T},z;
-                    distbin::Vector{T} = collect(0:0.5:5),
-                    mincount::Int = 50,
-                    maxpoints::Int = 10000,
-                    nmean::Int = 100,
-                    minlen::T = 0.1,
-                    maxlen::T = 3.,
                     tolrel::T = 1e-4,
                     smoothz::T = 100.,
-                    searchz::T = 300.,
+                    searchz::T = 50.,
                     progress = (iter,var,len,fitness) -> nothing,
                     distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                     maxnsamp = 5000,
                     limitlen = false,
                     ) where T
 
-    pmax = length(distbin)-1
     kmax = length(z)
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
-    fitcovar = Array{T,2}(pmax,kmax)
-    stdcovar = Array{T,2}(pmax,kmax)
-    covar = Array{T,2}(pmax,kmax)
-    distx = Vector{T}(pmax)
     fitinfos = Vector{Dict{Symbol,Any}}(kmax)
     
     nsamp =
@@ -996,16 +979,6 @@ function fithorzlen(x,value::Vector{T},z;
         xsel = (x[1][sel],x[2][sel]);
         v = value[sel] - mean(value[sel]);
 
-        # var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
-        #     xsel,v,distbin,mincount;
-        #     maxpoints = maxpoints,
-        #     nmean = nmean,
-        #     minlen = minlen,
-        #     maxlen = maxlen,
-        #     tolrel = tolrel,
-        #     progress = progress,
-        # )
-        #@show  nsamp
         var0opt[k],lenopt[k],fitinfos[k] = divand.fitlen(
             xsel,v,nsamp;
             distfun = distfun
@@ -1026,10 +999,6 @@ function fithorzlen(x,value::Vector{T},z;
     return lenoptf,Dict(
         :var0 => var0opt,
         :len => lenopt,
-        :distx => distx,
-        :covar => covar,
-        :stdcovar => stdcovar,
-        :fitcovar => fitcovar,
         :fitinfos => fitinfos,
    )
 end
@@ -1043,18 +1012,11 @@ See also divand.fithorzlen
 """
 
 function fitvertlen(x,value::Vector{T},z;
-                     distbin::Vector{T} = collect(0.:5.:100.),
-                     mincount::Int = 50,
-                     maxpoints::Int = 10000,
-                     nmean::Int = 100,
-                     minlen::T = 10.,
-                     maxlen::T = 200.,
-                     tolrel::T = 1e-4,
                      smoothz::T = 100.,
                      searchz::T = 10.,
                      searchxy::T = 1_000., # meters
                      maxntries::Int = 10000,
-                     maxnsamp = 5000,
+                     maxnsamp = 50,
                      progress = (iter,var,len,fitness) -> nothing,
                      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                      ) where T
@@ -1063,117 +1025,13 @@ function fitvertlen(x,value::Vector{T},z;
     zindex = Vector{Int}(length(value))
     nzindex = 0
 
-    function pickone(mask)
-        ii = find(mask)
-        jindex = rand(1:length(ii))
-        return ii[jindex]
-    end
-
-
-
-    function vertchoose(x,zlevel)
-        #mask = abs.(zlevel - x[3]) .< searchz
-        #j = pickone(mask);
-
-        j = -1
-        jindex = -1
-
-
-        for ntries = 1:maxntries
-
-            j = zindex[rand(1:length(zindex))] :: Int
-
-
-            # # for few data, this is faster
-            # if length(zindex) < 10000
-            #     mask = falses(size(x[1]))
-            #     for k = 1:length(x[1])
-            #         mask[k] = distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < searchxy
-            #     end
-            #     jindex = pickone(mask)
-
-            #     return j,jindex
-            # end
-
-            jindex = -1
-
-            for ntries2 = 1:maxntries
-                k = rand(1:length(x[1]))
-                if distfun([x[1][k],x[2][k]],[x[1][j],x[2][j]]) < searchxy
-                    jindex = k
-                    break
-                end
-            end
-
-            if jindex != -1
-                break
-            end
-        end
-
-        if (j == -1) || (jindex == -1)
-            error("fail to find enought pairs at z = $(zlevels2)")
-        end
-        #@show j,jindex,(x[1][j],x[2][j],x[3][j])
-        #@show j,jindex,(x[1][jindex],x[2][jindex],x[3][jindex])
-        #@show x[3][j],x[3][jindex],value[j],value[jindex]
-        return j,jindex
-    end
-
-
-    function vchoose(dummy)
-        vertchoose(x,zlevel2::Float64)
-    end
-
-    #@code_warntype vertchoose(x,zlevel2)
-    #@code_warntype vchoose(x)
-
-    pmax = length(distbin)-1
     kmax = length(z)
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
-    fitcovar = Array{T,2}(pmax,kmax)
-    stdcovar = Array{T,2}(pmax,kmax)
-    covar = Array{T,2}(pmax,kmax)
-    distx = Vector{T}(pmax)
     fitinfos = Vector{Dict{Symbol,Any}}(kmax)
 
-    #nsamp = min(5000,length(value))
     nsamp = min(maxnsamp,length(value))
     count = (nsamp*(nsamp-1)) ÷ 2
-
-    # @time distx,covar,corr,varx,count = divand.empiriccovarmean(
-    #      (depth[sel],),value[sel],distbin,mincount;
-    #      maxpoints = maxpoints,
-    #      nmean = nmean,
-    #      choose = vchoose,
-    #      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)))
-
-
-    # k = 1
-    # @time var0[k],len[k],distx,covar,fitcovar = divand.fit_isotropic(
-    #      (depth[sel],),value[sel],distbin,mincount;
-    #      maxpoints = maxpoints,
-    #      nmean = nmean,
-    #      maxlen = maxlen,
-    #      choose = vchoose)
-
-
-    # clf()
-    #
-    # k = 10
-    # distx,covar,corr,varx,count = divand.empiriccovarmean(
-    #     (depth[sel],),value[sel],distbin,mincount;
-    #     maxpoints = maxpoints,
-    #     nmean = nmean,
-    #     choose = vchoose)
-    #
-    #     @time var0[k],len[k],distx,covar,fitcovar = divand.fit_isotropic(
-    #         (depth[sel],),value[sel],distbin,mincount;
-    #         maxpoints = maxpoints,
-    #         nmean = nmean,
-    #         maxlen = maxlen,
-    #         choose = vchoose)
-
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
@@ -1182,22 +1040,6 @@ function fitvertlen(x,value::Vector{T},z;
         if length(zindex) == 0
             error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
         end
-
-        #@show zlevel2,maxpoints,nmean
-        #@show length(zindex)
-
-        #=
-        var0opt[k],lenopt[k],distx[:],covar[:,k],fitcovar[:,k],stdcovar[:,k] = divand.fit_isotropic(
-            (x[3],),value,distbin,mincount;
-            maxpoints = maxpoints,
-            nmean = nmean,
-            minlen = minlen,
-            maxlen = maxlen,
-            choose = vchoose,
-            tolrel = tolrel,
-            progress = progress,
-        )
-        =#
 
         iter = VertRandomCoupels(z[k],zindex,x,searchxy,maxntries,count)
         #state = start(iter)
@@ -1213,14 +1055,9 @@ function fitvertlen(x,value::Vector{T},z;
         divand.smoothfilter!(z,lenoptf,smoothz)
     end
 
-    # TODO remove unused fields
     return lenoptf,Dict(
         :var0 => var0opt,
         :len => lenopt,
-        :distx => distx,
-        :covar => covar,
-        :stdcovar => stdcovar,
-        :fitcovar => fitcovar,
         :fitinfos => fitinfos,
    )
 
