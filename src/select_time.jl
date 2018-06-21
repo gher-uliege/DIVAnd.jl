@@ -31,9 +31,9 @@ TS = divand.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],
 """
 
 
-struct TimeSelectorYearListMonthList
-    yearlists
-    monthlists
+struct TimeSelectorYearListMonthList{T1 <: AbstractVector,T2 <: AbstractVector}
+    yearlists::T1
+    monthlists::T2
 end
 
 Base.length(TS::TimeSelectorYearListMonthList) = length(TS.yearlists) * length(TS.monthlists)
@@ -140,9 +140,9 @@ function select(TS::TimeSelectorYearListMonthList,index,obstime)
 end
 
 
-struct TimeSelectorRunningAverage
-    times # central times
-    window # in days
+struct TimeSelectorRunningAverage{T1 <: AbstractVector, T2 <: Number}
+    times::T1 # central times
+    window::T2 # in days
 end
 
 Base.length(TS::TimeSelectorRunningAverage) = length(TS.times)
