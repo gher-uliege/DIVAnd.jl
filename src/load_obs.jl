@@ -45,7 +45,7 @@ end
 
 
 """
-    value,lon,lat,depth,time,obsid = loadobs(T,filename,varname)
+    obsvalue,obslon,obslat,obsdepth,obstime,obsid = loadobs(T,filename,varname)
 
 Load the variable `varname` from the NetCDF file `filename`.
 Coordinates (the NetCDF variables "obslon", "obslat", "obsdepth"),
@@ -54,28 +54,29 @@ Numeric output arguments will have the type `T`.
 
 """
 function loadobs(T,filename,varname)
-    @inline function missingasNaN(v)
-        v2 = fill(T(NaN),size(v))
-        v2[.!ismissing.(v)] = v[.!ismissing.(v)]
-        return v2
-    end
-
-
     ds = Dataset(filename,"r")
-    time = ds["obstime"][:].data;
+    time = nomissing(ds["obstime"][:]) :: Vector{DateTime}
 
-    lon = missingasNaN(ds["obslon"][:])
-    lat = missingasNaN(ds["obslat"][:])
-    depth = missingasNaN(ds["obsdepth"][:])
-    value = missingasNaN(ds[varname][:])
+    lon = Vector{T}(nomissing(ds["obslon"][:],NaN))
+    lat = Vector{T}(nomissing(ds["obslat"][:],NaN))
+    depth = Vector{T}(nomissing(ds["obsdepth"][:],NaN))
+    value = Vector{T}(nomissing(ds[varname][:],NaN))
 
 
-    obsids = ds["obsid"][:]
+    obsids = nomissing(ds["obsid"][:]) :: Matrix{Char}
 
     obsid = Vector{String}(size(obsids,2))
 
     for i = 1:size(obsids,2)
-        obsid[i] = strip(join(obsids[:,i]),'\0')
+        id = view(obsids,:,i)
+        index = findfirst(c -> c .== '\0',id)
+
+        obsid[i] =
+            if index == 0
+                convert(String,id)
+            else
+                convert(String,view(id,1:index-1))
+            end
     end
 
     close(ds)
