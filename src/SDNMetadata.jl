@@ -234,20 +234,6 @@ function loadoriginators(csvfile::IO)
 end
 
 
-function loadobsid(filepath)
-    nc = Dataset(filepath,"r")
-    obsids = nc["obsid"][:]
-    close(nc)
-
-    obsid = Vector{String}(size(obsids,2))
-
-    for i = 1:size(obsids,2)
-        obsid[i] = strip(join(obsids[:,i]),'\0')
-    end
-
-    return obsid
-end
-
 function writeerrors(notfound,errname)
     info("Write error message in file: $(errname)")
 

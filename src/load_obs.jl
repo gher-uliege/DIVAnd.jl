@@ -43,6 +43,33 @@ function loadbigfile(fname)
     return value,lon,lat,depth,timeval,id
 end
 
+function loadobsid(filename::AbstractString,varname = "obsid")
+    Dataset(filename,"r") do ds
+        return loadobsid(ds,varname)
+    end
+end
+
+
+function loadobsid(ds,varname = "obsid")
+    obsids = nomissing(ds[varname][:]) :: Matrix{Char}
+
+    obsid = Vector{String}(size(obsids,2))
+
+    for i = 1:size(obsids,2)
+        id = view(obsids,:,i)
+        index = findfirst(c -> c .== '\0',id)
+
+        obsid[i] =
+            if index == 0
+                convert(String,id)
+            else
+                convert(String,view(id,1:index-1))
+            end
+    end
+
+    return obsid
+end
+
 
 """
     obsvalue,obslon,obslat,obsdepth,obstime,obsid = loadobs(T,filename,varname)
@@ -62,22 +89,7 @@ function loadobs(T,filename,varname)
     depth = Vector{T}(nomissing(ds["obsdepth"][:],NaN))
     value = Vector{T}(nomissing(ds[varname][:],NaN))
 
-
-    obsids = nomissing(ds["obsid"][:]) :: Matrix{Char}
-
-    obsid = Vector{String}(size(obsids,2))
-
-    for i = 1:size(obsids,2)
-        id = view(obsids,:,i)
-        index = findfirst(c -> c .== '\0',id)
-
-        obsid[i] =
-            if index == 0
-                convert(String,id)
-            else
-                convert(String,view(id,1:index-1))
-            end
-    end
+    obsid = loadobsid(ds,"obsid")
 
     close(ds)
     return value,lon,lat,depth,time,obsid
