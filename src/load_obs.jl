@@ -5,7 +5,6 @@ Load data from the text file `filename` and returns vectors with
 the value, longitude, latitude, depth and time (as DateTime).
 A list string identifiers is also returned.
 """
-
 function loadbigfile(fname)
 
     info("Loading data from 'big file' $(fname)")

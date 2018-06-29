@@ -5,7 +5,6 @@ Computes the cross validation estimator
 ``(d-\\hat{d})^T \\mathbf R^{-1} (d-\\hat{d}) / ( \\mathbf 1^T \\mathbf R^{-1} \\mathbf 1)``
 where the ``\\hat{d}`` is the analysis not using a data point.
 """
-
 function divand_cvestimator(s,residual)
     # Corrected to take into account only points in domain
 

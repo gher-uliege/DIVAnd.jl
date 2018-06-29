@@ -40,8 +40,6 @@
 Compute a variational analysis of arbitrarily located observations to calculate the almost exact error 
 
 """
-
-
 function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 
@@ -118,7 +116,7 @@ function divand_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
     ffake=deepcopy(f);
 
-    ffake=append!(ffake, 0.*xi[1][randindexes]);
+    ffake=append!(ffake, 0. * xi[1][randindexes]);
     Rfake=blkdiag(oriR,divand_obscovar(epsilonslarge,ncv));
     xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
 

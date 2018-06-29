@@ -4,8 +4,6 @@
 Computes the generalized residual yo - H xa  using the analysis on the grid 
 `fi` and the solution structure `s`.
 """
-
-
 function divand_residual(s,fi)
 
 

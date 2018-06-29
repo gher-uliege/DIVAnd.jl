@@ -21,13 +21,8 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 *  `fi`: the analysed field
 *  `s`: structure with an array `s.P` representing the analysed error covariance
 
-# Note:
-
 
 """
-
-
-
 function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphapc=[],otherargs...
                    )
     #
@@ -83,7 +78,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             if isa(Labs,Tuple)
                 Labsc=Labs
             else
-                Labsc=(Labs*ones(n)...);
+                Labsc=(Labs*ones(n)...,);
             end
             
 			methodpc=pcmethod
@@ -132,8 +127,8 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
 
 			
-			if methodpc==2
-				lmask1=0.*lmask;
+			if methodpc == 2
+				lmask1 = 0 .* lmask;
 				lmask1[1:2]=1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
@@ -543,7 +538,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         else
             # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
             #  Labsc=Labs;
-            Labsc=(Labs*ones(n)...);
+            Labsc=(Labs*ones(n)...,);
         end
 
 
@@ -680,7 +675,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			 xr=randn(size(HI)[1],1)
 			
 			scalef=(xr'*(HI*(HI'*xr)))./(xr'*xr)
-			scalef2=1./scalef[1]
+			scalef2=1 / scalef[1]
 			
 			scalef2=1.02
 			xguess=xguess*scalef2
@@ -774,7 +769,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             xr=randn(size(HI)[1],1)
 			
 			scalef=(xr'*(HI*(HI'*xr)))./(xr'*xr)
-			scalef2=1./scalef[1]
+			scalef2=1. / scalef[1]
 			scalef2=1.
 			xguess=xguess*scalef2
 
@@ -1074,7 +1069,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if isa(Labs,Tuple)
                 Labsf=Labs
             else
-                Labsf=(Labs*ones(n)...);
+                Labsf=(Labs*ones(n)...,);
             end
 			lmask1=0.0.*lmask;
 			lmask1[1]=1.0/1.42;

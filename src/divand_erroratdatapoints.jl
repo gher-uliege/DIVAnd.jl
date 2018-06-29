@@ -4,8 +4,6 @@ Computes the error at the real data locations using the analysis structure s
 errorvariance = divand_erroratdatapoints(s);
 
 """
-
-
 function divand_erroratdatapoints(s)
 
 

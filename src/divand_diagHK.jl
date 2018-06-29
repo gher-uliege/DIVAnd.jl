@@ -4,8 +4,6 @@ Computes the diagonal terms of the so called hat-matrix HK, using the already so
 diagonalterms = divand_diagHK(s);
 
 """
-
-
 function divand_diagHK(s)
 
     #

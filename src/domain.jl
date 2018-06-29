@@ -4,7 +4,6 @@
 
 Estimate the local resolution of the coordinate `coord` by finite differences.
 """
-
 function localresolution(coord)
     Δcoord = similar(coord)
 
@@ -34,7 +33,7 @@ the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
 mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,50))
 """
 function divand_squaredom(n,coord)
-    coords = ([coord for i = 1:n]...)
+    coords = ntuple(i-> coord,n)
     return divand_rectdom(coords...)
 end
 
@@ -73,7 +72,6 @@ end
 Generate a 2D geospatial domain based on the topography from the NetCDF file
 `bathname`.
 """
-
 function domain(bathname,bathisglobal,lonr,latr)
     mask,(pm,pn),(xi,yi) = divand.divand_rectdom(lonr,latr)
 
@@ -92,7 +90,6 @@ Generate a 3D geospatial domain based on the topography from the NetCDF file
 positive in water (positive is down). If `zlevel` is `:floor`, then `depthr` is 
 zero for the sea floor and positive in water (positive is up)
 """
-
 function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
 
     mask,(pm,pn,po),(xi,yi,zi) = divand.divand_rectdom(lonr,latr,depthr)
@@ -126,7 +123,6 @@ end
 Generate a geospatial domain based on the topography from the NetCDF file
 `bathname`.
 """
-
 function domain(bathname,bathisglobal,lonr,latr,depthr,timer)
 
     mask,(pm,pn,po,pp),(xi,yi,zi,ti) = divand.divand_rectdom(lonr,latr,depthr,timer)

@@ -103,7 +103,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     H = constrain.H
 
     Ld = T[mean(L) for L in len]
-    nu = ([L.^2 for L in len]...) 
+    nu = ([L.^2 for L in len]...,)
 
     # Building the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the
     # correlation length-scale squared

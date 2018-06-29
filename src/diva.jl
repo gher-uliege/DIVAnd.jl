@@ -63,7 +63,6 @@ Any additional keywoard arguments understood by `divandgo` can also be used here
 (e.g. velocity constrain)
 
 """
-
 function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data"),
                 bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc"),

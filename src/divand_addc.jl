@@ -10,7 +10,6 @@ The added contrain Jc(x) is quadratic and has the following structure.
 Jc(x) = (H x - yo)ᵀ R⁻¹ (H x - yo)
 
 """
-
 function divand_addc(s,constrain)
     if isempty(s.H)
         s.H = constrain.H;

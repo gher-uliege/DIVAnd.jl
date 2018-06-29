@@ -4,8 +4,6 @@ Computes an estimate of the mean value of the diagonal of HK using GCV and the a
 Kii = divand_GCVKii(s);
 
 """
-
-
 function divand_GCVKii(s,nr=5)
 
     #the second, optional argument is the number of random vectors nr used for the estimate

@@ -7,8 +7,6 @@ Only using real data locations
 Kii = divand_GCVKiiobs(s);
 
 """
-
-
 function divand_GCVKiiobs(s,nr=30;FIELD=())
 
     #the second, optional argument is the number of random vectors nr used for the estimate

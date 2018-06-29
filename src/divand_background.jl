@@ -69,7 +69,8 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     alphabc = 0
 
-    s,D = divand_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...),iscyclic,mapindex,Labs)
+    s,D = divand_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...,),
+                           iscyclic,mapindex,Labs)
 
     # D is laplacian (a dimensional, since nu = Labs.^2)
     sv = s.sv
@@ -95,7 +96,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 
 
-	WE = oper_diag(operatortype,statevector_pack(sv,(1./sqrt.(d),))[:,1])
+	WE = oper_diag(operatortype,statevector_pack(sv,(1 ./ sqrt.(d),))[:,1])
 
 
 
@@ -120,7 +121,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 		S = sparse_stagger(sz,i,iscyclic[i])
 		ma = (S * mask[:]) .== 1
 		d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
-		d = 1./d
+		d = 1 ./ d
 		s.WEs[i] = oper_diag(operatortype,sqrt.(d))
 	end
 

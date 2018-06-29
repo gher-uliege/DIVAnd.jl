@@ -25,9 +25,6 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 IMPORTANT: divandgo is very similar to divandrun and is only interesting to use if divandrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see `addprocs` for example)
 
 """
-
-
-
 function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                   )
 
@@ -116,12 +113,12 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         istore2 = windowlist[iwin][6]
 
 
-		windowpointssol = ([isol1[i]:isol2[i] for i in 1:n]...);
-		windowpointsstore = ([istore1[i]:istore2[i] for i in 1:n]...);
+		windowpointssol = ([isol1[i]:isol2[i] for i in 1:n]...,)
+		windowpointsstore = ([istore1[i]:istore2[i] for i in 1:n]...,)
 
         #warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
 
-        windowpoints = ([iw1[i]:iw2[i] for i in 1:n]...);
+        windowpoints = ([iw1[i]:iw2[i] for i in 1:n]...,)
 
         #################################################
         # Need to check how to work with aditional constraints...
@@ -142,7 +139,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
             warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
             # modify the parameter
             otherargsw = deepcopy(otherargs)
-            otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...))
+            otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...,))
         else
             otherargsw = otherargs
         end
@@ -159,14 +156,14 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         fw = 0
         s = 0
 
-        xiw = deepcopy(([ x[windowpoints...] for x in xi ]...))
+        xiw = deepcopy(([ x[windowpoints...] for x in xi ]...,))
 
         # NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
 
         Labsw = Labs
         if !isa(Labs,Number)
             if !isa(Labs[1],Number)
-                Labsw= ([ x[windowpoints...] for x in Labs ]...)
+                Labsw= ([ x[windowpoints...] for x in Labs ]...,)
             end
         end
 
@@ -212,18 +209,18 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
             # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
             # Verify if a direct solver was requested from the demain decomposer
             if sum(csteps)>0
-		        fw,s = divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin,csteps,lmask;alphapc = alphanormpc, otherargsw... )
+		        fw,s = divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,finwin,Labsw,epsinwin,csteps,lmask;alphapc = alphanormpc, otherargsw... )
                 fi[windowpointsstore...]= fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 
 			    finwindata = divand_residual(s,fw)
-			    xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
+			    xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...,),xinwin,finwindata)
 			    fidata[winindex[winindexsol]]=finwinsol
 
 			    if doqc
 			        warn("QC not fully implemented in jogging, using rough estimate of Kii")
 			        finwinqc = divand_qc(fw,s,5)
-			        xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
+			        xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...,),xinwin,finwinqc)
 			        qcdata[winindex[winindexsol]]=finwinsol
 			    end
 
@@ -265,7 +262,7 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
             if errormethod==:exact
                 # EXERR: P only to points on the inner grid, not the overlapping one !
                 # Initialize errw everywhere,
-                errw = 0.*fw
+                errw = 0. * fw
                 # For packing, take the stavevector returned except when sum(csteps)>n
                 # in this case recreate a statevector
                 if sum(csteps)==n

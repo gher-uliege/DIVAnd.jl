@@ -206,7 +206,9 @@ function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 end
 
 
-divandrun{N}(mask::Array{Bool,N},args...) = divandrun(convert(BitArray{N},mask),args...)
+function divandrun(mask::Array{Bool,N},args...) where N
+    return divandrun(convert(BitArray{N},mask),args...)
+end
 
 
 # the same as divandrun, but just return the field fi

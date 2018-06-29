@@ -70,7 +70,6 @@ the whole globe and thus the last longitude point can be considered to be right 
 interpolated.
 
 """
-
 function load_bath(bath_name,isglobal,xi,yi)
 
     bx,by,b = extract_bath(bath_name,isglobal,xi,yi)
@@ -117,7 +116,6 @@ interpolated.
 **Convention:** in the water, `level` is positive and in the air `level` is negative.
 
 """
-
 function load_mask(bath_name,isglobal,xi,yi,level::Number)
 
     #info("Creating land-sea mask on level: $(level)")

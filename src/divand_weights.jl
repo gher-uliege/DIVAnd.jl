@@ -9,15 +9,14 @@ covarances when distances are smaller than `3*LS`
 
 Adapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90
 """
-
 function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
     ndata = size(coord,2)
     len = [LS...]
     coordmin = minimum(coord,2)
     coordmax = maximum(coord,2)
 
-    ilen = 1./len
-    ilenmax = 1./(3*len)
+    ilen = 1 ./ len
+    ilenmax = 1 ./ (3*len)
     
     # Slightly enlarge bounding box to be sure all points remain
     # in box even when rounding occurs
@@ -28,7 +27,7 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
 
 
     # Now number of grid points in each direction
-    sz = (round.(Int, (coordmax - coordmin) .* ilenmax) + 1 ...) :: NTuple{ndim,Int}
+    sz = (round.(Int, (coordmax - coordmin) .* ilenmax) + 1 ...,) :: NTuple{ndim,Int}
 
     # now allocate the arrays
     NP = zeros(Int,sz)
@@ -81,8 +80,8 @@ function Rtimesx!(coord,LS::NTuple{ndim,T},x,Rx) where T where ndim
         # Now all boxes around this one
         Rx[i] = 0
 
-        istart = CartesianIndex( (max.( 1,NG-1)...) :: NTuple{ndim,Int} )
-        iend   = CartesianIndex( (min.(sz,NG+1)...) :: NTuple{ndim,Int} )
+        istart = CartesianIndex( (max.( 1,NG-1)...,) :: NTuple{ndim,Int} )
+        iend   = CartesianIndex( (min.(sz,NG+1)...,) :: NTuple{ndim,Int} )
         
         for ind in CartesianRange(istart,iend)
             # Now for each point in the box calculate contribution
@@ -113,13 +112,12 @@ represents a coordinate of the observations. `len` is a tuple of arrays
 representing the correlation length. `len[i]` is the correlation length in the 
 i-th dimension.
 """
-
 function weight_RtimesOne(x::NTuple{ndim,Vector{T}},len) where T where ndim
     coord = cat(2,x...)'
 
     # geometric mean
     geomean(v) = prod(v)^(1/length(v))
-    LS = ([geomean(l) for l in len]...)
+    LS = ([geomean(l) for l in len]...,)
     
     vec = ones(T,length(x[1]))
     Rvec = ones(T,length(x[1]))

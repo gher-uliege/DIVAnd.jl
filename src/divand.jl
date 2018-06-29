@@ -20,6 +20,7 @@ if VERSION >= v"0.7.0-beta.0"
     using Printf
     using LinearAlgebra
     using SparseArrays
+    using Distributed
 end
 
 const EarthRadius = 6372795.477598; # m
@@ -413,17 +414,17 @@ export SDNMetadata, SDNObsMetadata, divadoxml
 
 include("select_time.jl");
 export TimeSelectorYW, TimeSelectorYearListMonthList, TimeSelectorRunningAverage
-    
+
 include("fit.jl");
 export fit_isotropic
 export fitvertlen
 export fithorzlen
-    
+
 include("utils.jl");
 
 include("Quadtrees.jl");
 export checkduplicates
-    
+
 include("divand_datainboundingbox.jl")
 
 include("divand_cpme_go.jl")

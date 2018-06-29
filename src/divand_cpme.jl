@@ -39,8 +39,6 @@ the coordinates `x`. The array `cpme` represent the error field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`. If you cannot run `divandrun` you can use `divandgo` with error field calculation `:cpme`
 
 """
-
-
 function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
 
 
@@ -52,7 +50,7 @@ function divand_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc
 
 
     if isa(Labs,Tuple)
-        len=([x./1.70766 for x in Labs]...);
+        len=([x./1.70766 for x in Labs]...,);
     else
         len=Labs./1.70766
     end

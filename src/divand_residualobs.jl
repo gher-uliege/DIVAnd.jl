@@ -4,8 +4,6 @@ Computes the residual yo- H xa  only at real data points using the analysis on t
 dataresidual = divand_residualobs(s,fi);
 
 """
-
-
 function divand_residualobs(s,fi)
     return s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,))
 end

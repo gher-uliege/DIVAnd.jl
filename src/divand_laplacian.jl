@@ -85,7 +85,7 @@ function divand_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscycli
             szt = sz
             tmp_szt = collect(szt)
             tmp_szt[i] = tmp_szt[i]+1
-            szt = (tmp_szt...)
+            szt = (tmp_szt...,)
 
             extx = oper_trim(operatortype,szt,i)'
 			# Tried to save an explicitely created intermediate matrix D
@@ -127,10 +127,10 @@ for N = 1:6
 function divand_laplacian_prepare(mask::BitArray{$N},
                       pmn::NTuple{$N,Array{T,$N}},
                       nu::NTuple{$N,Array{T,$N}}) where T
-    const sz = size(mask)
-    const ivol = .*(pmn...)
+    sz = size(mask)
+    ivol = .*(pmn...)
 
-    const nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
+    nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
 
     # This heavily uses macros to generate fast code 
     # In e.g. 3 dimensions
@@ -181,7 +181,8 @@ function divand_laplacian_apply!(ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArr
             tmp2 = nus[d1]
             
             if i_d1 < sz[d1]
-                @inbounds (@nref $N Lx i) += (@nref $N tmp2 i) * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                @inbounds (@nref $N Lx i) += (@nref $N tmp2 i) * (
+                    (@nref $N x d2->(d2==d1 ? i_d2+1 : i_d2)) - (@nref $N x i))
             end
             
             if i_d1 > 1
