@@ -104,16 +104,16 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     # sparse interp
 
     mask = trues(size(mask))
-    I = [2.5 2 2]'
-    H,out,outbbox = sparse_interp(mask,I)
+    gridindices = [2.5; 2; 2]
+    H,out,outbbox = sparse_interp(mask,gridindices)
     f1 = (f[2,2,2] + f[3,2,2])/2
     f2 = H*f[:]
     @test [f1] ≈ f2
 
     # sparse interp
 
-    I = [2.5 3; 2 3; 2 3]
-    H,out,outbbox = sparse_interp(mask,I)
+    gridindices = [2.5 3; 2 3; 2 3]
+    H,out,outbbox = sparse_interp(mask,gridindices)
     f1 = [ (f[2,2,2] + f[3,2,2])/2 ;  f[3,3,3] ]
     f2 = H*f[:]
 
