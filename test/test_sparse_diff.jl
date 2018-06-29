@@ -1,4 +1,8 @@
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 
 # Testing sparse and MatFun operators.
 
@@ -8,73 +12,89 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
 
     f = randn(21,30,10)
 
-    S = oper_diff(operatortype,size(f),1)
+    Sdiff = oper_diff(operatortype,size(f),1)
     f1 = f[2:end,:,:] - f[1:end-1,:,:]
-    f2 = S*f[:]
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
-    S = oper_diff(operatortype,size(f),2)
+    Sdiff = oper_diff(operatortype,size(f),2)
     f1 = f[:,2:end,:] - f[:,1:end-1,:]
-    f2 = S*f[:]
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
-    S = oper_diff(operatortype,size(f),3)
+    Sdiff = oper_diff(operatortype,size(f),3)
     f1 = f[:,:,2:end] - f[:,:,1:end-1]
-    f2 = S*f[:]
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
     # cyclic
 
     # dim 1 cyclic
-    fc = cat(1,f,reshape(f[1,:,:],(1,size(f,2),size(f,3))))
+    fc =
+        if VERSION >= v"0.7.0-beta.0"
+            cat(f,reshape(f[1,:,:],(1,size(f,2),size(f,3))), dims=1)
+        else            
+            cat(1,f,reshape(f[1,:,:],(1,size(f,2),size(f,3))))
+        end
     dfc = fc[2:end,:,:] - fc[1:end-1,:,:]
 
-    S = oper_diff(operatortype,size(f),1,true)
-    f2 = S*f[:]
+    Sdiff = oper_diff(operatortype,size(f),1,true)
+    f2 = Sdiff*f[:]
     @test dfc[:] ≈ f2
 
 
     # dim 2 cyclic
-    fc = cat(2,f,reshape(f[:,1,:],(size(f,1),1,size(f,3))))
+    fc =
+        if VERSION >= v"0.7.0-beta.0"
+            cat(f,reshape(f[:,1,:],(size(f,1),1,size(f,3))), dims = 2)
+        else
+            cat(2,f,reshape(f[:,1,:],(size(f,1),1,size(f,3))))
+        end
     f1 = fc[:,2:end,:] - fc[:,1:end-1,:]
 
-    S = oper_diff(operatortype,size(f),2,true)
-    f2 = S*f[:]
+    Sdiff = oper_diff(operatortype,size(f),2,true)
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
     # stagger
 
-    S = oper_stagger(operatortype,size(f),1)
+    Sdiff = oper_stagger(operatortype,size(f),1)
     f1 = (f[2:end,:,:] + f[1:end-1,:,:])/2
-    f2 = S*f[:]
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
 
     # dim 1 cyclic
-    fc = cat(1,f,reshape(f[1,:,:],(1,size(f,2),size(f,3))))
+    fc =
+        if VERSION >= v"0.7.0-beta.0"            
+            cat(f,reshape(f[1,:,:],(1,size(f,2),size(f,3))), dims=1)
+        else
+            cat(1,f,reshape(f[1,:,:],(1,size(f,2),size(f,3))))
+        end
     f1 = (fc[2:end,:,:] + fc[1:end-1,:,:])/2
 
-    S = oper_stagger(operatortype,size(f),1,true)
-    f2 = S*f[:]
+    Sdiff = oper_stagger(operatortype,size(f),1,true)
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
     # shifting
 
-    S = oper_shift(operatortype,size(f),1)
+    Sdiff = oper_shift(operatortype,size(f),1)
     f1 = f[2:end,:,:]
-    f2 = S*f[:]
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
     # trimming
 
-    S = oper_trim(operatortype,size(f),1)
+    Sdiff = oper_trim(operatortype,size(f),1)
     f1 = f[2:end-1,:,:]
-    f2 = S*f[:]
+    f2 = Sdiff*f[:]
     @test f1[:] ≈ f2
 
     # sparse pack
 
-    mask = rand(size(f)) .> 0
+    mask = rand(Bool,size(f))
+    mask[1,1] = true
     f1 = f[mask]
     f2 = oper_pack(operatortype,mask) * f[:]
 

@@ -4,7 +4,10 @@ if VERSION >= v"0.7.0-beta.0"
     using Test
     using Random
     using LinearAlgebra
+    using Dates
+    using Printf
 else
+    using Compat
     using Base.Test
     import Base.LinAlg.BLAS
 end

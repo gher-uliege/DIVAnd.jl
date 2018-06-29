@@ -101,7 +101,12 @@ end
 end
 
 Base.:*(MF::MatFun, x::AbstractVector) = MF.fun(x)
-Base.:*(MF::MatFun, M::AbstractMatrix) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
+
+if VERSION >= v"0.7.0-beta.0"
+    Base.:*(MF::MatFun, M::AbstractMatrix) = cat([MF.fun(M[:,i]) for i = 1:size(M,2)]..., dims = 2)
+else
+    Base.:*(MF::MatFun, M::AbstractMatrix) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
+end
 
 function A_mul_B(MF1::MatFun, MF2::MatFun)
     if size(MF1,2) != size(MF2,1)
@@ -132,6 +137,9 @@ function Base.:^(MF::MatFun,n::Int)
 end
 
 Base.:transpose(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
+if VERSION >= v"0.7.0-beta.0"
+    Base.:adjoint(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
+end
 
 Base.Ac_mul_B(MF:: MatFun, x::AbstractVector) = MF.funt(x)
 Base.Ac_mul_B(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1',MF2)

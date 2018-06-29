@@ -105,7 +105,7 @@ function conjugategradient(fun!, b::Vector{T};
     bb = b ⋅ b
 
     if bb == 0
-        gc_enable(true)
+        GC.enable(true)
         return zeros(size(b)),true,0
     end
 
@@ -128,7 +128,7 @@ function conjugategradient(fun!, b::Vector{T};
 
     # quick exit
     if r⋅r < tol2
-        gc_enable(true)
+        GC.enable(true)
         return x,true,0
     end
 
@@ -203,7 +203,7 @@ function conjugategradient(fun!, b::Vector{T};
         zr_old = zr_new
     end
 
-    gc_enable(true)
+    GC.enable(true)
 
     return x,success,kfinal
 

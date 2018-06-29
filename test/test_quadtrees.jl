@@ -1,5 +1,7 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using Random
+    using Dates
 else
     using Base.Test
 end
@@ -61,7 +63,7 @@ function simplesearch(X,attribs,xmin,xmax)
     for j = 1:size(X,1)
         sel = sel .& (xmin[j] .<= X[j,:] .<= xmax[j])
     end
-    ind = find(sel)
+    ind = findall(sel)
     return X[:,ind],attribs[ind]
 end
 
@@ -87,32 +89,33 @@ end
 attribs_res = divand.Quadtrees.within(qt3,xmin,xmax)
 @test sort(attribs_ref) == sort(attribs_res)
 
+
 # Test in 1D - 4D
 
 for n = 1:4
     #@show n
-    X = rand(n,100)
-    attribs = collect(1:size(X,2))
+    Xtest = rand(n,100)
+    attribs_ = collect(1:size(Xtest,2))
 
-    qtND = divand.Quadtrees.QT(X,attribs)
+    qtND = divand.Quadtrees.QT(Xtest,attribs_)
     #@show qtND.points[1:5,:]
 
     divand.Quadtrees.rsplit!(qtND)
 
     @test divand.Quadtrees.ndims(qtND) == n
-    @test divand.Quadtrees.count(qtND) == size(X,2)
+    @test divand.Quadtrees.count(qtND) == size(Xtest,2)
 
-    xmin = fill(0.0,(n,))
-    xmax = fill(0.5,(n,))
+    xmin_ = fill(0.0,(n,))
+    xmax_ = fill(0.5,(n,))
 
-    xref,attribs_ref = simplesearch(X,attribs,xmin,xmax)
-    attribs_res = divand.Quadtrees.within(qtND,xmin,xmax)
+    xref_,attribs_ref_ = simplesearch(Xtest,attribs_,xmin_,xmax_)
+    attribs_res_ = divand.Quadtrees.within(qtND,xmin_,xmax_)
 
-    @test sort(attribs_ref) == sort(attribs_res)
+    @test sort(attribs_ref_) == sort(attribs_res_)
 
     s = IOBuffer()
     show(s,qtND)
-    @test contains(String(take!(s)),"Node")
+    @test occursin("Node",String(take!(s)))
 
 
 end
