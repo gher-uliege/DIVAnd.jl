@@ -5,10 +5,7 @@ SpecialFunctions
 DataArrays
 DataStructures
 HTTP
-Requests
 EzXML
-StringEncodings
-NLopt
 Mustache 0.3.2
 ZipFile
 Missings

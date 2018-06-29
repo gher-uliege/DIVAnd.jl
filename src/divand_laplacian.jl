@@ -17,26 +17,25 @@
    Lap: sparce matrix represeting a Laplacian
 
 """
-
 function divand_laplacian(operatortype,mask,pmn,nu::Float64,iscyclic)
     n = ndims(mask)
-    nu_ = ((fill(nu,size(mask)) for i = 1:n)...)
+    nu_ = ntuple(fill(nu,size(mask)),n)
 
     return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 
 end
 
-function divand_laplacian{n}(operatortype,mask,pmn,nu::Array{Float64,n},iscyclic)
-    nu_ = ((nu for i = 1:n)...)
+function divand_laplacian(operatortype,mask,pmn,nu::Array{Float64,N},iscyclic) where N
+    nu_ = ntuple(i -> nu[i],N)
     return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 
-function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Number,n}},iscyclic)
-    nu_ = ((fill(nui,size(mask)) for nui = nu)...)
+function divand_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Number,N}},iscyclic) where N
+    nu_ = ntuple(i -> fill(nu[i],size(mask)),N)
     return divand_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 
-function divand_laplacian{n}(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic)
+function divand_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic) where n
 
     sz = size(mask)
 
@@ -125,9 +124,9 @@ end
 
 for N = 1:6
 @eval begin
-function divand_laplacian_prepare{T}(mask::BitArray{$N},
+function divand_laplacian_prepare(mask::BitArray{$N},
                       pmn::NTuple{$N,Array{T,$N}},
-                      nu::NTuple{$N,Array{T,$N}})
+                      nu::NTuple{$N,Array{T,$N}}) where T
     const sz = size(mask)
     const ivol = .*(pmn...)
 
@@ -151,17 +150,17 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
         nu_i = nu[j]
         # stagger nu
         # e.g. 0.5 * (nu[1][2:end,:] + nu[1][1:end-1,:])
-        (@nref $N tmp i) = 0.5 * ((@nref $N nu_i l->(l==j?i_l+1:i_l)) + (@nref $N nu_i i) )
+        (@nref $N tmp i) = 0.5 * ((@nref $N nu_i l->(l==j ? i_l+1 : i_l)) + (@nref $N nu_i i) )
         # e.g. (pmn[2][2:end,:]+pmn[2][1:end-1,:]) ./ (pmn[1][2:end,:]+pmn[1][1:end-1,:])
         @nexprs $N m->begin
         pm_i = pmn[m]
         if (m .== j)
-            (@nref $N tmp i) *= 0.5 * ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+            (@nref $N tmp i) *= 0.5 * ((@nref $N pm_i l->(l==j ? i_l+1 : i_l)) + (@nref $N pm_i i) )
         else
-            (@nref $N tmp i) /= 0.5 * ((@nref $N pm_i l->(l==j?i_l+1:i_l)) + (@nref $N pm_i i) )
+            (@nref $N tmp i) /= 0.5 * ((@nref $N pm_i l->(l==j ? i_l+1 : i_l)) + (@nref $N pm_i i) )
         end
 
-        if !(@nref $N mask i) || !(@nref $N mask l->(l==j?i_l+1:i_l))
+        if !(@nref $N mask i) || !(@nref $N mask l->(l==j ? i_l+1 : i_l))
             (@nref $N tmp i) = 0
         end
         end
@@ -172,7 +171,7 @@ function divand_laplacian_prepare{T}(mask::BitArray{$N},
 end
 
 
-function divand_laplacian_apply!{T}(ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N})
+function divand_laplacian_apply!(ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N}) where T
     sz = size(x)
     Lx[:] = 0
 
@@ -186,7 +185,8 @@ function divand_laplacian_apply!{T}(ivol,nus,x::AbstractArray{T,$N},Lx::Abstract
             end
             
             if i_d1 > 1
-                @inbounds (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1?i_d2-1:i_d2)) * ((@nref $N x i) -  (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                @inbounds (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1 ? i_d2-1 : i_d2)) * (
+                    (@nref $N x i) -  (@nref $N x d2->(d2==d1 ? i_d2-1 : i_d2)))
             end
         end
         (@nref $N Lx i) *= (@nref $N ivol i)
@@ -194,8 +194,7 @@ function divand_laplacian_apply!{T}(ivol,nus,x::AbstractArray{T,$N},Lx::Abstract
 end
 
 
-#function divand_laplacian_apply{T}(ivol,nus,x::Array{T,$N})::Array{T,$N}
-function divand_laplacian_apply{T}(ivol,nus,x::AbstractArray{T,$N})::AbstractArray{T,$N}
+function divand_laplacian_apply(ivol,nus,x::AbstractArray{T,$N})::AbstractArray{T,$N} where T
     Lx = similar(x)
     divand_laplacian_apply!(ivol,nus,x,Lx)
     return Lx

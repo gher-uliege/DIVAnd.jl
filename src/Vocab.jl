@@ -2,7 +2,7 @@ module Vocab
 
 using Base
 using EzXML
-import Requests
+import HTTP
 import Base.find
 import Base.findfirst
 import Base.repr
@@ -44,8 +44,8 @@ entry = collection["sea_water_temperature"]
 
 """
 function CFVocab(; url = CFStandardNameURL)
-    r = Requests.get(url)
-    data = readstring(r)
+    r = HTTP.get(url)
+    data = String(r.body)
     try
         xdoc = EzXML.parsexml(data)
         return CFVocab(xdoc)
@@ -120,8 +120,8 @@ mutable struct Concept
 end
 
 function Concept(url::AbstractString)
-    r = Requests.get(url)
-    xdoc = parsexml(readstring(r))
+    r = HTTP.get(url)
+    xdoc = parsexml(String(r.body))
     return Concept(xdoc)
 end
 
@@ -219,8 +219,8 @@ mutable struct EDMOEntry
 end
 
 function EDMOEntry(url::AbstractString)
-    r = Requests.get(url)
-    xdoc = parsexml(readstring(r))
+    r = HTTP.get(url)
+    xdoc = parsexml(String(r.body))
     return EDMOEntry(xdoc)
 end
 

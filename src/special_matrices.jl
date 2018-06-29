@@ -133,7 +133,7 @@ end
 
 Base.:transpose(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
 
-Base.Ac_mul_B{T,S}(MF:: MatFun, x::AbstractVector{S}) = MF.funt(x)
+Base.Ac_mul_B(MF:: MatFun, x::AbstractVector) = MF.funt(x)
 Base.Ac_mul_B(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1',MF2)
 Base.A_mul_Bc(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1,MF2')
 

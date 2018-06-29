@@ -2,7 +2,7 @@
 # several variables under the control of a mask
 
 # N is the dimension of all variables
-type statevector{nvar_,N}
+mutable struct statevector{nvar_,N}
     mask::NTuple{nvar_,BitArray{N}}
     nvar::Int
     numels::Vector{Int}
@@ -14,8 +14,8 @@ type statevector{nvar_,N}
     unpacked2packed::Vector{Vector{Int}}
 end
 
-function unpack_(v,mask)
-    tmp = zeros(eltype(v),size(mask));
+function unpack_(v::AbstractVector{T},mask) where T
+    tmp = zeros(T,size(mask));
     tmp[mask] = v;
     return tmp[:]
 end
@@ -167,7 +167,7 @@ end
 
 function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {nvar_,N,T}
 
-    const k = size(x,2)
+    k = size(x,2)
 
     out = ntuple(i -> begin
                 v = Array{T,N+1}((sv.size[i]...,k));

@@ -4,7 +4,6 @@
 
 Dummy call-back function when no preconditioner is used. `fx` will be equal to `x`.
 """
-
 function pc_none!(x,fx)
   fx[:] = x
 end
@@ -25,7 +24,6 @@ function checksym(n,fun!)
     fun!(y,Ay)
 
     return (y ⋅ Ax),(x ⋅ Ay)
-
 end
 
 function cgprogress(iter,x,r,tol2,fun!,b)
@@ -92,25 +90,14 @@ The function `fun!` works in-place to reduce the amount of memory allocations.
 * `success`: true if the interation converged (otherwise false)
 * `niter`: the number of iterations
 """
-
-# It provides also an approximation of A:
-# A \sim Q*T*Q'
-
-# J(x) = 1/2 (x' b - x' A x)
-# ∇ J = b - A x
-# A x = b - ∇ J
-# b = ∇ J(0)
-
-# the columns of Q are the Lanczos vectors
-
-function conjugategradient{T}(fun!, b::Vector{T};
-                              x0::Vector{T} = zeros(size(b)),
-                              tol::T = 1e-6,
-                              maxit::Int = min(size(b,1),100000),
-                              minit::Int = 0,
-                              pc! = pc_none!,
-                              progress = (iter,x,r,tol2,fun!,b) -> nothing
-                              )
+function conjugategradient(fun!, b::Vector{T};
+                           x0::Vector{T} = zeros(size(b)),
+                           tol::T = 1e-6,
+                           maxit::Int = min(size(b,1),100000),
+                           minit::Int = 0,
+                           pc! = pc_none!,
+                           progress = (iter,x,r,tol2,fun!,b) -> nothing,
+                           ) where T
 
     success = false
     n = length(b)

@@ -55,13 +55,8 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     if scale_len
         # scale Labs by len_scale so that all kernels are similar
-        Labs = ([L/len_scale for L in Labs]...)
+        Labs = ntuple(i -> Labs[i]/len_scale,n)
     end
-
-
-
-
-
 
 
     # mean correlation length in every dimension
@@ -72,12 +67,7 @@ function divand_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     geomean(v) = prod(v)^(1/length(v))
     L = geomean(Ld[Ld .> 0])
 
-
-
-
-    alphabc=0
-
-
+    alphabc = 0
 
     s,D = divand_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...),iscyclic,mapindex,Labs)
 
