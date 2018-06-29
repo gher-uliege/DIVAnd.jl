@@ -1,6 +1,10 @@
 using Base.Cartesian
-using Base.Test
 import divand
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test    
+end
 
 
 function test_sp(mask,pmn,nu,x0,Nmax=1)
@@ -13,7 +17,7 @@ function test_sp(mask,pmn,nu,x0,Nmax=1)
         x = L*x
     end
 
-    Lx = zeros(x0)
+    Lx = zeros(size(x0))
     Lx[mask] = x
     return Lx
 end
@@ -64,7 +68,7 @@ for sz in [(20,),(100,100),(20,20,20),(5,5,5,5)]
     # check symmetry
     D = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)));
     
-    vol = 1./.*(pmn...);
+    vol = 1 ./ .*(pmn...);
     D2 = divand.sparse_diag(vol[mask]) * D;
     @test maximum(abs.(D2 - D2')) < 1e-9
 end    

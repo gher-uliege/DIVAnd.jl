@@ -55,7 +55,7 @@ function divand_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscycli
 
         # d = 1 for interfaces surounded by water, zero otherwise
         d = zeros(Float64,size(S,1))
-        d[(S * mask[:]) .== 1] = 1.
+        d[(S * mask[:]) .== 1] .= 1.
 
         # metric
         for j = 1:n
@@ -173,7 +173,7 @@ end
 
 function divand_laplacian_apply!(ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N}) where T
     sz = size(x)
-    Lx[:] = 0
+    Lx[:] .= 0
 
     @inbounds @nloops $N i d->1:sz[d]  begin
         (@nref $N Lx i) = 0

@@ -21,6 +21,8 @@ if VERSION >= v"0.7.0-beta.0"
     using LinearAlgebra
     using SparseArrays
     using Distributed
+else
+    using Compat
 end
 
 const EarthRadius = 6372795.477598; # m
@@ -204,7 +206,7 @@ end
 function ndgrid(vs::AbstractVector{T}...) where T
     n = length(vs)
     sz = map(length, vs)
-    out = ntuple(i->Array{T}(sz), n)
+    out = ntuple(i->Array{T}(undef,sz), n)
     s = 1
     for i=1:n
         a = out[i]::Array

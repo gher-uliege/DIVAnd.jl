@@ -94,7 +94,7 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     # sparse pack
 
     mask = rand(Bool,size(f))
-    mask[1,1] = true
+    mask[1] = true
     f1 = f[mask]
     f2 = oper_pack(operatortype,mask) * f[:]
 

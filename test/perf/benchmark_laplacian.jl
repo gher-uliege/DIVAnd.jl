@@ -6,10 +6,10 @@ for N = 1:6
     @show N
     @eval begin
 
-        function divand_laplacian_prepare2{T}(mask::BitArray{$N},
-                                              pmn::NTuple{$N,Vector{T}},
-                                              nu::NTuple{$N,Vector{T}})
-            const sz = size(mask)
+        function divand_laplacian_prepare2(mask::BitArray{$N},
+                                           pmn::NTuple{$N,Vector{T}},
+                                           nu::NTuple{$N,Vector{T}}) where T
+            sz = size(mask)
             ivol = ones(T,sz)
 
             @nloops $N i d->1:sz[d] begin
@@ -19,7 +19,7 @@ for N = 1:6
                 end
             end
 
-            const nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
+            nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
 
             # This heavily uses macros to generate fast code
             # In e.g. 3 dimensions
@@ -49,7 +49,7 @@ for N = 1:6
                             (@nref $N tmp i) /= pm_i[i_m]
                         end
 
-                        if !(@nref $N mask i) || !(@nref $N mask l->(l==j?i_l+1:i_l))
+                        if !(@nref $N mask i) || !(@nref $N mask l->(l==j ? i_l+1 : i_l))
                             (@nref $N tmp i) = 0
                         end
                     end
@@ -75,7 +75,7 @@ for N = 1:6
         end
 
 
-        function divand_laplacian_apply2!{T}(mask,ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N})
+        function divand_laplacian_apply2!(mask,ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N}) where T
             sz = size(x)
             Lx[:] = 0
 
@@ -86,14 +86,14 @@ for N = 1:6
 
                     if (@nref $N mask i)
                         if i_d1 < sz[d1]
-                            @inbounds if (@nref $N mask d2->(d2==d1?i_d2+1:i_d2))
-                                @inbounds (@nref $N Lx i) += tmp2[i_d1] * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                            @inbounds if (@nref $N mask d2->(d2==d1 ? i_d2+1 : i_d2))
+                                @inbounds (@nref $N Lx i) += tmp2[i_d1] * ((@nref $N x d2->(d2==d1 ? i_d2+1 : i_d2)) - (@nref $N x i))
                             end
                         end
 
                         if i_d1 > 1
-                            @inbounds if (@nref 2 mask d2->(d2==d1?i_d2-1:i_d2))
-                                @inbounds (@nref $N Lx i) -= tmp2[i_d1-1] * ((@nref $N x i) - (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                            @inbounds if (@nref 2 mask d2->(d2==d1 ? i_d2-1 : i_d2))
+                                @inbounds (@nref $N Lx i) -= tmp2[i_d1-1] * ((@nref $N x i) - (@nref $N x d2->(d2==d1 ? i_d2-1 : i_d2)))
                             end
                         end
                     end
@@ -105,7 +105,7 @@ for N = 1:6
 
 
 
-        function divand_laplacian_apply3!{T}(mask,pmn,nu,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N})
+        function divand_laplacian_apply3!(mask,pmn,nu,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N}) where T
             sz = size(x)
 
             # This heavily uses macros to generate fast code
@@ -127,7 +127,7 @@ for N = 1:6
 
                         #
                         if i_d1 < sz[d1]
-                            if (@nref $N mask l->(l==d1?i_l+1:i_l))
+                            if (@nref $N mask l->(l==d1 ? i_l+1 : i_l))
 
                                 mytmp = 0.5 * (nu_i[i_d1+1] + nu_i[i_d1])
                                 @nexprs $N m->begin
@@ -139,12 +139,12 @@ for N = 1:6
                                     end
                                 end
 
-                                @inbounds (@nref $N Lx i) += mytmp * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                                @inbounds (@nref $N Lx i) += mytmp * ((@nref $N x d2->(d2==d1 ? i_d2+1 : i_d2)) - (@nref $N x i))
                             end
                         end
 
                         if i_d1 > 1
-                            if (@nref $N mask l->(l==d1?i_l-1:i_l))
+                            if (@nref $N mask l->(l==d1 ? i_l-1 : i_l))
 
                                 mytmp = 0.5 * (nu_i[i_d1] + nu_i[i_d1-1])
                                 @nexprs $N m->begin
@@ -157,7 +157,7 @@ for N = 1:6
                                 end
 
 
-                                @inbounds (@nref $N Lx i) -= mytmp * ((@nref $N x i) - (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                                @inbounds (@nref $N Lx i) -= mytmp * ((@nref $N x i) - (@nref $N x d2->(d2==d1 ? i_d2-1 : i_d2)))
                             end
                         end
                     end
