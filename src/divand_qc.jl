@@ -26,8 +26,6 @@ If you cannot run `divandrun` but use `divandgo` (which does not provide a struc
 the latter provides `qcvalues` if you call `divandgo` with a keyword parameter `QCMETHOD=`
 
 """
-
-
 function divand_qc(fi, s, method=0)
 
     # info("Applying quality check based on the analysis")
@@ -67,26 +65,26 @@ function divand_qc(fi, s, method=0)
     if mymethod==4
 
         cvval=1
-        qcval=residual.^2./(cvval*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)).^2);
+        qcval=residual.^2 ./ (cvval*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)).^2);
         return qcval
     end
 
 
     if mymethod==1
 
-        qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_diagHKobs(s)));
+        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1-divand_diagHKobs(s)));
         return qcval
     end
 
     if mymethod==3
 
-        qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)));
+        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s)));
         return qcval
     end
 
 	if mymethod==5
 
-        qcval=residual.^2./(meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s,-1;FIELD=fi)));
+        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1-divand_GCVKiiobs(s,-1;FIELD=fi)));
         return qcval
     end
 

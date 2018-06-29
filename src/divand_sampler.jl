@@ -20,8 +20,6 @@ samplesteps = divand_sampler(pmn,len);
 * `samplesteps`: vector of integers with steps in subsampling [1 2 4 1] means every grid point in x direction, every fifth in y etc
 
 """
-
-
 function divand_sampler(pmn,len)
 
     # TO DO: in a single sweep compute both minimum and maximum with function extrema

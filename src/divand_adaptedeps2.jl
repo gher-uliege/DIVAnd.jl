@@ -15,8 +15,6 @@ estimate of the R matrix. If you cannot use `divandrun` but use `divandgo`, the 
 
 
 """
-
-
 function divand_adaptedeps2(s,fi);
 
     residual=divand_residualobs(s,fi);

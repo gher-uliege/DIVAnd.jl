@@ -21,8 +21,6 @@ Lpmnrange = divand_Lpmnrange(pmn,len);
 * `Lpmnrange`: Array of range tuples (minimum and maximum of L times metric)
 
 """
-
-
 function divand_Lpmnrange(pmn,len)
 
 

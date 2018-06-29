@@ -64,14 +64,9 @@ The `len` and `epsilon2` provided should be close the real one as the tests will
 
 
 """
-
-
 function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
     # check inputs
-
-
-
 
 
     # For the moment, hardwired values
@@ -91,7 +86,7 @@ function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     else
         logfactorsl=[0]
     end
-    factorsl=10.^logfactorsl;
+    factorsl=10 .^ logfactorsl;
 
 
     if ne>0
@@ -99,7 +94,7 @@ function divand_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     else
         logfactorse=[0]
     end
-    factorse=10.^logfactorse;
+    factorse=10 .^ logfactorse;
 
     # cvvalues at the locations
     cvvalues=zeros((2*nl+1)*(2*ne+1));

@@ -12,7 +12,6 @@ Ouput:
   outbbox: 1 if outise bouding box
   onland: 1 if point touches land (where mask == 0)
 """
-
 function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
     if ndims(mask) != size(I,1)
         error("sparse_interp: inconsistent arguments")

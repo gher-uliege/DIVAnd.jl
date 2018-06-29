@@ -72,7 +72,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 
     where iB is the inverse background error covariance, H the observation
     operator and R the error covariance of the observation. The function `compPC` returns the
-    preconditioner `fun(x,fx)` computing fx = `M \ x` (the inverse of M times x)
+    preconditioner `fun(x,fx)` computing fx = `M \\ x` (the inverse of M times x)
     where `M` is a positive defined symmetric matrix [1].
     Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M.
     Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix.
@@ -114,7 +114,6 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 # References
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
-# ::Union{T,AbstractVector{T},AbstractMatrix{T}}
 function divandrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    velocity = (),
                    primal::Bool = true,

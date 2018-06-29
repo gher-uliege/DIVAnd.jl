@@ -8,10 +8,10 @@ fname = "Water_body_Salinity.4Danl.nc"
 varname = "Salinity"
 
 ds = Dataset(fname)
-lon = ds["lon"][:].data
-lat = ds["lat"][:].data
-depth = ds["depth"][:].data
-time = ds["time"][:].data
+lon = nomissing(ds["lon"][:])
+lat = nomissing(ds["lat"][:])
+depth = nomissing(ds["depth"][:])
+time = nomissing(ds["time"][:])
 
 v = ds["Salinity"]
 

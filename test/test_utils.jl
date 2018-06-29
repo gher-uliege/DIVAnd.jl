@@ -1,7 +1,7 @@
 using Base.Test
 import divand
-using DataArrays
-#include("/home/abarth/projects/Julia/divand.jl/src/utils.jl")
+
+#include("../src/utils.jl")
 
 # gradient
 

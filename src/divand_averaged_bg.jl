@@ -15,8 +15,6 @@ As for divandrun, including all dimensions before averaging
 * faanom: Data anomalies when the analysis is subtracted from the input field.
 
 """
-
-
 function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
     n=ndims(mask)
@@ -77,8 +75,8 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
     pmnmf=pmn[dimstokeep]
     ximf=xi[dimstokeep]
 
-    pmnm=([ x[ind1...] for x in pmnmf ]...)
-    xim=([ x[ind1...] for x in ximf ]...)
+    pmnm=([ x[ind1...] for x in pmnmf ]...,)
+    xim=([ x[ind1...] for x in ximf ]...,)
 
 
     if isa(len,Number)
@@ -88,7 +86,7 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
             lenm=len[dimstokeep]
         else
             lenmf=len[dimstokeep]
-            lenm=([ x[ind1...] for x in lenmf ]...)
+            lenm=([ x[ind1...] for x in lenmf ]...,)
         end
     end
 
@@ -112,8 +110,8 @@ function divand_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
     faanom=f-vaanalyzed
     #@show extrema(vaanalyzed), sum(sm.obsout), extrema(faanom)
 
-    reshapeshape =([(toaverage[i] ? (1) : (size(mask)[i])) for i = 1:n]...)
-    copyshape =([(toaverage[i] ? (size(mask)[i]) : (1)) for i = 1:n]...)
+    reshapeshape = ntuple(i -> (toaverage[i] ? 1 : size(mask,i)),n)
+    copyshape = ntuple(i -> (toaverage[i] ? size(mask,i) : 1),n)
 
     #       @show reshapeshape
     #       @show copyshape

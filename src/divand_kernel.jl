@@ -9,8 +9,6 @@ coefficients `alpha` and normalization factor `mu`.
 `K(r)` is the kernel function (function of the normalized distance `r`),
 `len_scale` is the distance at which `K(len_scale)` = 0.6019072301972346 (which is besselk(1,1))
 """
-
-
 function divand_kernel(n,alpha)
     # precision on len_scale
     eps = 1e-8
@@ -60,7 +58,7 @@ end
 
 
 function divand_kernel_binom(n,m)
-    const nu = m-n/2
+    nu = m-n/2
     mu = (4*pi)^(n/2) * gamma(m) / gamma(nu)
     K(x) = divand_rbesselk(nu,x)
 
@@ -88,8 +86,8 @@ end
 
 """
 fzero(f,x0,x1,eps; maxiter = Inf)
-find the zero of the function f between x0 and x1 assuming x0 < x1 at a precision eps."""
-
+find the zero of the function f between x0 and x1 assuming x0 < x1 at a precision eps.
+"""
 function fzero(f,x0,x1,eps; maxiter = 1000)
 
     if x0 > x1

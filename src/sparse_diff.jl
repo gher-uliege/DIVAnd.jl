@@ -12,7 +12,6 @@ Input:
   cyclic: true if domain is cyclic along dimension m. False is the
   default value
 """
-
 function sparse_diff(sz1,m,cyclic = false)
 
     n1 = prod(sz1)

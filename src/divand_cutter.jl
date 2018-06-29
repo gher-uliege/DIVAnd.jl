@@ -32,8 +32,6 @@ windowlist,csteps,lmask,alphapc = divand_cutter(Lpmnrange,gridsize,moddim,MEMTOF
 * `alphapc` : Norm defining coefficients for preconditionner
 
 """
-
-
 function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     #JLD.save("divand_cutter.jld", "Lpmnrange", Lpmnrange, 
     #         "gridsize", gridsize,"moddim",moddim,"MEMTOFIT",MEMTOFIT)
@@ -115,7 +113,7 @@ function divand_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     # need to subtract two overlap regions from total size to determine the number of tiles
     #subsz = ([ceil(Int,sz[i] / stepsize[i]) for i = 1:ndims(mask)]...)
 
-    subsz = ([max(ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]),1) for i = 1:n]...)
+    subsz = ([max(ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]),1) for i = 1:n]...,)
 
     ntiles=prod(subsz)
 

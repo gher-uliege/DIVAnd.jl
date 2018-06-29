@@ -39,8 +39,9 @@ function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     return ufill(c2,valex)
 end
 
-ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
-
+@static if isdefined(:DataArrays)
+    ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
+end
 
 function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
     const A1 = 5
@@ -505,9 +506,9 @@ same grid as the analysis.
 
 function backgroundfile(fname,varname)
     ds = Dataset(fname)
-    lon = ds["lon"][:].data
-    lat = ds["lat"][:].data
-    depth = ds["depth"][:].data
+    lon = nomissing(ds["lon"][:])
+    lat = nomissing(ds["lat"][:])
+    depth = nomissing(ds["depth"][:])
     #time = ds["time"][:].data
     
     v = ds[varname]

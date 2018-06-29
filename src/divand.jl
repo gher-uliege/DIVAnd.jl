@@ -4,23 +4,28 @@ module divand
 
 using Interpolations
 using NCDatasets
-using DataArrays
-using Base.Test
+#using DataArrays
+#using Base.Test
 using Base.Cartesian
 using DataStructures
 import SpecialFunctions
 import HTTP
-using NLopt
+#using NLopt
 import Mustache
 import ZipFile
 using Missings
 #using JLD
 
+if VERSION >= v"0.7.0-beta.0"
+    using Printf
+    using LinearAlgebra
+end
+
 const EarthRadius = 6372795.477598; # m
 
 include("statevector.jl")
 
-type divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{<: Number}, TH <: AbstractMatrix{<: Number}}
+mutable struct divand_constrain{T <: AbstractFloat, TR <: AbstractMatrix{<: Number}, TH <: AbstractMatrix{<: Number}}
     yo::Vector{T}
     R::TR
     H::TH
@@ -29,7 +34,7 @@ end
 # T is the type of floats and
 # Ti: the type of integers
 # N: the number of dimensions
-type divand_struct{T <: AbstractFloat,Ti <: Int,N}
+mutable struct divand_struct{T <: AbstractFloat,Ti <: Int,N}
     n::Ti
     neff::Ti
     coeff::T
@@ -107,7 +112,7 @@ end
         mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
         WEs = Vector{SparseMatrixCSC{Float64,Int}}()
         WEss = [sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]
-        Dx = ([sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]...)
+        Dx = ([sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]...,)
         applybc = copy(sempty)
 
         betap = 0.
@@ -245,15 +250,15 @@ Len = len_harmonise(len,mask)
 Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
 a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
 """
-function len_harmonize{T <: Number,N}(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
-    return ((fill(len,size(mask)) for i=1:N)...)
+function len_harmonize(len::T,mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} where T <: Number where N
+    return ((fill(len,size(mask)) for i=1:N)...,)
 end
 
-function len_harmonize{T <: Number,N}(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
-    return ((fill(len[i],size(mask)) for i=1:N)...)
+function len_harmonize(len::NTuple{N,T},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} where T <: Number where N
+    return ((fill(len[i],size(mask)) for i=1:N)...,)
 end
 
-function len_harmonize{T <: Number,N}(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}}
+function len_harmonize(len::NTuple{N,AbstractArray{T,N}},mask::AbstractArray{Bool,N})::NTuple{N, Array{T,N}} where T <: Number where N
     for i=1:N
         if size(mask) != size(len[i])
             error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
@@ -290,7 +295,6 @@ end
 
 Return a default value of alpha.
 """
-
 @inline function alpha_default(Labs,alpha::Vector{T}) where T
     # must handle the case when Labs is zero in some dimension
     # thus reducing the effective dimension

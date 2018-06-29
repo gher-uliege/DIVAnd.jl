@@ -1,9 +1,3 @@
-"""
-
-
-
-"""
-
 function divand_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1::Array{Float64,1},workstate1::Array{Float64,1}
       ,workstate2::Array{Float64,1},iBx_::Array{Float64,1};btrunc=Int[])
 

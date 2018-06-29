@@ -67,7 +67,6 @@ maps values within the interval from 0 and 1. This can be changed with the
 `min` and `max` parameters. Note that trans(min) = -∞ and trans(max) = +∞. 
 The use safety-margin might be necessary.
 """
-
 function logit(; min = 0., max = 1.)
     
     function trans(x; position = ())

@@ -92,7 +92,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			if methodpc==1
 			diagshift=0.0001;
-				Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask[i] for i=1:n]...,)
 				# Run model with simplified norm
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...,alpha=alphapc)
                 scP=1
@@ -135,7 +135,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if methodpc==2
 				lmask1=0.*lmask;
 				lmask1[1:2]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
 				xguess=1
@@ -156,7 +156,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				lmask1=0.0.*lmask;
 				lmask1[3:end]=1.0./1.42;
 					
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				PC1=1
 				sc=0
 				if size(lmask)[2]>2
@@ -217,7 +217,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.0.*lmask;
 				lmask1[1:2]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
 				xguess=1
@@ -237,7 +237,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				#gc()
 				lmask1=0.0.*lmask;
 				lmask1[3:end]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				PC1=1
 				sc=0
 				
@@ -320,7 +320,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.0.*lmask;
 				lmask1[1:2]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
 				xguess=1
@@ -340,7 +340,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				#gc()
 				lmask1=0.0.*lmask;
 				lmask1[3:end]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				# Try to get iB by using iterative solved stopped at one
 				maxiterb=1
      			pcargsb = [(:tol, tol),(:maxit,maxiterb)]
@@ -403,7 +403,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			# same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.0.*lmask;
 				lmask1[1:2]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
 				xguess=1
@@ -487,24 +487,24 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         # Slight inconsistency here for the error field as pmn was not adapted for last two points
         #######################################
 
-        #coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...);
-        #([unique(push!(collect(1:3:13),13)) for i in 1:4]...)
+        #coarsegridpoints=([1:nsteps[i]:size(mask)[i] for i in 1:n]...,);
+        #([unique(push!(collect(1:3:13),13)) for i in 1:4]...,)
 
-        # coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...);
+        # coarsegridpoints=([unique(push!(collect(1:nsteps[i]:size(mask)[i]),size(mask)[i])) for i in 1:n]...,);
 
         # Test for better convergence making sure the expanded points are take in the preconditionner but then expande the grid only with alpha=0.5 since factor 2 typically applied later ?
         # Alphabc should be an array to do this properly ...
 
 
 
-        coarsegridpoints=([sort(unique(push!(collect(2:nsteps[i]:size(mask)[i]-1),size(mask)[i],size(mask)[i]-1,1))) for i in 1:n]...);
+        coarsegridpoints=([sort(unique(push!(collect(2:nsteps[i]:size(mask)[i]-1),size(mask)[i],size(mask)[i]-1,1))) for i in 1:n]...,);
 
         # If last point not reached add last point and just forget about incorrect metric  there ?
 
 
         #
 
-        xic=([ x[coarsegridpoints...] for x in xi ]...);
+        xic=([ x[coarsegridpoints...] for x in xi ]...,);
 
 
         # Create a slightly expanded sea mask if nsteps are not 1
@@ -530,7 +530,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
         # Now scale pmn by the step factors
 
-        pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...)
+        pmnc=([ (1.0/nsteps[i])*pmn[i][coarsegridpoints...] for i=1:length(pmn) ]...,)
 
         # Check if Labs is a tuple of tuple; in this case also subsample
 
@@ -538,7 +538,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             if isa(Labs[1],Number)
                 Labsc=Labs;
             else
-                Labsc=([ x[coarsegridpoints...] for x in Labs ]...);
+                Labsc=([ x[coarsegridpoints...] for x in Labs ]...,);
             end
         else
             # Create a tuple of L for the coarse grid; needed to be able to put some of them to zero
@@ -558,7 +558,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         # to have the pseudo-data coordinates
 
 
-        Ic = localize_separable_grid(([statevector_pack(svf,(x,)) for x in xi]...),maskc,xic);
+        Ic = localize_separable_grid(([statevector_pack(svf,(x,)) for x in xi]...,),maskc,xic);
 
         # Create fractional indexes of these data points in the coarse grid
 
@@ -583,7 +583,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         if jfound>0
             # modify the parameter only in the coarse model
             otherargsc=deepcopy(otherargs)
-            otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...))
+            otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...,))
         else
             otherargsc=otherargs
         end
@@ -647,11 +647,11 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		#Method 1
 		if methodpccoarse==1
 		
-			Labsccut=([Labsc[i]*lmask[i] for i=1:n]...)
+			Labsccut=([Labsc[i]*lmask[i] for i=1:n]...,)
 			# try classic 2D
 			lmask1=0.0.*lmask;
 				lmask1[1:2]=1.0;
-				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				
 			#fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
 			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
@@ -750,7 +750,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if n>3
 				lmask1[3]=0.0;
 			end
-			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,btrunc=3)
 			scP=1
 			figuess=zeros(size(mask))
@@ -805,7 +805,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if n>3		
 				lmask1[3]=0;
 			end
-			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			
 			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 			PC2=1
@@ -831,7 +831,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             #Try 3D
 			if n>3
 						lmask1[3]=1/1.42;
-						Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+						Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 
 						fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,10000.; otherargsc...)
 			
@@ -901,7 +901,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if n>3
 				lmask1[3]=0.0;
 			end
-			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,btrunc=3)
 			scP=1
 			
@@ -938,7 +938,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			
 			lmask1[1]=1.0/1.42;
 			
-			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...,)
 			sc=0
 			PC1a=1
 			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,btrunc=3)
@@ -959,7 +959,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			lmask1=0.0.*lmask;
 			
 			lmask1[2]=1.0/1.42;
-			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...,)
 			sc=0
 			PC1b=1
 			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,btrunc=3)
@@ -1027,7 +1027,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 	if methodpccoarse==5
 			lmask1=0.0.*lmask;
 			lmask1[1:2]=1.0;
-			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			
 			fc,sc=divandrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
 			PC2=1
@@ -1048,7 +1048,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			#gc()
 			lmask1=0.0.*lmask;
             lmask1[3:end]=1.0/1.42;
-			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			PC1=1
 			sc=0
 
@@ -1078,7 +1078,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             end
 			lmask1=0.0.*lmask;
 			lmask1[1]=1.0/1.42;
-			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...,)
 			sc=0
 			PC1a=1
 			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...)
@@ -1098,7 +1098,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			lmask1=0.0.*lmask;
 			lmask1[2]=1.0/1.42;
-			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...)
+			Labsccut=([Labsf[i]*lmask1[i] for i=1:n]...,)
 			sc=0
 			PC1b=1
 			fc,sc=divandrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...)

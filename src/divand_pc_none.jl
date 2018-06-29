@@ -6,8 +6,6 @@ Dummy function for requiring that no preconditioner is used in divand.
 See also:
 diavnd_pc_sqrtiB
 """
-
-
 function divand_pc_none(iB,H,R)
     function fun!(x,fx)
         fx[:] = x

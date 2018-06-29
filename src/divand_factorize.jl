@@ -22,7 +22,7 @@ function divand_factorize!(s)
         if s.inversion == :chol
             if isa(R,Diagonal)
                 # R \ H is still sparse
-                iR = Diagonal(1./diag(R))
+                iR = Diagonal(1 ./ diag(R))
                 iP = iB + H'*(iR * H);
             else
                 # warning: R \ H will be a full matrix (unless R is a Diagonal matrix)

@@ -47,7 +47,6 @@ Input:
   cyclic: true if domain is cyclic along dimension m. False is the
   default value
 """
-
 function matfun_diff(sz1,m,cyclic = false)
 
     # sz2 size of the resulting array
@@ -101,7 +100,6 @@ Input:
   cyclic: true if domain is cyclic along dimension m. False is the
     default value
 """
-
 function matfun_shift(sz1,m,cyclic = false)
 
     # sz2 size of the resulting array
@@ -123,7 +121,7 @@ function matfun_shift(sz1,m,cyclic = false)
     function funt(x)
         x = reshape(x,sz2)
         if !cyclic
-            sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
+            sz0 = ntuple(i -> (i == m ? 1 : sz2[i]), length(sz2))
             return cat(m,zeros(eltype(x),sz0),x)[:]
         else
             ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
@@ -147,7 +145,6 @@ Input:
   cyclic: true if domain is cyclic along dimension m. False is the
   default value
 """
-
 function matfun_stagger(sz1,m,cyclic = false)
 
     # sz2 size of the resulting array
@@ -193,7 +190,6 @@ Create an operator which trim first and last row (or column) in
 The field is a "collapsed" matrix of the size `sz1`. `m` is the dimension 
 to trim.
 """
-
 function matfun_trim(sz1,m)
 
     # sz2 size of the resulting array
@@ -209,7 +205,7 @@ function matfun_trim(sz1,m)
     # adjoint
     function funt(x)
         x = reshape(x,sz2)
-        sz0 = ([ (i == m ? 1 : sz2[i]) for i = 1:length(sz2)]...)
+        sz0 = ntuple(i -> (i == m ? 1 : sz2[i]), length(sz2))
         return cat(m,zeros(eltype(x),sz0),x,zeros(eltype(x),sz0))[:]
     end
 

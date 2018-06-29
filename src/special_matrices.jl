@@ -1,20 +1,20 @@
 
-type CovarIS{T} <: AbstractMatrix{T}
+mutable struct CovarIS{T} <: AbstractMatrix{T}
     IS:: AbstractMatrix{T}
     factors
 end
 
-function CovarIS{T}(IS::AbstractMatrix{T})
+function CovarIS(IS::AbstractMatrix{T}) where T
     factors = nothing
     CovarIS(IS,factors)
 end
 
 
-Base.inv{T}(C::CovarIS{T}) = C.IS
+Base.inv(C::CovarIS) = C.IS
 
-Base.size{T}(C::CovarIS{T}) = size(C.IS)
+Base.size(C::CovarIS) = size(C.IS)
 
-function Base.:*{T}(C::CovarIS{T}, v::AbstractVector{Float64})
+function Base.:*(C::CovarIS{T}, v::AbstractVector{Float64}) where T
     if C.factors != nothing
         return C.factors \ v
     else
@@ -22,7 +22,7 @@ function Base.:*{T}(C::CovarIS{T}, v::AbstractVector{Float64})
     end
 end
 
-Base.:*{T}(C::CovarIS{T}, v::SparseVector{Float64,Int}) = C*full(v)
+Base.:*(C::CovarIS, v::SparseVector{Float64,Int}) = C*full(v) 
 
 
 function A_mul_B{T}(C::CovarIS{T}, M::AbstractMatrix{Float64})
@@ -82,7 +82,7 @@ end
 
 # MatFun: a matrix defined by a function representing the matrix product
 
-type MatFun{T}  <: AbstractMatrix{Float64}
+mutable struct MatFun{T}  <: AbstractMatrix{Float64}
     sz::Tuple{T,T}
     fun:: Function
     funt:: Function
@@ -142,7 +142,7 @@ MatFun(S::AbstractSparseMatrix) = MatFun(size(S), x -> S*x, x -> S'*x)
 
 # CovarHPHt representing H P Hᵀ
 
-type CovarHPHt{T} <: AbstractMatrix{T}
+mutable struct CovarHPHt{T} <: AbstractMatrix{T}
     P:: AbstractMatrix{T}
     H:: AbstractMatrix{T}
 end

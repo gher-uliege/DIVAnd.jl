@@ -42,8 +42,7 @@ see also statevector_pack, statevector_unpack
 Author: Alexander Barth, 2009,2017 <a.barth@ulg.ac.be>
 License: GPL 2 or later
 """
-
-function statevector{nvar_,N}(masks::NTuple{nvar_,BitArray{N}})
+function statevector(masks::NTuple{nvar_,BitArray{N}}) where nvar_ where N
 
     numels = [sum(mask)    for mask in masks]
     ind = [0, cumsum(numels)...]
@@ -70,8 +69,8 @@ function statevector{nvar_,N}(masks::NTuple{nvar_,BitArray{N}})
 end
 
 
-function statevector{nvar_,N}(masks::NTuple{nvar_,Array{Bool,N}})
-    return statevector(([convert(BitArray{N},mask) for mask in masks]...))
+function statevector(masks::NTuple{nvar_,Array{Bool,N}}) where nvar_ where N
+    return statevector(([convert(BitArray{N},mask) for mask in masks]...,))
 end
 
 """
@@ -94,8 +93,7 @@ If var1, var2, ... have an additional trailing dimension, then this dimension is
 to represent the different ensemble members. In this case x is a matrix and its last dimension
 is the number of ensemble members.
 """
-
-function pack{nvar_,N,T}(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T}
+function pack(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T} where {nvar_,N,T}
 
     k = size(vars[1],ndims(sv.mask[1])+1)
 
@@ -112,7 +110,7 @@ end
 
 
 
-function packens{nvar_,N,T,Np}(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Array{T,2}
+function packens(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Array{T,2} where {nvar_,N,T,Np}
 
     k = size(vars[1],ndims(sv.mask[1])+1)
 
@@ -153,8 +151,7 @@ If x is a matrix, then the second dimension is assumed
 to represent the different ensemble members. In this case,
 var1, var2, ... have also an additional trailing dimension.
 """
-
-function unpack{nvar_,N,T}(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0)
+function unpack(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0) where {nvar_,N,T}
     out = ntuple(i -> begin
                 v = Array{T,N}(sv.size[i]);
                 v[:] = fillvalue
@@ -168,7 +165,7 @@ end
 
 # output is Tuple{_<:Array{Float64,N}} (not completely type-stable)
 
-function unpackens{nvar_,N,T}(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0)
+function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {nvar_,N,T}
 
     const k = size(x,2)
 
@@ -193,7 +190,6 @@ subscripts = ind2ind(sv,index)
 Compute from linear index in the packed state vector a tuple of subscripts.
 The first element of the subscript indicates the variable index and the remaining the spatial subscripts.
 """
-
 function Base.ind2sub(sv::statevector,index::Integer)
 
     # variable index
@@ -216,7 +212,6 @@ ind = statevector_sub2ind(sv,subscripts)
 Compute from a tuple of subscripts the linear index in the packed state vector.
 The first element of the subscript indicates the variable index and the remaining the spatial subscripts.
 """
-
 function Base.sub2ind(sv::statevector,subscripts::Tuple)
 
     # index of variable

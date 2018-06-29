@@ -16,11 +16,11 @@ function divand_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
     Labs=deepcopy(Lin)
 
     if isa(Labs,Number)
-        Labs = ((Labs * ones(size(mask)) for i=1:n)...)
+        Labs = ((Labs * ones(size(mask)) for i=1:n)...,)
     elseif isa(Labs,Tuple)
 
         if isa(Labs[1],Number)
-            Labs = ([Labs[i] * ones(size(mask)) for i = 1:n]...)
+            Labs = ([Labs[i] * ones(size(mask)) for i = 1:n]...,)
         end
 
         for i=1:n

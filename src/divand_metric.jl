@@ -27,7 +27,6 @@ and the order is longitude then latitude.
 
 The units of all input and output parameters are degrees.
 """
-
 function distance(xi::Vector{T},xj::Vector{T}) where T
     return distance(xi[2],xi[1],xj[2],xj[1])
 end
@@ -41,27 +40,24 @@ represent the inverse of the local resolution in meters using
 the mean Earth radius.
 """
 function divand_metric(lon::Array{T,2},lat::Array{T,2}) where T
+    sz = size(lon)
+    i = 2:sz[1]-1
+    j = 2:sz[2]-1
 
-    sz = size(lon);
-    i = 2:sz[1]-1;
-    j = 2:sz[2]-1;
+    dx = distance.(lat[i-1,:],lon[i-1,:],lat[i+1,:],lon[i+1,:])/2
+    dx = cat(1,dx[1:1,:],dx,dx[end:end,:])
 
+    dy = distance.(lat[:,j-1],lon[:,j-1],lat[:,j+1],lon[:,j+1])/2
+    dy = cat(2,dy[:,1:1],dy,dy[:,end:end])
 
-    dx = distance.(lat[i-1,:],lon[i-1,:],lat[i+1,:],lon[i+1,:])/2;
-    dx = cat(1,dx[1:1,:],dx,dx[end:end,:]);
+    dx = real(dx)
+    dy = real(dy)
 
-    dy = distance.(lat[:,j-1],lon[:,j-1],lat[:,j+1],lon[:,j+1])/2;
-    dy = cat(2,dy[:,1:1],dy,dy[:,end:end]);
+    dx = deg2m(dx)
+    dy = deg2m(dy)
 
-    dx = real(dx);
-    dy = real(dy);
-
-    dx = deg2m(dx);
-    dy = deg2m(dy);
-
-
-    pm = 1./dx;
-    pn = 1./dy;
+    pm = 1 ./ dx
+    pn = 1 ./ dy
 
     return pm,pn
 end

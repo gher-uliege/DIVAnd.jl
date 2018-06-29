@@ -41,9 +41,6 @@ Save the result of the analysis in a NetCDF file .
   * `relerr`: relative error
   * `timeorigin`: time origin for the time units attribute (default is 1900-01-01 00:00:00)
 """
-
-
-
 function ncfile(ds,filename,xyi,varname;
                 ncvarattrib = Dict(), ncglobalattrib = Dict(),
                 thresholds = [("L1",0.3),("L2",0.5)],
@@ -288,18 +285,24 @@ end
 White a slice of data in a NetCDF given by the index `index`. The variable
 `relerr` can be nothing.
 """
-
 function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
-    ncvar[index...] = DataArray(fi,isnan.(fi))
+    fillval = NC_FILL_FLOAT
+    
+    tmp = copy(fi)
+    tmp[isnan.(fi)] = fillval
+    ncvar[index...] = tmp
 
     if relerr != nothing
 
         for (thresholds_value,ncvar_L) in ncvar_Lx
-            ncvar_L[index...] =
-                DataArray(fi,isnan.(fi) .| (relerr .> thresholds_value))
+            tmp = copy(fi)
+            tmp[isnan.(fi) .| (relerr .> thresholds_value)] = fillval
+            ncvar_L[index...] = tmp
         end
 
-        ncvar_relerr[index...] = DataArray(relerr,isnan.(relerr))
+        tmp = copy(relerr)
+        tmp[isnan.(relerr)] = fillval
+        ncvar_relerr[index...] = tmp
     end
 
     # ncvar_deepest[:] = ...
@@ -331,10 +334,6 @@ Save the result of the analysis in a NetCDF file .
   * `relerr`: relative error
 
 """
-
-
-
-
 function save(filename,xyi,fi,varname;
                       kwargs...)
 
@@ -370,7 +369,6 @@ depth and time (as a vector of `DateTime`).
 1900-01-01 00:00:00)
 
 """
-
 function saveobs(filename,xy,ids;
                  type_save = Float32,
                  timeorigin = DateTime(1900,1,1,0,0,0),
@@ -448,7 +446,6 @@ variable called `varname`.
 1900-01-01 00:00:00)
 
 """
-
 function saveobs(filename,varname,value,xy,ids;
                  type_save = Float32,
                  timeorigin = DateTime(1900,1,1,0,0,0),

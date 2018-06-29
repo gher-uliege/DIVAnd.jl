@@ -10,8 +10,8 @@ Input:
               DO NOT USE NaN in it. If an array is replaced by a scalar zero, the constraint is not used.
               for fluxes calculated with geostrophy apply g/f to h
   fluxes: tuple of two arrays of fluxes. The barotropic correction on elevation should be such that
-                        Sum over longitude at each latidute of Sum h \delta(eta)/\delta x   \delta x = - fluxes[1]
-                        Sum over latitude  at each longitude of Sum h \delta(eta)/\delta y   \delta y = -fluxes[2]
+                        Sum over longitude at each latidute of Sum h δ(eta)/δx   δx = - fluxes[1]
+                        Sum over latitude  at each longitude of Sum h δ(eta)/δy  δ y = -fluxes[2]
             WARNING: This has been coded to directly use geostrophy.jl output and flux directions
   epsfluxes: error variance on constraint. Scaling to be verified
   pmnin: metrics from the calling routine

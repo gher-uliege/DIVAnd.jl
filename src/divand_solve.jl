@@ -16,7 +16,6 @@ Input:
 Output:
   fi: analyzed field
 """
-
 function divand_solve!(s,fi0,f0;btrunc=[])
 
     H = s.H;
