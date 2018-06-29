@@ -1,6 +1,13 @@
 using divand
-using Base.Test
-import Base.LinAlg.BLAS
+
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+    using Random
+    using LinearAlgebra
+else
+    using Base.Test
+    import Base.LinAlg.BLAS
+end
 
 @testset "divand" begin
     include("test_quadtrees.jl");
@@ -124,8 +131,8 @@ import Base.LinAlg.BLAS
     # test divand_metric
     lon,lat = ndgrid([0:10;],[0:5;])
     pm,pn = divand_metric(lon,lat)
-    @test 111e3 < mean(1./pm) < 112e3
-    @test 111e3 < mean(1./pn) < 112e3
+    @test 111e3 < mean(1 ./ pm) < 112e3
+    @test 111e3 < mean(1 ./ pn) < 112e3
 
     
     # test divand_kernel

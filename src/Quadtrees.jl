@@ -25,10 +25,14 @@ QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
 
 """create a quadtree
 """
-QT(points::Array{T,2},attribs::Vector{TA}) where {T,TA} =
-    QT(QT{T,TA,size(points,1)}[],points,minimum(points,2)[:],maximum(points,2)[:],attribs)
+QT(points::AbstractArray{T,2},attribs::AbstractVector{TA}) where {T,TA} =
+    QT(QT{T,TA,size(points,1)}[],
+       points,
+       minimum(points,dims = 2)[:],
+       maximum(points,dims = 2)[:],
+       attribs)
 
-function QT(points::Array{T,2}, min::Vector{T}, max::Vector{T}, attribs::Vector{TA}) where {T,TA}
+function QT(points::AbstractArray{T,2}, min::Vector{T}, max::Vector{T}, attribs::AbstractVector{TA}) where {T,TA}
     
     if length(attribs) != size(points,2)
         error("QT inconsistent size $(length(attribs)) versus $(size(points,2))")

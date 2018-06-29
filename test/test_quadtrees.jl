@@ -1,4 +1,9 @@
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
+
 import divand.Quadtrees
 
 # Quadtrees = divand.Quadtrees
@@ -11,7 +16,7 @@ X = [0  0;
      0  1;
      0  0]
 
-qt = divand.Quadtrees.QT(X',collect(1:size(X,1)))
+qt = divand.Quadtrees.QT(copy(X'),collect(1:size(X,1)))
 attribs_res = divand.Quadtrees.within(qt,[0,0],[0.1,0.1])
 @test attribs_res == [1,5]
 

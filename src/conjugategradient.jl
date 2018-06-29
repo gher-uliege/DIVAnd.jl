@@ -147,9 +147,9 @@ function conjugategradient(fun!, b::Vector{T};
     alpha = zeros(T,maxit)
     beta = zeros(T,maxit+1)
 
-    k = 0
+    kfinal = maxit
     #gc()
-    for k=1:maxit
+    for k = 1:maxit
         # compute A*p
 		#@show k
         fun!(p,Ap)
@@ -177,6 +177,7 @@ function conjugategradient(fun!, b::Vector{T};
         if ((r ⋅ r) < tol2) && (k >= minit)
             success = true
             #@show k
+            kfinal = k
             break
         end
 
@@ -204,7 +205,7 @@ function conjugategradient(fun!, b::Vector{T};
 
     gc_enable(true)
 
-    return x,success,k
+    return x,success,kfinal
 
 end
 
