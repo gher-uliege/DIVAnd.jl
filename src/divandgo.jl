@@ -209,18 +209,27 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
             # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
             # Verify if a direct solver was requested from the demain decomposer
             if sum(csteps)>0
-		        fw,s = divandjog(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,finwin,Labsw,epsinwin,csteps,lmask;alphapc = alphanormpc, otherargsw... )
+		        fw,s = divandjog(
+                    mask[windowpoints...],
+                    ([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,
+                    finwin,Labsw,epsinwin,csteps,lmask;
+                    alphapc = alphanormpc, otherargsw... )
+                
                 fi[windowpointsstore...]= fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 
 			    finwindata = divand_residual(s,fw)
-			    xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...,),xinwin,finwindata)
+			    xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(
+                    ([ x[windowpointssol...] for x in xiw ]...,),xinwin,
+                    finwindata)
 			    fidata[winindex[winindexsol]]=finwinsol
 
 			    if doqc
 			        warn("QC not fully implemented in jogging, using rough estimate of Kii")
 			        finwinqc = divand_qc(fw,s,5)
-			        xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...,),xinwin,finwinqc)
+			        xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(
+                        ([ x[windowpointssol...] for x in xiw ]...,),
+                        xinwin,finwinqc)
 			        qcdata[winindex[winindexsol]]=finwinsol
 			    end
 
@@ -231,25 +240,41 @@ function divandgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                     s = 0
                     gc()
                     # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
-                    errw = divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin;csteps = csteps,lmask = lmask,alphapc = alphanormpc, otherargsw... )
+                    errw = divand_cpme(
+                        mask[windowpoints...],
+                        ([ x[windowpoints...] for x in pmn ]...,),
+                        xiw,xinwin,finwin,Labsw,epsinwin;
+                        csteps = csteps,lmask = lmask,alphapc = alphanormpc,
+                        otherargsw... )
                 end
                 # for errors here maybe add a parameter to divandjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
             else
                 # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
-                fw,s = divandrun(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw...)
+                fw,s = divandrun(
+                    mask[windowpoints...],
+                    ([ x[windowpoints...] for x in pmn ]...,),
+                    xiw,xinwin,finwin,Labsw,epsinwin; otherargsw...)
+
 			    fi[windowpointsstore...]= fw[windowpointssol...];
 			    finwindata = divand_residualobs(s,fw)
-			    xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwindata)
+			    xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(
+                    ([ x[windowpointssol...] for x in xiw ]...,),
+                    xinwin,finwindata)
 			    fidata[winindex[winindexsol]]=finwinsol
 
 			    if doqc
 			        finwinqc = divand_qc(fw,s,QCMETHOD)
-			        xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(([ x[windowpointssol...] for x in xiw ]...),xinwin,finwinqc)
+			        xinwinsol,finwinsol,winindexsol = divand_datainboundingbox(
+                        ([ x[windowpointssol...] for x in xiw ]...,),
+                        xinwin,finwinqc)
 			        qcdata[winindex[winindexsol]]=finwinsol
 			    end
 
                 if errormethod==:cpme
-                    errw = divand_cpme(mask[windowpoints...],([ x[windowpoints...] for x in pmn ]...),xiw,xinwin,finwin,Labsw,epsinwin; otherargsw... )
+                    errw = divand_cpme(
+                        mask[windowpoints...],
+                        ([ x[windowpoints...] for x in pmn ]...,),
+                        xiw,xinwin,finwin,Labsw,epsinwin; otherargsw... )
                 end
             end
 

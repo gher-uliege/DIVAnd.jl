@@ -1,6 +1,5 @@
 module Quadtrees
 
-using Base.Test
 import Base.length
 
 """
@@ -9,8 +8,7 @@ T the type of the coordinates
 TA the type of the attributes
 N number of dimensions
 """
-
-type QT{T,TA,N}
+mutable struct QT{T,TA,N}
     children :: Vector{QT{T,TA,N}}  # vector of child nodes (empty if node is a leaf)
     # list of coordinates (only non-empty if node is a leaf)
     # points[:,i] coordinates of the i-th point
@@ -20,13 +18,13 @@ type QT{T,TA,N}
     attribs :: Vector{TA}           # additional attributes (only non-empty if node is a leaf)
 end
 
-"""create empty quadtree"""
+"""create empty quadtree
+"""
 QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
     QT(QT{T,TA,size(min,1)}[],Matrix{T}(size(min,1),0),min,max,TA[])
 
-"""create a quadtree"""
-
-
+"""create a quadtree
+"""
 QT(points::Array{T,2},attribs::Vector{TA}) where {T,TA} =
     QT(QT{T,TA,size(points,1)}[],points,minimum(points,2)[:],maximum(points,2)[:],attribs)
 
@@ -49,7 +47,6 @@ end
  x0
 
 """
-
 function inside(x0,x1,y)
     insd = true
 
@@ -59,7 +56,9 @@ function inside(x0,x1,y)
     return insd
 end
 
-"Test if the n-th bit in a is set. The least significant bit is n = 1."
+"""
+Test if the n-th bit in a is set. The least significant bit is n = 1.
+"""
 bitget(a,n) = Bool((a & (1 << (n-1))) >> (n-1))
 
 
@@ -101,7 +100,6 @@ Test of the rectanges defined by x0,x1  and y0,y1 intersects
       +----------+
      y0
 """
-
 function intersect(x0,x1,y0,y1)
     n = size(x0,1)
 #    if (n != length(x1)) || (n != length(y0)) || (n != length(y1))
@@ -208,7 +206,6 @@ end
 """
 split a single node
 """
-
 function split!(qt::QT{T,TA,N}) where {T,TA,N}
     # N: number of dimenions
     
@@ -261,7 +258,6 @@ end
 """
 recursive split
 """
-
 function rsplit!(qt::QT{T,TA,N}, max_cap = 10) where {T,TA,N}
 
 
@@ -298,7 +294,6 @@ end
 
 Search all points within a bounding box defined by the vectors `min` and `max`.
 """
-
 function within(qt::QT{T,TA,N}, min, max) where {T,TA,N}
     attribs = TA[]
     sizehint!(attribs,1)
@@ -427,7 +422,6 @@ and time (`times` vector of `DateTime`)) check of points who are in the same spa
 longitude, latitude, depth and time
 (in days). `dupl` a vector of vectors containing indices of the duplicates.
 """
-
 function checkduplicates(x::Tuple,value,delta,deltavalue;
                          maxcap = 100, label = collect(1:size(x[1],1)))
     n = length(x)
@@ -503,7 +497,6 @@ Report duplicate of observation in data set (x2,v2) which are also in data set
 (x1,v1). `x1` and `x2` is a tuple of vectors with the cooridantes and `v1` and `v2` the 
 corresponding values. 
 """
-
 function checkduplicates(x1::Tuple,value1,
                          x2::Tuple,value2,
                          delta, deltavalue;

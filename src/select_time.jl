@@ -29,8 +29,6 @@ an empty month range.
 TS = divand.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
 
 """
-
-
 struct TimeSelectorYearListMonthList{T1 <: AbstractVector,T2 <: AbstractVector}
     yearlists::T1
     monthlists::T2
@@ -93,7 +91,6 @@ end
 
 Return the end date of all intervals defined by `TS`.
 """
-
 function timesend(TS::TimeSelectorYearListMonthList)
     timeclim = DateTime[]
 
@@ -192,6 +189,7 @@ all sub-intervals defined by this `i`-th time instance and
 `cbounds[i,2]` is the end time of all sub-intervals defined by this `i`-th time
 instance.
 """
+function climatology_bounds(TS)
 # https://web.archive.org/web/20180326074452/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html
 
 # it has a climatology attribute, which names a variable with
@@ -202,7 +200,6 @@ instance.
 # subinterval used to evaluate the climatological statistics with
 # index i in the time dimension.
 
-function climatology_bounds(TS)
     b = Array{DateTime}(2,length(TS))
     b[1,:] = timesstart(TS)
     b[2,:] = timesend(TS)

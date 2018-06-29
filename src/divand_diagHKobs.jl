@@ -6,12 +6,7 @@ This version only uses the real data (not those related to additional constraint
 diagonalterms = divand_diagHKobs(s);
 
 """
-
-
 function divand_diagHKobs(s,indexlist=[])
-
-    #
-
 
     H = s.obsconstrain.H;
     R = s.obsconstrain.R;
@@ -19,20 +14,14 @@ function divand_diagHKobs(s,indexlist=[])
 
 
     if indexlist==[]
-
-
         diagHK=diagLtCM(H',P,(H' * (R \ eye(size(R)[1]))) )
-
-
     else
-
         Z=zeros(size(R)[1],length(indexlist));
 
         for i = 1:length(indexlist)
             Z[indexlist[i],i] = 1;
         end
         diagHK=diagLtCM((H'*Z),P,(H' * (R \ Z)))
-
     end
 
 
@@ -48,10 +37,7 @@ function divand_diagHKobs(s,indexlist=[])
     #ZtHKZ =   (H * (P * (H' * (R \ Z))));
     #    diagHK = diag(ZtHKZ);
 
-
-
     return diagHK
-
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

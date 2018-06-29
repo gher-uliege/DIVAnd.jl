@@ -124,5 +124,5 @@ function weight_RtimesOne(x::NTuple{ndim,Vector{T}},len) where T where ndim
     
     Rtimesx!(coord,LS,vec,Rvec)
 
-    return 1./Rvec
+    return 1 ./ Rvec
 end

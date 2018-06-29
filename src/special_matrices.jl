@@ -166,12 +166,12 @@ end
 Base.:*(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 
 # The following two definitions are necessary; otherwise the full C matrix will be formed when
-# calculating C * M' or C * M.'
+# calculating C * M' or C * transpose(M)
 
 # call to C * M' (conjugate transpose: C Mᴴ)
 Base.A_mul_Bc(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
-# call to C * M.' (transpose: C Mᵀ)
-Base.A_mul_Bt(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M.')
+# call to C * transpose(M) (transpose: C Mᵀ)
+Base.A_mul_Bt(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
 
 
 

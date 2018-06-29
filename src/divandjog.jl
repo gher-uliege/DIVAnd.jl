@@ -925,7 +925,7 @@ function divandjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if isa(Labs,Tuple)
                 Labsf=Labs
             else
-                Labsf=(Labs*ones(n)...);
+                Labsf=(Labs*ones(n)...,);
             end
 			
 			

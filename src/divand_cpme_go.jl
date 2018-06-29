@@ -20,8 +20,6 @@
 
 
 """
-
-
 function divand_cpme_go(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
 
@@ -33,7 +31,7 @@ function divand_cpme_go(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
 
 
     if isa(Labs,Tuple)
-        len=([x./1.70766 for x in Labs]...);
+        len=([x./1.70766 for x in Labs]...,);
     else
         len=Labs./1.70766
     end

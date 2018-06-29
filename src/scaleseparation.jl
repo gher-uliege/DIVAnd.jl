@@ -32,8 +32,6 @@ Here the two fields can have different supports (one could be a 3D analysis and 
 	
 	
 """
-
-
 function scaleseparation(K1andH1K1,K2andH2K2,d;niter=10)
 
 

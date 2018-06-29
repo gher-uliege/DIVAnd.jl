@@ -4,7 +4,6 @@
 Replace values in `c` equal to `valex` by averages of surrounding points.
 
 """
-
 function ufill(c::Array{T,3},valex::Number) where T
     imax,jmax,kmax = size(c)
     work = zeros(eltype(c),imax+2, jmax+2, kmax+2)
@@ -44,9 +43,9 @@ end
 end
 
 function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
-    const A1 = 5
-    const A2 = 0
-    const A3 = 0
+    A1 = 5
+    A2 = 0
+    A3 = 0
 
     imax,jmax,kmax = size(c)
 
@@ -209,7 +208,6 @@ end
 """
     hx,hy = cgradient(pmn,h)
 
-
 """
 function cgradient(pmn,h)
 
@@ -308,7 +306,6 @@ R_L = 1 / (1 + L |∇h| / max(h2,hmin))
 Per default `h2` is equal to `h`. The depth `h` must be positive. `hmin` must 
 have the same units as h (usually meters).
 """
-
 function lengraddepth(pmn,h::Array{T,2}, L;
                       h2 = h,
                       hmin = 0.001 #m
@@ -390,9 +387,7 @@ It is defined as 2Tν  where T is the integration time.
 It uses the Greens functions for 1D diffusion:
 1/sqrt(4 π ν t) * exp(-x^2 / (4νt))
 
-
 """
-
 function smoothfilter(x,f::Vector{T},scale) where T
     ff = copy(f)
     smoothfilter!(x,ff,scale)
@@ -408,7 +403,6 @@ a domain with the mask `mask` and the metric `pmn`.
 
 See `divand.divandrun` for more information about these parameters.
 """
-
 function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
                 alpha::Vector{T} = T[],
                 moddim::Vector{T} = T[],
@@ -442,9 +436,6 @@ n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
 The interpolated field is stored in `f`.
 The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
 """
-
-
-
 function interp!(xi::NTuple{N,Vector{T}},
                  fi::Array{T,N},
                  x::NTuple{N,Array{T,Nf}},
@@ -482,7 +473,6 @@ Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
 n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
 The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
 """
-
 function interp(xi,fi,x)
     f = similar(x[1])
     interp!(xi,fi,x,f)
@@ -503,7 +493,6 @@ defined in the NetCDF variable `varname` in the NetCDF file
 same grid as the analysis.
 
 """
-
 function backgroundfile(fname,varname)
     ds = Dataset(fname)
     lon = nomissing(ds["lon"][:])

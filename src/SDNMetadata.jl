@@ -42,7 +42,6 @@ encodeWMSStyle(params) = join([k * ':' * string(v) for (k,v) in  params ],"+")
 Based on the information in the dictionary `metadata` and the analysed 4D field
 `fi` produce a list of NetCDF global and variable attributes for `divand_save2`.
 """
-
 function SDNMetadata(metadata,filename,varname,lonr,latr;
                      field = nothing,
                      default_field_min = nothing,
@@ -191,7 +190,6 @@ end
 Load the CDI list from the file `fname`
 (zip with a csv file, or csv file directly).
 """
-
 function loadoriginators(fname::AbstractString)
     if endswith(fname,"zip")
         zp = ZipFile.Reader(fname);
@@ -331,7 +329,7 @@ function gettemplatevars(filepath,varname,project,cdilist;
                 errname = split(filepath,".nc")[1] * ".cdi_import_errors.csv",
                 ignore_errors = false)
 
-    const isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
+    isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
 
     baseurl_wms = PROJECTS[project]["baseurl_wms"]
     filename = basename(filepath)
@@ -614,7 +612,6 @@ will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignore if `ignore_errors` is
 set to true.
 """
-
 function divadoxml(filepath,varname,project,cdilist,xmlfilename;
                    ignore_errors = false)
 
@@ -637,8 +634,6 @@ Return a link to the SeaDataNet metadata page of the observation with the
 identifier `id` (a combination of the EDMO code and local CDI ID).
 This works only in IJulia.
 """
-
-
 function SDNObsMetadata(id)
     edmo,local_CDI_ID = split(id,'-')
     url = "http://seadatanet.maris2.nl/v_cdi_v3/print_wfs.asp" * string(

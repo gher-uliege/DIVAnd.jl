@@ -4,7 +4,6 @@
 Computes the mean `meanx` and the standard deviation `stdx` from the sum
 (`sumx`) and the sum of squares (`sumx2`) from `N` numbers.
 """
-
 function stats(sumx,sumx2,N)
     # var(x) = 1/(N-1)  Σᵢ (xᵢ - mean(x))²
     # var(x) = 1/(N-1)  Σᵢ [ xᵢ² - 2 xᵢ mean(x) + mean(x)² ]
@@ -36,7 +35,6 @@ Computes the mean `meanx` and the standard deviation `stdx` from the sum
 similarly for the variable `y`. The function computes also the
 Pearson correlation `corr` and covariance `covar` between `x` and `y`.
 """
-
 function stats(sumx,sumx2,sumy,sumy2,sumxy,N)
     # (N-1) * covar(x,y) = Σᵢ (xᵢ - mean(x)) (yᵢ - mean(y))
     # (N-1) * covar(x,y) = Σᵢ (xᵢ yᵢ - xᵢ mean(y) - mean(x) yᵢ + mean(x) mean(y))
@@ -75,7 +73,6 @@ distance. Random pairs are choosen and grouped by their distance
 at least `mincount` of data points in each bin but always stop after
 considering `maxpoints` pairs.
 """
-
 function empiriccovar(x,v,distbin,mincount;
                       maxpoints = 10000,
                       choose = fitchoose,
@@ -234,6 +231,7 @@ function empiriccovarmean(x,v::Vector{T},distbin,mincount;
     return distx::Vector{T},meancovar,meancorr,meanvarx,meancount,stdcovar
 #    stdcovar,meancount
 end
+
 """
     var0,len,distx,covar,fitcovar = fit_isotropic(x,v,distbin,mincount;
                                alpha = divand.alpha_default(length(x)),
@@ -333,7 +331,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
 
     var0opt = covar[1]
     L = linspace(minlen,maxlen,10000)
-    J(L) = sum(((covar - var0opt * K.(distx * len_scale/L))./stdcovar).^2)
+    J(L) = sum(((covar - var0opt * K.(distx * len_scale/L)) ./ stdcovar).^2)
     Jmin,imin = findmin(J.(L))
     lenopt = L[imin]
 
@@ -424,7 +422,7 @@ function fit(x,v,distbin,mincount;
     # number of dimensions
     n = length(x)
 
-    const seed = rand(UInt64)
+    seed = rand(UInt64)
     iter = 0 :: Int
 
     mu,K,len_scale = divand.divand_kernel(n,alpha)
@@ -508,7 +506,7 @@ end
 distfun_m(x0,x1) = EarthRadius * distance(x0[2],x0[1],x1[2],x1[1]) * pi/180
 
 
-type AllCoupels
+mutable struct AllCoupels
     n:: Int
 end
 
@@ -532,7 +530,7 @@ function Base.done(iter::AllCoupels,state)
     return (i == iter.n-1) && (j == iter.n)
 end
 
-type RandomCoupels
+mutable struct RandomCoupels
     n::Int
     count::Int
 end
@@ -553,7 +551,7 @@ Base.done(iter::RandomCoupels,state) = state == iter.count
 
 
 
-type VertRandomCoupels
+mutable struct VertRandomCoupels
     zlevel::Float64 # depth in meters
     zindex::Vector{Int}
     x::NTuple{3,Vector{Float64}}
@@ -617,9 +615,10 @@ end
 """
   varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo =
      fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
-"""
-# this function used to be called lfit in fitlsn.f
 
+this function used to be called lfit in fitlsn.f
+
+"""
 function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
     # number of samples
     n = length(d)
@@ -889,7 +888,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         :meandist => meandist
     )
     #return RL,SN,varbak,dbinfo
-    stdcovar = 1./sqrt.(covarweight)
+    stdcovar = 1 ./ sqrt.(covarweight)
 
     return varbak,RL,dbinfo
 end
@@ -944,7 +943,6 @@ Optional arguments:
  * `limitlen` (default false): limit correlation length by mean distance between observations
 
 """
-
 function fithorzlen(x,value::Vector{T},z;
                     tolrel::T = 1e-4,
                     smoothz::T = 100.,
@@ -1010,7 +1008,6 @@ end
 
 See also divand.fithorzlen
 """
-
 function fitvertlen(x,value::Vector{T},z;
                      smoothz::T = 100.,
                      searchz::T = 10.,

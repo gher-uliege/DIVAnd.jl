@@ -25,9 +25,7 @@
 `Rn`: the new error variance 
 
 """
-  function divand_datainboundingbox(xi,x,f;Rmatrix=())
-
-
+function divand_datainboundingbox(xi,x,f;Rmatrix=())
 
 n=length(xi)
 
@@ -63,7 +61,7 @@ end
 		  end
 		end
 		
-	return ([ xx[sel] for xx in x ]...),f[sel],find(sel),Rm
+	return ([ xx[sel] for xx in x ]...,),f[sel],find(sel),Rm
     
 end
 
