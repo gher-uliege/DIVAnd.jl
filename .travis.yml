@@ -5,21 +5,24 @@ os:
   - osx
 julia:
   - 0.6
-  - nightly
+  - 0.7
 matrix:
   allow_failures:
-    - julia: nightly
+    - julia: 0.7
 addons:
     apt: # apt-get for linux
         packages:
-          - libnlopt0
+          - libxml2
 notifications:
   email: false
 # uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone("https://github.com/Alexander-Barth/NCDatasets.jl"); Pkg.build("NCDatasets")'
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("divand"); Pkg.test("divand"; coverage=true)'  
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("divand"); Pkg.test("divand"; coverage=true)'
+  - julia -e 'try; Pkg.add("EzXML"); catch; end' # fails
+  - if [[ -d $HOME/.julia/v0.6 ]]; then rm $HOME/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so*; fi
+  - julia -e 'Pkg.build("EzXML")'
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("divand")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
