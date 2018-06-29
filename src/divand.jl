@@ -19,6 +19,7 @@ using Missings
 if VERSION >= v"0.7.0-beta.0"
     using Printf
     using LinearAlgebra
+    using SparseArrays
 end
 
 const EarthRadius = 6372795.477598; # m

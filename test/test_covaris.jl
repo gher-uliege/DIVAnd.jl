@@ -11,9 +11,9 @@ function testprod(C,C2)
     @test a ≈ a2
 
     # C times a matrix tranposed
-    b = randn(2,n);
-    a = C*b.';
-    a2 = C2*b.';
+    b = randn(2,n)
+    a = C * transpose(b)
+    a2 = C2 * transpose(b)
     @test a ≈ a2
 
     # C times a matrix conjugate tranposed
