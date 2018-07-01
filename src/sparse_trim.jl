@@ -10,30 +10,26 @@
 #   m: dimension to trim
 
 function sparse_trim(sz1,m)::SparseMatrixCSC{Float64,Int}
-
     n1 = prod(sz1)
-    sz2 = collect(sz1)
-    sz2[m] = sz2[m]-2
+
+    sz2 = ntuple(i -> (i == m ? sz1[i]-2 : sz1[i] ),length(sz1))
+
     n2 = prod(sz2)
     n = length(sz1)
 
-    # L1
+    L1 = 1:n2
+    tmp = zeros(Int,n)
+    L2 = zeros(Int,n2)
 
-    vi = [collect(1:sz2[i]) for i = 1:n]
-    IJ = [vii[:] for vii in ndgrid(vi...)]
+    for i = 1:n2
+        lin2sub!(sz2,i,tmp)
+        tmp[m] += 1
+        L2[i] = sub2lin(sz1,tmp)
+    end
 
-    L1 = sub2ind((sz2...,),IJ...)
-
-    IJ[m]=IJ[m]+1
-
-    L2 = sub2ind(sz1,IJ...)
-
-    one = ones(size(L1))
-
-    S = sparse(L1, L2, one, n2, n1)
+    S = sparse(L1, L2, ones(n2), n2, n1)
 
     return S
-
 end
 
 # Copyright (C) 2009,2016 Alexander Barth <a.barth@ulg.ac.be>
