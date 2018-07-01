@@ -12,19 +12,13 @@ matrix:
 addons:
     apt: # apt-get for linux
         packages:
-          - libxml2
+          - libnetcdf-dev
 notifications:
   email: false
 # uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone("https://github.com/Alexander-Barth/NCDatasets.jl"); Pkg.build("NCDatasets")'
-  - [ "$TRAVIS_OS_NAME" == linux ] && julia -e 'try; Pkg.add("EzXML"); catch; end' # fails
-  - [ "$TRAVIS_OS_NAME" == linux ] && rm -f $HOME/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so*
-  - [ "$TRAVIS_OS_NAME" == linux ] && mkdir -p $HOME/.julia/v0.6/EzXML/deps/usr/lib/
-  - [ "$TRAVIS_OS_NAME" == linux ] && cp /usr/lib/x86_64-linux-gnu/libxml2.so $HOME/.julia/v0.6/EzXML/deps/usr/lib/
-  - [ "$TRAVIS_OS_NAME" == linux ] && julia -e 'Pkg.build("EzXML")'
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("divand"); Pkg.test("divand"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("divand")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
