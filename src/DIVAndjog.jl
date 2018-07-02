@@ -627,7 +627,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		methodpccoarse=pcmethod
 
 		tol=1e-3
-		maxiter=10*Int(ceil(sqrt(size(HI)[1])))
+		maxiter=20*Int(ceil(sqrt(size(HI)[1])))
 		maxiter=minimum([2000,maxiter])
 		#maxiter=0
     	pcargs = [(:tol, tol),(:maxit,maxiter)]
@@ -879,8 +879,6 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
 
 			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC3, fi0 =figuess,btrunc=2)
-
-
 		end
 
 
