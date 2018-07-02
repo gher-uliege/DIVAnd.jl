@@ -1,7 +1,7 @@
 using Base.Test
-import divand
+import DIVAnd
 
-bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
+bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
 
 if !isfile(bathname)
@@ -16,13 +16,13 @@ latr = 40:dy:47
 
 depthr = [0.,10,100]
 
-mask,(pm,pn,po),(xi,yi,zi) = divand.domain(bathname,bathisglobal,lonr,latr,depthr)
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr,depthr)
 
 
 @test sum(mask[:,:,1]) >= sum(mask[:,:,2]) >= sum(mask[:,:,3])
 
 
-mask,(pm,pn,po),(xi,yi,zi) = divand.domain(
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.domain(
     bathname,bathisglobal,
     lonr,latr,depthr;
     zlevel = :floor
@@ -34,13 +34,13 @@ mask,(pm,pn,po),(xi,yi,zi) = divand.domain(
 
 
 
-@test divand.localresolution([0.,10.,20.]) ≈ [10.,10.,10.]
+@test DIVAnd.localresolution([0.,10.,20.]) ≈ [10.,10.,10.]
 
-@test divand.localresolution([0.,10.,20.,100,200,500]) ≈ [10.0,  10.0,  45.0,  90.0, 200.0, 300.0]
+@test DIVAnd.localresolution([0.,10.,20.,100,200,500]) ≈ [10.0,  10.0,  45.0,  90.0, 200.0, 300.0]
 
 
 
-mask,pmn,xyi = divand.divand_rectdom(1:5,1:2:10,[10,20,30,100,200,300])
+mask,pmn,xyi = DIVAnd.DIVAnd_rectdom(1:5,1:2:10,[10,20,30,100,200,300])
 
 
 @test all(pmn[1] .== 1)

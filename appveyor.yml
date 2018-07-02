@@ -42,9 +42,9 @@ build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
-      Pkg.clone(pwd(), \"divand\"); Pkg.build(\"divand\")"
+      Pkg.clone(pwd(), \"DIVAnd\"); Pkg.build(\"DIVAnd\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"NCDatasets.jl\")"
-  - C:\projects\julia\bin\julia -e "include(joinpath(Pkg.dir(\"divand\"),\"test\",\"download_data.jl\"))"
+  - C:\projects\julia\bin\julia -e "include(joinpath(Pkg.dir(\"DIVAnd\"),\"test\",\"download_data.jl\"))"
 
 test_script:
-  - C:\projects\julia\bin\julia -e "Pkg.test(\"divand\")"
+  - C:\projects\julia\bin\julia -e "Pkg.test(\"DIVAnd\")"

@@ -1,5 +1,5 @@
 using Base.Test
-using divand
+using DIVAnd
 
 coord = [0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.7699; 0.357327 0.891722; 0.101827 0.856188; 0.862349 0.0555934; 0.992086 0.97036; 0.702955 0.591252; 0.685006 0.23132]'
 
@@ -40,8 +40,8 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
     Nobs = size(coord,2)
 
     maxcap = 10
-    qt = divand.Quadtrees.QT(coord,collect(1:Nobs)) :: divand.Quadtrees.QT{T,Int,ndim}
-    divand.Quadtrees.rsplit!(qt, maxcap)
+    qt = DIVAnd.Quadtrees.QT(coord,collect(1:Nobs)) :: DIVAnd.Quadtrees.QT{T,Int,ndim}
+    DIVAnd.Quadtrees.rsplit!(qt, maxcap)
 
     xmin = zeros(ndim)
     xmax = zeros(ndim)
@@ -54,7 +54,7 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
             xmax[j] = coord[j,i] + factor * len[j]
         end
         
-        index = divand.Quadtrees.within(qt,xmin,xmax)    
+        index = DIVAnd.Quadtrees.within(qt,xmin,xmax)    
         Rx[i] = 0.
         
         for ii in index
@@ -74,7 +74,7 @@ end
 
 # compare naive and optimized method
 Rtimesx1!(coord,LS,x,Rx1)
-divand.Rtimesx!(coord,LS,x,Rx)
+DIVAnd.Rtimesx!(coord,LS,x,Rx)
 
 @test Rx1 ≈ Rx
 
@@ -94,7 +94,7 @@ y = [rand(75); rand(75)/10 + 0.3]
 len = (0.01,0.01)
 
 # compute weigths
-weight = divand.weight_RtimesOne((x,y),len)
+weight = DIVAnd.weight_RtimesOne((x,y),len)
 
 # the weight of the data points inside the cluster
 # should be smaller than outside
@@ -116,7 +116,7 @@ coord = randn(ndata,ndim)'
 x = ones(ndata)
 Rx = zeros(ndata)
 LS = ntuple(i -> 0.1,ndim)
-@time divand.Rtimesx!(coord,LS,x,Rx)
+@time DIVAnd.Rtimesx!(coord,LS,x,Rx)
 
 Rx2 = zeros(ndata)
 @time Rtimesx2!(coord,LS,x,Rx2)

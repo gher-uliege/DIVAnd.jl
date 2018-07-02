@@ -4,7 +4,7 @@ function diffusion!(ivol,nus,α,nmax,x0,x)
     x[:] = x0
     
     for niter = 1:nmax
-        divand_laplacian_apply!(ivol,nus,x,work1)
+        DIVAnd_laplacian_apply!(ivol,nus,x,work1)
         x[:] = x + α * work1        
     end
 
@@ -36,7 +36,7 @@ function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) whe
     work2[:] = work2[:] .* ivol[:]
 
     for niter = 1:(nmax ÷ 2)
-        divand_laplacian_apply!(ivol,nus,work2,work1)
+        DIVAnd_laplacian_apply!(ivol,nus,work2,work1)
         #work2 += α * work1
         BLAS.axpy!(α,work1,work2)
     end
@@ -93,12 +93,12 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
 
     len = len_harmonize(len,mask)
 
-    R = divand.divand_obscovar(epsilon2,length(f));
+    R = DIVAnd.DIVAnd_obscovar(epsilon2,length(f));
 
-    s = divand.divand_struct(mask)
+    s = DIVAnd.DIVAnd_struct(mask)
 
     # observation constrain
-    constrain = divand.divand_obs(s,xi,x,f,R)
+    constrain = DIVAnd.DIVAnd_obs(s,xi,x,f,R)
     yo = constrain.yo
     H = constrain.H
 
@@ -148,7 +148,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     # W is the norm
     # xᵀ W y correspond to the integral ∫ f g dx
 
-    ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
+    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
 
     vol = 1.0 ./ ivol
 
@@ -205,9 +205,9 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
 
     # xp = (I + W^½ SB^½ * H' * (R^{-1} * (H * SB^½ * W^½)) )^{-1} b
 
-    #@show divand.checksym(s.sv.n,fun!)
+    #@show DIVAnd.checksym(s.sv.n,fun!)
           
-    xp,success,s.niter = divand.conjugategradient(
+    xp,success,s.niter = DIVAnd.conjugategradient(
         fun!,b; tol = tol, maxit = maxit,
         progress = progress);
 
@@ -222,10 +222,10 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
         #@show mean(β),nmax,α
         
         decompBx = similar(x)
-        divand.decompB!(s.sv,β,ivol,nus,nmax,α,x,work1,work2,decompBx)
+        DIVAnd.decompB!(s.sv,β,ivol,nus,nmax,α,x,work1,work2,decompBx)
 
 #        decompBx2 = (sW)^2 *  decompBx
-#        divand.decompB!(s.sv,β,ivol,nus,nmax,α,decompBx2,work1,work2,decompBx)
+#        DIVAnd.decompB!(s.sv,β,ivol,nus,nmax,α,decompBx2,work1,work2,decompBx)
         
         return decompBx        
     end

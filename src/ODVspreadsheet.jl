@@ -556,8 +556,8 @@ end
 
 """
      profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
-        qv_flags = [divand.ODVspreadsheet.GOOD_VALUE,
-                    divand.ODVspreadsheet.PROBABLY_GOOD_VALUE],
+        qv_flags = [DIVAnd.ODVspreadsheet.GOOD_VALUE,
+                    DIVAnd.ODVspreadsheet.PROBABLY_GOOD_VALUE],
         nametype = :P01,
         qvlocalname = "QV:SEADATANET")
 
@@ -572,7 +572,7 @@ are vectors of `DateTime` and `String` respectively). Only values matching the
 quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings
 (based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. "1" means "good value").
 One can also use the constants these constants (prefixed with
-`divand.ODVspreadsheet.`):
+`DIVAnd.ODVspreadsheet.`):
 
 `qvlocalname` is the column name to denote quality flags. It is assumed that the
 quality flags follow immediatly the data column.
@@ -596,7 +596,7 @@ If the ODV does not contain a semantic header (e.g. for the aggregated ODV files
 then local names must be used.
 
 ```julia-repl
-julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
+julia> data,lon,lat,depth,time,ids = DIVAnd.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
       ["Water body salinity"]; nametype = :localname );
 ```
 

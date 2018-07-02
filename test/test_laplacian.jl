@@ -1,5 +1,5 @@
 using Base.Cartesian
-import divand
+import DIVAnd
 if VERSION >= v"0.7.0-beta.0"
     using Test
 else
@@ -11,7 +11,7 @@ function test_sp(mask,pmn,nu,x0,Nmax=1)
     sz = size(x0)
     x = x0[mask]
 
-    L = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
+    L = DIVAnd.DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
 
     @inbounds for nt = 1:Nmax
         x = L*x
@@ -24,11 +24,11 @@ end
     
 
 function test_lap8(mask,pmn,nu,x0,Nmax=1)
-    ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
+    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
     x = copy(x0)
 
     @inbounds for nt = 1:Nmax
-        x = divand.divand_laplacian_apply(ivol,nus,x)
+        x = DIVAnd.DIVAnd_laplacian_apply(ivol,nus,x)
     end
 
     return x
@@ -41,7 +41,7 @@ for sz in [(20,),(100,100),(20,20,20),(5,5,5,5)]
     x = randn(sz)
     mask = trues(sz)
 
-    ij = divand.ndgrid([Float64.(1:s) for s in sz]...)
+    ij = DIVAnd.ndgrid([Float64.(1:s) for s in sz]...)
     x = ij[1].^2
 
     if length(sz) == 2
@@ -59,17 +59,17 @@ for sz in [(20,),(100,100),(20,20,20),(5,5,5,5)]
     Lxsp = test_sp(mask,pmn,nu,x,Nmax)
     Lx2 = test_lap8(mask,pmn,nu,x,Nmax)
     
-    ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
+    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
     
-    Lx = divand.divand_laplacian_apply(ivol,nus,x)
+    Lx = DIVAnd.DIVAnd_laplacian_apply(ivol,nus,x)
     
     @test Lxsp ≈ Lx2
     
     # check symmetry
-    D = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)));
+    D = DIVAnd.DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)));
     
     vol = 1 ./ .*(pmn...);
-    D2 = divand.sparse_diag(vol[mask]) * D;
+    D2 = DIVAnd.sparse_diag(vol[mask]) * D;
     @test maximum(abs.(D2 - D2')) < 1e-9
 end    
     
@@ -92,7 +92,7 @@ for j = 1:sz[2]
 end
 
 Lxsp = test_sp(mask,pmn,nu,x,Nmax)
-ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
-Lx = divand.divand_laplacian_apply(ivol,nus,x)
+ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
+Lx = DIVAnd.DIVAnd_laplacian_apply(ivol,nus,x)
 @test Lxsp ≈ Lx
 

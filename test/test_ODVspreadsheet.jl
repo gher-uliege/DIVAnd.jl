@@ -1,6 +1,6 @@
 using Base.Test
-import divand
-ODV = divand.ODVspreadsheet
+import DIVAnd
+ODV = DIVAnd.ODVspreadsheet
 
 
 fname = joinpath(dirname(@__FILE__),"..","data","sample_ODV.txt")
@@ -44,10 +44,10 @@ profiles,lons,lats,depths,times,ids = ODV.load(T,[fname_qv],["SDN:P01::SLCAAAZX"
 # https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm
 # rounded to 3 hour
 
-@test divand.ODVspreadsheet.parsejd(2454142.125) == DateTime(2007,02,10,03,0,0)
+@test DIVAnd.ODVspreadsheet.parsejd(2454142.125) == DateTime(2007,02,10,03,0,0)
 
 # values from
 # http://www.julian-date.com/ (setting GMT offset to zero)
 # https://web.archive.org/web/20180212213256/http://www.julian-date.com/
 
-@test divand.ODVspreadsheet.parsejd(2455512.375) == DateTime(2010,11,11,9,0,0)
+@test DIVAnd.ODVspreadsheet.parsejd(2455512.375) == DateTime(2010,11,11,9,0,0)

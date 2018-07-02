@@ -79,7 +79,7 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
     return iBx
 end
 
-# LocalWords:  iB divand
+# LocalWords:  iB DIVAnd
 
 # Copyright (C) 2014-2017 Alexander Barth	  	 <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	 <JM.Beckers@ulg.ac.be>

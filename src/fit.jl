@@ -234,7 +234,7 @@ end
 
 """
     var0,len,distx,covar,fitcovar = fit_isotropic(x,v,distbin,mincount;
-                               alpha = divand.alpha_default(length(x)),
+                               alpha = DIVAnd.alpha_default(length(x)),
                                minlen = 0.,
                                maxlen = 10.,
                                tolrel = 1e-4,
@@ -292,7 +292,7 @@ In these case, increase `minlen`.
 
 """
 function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
-                       alpha = divand.alpha_default(length(x)),
+                       alpha = DIVAnd.alpha_default(length(x)),
                        len::T = 1.,
                        minlen::T = 1e-5,
                        maxlen::T = 10.,
@@ -327,7 +327,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     distx2 = copy(distx)
 
     # Kernel for the given dimension
-    mu,K,len_scale = divand.divand_kernel(n,alpha)
+    mu,K,len_scale = DIVAnd.DIVAnd_kernel(n,alpha)
 
     var0opt = covar[1]
     L = linspace(minlen,maxlen,10000)
@@ -385,7 +385,7 @@ function fitprogress(iter,var0,lens,fitness)
 end
 """
     var0opt,lensopt,distx,covar,fitcovar = fit(x,v,distbin,mincount;
-             alpha = divand.alpha_default(length(x)),
+             alpha = DIVAnd.alpha_default(length(x)),
              minlen = zeros(length(x)),
              maxlen = ones(length(x)),
              tolrel = 1e-4,
@@ -406,7 +406,7 @@ parameter to compute the normalized distance.
 The note of the optional parameters in `divafit` also applies here.
 """
 function fit(x,v,distbin,mincount;
-             alpha = divand.alpha_default(length(x)),
+             alpha = DIVAnd.alpha_default(length(x)),
              minlen = zeros(length(x)),
              maxlen = ones(length(x)),
              tolrel = 1e-4,
@@ -425,7 +425,7 @@ function fit(x,v,distbin,mincount;
     seed = rand(UInt64)
     iter = 0 :: Int
 
-    mu,K,len_scale = divand.divand_kernel(n,alpha)
+    mu,K,len_scale = DIVAnd.DIVAnd_kernel(n,alpha)
 
     function fitcovarlen(var0,lens)
         # declare the variable as local as they have the same name as the
@@ -930,7 +930,7 @@ end
 
 
 """
-    lenz,dbinfo = divand.fithorzlen(x,value,z)
+    lenz,dbinfo = DIVAnd.fithorzlen(x,value,z)
 
 Determines the horizontal correlation length `lenz` based on the
 measurments `value` at the location `x` (tuple of 3 vectors corresponding to
@@ -977,7 +977,7 @@ function fithorzlen(x,value::Vector{T},z;
         xsel = (x[1][sel],x[2][sel]);
         v = value[sel] - mean(value[sel]);
 
-        var0opt[k],lenopt[k],fitinfos[k] = divand.fitlen(
+        var0opt[k],lenopt[k],fitinfos[k] = DIVAnd.fitlen(
             xsel,v,nsamp;
             distfun = distfun
         )
@@ -991,7 +991,7 @@ function fithorzlen(x,value::Vector{T},z;
 
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
-        divand.smoothfilter!(z,lenoptf,smoothz)
+        DIVAnd.smoothfilter!(z,lenoptf,smoothz)
     end
 
     return lenoptf,Dict(
@@ -1004,9 +1004,9 @@ end
 
 
 """
-    lenz,dbinfo = divand.fitvertlen(x,value,z)
+    lenz,dbinfo = DIVAnd.fitvertlen(x,value,z)
 
-See also divand.fithorzlen
+See also DIVAnd.fithorzlen
 """
 function fitvertlen(x,value::Vector{T},z;
                      smoothz::T = 100.,
@@ -1049,7 +1049,7 @@ function fitvertlen(x,value::Vector{T},z;
 
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
-        divand.smoothfilter!(z,lenoptf,smoothz)
+        DIVAnd.smoothfilter!(z,lenoptf,smoothz)
     end
 
     return lenoptf,Dict(

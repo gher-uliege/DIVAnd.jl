@@ -396,12 +396,12 @@ end
 
 
 """
-    field = divand.random(mask,pmn,len,Nens)
+    field = DIVAnd.random(mask,pmn,len,Nens)
 
 Create `Nens` random fields with the correlation length `len` in 
 a domain with the mask `mask` and the metric `pmn`.
 
-See `divand.divandrun` for more information about these parameters.
+See `DIVAnd.DIVAndrun` for more information about these parameters.
 """
 function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
                 alpha::Vector{T} = T[],
@@ -410,7 +410,7 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
                 btrunc = [],
                 ) where {N,T}
     
-    s = divand.divand_background(
+    s = DIVAnd.DIVAnd_background(
         Val{:sparse},mask,pmn,len,alpha,moddim,scale_len,[];
         btrunc = btrunc);
     
@@ -423,7 +423,7 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
     # F[:UP] ==  L'*P
     
     ff = (F[:UP]) \ z;
-    field = divand.unpackens(s.sv,ff)[1] :: Array{T,N+1}
+    field = DIVAnd.unpackens(s.sv,ff)[1] :: Array{T,N+1}
     return field
 end
 
@@ -434,7 +434,7 @@ end
 Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
 n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
 The interpolated field is stored in `f`.
-The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+The grid in `xi` must be align with the axis (e.g. produced by DIVAnd.ndgrid).
 """
 function interp!(xi::NTuple{N,Vector{T}},
                  fi::Array{T,N},
@@ -471,7 +471,7 @@ end
 
 Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
 n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
-The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+The grid in `xi` must be align with the axis (e.g. produced by DIVAnd.ndgrid).
 """
 function interp(xi,fi,x)
     f = similar(x[1])
@@ -509,8 +509,8 @@ function backgroundfile(fname,varname)
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
 
         
-        vn .= trans.(divand.ufill(vn,.!isnan.(vn)))
-        fi = divand.interp(x,vn,xi)
+        vn .= trans.(DIVAnd.ufill(vn,.!isnan.(vn)))
+        fi = DIVAnd.interp(x,vn,xi)
 
         return vn,value - fi
     end

@@ -1,8 +1,8 @@
 using NCDatasets
 using Missings
-import divand
+import DIVAnd
 
-NCSDN = divand.NCSDN
+NCSDN = DIVAnd.NCSDN
 
 basedir = joinpath(@__DIR__,"..","data")
 

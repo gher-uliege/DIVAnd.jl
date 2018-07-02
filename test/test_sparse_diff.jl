@@ -126,7 +126,7 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     mask = trues(size(x1));
     pm = ones(size(x1))/2;
 
-    DD = divand_laplacian(operatortype,mask,(pm,),ones(size(x1)),[false]);
+    DD = DIVAnd_laplacian(operatortype,mask,(pm,),ones(size(x1)),[false]);
     f = 2*x1.^2;
     Df1 = 4;
     Df2 = reshape(DD * f[:], size(mask));
@@ -162,7 +162,7 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     mask = trues(size(x1))
     pm = ones(size(x1))
     pn = ones(size(x1))
-    DD = divand_laplacian(operatortype,mask,(pm,pn),ones(size(mask)),[false,false])
+    DD = DIVAnd_laplacian(operatortype,mask,(pm,pn),ones(size(mask)),[false,false])
     f = 2*x1.^2 + x2
     Df1 = 4.
     Df2 = reshape(DD * f[:], size(mask))

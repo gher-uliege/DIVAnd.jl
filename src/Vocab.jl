@@ -197,7 +197,7 @@ http://www.seadatanet.org/urnurl/collection/
 The collection can be indexed with brackets using the identifier.
 
 ```
-using divand
+using DIVAnd
 collection = Vocab.SDNCollection("P01")
 concept = collection["PSALPR01"]
 @show Vocab.prefLabel(concept)

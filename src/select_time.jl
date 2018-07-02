@@ -26,7 +26,7 @@ an empty month range.
 # seasonal climatology using all data from 1900 to 2017
 # for winter (December-February), spring, summer, autumn
 
-TS = divand.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
+TS = DIVAnd.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
 
 """
 struct TimeSelectorYearListMonthList{T1 <: AbstractVector,T2 <: AbstractVector}

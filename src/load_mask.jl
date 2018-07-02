@@ -1,6 +1,6 @@
 
 """
-    bx,by,b = divand.extract_bath(bath_name,isglobal,xi,yi)
+    bx,by,b = DIVAnd.extract_bath(bath_name,isglobal,xi,yi)
 
 Extract the bathymetry from the NetCDF file `bathname`. The parameter `isglobal`
  is true if the NetCDF file covers the whole globe and thus the last longitude
@@ -62,7 +62,7 @@ function extract_bath(bath_name,isglobal,xi,yi)
 end
 
 """
-    xi,yi,bath = divand.load_bath(bath_name,isglobal,xi,yi)
+    xi,yi,bath = DIVAnd.load_bath(bath_name,isglobal,xi,yi)
 
 Load the bathymetry from the NetCDF file `bathname`. The parameter `isglobal` is true if the NetCDF file covers
 the whole globe and thus the last longitude point can be considered to be right next to the first longitude point.

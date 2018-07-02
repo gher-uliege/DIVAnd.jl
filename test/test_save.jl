@@ -1,4 +1,4 @@
-import divand
+import DIVAnd
 using NCDatasets
 using Base.Test
 using Missings
@@ -18,7 +18,7 @@ mask = .!isnan.(fi)
 
 relerr = rand(T,sz)
 
-divand.save(filename,xyi,fi,varname; type_save = T, relerr = relerr)
+DIVAnd.save(filename,xyi,fi,varname; type_save = T, relerr = relerr)
 
 ds = Dataset(filename)
 fi2 = ds[varname][:]

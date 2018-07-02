@@ -1,7 +1,7 @@
-# A simple example of divand in 4 dimensions
+# A simple example of DIVAnd in 4 dimensions
 # with observations from an analytical function.
 
-using divand
+using DIVAnd
 using Base.Test
 #using PyPlot
 
@@ -20,7 +20,7 @@ f = [1]
 # pm is the inverse of the resolution along the 1st dimension,...
 
 
-mask,pmn,xyi = divand_rectdom([linspace(0,1,s) for s in gridsize]...)
+mask,pmn,xyi = DIVAnd_rectdom([linspace(0,1,s) for s in gridsize]...)
 
 
 sv = statevector((mask,))
@@ -49,7 +49,7 @@ tol = 1e-5
 
 Ld = [mean(L) for L in lenxy]
 nu = ([L.^2 for L in lenxy]...)
-D = divand_laplacian(Val{:sparse},mask,pmn,nu,falses(4))
+D = DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(4))
 
 
 

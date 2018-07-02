@@ -1,8 +1,8 @@
-# A simple example of divand in 2 dimensions
+# A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 using Base.Test
 
-using divand
+using DIVAnd
 srand(1)
 x=randn(100)
 y=randn(100)
@@ -10,7 +10,7 @@ z=randn(100)
 t=randn(100)
 f=z
 
-mask,(pm,pn,po,pq),(xi,yi,zi,ti) = divand_rectdom(linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5))
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_rectdom(linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5))
 
 # correlation length
 len = 1
@@ -18,17 +18,17 @@ len = 1
 # obs. error variance normalized by the background error variance
 epsilon2 = 0.01;
 
-fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true false true]);
+fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true false true]);
 
 @test -1.6 < fi[1,1,1,1] < -1.4
 
-fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true true true]);
+fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true true true]);
 
 
 
 @test -0.15 < fi[1,1,1,1] < 0
 
-fi,fanom= divand_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
+fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
 
 
 

@@ -26,24 +26,24 @@ end
 tol = 1e-4
 kwargs = [(:tol, tol)]
 
-xAy, yATx = divand.checksym(n,fun!)
+xAy, yATx = DIVAnd.checksym(n,fun!)
 @test xAy ≈ yATx
 
-x,success,niter0 = divand.conjugategradient(fun!,zeros(size(b)); kwargs...)
+x,success,niter0 = DIVAnd.conjugategradient(fun!,zeros(size(b)); kwargs...)
 @test x ≈ zeros(size(b))
 
-x,success,niter1 = divand.conjugategradient(fun!,b; kwargs...)
+x,success,niter1 = DIVAnd.conjugategradient(fun!,b; kwargs...)
 @test norm(A*x - b)/norm(b) < tol
 
-x,success,niter2 = divand.conjugategradient(fun!,b; kwargs..., pc! = pc_exact!)
+x,success,niter2 = DIVAnd.conjugategradient(fun!,b; kwargs..., pc! = pc_exact!)
 @test norm(A*x - b)/norm(b) < tol
 @test niter2 == 1
 
-x,success,niter3 = divand.conjugategradient(fun!,b; kwargs..., pc! = pc_jacobi!)
+x,success,niter3 = DIVAnd.conjugategradient(fun!,b; kwargs..., pc! = pc_jacobi!)
 @test norm(A*x - b)/norm(b) < tol
 @test niter3 <= niter1
 
 
 # check type-stability
-@inferred divand.conjugategradient(fun!,zeros(size(b)); kwargs..., pc! = pc_jacobi!)
+@inferred DIVAnd.conjugategradient(fun!,zeros(size(b)); kwargs..., pc! = pc_jacobi!)
 

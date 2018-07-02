@@ -1,9 +1,9 @@
 using Base.Test
 using NetCDF
 using Interpolations
-using divand
+using DIVAnd
 
-bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data","Global","Bathymetry","gebco_30sec_16.nc")
+bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 
 x0 = 27.0
 x1 = 41.8

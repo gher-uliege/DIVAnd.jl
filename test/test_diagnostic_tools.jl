@@ -1,10 +1,10 @@
-# Testing divand in 2 dimensions with independent verification.
+# Testing DIVAnd in 2 dimensions with independent verification.
 
-import divand
+import DIVAnd
 using Base.Test
 
 # grid of background field (its size should be odd)
-xi,yi = divand.ndgrid(linspace(0.0,1.0,15),linspace(0.0,1.0,15))
+xi,yi = DIVAnd.ndgrid(linspace(0.0,1.0,15),linspace(0.0,1.0,15))
 
 # mask (all points are valid)
 mask = trues(xi)
@@ -24,18 +24,18 @@ len = 0.2
 # normalized error variance
 epsilon2 = 1.;
 
-fi,s = divand.divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
+fi,s = DIVAnd.DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
-@test abs(mean(divand.divand_diagHK(s))-0.5)<0.05
-@test abs(mean(divand.divand_diagHKobs(s))-0.5)<0.05
-@test abs(mean(divand.divand_diagHKobs(s,[1]))-0.5)<0.05
-@test abs(mean(divand.divand_GCVKii(s))-0.5)<0.05
-@test abs(mean(divand.divand_GCVKiiobs(s))-0.5)<0.05
-@test abs(mean(divand.divand_residual(s,fi))-0.5)<0.05
-@test abs(mean(divand.divand_residualobs(s,fi))-0.5)<0.05
-@test abs(mean(divand.divand_erroratdatapoints(s))-0.5)<0.05
-@test abs(mean(divand.divand_adaptedeps2(s,fi))-0.89)<0.15
-@test abs(divand.divand_cvestimator(s,divand.divand_residual(s,fi))-0.22)<0.05
+@test abs(mean(DIVAnd.DIVAnd_diagHK(s))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_diagHKobs(s))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_diagHKobs(s,[1]))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_GCVKii(s))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_GCVKiiobs(s))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_residual(s,fi))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_residualobs(s,fi))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_erroratdatapoints(s))-0.5)<0.05
+@test abs(mean(DIVAnd.DIVAnd_adaptedeps2(s,fi))-0.89)<0.15
+@test abs(DIVAnd.DIVAnd_cvestimator(s,DIVAnd.DIVAnd_residual(s,fi))-0.22)<0.05
 
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
