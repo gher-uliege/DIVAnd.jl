@@ -43,7 +43,6 @@ build_script:
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
       Pkg.clone(pwd(), \"DIVAnd\"); Pkg.build(\"DIVAnd\")"
-  - C:\projects\julia\bin\julia -e "Pkg.checkout(\"NCDatasets.jl\")"
   - C:\projects\julia\bin\julia -e "include(joinpath(Pkg.dir(\"DIVAnd\"),\"test\",\"download_data.jl\"))"
 
 test_script:
