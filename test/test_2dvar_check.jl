@@ -1,6 +1,10 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,10),linspace(0,1,10))

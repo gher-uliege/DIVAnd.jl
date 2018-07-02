@@ -1,6 +1,10 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 #using DIVAnd
 
 # grid of background field

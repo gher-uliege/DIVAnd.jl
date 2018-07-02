@@ -8,7 +8,7 @@ using NCDatasets
 #using Base.Test
 using Base.Cartesian
 using DataStructures
-import SpecialFunctions
+using SpecialFunctions
 import HTTP
 #using NLopt
 import Mustache

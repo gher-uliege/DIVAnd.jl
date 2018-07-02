@@ -2,7 +2,11 @@ import DIVAnd
 using NCDatasets
 using Interpolations
 using Missings
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 
 fname = "Water_body_Salinity.4Danl.nc"
 varname = "Salinity"

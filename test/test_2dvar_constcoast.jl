@@ -1,6 +1,10 @@
 # Testing DIVAnd in 2 dimensions with advection.
 using DIVAnd
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 
 # grid of background field
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(-1,1,30))
