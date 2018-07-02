@@ -254,14 +254,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				fc=0
 				#gc()
 
-
-
-
 			    # tolerance on the gradient A x - b
-
-
-
-
 
 			    xguess=(PC1*xguess);
 			    xr=randn(size(xguess)[1],1)
@@ -301,9 +294,13 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                     return fun!
 			    end
 			    if PC1==1
-			        fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4bisb, fi0 =figuess,btrunc=2)
+			        fi,si=DIVAndrun(
+                        mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,
+                        inversion=:pcg,compPC = compPC4bisb, fi0 =figuess,btrunc=2)
 			    else
-			        fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4bis, fi0 =figuess,btrunc=2)
+			        fi,si=DIVAndrun(
+                        mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,
+                        inversion=:pcg,compPC = compPC4bis, fi0 =figuess,btrunc=2)
 			    end
 
 			end
