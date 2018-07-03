@@ -22,7 +22,7 @@ function Base.:*(C::CovarIS, v::AbstractVector{Float64})
     end
 end
 
-Base.:*(C::CovarIS, v::SparseVector{Float64,Int}) = C*full(v) 
+Base.:*(C::CovarIS, v::SparseVector{Float64,Int}) = C*full(v)
 
 
 function A_mul_B(C::CovarIS, M::AbstractMatrix{Float64})
@@ -56,15 +56,25 @@ end
 Base.:\(C::CovarIS, M::AbstractArray{Float64,2}) = C.IS * M
 
 function factorize!(C::CovarIS)
-    #    C.factors = cholfact(Symmetric(C.IS), Val{true})
-    C.factors = cholfact(Symmetric(C.IS))
-    #    C.factors = cholfact(C.IS, Val{true})
+    if VERSION >= v"0.7.0-beta.0"
+        C.factors = cholesky(Symmetric(C.IS))
+    else
+        C.factors = cholfact(Symmetric(C.IS))
+    end
 end
 
 
 function diagMtCM(C::CovarIS, M::AbstractMatrix{Float64})
     if C.factors != nothing
-        return squeeze(sum((abs.(C.factors[:PtL]\M)).^2,1),1)
+
+        PtL =
+            if VERSION >= v"0.7.0-beta.0"
+                C.factors.PtL
+            else
+                C.factors[:PtL]
+            end
+
+        return squeeze(sum((abs.(PtL \ M)).^2,1),1)
     else
         return diag(M'*(C.IS \ M))
     end
@@ -72,7 +82,15 @@ end
 
 function diagLtCM(L::AbstractMatrix{Float64}, C::CovarIS, M::AbstractMatrix{Float64})
     if C.factors != nothing
-        return squeeze(sum((C.factors[:PtL]\M).*(C.factors[:PtL]\L),1),1)
+
+        PtL =
+            if VERSION >= v"0.7.0-beta.0"
+                C.factors.PtL
+            else
+                C.factors[:PtL]
+            end
+
+        return squeeze(sum((PtL \ M).*(PtL \ L),1),1)
     else
         return diag(L'*(C.IS \ M))
     end

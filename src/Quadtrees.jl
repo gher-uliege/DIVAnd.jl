@@ -382,9 +382,9 @@ end
 
 function Base.show(io::IO,qt::QT; indent = "  ")
     if isleaf(qt)
-        print_with_color(:green, io, indent,"Leaf $(length(qt))")
+        print_with_color(io, indent,"Leaf $(length(qt))",color=:green)
     else
-        print_with_color(:blue, io, indent,"Node ")
+        print_with_color(io, indent,"Node ",color=:blue)
     end
     print(io,"  from $(qt.min) to $(qt.max)\n")
 
@@ -460,8 +460,7 @@ function checkduplicates(x::Tuple,value,delta,deltavalue;
     qt = Quadtrees.QT(X,label)
     Quadtrees.rsplit!(qt, maxcap)
 
-    #mult = Vector{Int}(size(X,1))
-    duplicates = Vector{Set{Int}}(0)
+    duplicates = Set{Int}[]
 
     xmin = zeros(n)
     xmax = zeros(n)

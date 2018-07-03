@@ -29,8 +29,13 @@ end
 sparse_diag(d)::SparseMatrixCSC{Float64,Int} = sparse(Diagonal(d))
 
 function sparse_pack(mask)
+    j =
+        if VERSION >= v"0.7.0-beta.0"
+            LinearIndices(mask)[findall(mask)]
+        else
+            find(mask)
+        end
 
-    j = find(mask)
     m = length(j)
     i = collect(1:m)
     s = ones(m)
