@@ -1,5 +1,3 @@
-### DDR3 12800
-
 if VERSION >= v"0.7.0-beta.0"
     using Test
 else
@@ -17,7 +15,7 @@ db = Dict{Tuple{Int64,String},Tuple{Bool,Vector{Int64}}}(
 
 obsids = ["1-A","2-B","1000-A","2-C"]
 
-originators,notfound = DIVAnd.get_originators_from_obsid(
+originators,notfound = @test_warn r".*EDMO.*" DIVAnd.get_originators_from_obsid(
     db,obsids; ignore_errors = true)
 
 @test originators[1]["EDMO_CODE"] == "1"

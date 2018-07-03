@@ -68,10 +68,10 @@ z = linspace(-50,50,201);
 f = zeros(z)
 f[(end+1)÷2] = 1
 
-scale = 10
-ff = DIVAnd.smoothfilter(z,f,scale)
+filterscale = 10
+ff = DIVAnd.smoothfilter(z,f,filterscale)
 
-fref =  (z[2]-z[1]) * exp.(-z.^2/(2*scale^2)) / sqrt(2* π * scale^2);
+fref = (z[2]-z[1]) * exp.(-z.^2/(2*filterscale^2)) / sqrt(2* π * filterscale^2)
 
 @test sum(fref) ≈ 1 atol=1e-4
 @test sum(ff) ≈ 1 atol=1e-4
@@ -81,8 +81,6 @@ fref =  (z[2]-z[1]) * exp.(-z.^2/(2*scale^2)) / sqrt(2* π * scale^2);
 
 
 # random field
-
-
 xi,yi = DIVAnd.ndgrid(linspace(0,1,100),linspace(0,1,110))
 
 mask = trues(size(xi))

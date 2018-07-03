@@ -29,9 +29,8 @@ leny = .15;
 
 epsilon2 = 0.05;
 
-#@test_warn "no sea point" va,s = DIVAnd.DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
-va,s = DIVAnd.DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
-
+va,s = @test_warn r".*No sea point.*" DIVAnd.DIVAndrun(
+    mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
 @test s.sv.size[1] == size(xi)
 
 

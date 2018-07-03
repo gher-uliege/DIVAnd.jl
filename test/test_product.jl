@@ -146,7 +146,7 @@ if isfile(filename)
    rm(filename) # delete the previous analysis
 end
 
-DIVAnd.diva3d((lonr,latr,depthr,TS),
+@test_warn r".netCDF.*" DIVAnd.diva3d((lonr,latr,depthr,TS),
               (lon,lat,depth,time),
               value,
               (lenx,leny,lenz),
@@ -166,8 +166,9 @@ project = "SeaDataCloud"
 xmlfilename = "test.xml"
 ignore_errors = true
 
-DIVAnd.divadoxml(filename,varname,project,cdilist,xmlfilename,
-          ignore_errors = ignore_errors)
+@test_warn r".*Not all.*" DIVAnd.divadoxml(
+    filename,varname,project,cdilist,xmlfilename,
+    ignore_errors = ignore_errors)
 
 errname = "$(replace(filename,r"\.nc$","")).cdi_import_errors_test.csv"
 
@@ -192,7 +193,7 @@ if isfile(filename2)
    rm(filename2) # delete the previous analysis
 end
 
-dbinfo = DIVAnd.diva3d(
+dbinfo = @test_warn r".*Be patient.*" DIVAnd.diva3d(
     (lonr,latr,depthr,TS),
     (lon,lat,depth,time),
     value,

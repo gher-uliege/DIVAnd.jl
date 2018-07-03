@@ -64,7 +64,6 @@ fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
 
 for method in [0, 1, 3, 4]
-
     qcval=DIVAnd_qc(fi,s,method)
 
     if method==4
@@ -73,16 +72,12 @@ for method in [0, 1, 3, 4]
     end
 
     # Find suspect points
-
     sp=find(x-> x.>9,qcval)
-
     @test sum(sp)==3
-
-
-    qcval=DIVAnd_qc(fi,s,2)
-    @test qcval==0
-
 end
+
+qcval = @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
+@test qcval==0
 
 
 
