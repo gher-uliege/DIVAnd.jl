@@ -4,13 +4,10 @@ module DIVAnd
 
 using Interpolations
 using NCDatasets
-#using DataArrays
-#using Base.Test
 using Base.Cartesian
 using DataStructures
 import SpecialFunctions
 import HTTP
-#using NLopt
 import Mustache
 import ZipFile
 using Missings

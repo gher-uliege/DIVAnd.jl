@@ -19,19 +19,15 @@ len = 1
 epsilon2 = 0.01;
 
 fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true false true]);
-
 @test -1.6 < fi[1,1,1,1] < -1.4
 
 fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true true true]);
-
-
-
 @test -0.15 < fi[1,1,1,1] < 0
 
-fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
 
-
-
+fi,fanom = @test_warn r".*no averaging.*" DIVAnd_averaged_bg(
+    mask,(pm,pn,po,pq),
+    (xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
 @test -1.2 < fi[1,1,1,1] < -1.1
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

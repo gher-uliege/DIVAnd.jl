@@ -213,7 +213,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     # ll1= d0d/(d0d-d1d)-1
     #
     if (ne==0 && nl==0)
-        warn("There is no parameter optimisation done ", nl, ne)
+        warn("There is no parameter optimisation done (nl=$nl, ne=$ne)")
         ll1= d0d/(d0dmd1d)-1;
         eps1=1/ll1;
         if ndims(epsilon2) == 0
