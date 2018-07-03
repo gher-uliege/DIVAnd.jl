@@ -561,6 +561,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#DIVAnd.DIVAnd_constr_fluxes",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_constr_fluxes",
+    "category": "function",
+    "text": "c = DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)\n\nCreates integral constraints for each latitude so that a barotropic correction step leads to an additional flux prescribed.\n\nInput:   s: structure   topographyforfluxes: tuple of two 2D arrays with the bottom topography used for the flux calculations               DO NOT USE NaN in it. If an array is replaced by a scalar zero, the constraint is not used.               for fluxes calculated with geostrophy apply g/f to h   fluxes: tuple of two arrays of fluxes. The barotropic correction on elevation should be such that                         Sum over longitude at each latidute of Sum h δ(eta)/δx   δx = - fluxes[1]                         Sum over latitude  at each longitude of Sum h δ(eta)/δy  δ y = -fluxes[2]             WARNING: This has been coded to directly use geostrophy.jl output and flux directions   epsfluxes: error variance on constraint. Scaling to be verified   pmnin: metrics from the calling routine\n\nOutput:   c: structure to be used by DIVAnd_addc with the following fields: R (a     covariance matrix), H (extraction operator) and yo (specified value for     the constrain).\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_constr_constcoast",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_constr_constcoast",
+    "category": "function",
+    "text": "c = DIVAnd_constr_constcoast(mask,eps2)\n\nConstrain imposing that the gradients along the coastline defined by mask are close to zero constrolled by the parameter eps2 which represents the scalled error variance on the gradients.\n\nThis constrain is useful to indirectly impose that a stream function does not have a current component perpendicular to the coast line.\n\n\n\n"
+},
+
+{
     "location": "index.html#Constraints-1",
     "page": "DIVAnd.jl documentation",
     "title": "Constraints",
@@ -825,11 +841,387 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#DIVAnd.DIVAnd_laplacian",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_laplacian",
+    "category": "function",
+    "text": "Create the laplacian operator.\n\nLap = DIVAnd_laplacian(mask,pmn,nu,iscyclic)\n\nForm a Laplacian using finite differences  assumes that gradient is zero at \"coastline\"\n\nInput:    mask: binary mask delimiting the domain. 1 is inside and 0 outside.          For oceanographic application, this is the land-sea mask.    pmn: scale factor of the grid.    nu: diffusion coefficient of the Laplacian       field of the size mask or cell arrays of fields\n\nOutput:    Lap: sparce matrix represeting a Laplacian\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_obscovar",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_obscovar",
+    "category": "function",
+    "text": "R = DIVAnd_obscovar(epsilon2,m)\n\nCreate a matrix representing the observation error covariance R of size m x m.\n\nIf epsilon2 is a scalar, then R = epsilon2 * I If epsilon2 is a vector, then R = diag(epsilon2) If epsilon2 is a matrix, then R = epsilon2\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_adaptedeps2",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_adaptedeps2",
+    "category": "function",
+    "text": "factor = DIVAnd_adaptedeps2(s,fi);\n\nInput:\n\ns: structure returned by DIVAndrun\nfi: analysis returned by DIVAndrun\n\nOutput:\n\nfactor : multiplicative factor to apply to epsilon2\n\nUsing Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better estimate of the R matrix. If you cannot use DIVAndrun but use DIVAndgo, the latter provides automatically this pamater as result.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_diagHKobs",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_diagHKobs",
+    "category": "function",
+    "text": "Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time\n\nThis version only uses the real data (not those related to additional constraints)\n\ndiagonalterms = DIVAnd_diagHKobs(s);\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_residual",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_residual",
+    "category": "function",
+    "text": "dataresidual = DIVAnd_residual(s,fi)\n\nComputes the generalized residual yo - H xa  using the analysis on the grid  fi and the solution structure s.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_addc",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_addc",
+    "category": "function",
+    "text": "s = DIVAnd_addc(s,c)\n\nAdd a constraint c to the cost function defined by s. The structure s is typically created by DIVAnd_background and the contrain c  has the following fields: R (a covariance matrix), H (extraction operator) and  yo (specified value for the constrain). The added contrain Jc(x) is quadratic and has the following structure.\n\nJc(x) = (H x - yo)ᵀ R⁻¹ (H x - yo)\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_erroratdatapoints",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_erroratdatapoints",
+    "category": "function",
+    "text": "Computes the error at the real data locations using the analysis structure s\n\nerrorvariance = DIVAnd_erroratdatapoints(s);\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_GCVKii",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_GCVKii",
+    "category": "function",
+    "text": "Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysisand it structure s\n\nKii = DIVAnd_GCVKii(s);\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_fittocpu",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_fittocpu",
+    "category": "function",
+    "text": "stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);\n\nCreates a list of windows for subsequent domain decomposition\n\nAlso calculates already the subsampling steps csteps for the preconditionners\n\nInput:\n\nLpmnrange:\ngridsize: number of points in each direction (size(mask))\nmoddim:\n\nOutput:\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_background",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_background",
+    "category": "function",
+    "text": "Form the inverse of the background error covariance matrix. s = DIVAnd_background(mask,pmn,Labs,alpha,moddim) Form the inverse of the background error covariance matrix with finite-difference operators on a curvilinear grid\n\nInput:\n\nmask: binary mask delimiting the domain. 1 is inside and 0 outside.       For oceanographic application, this is the land-sea mask.\npmn: scale factor of the grid.\nLabs: correlation length\nalpha: a dimensional coefficients for norm, gradient, laplacian,...    alpha is usually [1,2,1] in 2 dimensions.\n\nOutput:\n\ns: stucture containing\ns.iB: inverse of the background error covariance\ns.L: spatial average correlation length\ns.n: number of dimenions\ns.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_obs",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_obs",
+    "category": "function",
+    "text": "s = DIVAnd_obs(s,xi,x,R,I)\n\nInclude the constrain from the observations. It is assumed that the each coordinate depends only on one index. If this is not the case, then matrix I must be provided.\n\nInput:   s: structure created by DIVAnd_background   xi: coordinates of observations (tuple of vectors)   x: coordinates of grid (tuple of arrays)   R: obs. error covariance matrix (normalized)   I (optional): fractional indexes of location of observation     within the grid\n\nOutput:   s: structure to be used by DIVAnd_factorize\n\nNote make sure not to mix Float32 and Float64 for DIVAnd_constrain.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_bc_stretch",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_bc_stretch",
+    "category": "function",
+    "text": "\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_diagHK",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_diagHK",
+    "category": "function",
+    "text": "Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time\n\ndiagonalterms = DIVAnd_diagHK(s);\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_kernel",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_kernel",
+    "category": "function",
+    "text": "mu,K,len_scale = DIVAnd_kernel(n,alpha)\n\nReturn the analytical kernel and normalization factor.\n\nAnalytical (normalized) kernels K for infinite domain in dimension n and for coefficients alpha and normalization factor mu.\n\nK(r) is the kernel function (function of the normalized distance r), len_scale is the distance at which K(len_scale) = 0.6019072301972346 (which is besselk(1,1))\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_residualobs",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_residualobs",
+    "category": "function",
+    "text": "Computes the residual yo- H xa  only at real data points using the analysis on the grid fi and the solution structure s\n\ndataresidual = DIVAnd_residualobs(s,fi);\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_aexerr",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_aexerr",
+    "category": "function",
+    "text": "aexerr,Bref,fa,sa = DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2;...);\n\nInput: same as for DIVAndrun\n\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nxi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations minus the background estimate (m-by-1 array).   (see note)\nlen: correlation length\nepsilon2: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\n\nOptional input arguments specified as keyword arguments also as for DIVAnd\n\nOutput:\n\naexerr: the almost exact error\nBref: the background error for error scaling by background aexerr./Bref\nfa: the analysis (with low impact fake data): DO NOT USE UNLESS YOU KNOW WHAT YOU ARE DOING\nsa: the associated structure\n\nCompute a variational analysis of arbitrarily located observations to calculate the almost exact error \n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_cpme",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_cpme",
+    "category": "function",
+    "text": "cpme = DIVAnd_cpme(mask,pmn,xi,x,f,len,epsilon2;...);\n\nInput: Same as for DIVAndrun\n\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nxi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations minus the background estimate (m-by-1 array).   (see note)\nlen: correlation length\nepsilon2: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\nkeywords : undocumented for the moment how to use iterative solver with coarser grid as preconditionner. see DIVAndjog for csteps, lmask and alphapcparameters\n\nOptional input arguments specified as keyword arguments also as for DIVAnd\n\nOutput:\n\ncpme: the clever poor mans error\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array cpme represent the error field at the grid defined by the coordinates xi and the scales factors pmn. If you cannot run DIVAndrun you can use DIVAndgo with error field calculation :cpme\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_cpme_go",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_cpme_go",
+    "category": "function",
+    "text": "erri = DIVAnd_cpme_go(mask,pmn,xi,x,f,len,epsilon2; ...);\n\nInput:\n\nSame arguments as DIVAndrun with in addition\nMEMTOFIT=: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)\nRTIMESONESCALES= : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See weight_RtimesOne for details \n\nOutput:\n\nerri: relative error field using the clever poor man\'s error approach. Result on the same grid as fi. `\n\nONLY USE THIS VERSION IF YOU CANNOT RUN DIVAndgo with :cmpe activated (or directly DIVAnd_cpme if you can run DIVAndrun)\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_datainboundingbox",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_datainboundingbox",
+    "category": "function",
+    "text": "DIVAnd_datainboundingbox(xi,x,f;Rmatrix=())\n\nInput:\n\nxi: tuple with n elements. Every element represents a coordinate   of the final grid on which the observations are interpolated\n\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations\nRmatrix: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\n\nOutput:\n\nxn: tuple with n elements. Every element represents a coordinate of   the observations which falls in the bounding box defined by xi fn: the corresponding data indexes: the indexes in the original array retained  Rn: the new error variance \n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_Lpmnrange",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_Lpmnrange",
+    "category": "function",
+    "text": "Lpmnrange = DIVAnd_Lpmnrange(pmn,len);\n\nIn each direction searches for the minimum and maximum value of the length scale times the metric in this diretion\n\nSi it basically looks at the worst and the best resolution found in the grid\n\nInput:\n\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nlen: correlation length\n\nOutput:\n\nLpmnrange: Array of range tuples (minimum and maximum of L times metric)\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_pc_sqrtiB",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_pc_sqrtiB",
+    "category": "function",
+    "text": "Compute a preconditioner using the Cholesky decomposition.\n\n[M1,M2] = DIVAnd_pc_michol(iB,H,R)\n\nCompute preconditioner matrices M1 and M2 based on the Cholesky decomposition of iB. The matrices H and R are not used. M2 is the transpose of M1 for this preconditioner.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_pc_none",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_pc_none",
+    "category": "function",
+    "text": "fun = DIVAnd_pc_none(iB,H,R)\n\nDummy function for requiring that no preconditioner is used in DIVAnd.\n\nSee also: diavnd_pc_sqrtiB\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_GCVKiiobs",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_GCVKiiobs",
+    "category": "function",
+    "text": "Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysis and it structure s\n\nOnly using real data locations\n\nKii = DIVAnd_GCVKiiobs(s);\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_cutter",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_cutter",
+    "category": "function",
+    "text": "windowlist,csteps,lmask,alphapc = DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT);\n\nCreates a list of windows for subsequent domain decomposition\n\nAlso calculates already the subsampling steps csteps for the preconditionners\n\nas well as the mask lmask to apply to the length scales in the preconditionner, allowing to reduce\n\nthe problem size\n\nInput:\n\nLpmnrange:\ngridsize: number of points in each direction (size(mask))\nmoddim:\n\nOutput:\n\nwindowlist: vector of tuples (iw1,iw2,isol1,isol2,istore1,istore2,)   where (iw1,iw2) correspond to the start and end indices in the (global)   grid (isol1,isol2) correspond to the start and end indices solution   to be retained in the window (not all is retained due to overlapping)   and (istore1,istore2) correspond to the start and end indices of the solution   relative to the global grid. They define thus where the local solution has to be   stored in the combined global solution.\ncsteps : Array of steps for the coarse grid preconditionner\nlmask : Array of multiplication factors for length scale of preconditionner\nalphapc : Norm defining coefficients for preconditionner\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_qc",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_qc",
+    "category": "function",
+    "text": "qcvalues = DIVAnd_qc(fi,s,method);\n\nInput:\n\nfi : interpolated field from a DIVAndrun execution\ns: corresponding structure returned by DIVAnd\nmethod : optional argument, which describes the method to be used:\n\n1  as for standard cross validation,  3  as for GCV,  4  with CV estimator to be used outside the routine,  5  Poor man\'s GCV using data instead of random vector,  0  automatic selection of method.\n\nOutput\n\nqcvalues: quality check values, one for each data point.\n\nThe higher the value, the more suspect a data point is. Absolute values of qcvalues might be not robust when analysis parameters are uncertain. The ranking is however quite robust.\n\nIf you cannot run DIVAndrun but use DIVAndgo (which does not provide a structure s at the output), the latter provides qcvalues if you call DIVAndgo with a keyword parameter QCMETHOD=\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_solve!",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_solve!",
+    "category": "function",
+    "text": "Solve the variational problem.\n\nfi = DIVAnd_solve(s)\n\nDerive the analysis based on all contraints included in s and using the observations yo\n\nInput:   s: structure created by DIVAnd_factorize   fi0: starting point for iterative primal methods   f0: starting point for the iterative dual method\n\nbtrunc: the value at which the stored value of s.iB was truncated and needs to be completed on the fly using jmBix\n\nOutput:   fi: analyzed field\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_sampler",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_sampler",
+    "category": "function",
+    "text": "samplesteps = DIVAnd_sampler(pmn,len);\n\nDefines steps for sub-sampling in the discrete grid which would still allow to resolve the provided lengthscales\n\nInput:\n\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nlen: correlation length\n\nOutput:\n\nsamplesteps: vector of integers with steps in subsampling [1 2 4 1] means every grid point in x direction, every fifth in y etc\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAndjog",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAndjog",
+    "category": "function",
+    "text": "Compute a variational analysis of arbitrarily located observations.\n\nfi,s = DIVAndjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask; alphapc=[1,2,1], otherargs...);\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array fi represent the interpolated field at the grid defined by the coordinates xi and the scales factors pmn.\n\nInput:\n\nSame parameters as for divarun.       * Two additional parameters:               * csteps: array of ndims values defining the sampling steps for the preconditionner               * lmask: array of ndims mutilplications factors for length scales       * One additional optiional parameter               * alphapc: The coefficients for the norm used in the preconditionner\n\nOutput:\n\nfi: the analysed field\ns: structure with an array s.P representing the analysed error covariance\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.DIVAnd_background_components",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.DIVAnd_background_components",
+    "category": "function",
+    "text": "Form the different components of the background error covariance matrix.\n\niB = DIVAnd_background_components(s,D,alpha; kwargs...)\n\nCompute the components of the background error covariance matrix iB_ and their sum based on alpha (the a-dimensional coefficients for norm, gradient, laplacian,...).\n\nIf the optional arguments contains btrunc, the calculation of iB is limited to the term up and including alpha[btrunc]\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.stats",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.stats",
+    "category": "function",
+    "text": "meanx,stdx = stats(sumx,sumx2,N)\n\nComputes the mean meanx and the standard deviation stdx from the sum (sumx) and the sum of squares (sumx2) from N numbers.\n\n\n\nmeanx,meany,stdx,stdy,covar,corr = stats(sumx,sumx2,sumy,sumy2,sumxy,N)\n\nComputes the mean meanx and the standard deviation stdx from the sum (sumx) and the sum of squares (sumx2) from N numbers and similarly for the variable y. The function computes also the Pearson correlation corr and covariance covar between x and y.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.statpos",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.statpos",
+    "category": "function",
+    "text": "ulon,ulat = statpos(lon,lat)\n\nReturn unique positions (ulon, ulat) as well their mean, standard deviation and count of the vector of observations val located at the positions lon and lat.\n\n\n\nulon,ulat,meanval,stdval,count = statpos(val,lon,lat)\n\nReturn unique positions (ulon, ulat) as well their mean, standard deviation and count of the vector of observations val located at the positions lon and lat.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.blkdiag",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.blkdiag",
+    "category": "function",
+    "text": "concatenate diagonal matrices\n\n\n\n"
+},
+
+{
+    "location": "index.html#Base.findfirst",
+    "page": "DIVAnd.jl documentation",
+    "title": "Base.findfirst",
+    "category": "function",
+    "text": "findfirst(c::Concept,name,collection)\n\nReturn the first related concepts in the collection collection. name can be the string \"related\", \"narrower\", \"broader\".\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.formatsize",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.formatsize",
+    "category": "function",
+    "text": "display size as a string \n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.interp!",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.interp!",
+    "category": "function",
+    "text": "interp!(xi,fi,x,f)\n\nInterpolate field fi (n-dimensional array) defined at xi (tuble of n-dimensional arrays or vectors) onto grid x (tuble of n-dimensional arrays). The interpolated field is stored in f. The grid in xi must be align with the axis (e.g. produced by DIVAnd.ndgrid).\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.ufill",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.ufill",
+    "category": "function",
+    "text": "cfilled = ufill(c,valex)\n\nReplace values in c equal to valex by averages of surrounding points.\n\n\n\nufill(c::Array{T,2},mask::AbstractArray{Bool}) where T\n\nmask is true where c is valid.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.cgradient",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.cgradient",
+    "category": "function",
+    "text": "hx,hy = cgradient(pmn,h)\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.fzero",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.fzero",
+    "category": "function",
+    "text": "fzero(f,x0,x1,eps; maxiter = Inf) find the zero of the function f between x0 and x1 assuming x0 < x1 at a precision eps.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.localize_separable_grid",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.localize_separable_grid",
+    "category": "function",
+    "text": "Derive fractional indices on a separable grid.\n\nI = localize_separable_grid(xi,mask,x)\n\nxi and x are a tuples, e.g. x1,x2 = ndgrid(2 * collect(1:5),collect(1:6)) x = (x1,x2)\n\nDerive fractional indices where xi are the points to localize in the separable grid x (every dimension in independent on other dimension). The output I is an n-by-m array where n number of dimensions and m number of observations. The correspond element of I is negative if xi is outside of the grid defined by x.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.decompB!",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.decompB!",
+    "category": "function",
+    "text": "work1, work2: size of mask\n\nSymmetric matrix\n\nSB = √(β) (1 + α L)^(nmax / 2) W^{-1}\n\nwhere W is the volumne of the corresponding grid cell. The background error covariance matrix B is SB W SB\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.varanalysis",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.varanalysis",
+    "category": "function",
+    "text": "Variational analysis similar to 3D-var\n\nInput:\n\nx0: start vector for iteration, at output it is the last state of the     iteration. Note that x0 is related to the analysis xa by       xa = SB^½ * W^½ * xa\n\n| x + W^½ * SB^½ * H\' * (R \\ (H * SB^½ * W^½ * x ))   -   W^½ SB^{½} * H\' * (R \\ yo) |       <     tol * s.sv.n / length(yo)  * | W^½ SB^{½} * H\' * (R \\ yo) |\n\nKernel is the solution of the n-dimensional diffusion equation\n\n∂c/∂t =  ∇ ⋅ (D ∇ c)\n\nn-dimensional Green’s function\n\nG(x,x\',t) = (4πDt)^(-n/2)  exp( - |x -x\'|² / (4Dt))\n\nG(x,x\',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x\')ᵀ D⁻¹ (x -x\')ᵀ / (4t))\n\nhttp://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.len_harmonize",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.len_harmonize",
+    "category": "function",
+    "text": "Len = len_harmonise(len,mask) Produce a tuple of arrays of the correlation length len which can be either a scalar (homogeneous and isotropic case), a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.alpha_default",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.alpha_default",
+    "category": "function",
+    "text": "neff, alpha = alpha_default(Labs,alpha)\n\nReturn a default value of alpha.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.ncfile",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.ncfile",
+    "category": "function",
+    "text": "DIVAnd_save(ds,filename,xyi,fi,varname;\n                  ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nds: the NetCDF dataset \nfilename: the name of the NetCDF file\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.\nxyi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\ntimeorigin: time origin for the time units attribute (default is 1900-01-01 00:00:00)\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.writeslice",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.writeslice",
+    "category": "function",
+    "text": "ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)\n\nWhite a slice of data in a NetCDF given by the index index. The variable relerr can be nothing.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.encodeWMSStyle",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.encodeWMSStyle",
+    "category": "function",
+    "text": "encode parameters as key-value separated by : and +\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.loadoriginators",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.loadoriginators",
+    "category": "function",
+    "text": "db = loadoriginators(fname)\n\nLoad the CDI list from the file fname (zip with a csv file, or csv file directly).\n\n\n\n"
+},
+
+{
     "location": "index.html#Utility-functions-1",
     "page": "DIVAnd.jl documentation",
     "title": "Utility functions",
     "category": "section",
-    "text": "DIVAnd.DIVAnd_laplacian\nDIVAnd.DIVAnd_obscovar\nDIVAnd.DIVAnd_adaptedeps2\nDIVAnd.DIVAnd_diagHKobs\nDIVAnd.DIVAnd_residual\nDIVAnd.DIVAnd_addc\nDIVAnd.DIVAnd_erroratdatapoints\nDIVAnd.DIVAnd_iBpHtiRHx!\nDIVAnd.DIVAnd_GCVKii\nDIVAnd.DIVAnd_fittocpu\nDIVAnd.DIVAnd_background\nDIVAnd.DIVAnd_obs\nDIVAnd.DIVAnd_bc_stretch\nDIVAnd.DIVAnd_diagHK\nDIVAnd.DIVAnd_kernel\nDIVAnd.DIVAnd_residualobs\nDIVAnd.DIVAnd_aexerr\nDIVAnd.DIVAnd_cpme\nDIVAnd.DIVAnd_cpme_go\nDIVAnd.DIVAnd_datainboundingbox\nDIVAnd.DIVAnd_Lpmnrange\nDIVAnd.DIVAnd_pc_sqrtiB\nDIVAnd.DIVAnd_pc_none\nDIVAnd.DIVAnd_GCVKiiobs\nDIVAnd.DIVAnd_cutter\nDIVAnd.DIVAnd_qc\nDIVAnd.DIVAnd_solve!\nDIVAnd.DIVAnd_sampler\nDIVAnd.DIVAndjog\nDIVAnd.DIVAnd_background_components\nDIVAnd.stats\nDIVAnd.statpos\nDIVAnd.blkdiag\nBase.findfirst\nDIVAnd.formatsize\nDIVAnd.interp!\nDIVAnd.ufill\nDIVAnd.jmBix\nDIVAnd.cgradient\nDIVAnd.fzero\nDIVAnd.localize_separable_grid\nDIVAnd.decompB!\nDIVAnd.varanalysis\nDIVAnd.len_harmonize\nDIVAnd.alpha_default\nDIVAnd.ncfile\nDIVAnd.writeslice\nDIVAnd.encodeWMSStyle\nDIVAnd.loadoriginators"
+    "text": "DIVAnd.DIVAnd_laplacian\nDIVAnd.DIVAnd_obscovar\nDIVAnd.DIVAnd_adaptedeps2\nDIVAnd.DIVAnd_diagHKobs\nDIVAnd.DIVAnd_residual\nDIVAnd.DIVAnd_addc\nDIVAnd.DIVAnd_erroratdatapoints\nDIVAnd.DIVAnd_GCVKii\nDIVAnd.DIVAnd_fittocpu\nDIVAnd.DIVAnd_background\nDIVAnd.DIVAnd_obs\nDIVAnd.DIVAnd_bc_stretch\nDIVAnd.DIVAnd_diagHK\nDIVAnd.DIVAnd_kernel\nDIVAnd.DIVAnd_residualobs\nDIVAnd.DIVAnd_aexerr\nDIVAnd.DIVAnd_cpme\nDIVAnd.DIVAnd_cpme_go\nDIVAnd.DIVAnd_datainboundingbox\nDIVAnd.DIVAnd_Lpmnrange\nDIVAnd.DIVAnd_pc_sqrtiB\nDIVAnd.DIVAnd_pc_none\nDIVAnd.DIVAnd_GCVKiiobs\nDIVAnd.DIVAnd_cutter\nDIVAnd.DIVAnd_qc\nDIVAnd.DIVAnd_solve!\nDIVAnd.DIVAnd_sampler\nDIVAnd.DIVAndjog\nDIVAnd.DIVAnd_background_components\nDIVAnd.stats\nDIVAnd.statpos\nDIVAnd.blkdiag\nBase.findfirst\nDIVAnd.formatsize\nDIVAnd.interp!\nDIVAnd.ufill\nDIVAnd.cgradient\nDIVAnd.fzero\nDIVAnd.localize_separable_grid\nDIVAnd.decompB!\nDIVAnd.varanalysis\nDIVAnd.len_harmonize\nDIVAnd.alpha_default\nDIVAnd.ncfile\nDIVAnd.writeslice\nDIVAnd.encodeWMSStyle\nDIVAnd.loadoriginators"
 },
 
 {
@@ -957,7 +1349,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Error in the factorisation",
     "category": "section",
-    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with: julia Stacktrace:  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360  .................  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147might be due to a wrong choice in the analysis parameters, for example a too long  correlation length."
+    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with:Stacktrace:  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360  .................  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147might be due to a wrong choice in the analysis parameters, for example a too long  correlation length."
 },
 
 ]}
