@@ -166,7 +166,6 @@ DIVAnd.DIVAnd_diagHKobs
 DIVAnd.DIVAnd_residual
 DIVAnd.DIVAnd_addc
 DIVAnd.DIVAnd_erroratdatapoints
-DIVAnd.DIVAnd_iBpHtiRHx!
 DIVAnd.DIVAnd_GCVKii
 DIVAnd.DIVAnd_fittocpu
 DIVAnd.DIVAnd_background
@@ -196,7 +195,6 @@ Base.findfirst
 DIVAnd.formatsize
 DIVAnd.interp!
 DIVAnd.ufill
-DIVAnd.jmBix
 DIVAnd.cgradient
 DIVAnd.fzero
 DIVAnd.localize_separable_grid
@@ -445,7 +443,8 @@ Base.LinAlg.PosDefException(95650)
 ```
 
 followed by the stack-trace starting with:
-```julia
+
+```
 Stacktrace:
  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360
  .................

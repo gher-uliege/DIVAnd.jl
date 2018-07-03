@@ -24,8 +24,6 @@ Output:
 """
 function DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 
-
-
     mask = s.mask;
 
     n  = s.n;
