@@ -12,8 +12,6 @@ function DIVAnd_diagHK(s)
     H = s.H;
     R = s.R;
 
-
-
     Z=eye(size(R)[1],size(R)[1]);
 
 

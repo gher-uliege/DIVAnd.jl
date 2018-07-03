@@ -3,7 +3,7 @@ import DIVAnd
 if VERSION >= v"0.7.0-beta.0"
     using Test
 else
-    using Base.Test    
+    using Base.Test
 end
 
 
@@ -21,7 +21,7 @@ function test_sp(mask,pmn,nu,x0,Nmax=1)
     Lx[mask] = x
     return Lx
 end
-    
+
 
 function test_lap8(mask,pmn,nu,x0,Nmax=1)
     ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
@@ -48,31 +48,31 @@ for sz in [(20,),(100,100),(20,20,20),(5,5,5,5)]
         pmn = (ij[1],ij[2]+ij[1]/10)
         nu = (ij[1]+2 * ij[2],ij[2]+3 * ij[1])
 
-        mask[3:4,3:4] = false        
+        mask[3:4,3:4] .= false
     else
         pmn = ntuple(i -> ones(sz),length(sz))
         nu = ntuple(i -> i*ones(sz),length(sz))
     end
 
 
-    
+
     Lxsp = test_sp(mask,pmn,nu,x,Nmax)
     Lx2 = test_lap8(mask,pmn,nu,x,Nmax)
-    
+
     ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
-    
+
     Lx = DIVAnd.DIVAnd_laplacian_apply(ivol,nus,x)
-    
+
     @test Lxsp ≈ Lx2
-    
+
     # check symmetry
     D = DIVAnd.DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)));
-    
+
     vol = 1 ./ .*(pmn...);
     D2 = DIVAnd.sparse_diag(vol[mask]) * D;
     @test maximum(abs.(D2 - D2')) < 1e-9
-end    
-    
+end
+
 # degenerated case
 sz = (10,1)
 mask = trues(sz)
@@ -95,4 +95,3 @@ Lxsp = test_sp(mask,pmn,nu,x,Nmax)
 ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
 Lx = DIVAnd.DIVAnd_laplacian_apply(ivol,nus,x)
 @test Lxsp ≈ Lx
-

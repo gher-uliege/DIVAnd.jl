@@ -56,11 +56,11 @@ function localize_separable_grid(xi,mask,x)
     for i=1:n
         # upper bound
         ind = sz[i] .< I[i,:] .<= sz[i] + tol
-        I[i,ind] = sz[i]
+        I[i,ind] .= sz[i]
 
         # lower bound
         ind = 1 .< I[i,:] .<= 1 + tol
-        I[i,ind] = 1
+        I[i,ind] .= 1
     end
 
     return I

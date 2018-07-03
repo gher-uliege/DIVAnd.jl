@@ -14,8 +14,8 @@ function DIVAnd_kernel(n,alpha)
     eps = 1e-8
 
     # remove trailling zeros
-    ind = maximum(find(.!(alpha .== 0)))
-    alpha = alpha[1:ind];
+    ind = findlast(alpha .!= 0)
+    alpha = alpha[1:ind]
 
     m = length(alpha)-1;
 

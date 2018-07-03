@@ -97,11 +97,16 @@ function pack(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T
 
     k = size(vars[1],ndims(sv.mask[1])+1)
 
-    x = Vector{T}(sv.n)
+    x = Vector{T}(undef,sv.n)
 
     for i=1:sv.nvar
         tmp = reshape(vars[i],sv.numels_all[i],k)
-        ind = find(sv.mask[i])
+        ind =
+            @static if VERSION >= v"0.7.0-beta.0"
+                (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
+            else
+                find(sv.mask[i])
+            end
         x[sv.ind[i]+1:sv.ind[i+1]] = tmp[ind]
     end
 
@@ -114,11 +119,17 @@ function packens(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Arra
 
     k = size(vars[1],ndims(sv.mask[1])+1)
 
-    x = Array{T,2}(sv.n,k)
+    x = Array{T,2}(undef,sv.n,k)
 
     for i=1:sv.nvar
         tmp = reshape(vars[i],sv.numels_all[i],k)
-        ind = find(sv.mask[i])
+        ind =
+            @static if VERSION >= v"0.7.0-beta.0"
+                (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
+            else
+                find(sv.mask[i])
+            end
+
         x[sv.ind[i]+1:sv.ind[i+1],:] = tmp[ind,:]
     end
 
@@ -153,8 +164,8 @@ var1, var2, ... have also an additional trailing dimension.
 """
 function unpack(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0) where {nvar_,N,T}
     out = ntuple(i -> begin
-                v = Array{T,N}(sv.size[i]);
-                v[:] = fillvalue
+                v = Array{T,N}(undef,sv.size[i]);
+                v[:] .= fillvalue
                 v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
 
                 return v
@@ -170,9 +181,15 @@ function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {
     k = size(x,2)
 
     out = ntuple(i -> begin
-                v = Array{T,N+1}((sv.size[i]...,k));
-                v[:] = fillvalue
-                ind = find(sv.mask[i])
+                 v = Array{T,N+1}(undef,(sv.size[i]...,k));
+                 v[:] .= fillvalue
+
+                 ind =
+                   @static if VERSION >= v"0.7.0-beta.0"
+                     (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
+                   else
+                     find(sv.mask[i])
+                   end
 
                 tmp = reshape(v,sv.numels_all[i],k)
                 tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]

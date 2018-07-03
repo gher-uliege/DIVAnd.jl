@@ -91,8 +91,8 @@ end
         iscyclic = convert(Vector{Bool},falses(n))
         alpha = Float64[]
         yo = Float64[]
-        R = Matrix{Float64}(0,0)
-        H = Matrix{Float64}(0,0)
+        R = Matrix{Float64}(undef,0,0)
+        H = Matrix{Float64}(undef,0,0)
 
         sv = statevector_init((mask,))
         sz = size(mask)

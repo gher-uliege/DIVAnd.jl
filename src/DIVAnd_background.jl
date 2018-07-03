@@ -111,16 +111,25 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 	coeff = coeff * Ln # units length^n
 
-	pmnv = cat(2,[pm[:] for pm in pmn]...)
+	pmnv =
+        @static if VERSION >= v"0.7.0-beta.0"
+            cat([pm[:] for pm in pmn]..., dims = 2)
+        else
+            cat(2,[pm[:] for pm in pmn]...)
+        end
 
-	pmnv[:,find(Ld == 0)] = 1
+	pmnv[:,findall(Ld .== 0)] = 1
 
 # staggered version of norm
 
 	for i=1:n
 		S = sparse_stagger(sz,i,iscyclic[i])
 		ma = (S * mask[:]) .== 1
-		d = sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
+        d = @static if VERSION >= v"0.7.0-beta.0"
+		    sparse_pack(ma) * (prod(S * pmnv,dims=2)[:,1])
+        else
+		    sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
+        end
 		d = 1 ./ d
 		s.WEs[i] = oper_diag(operatortype,sqrt.(d))
 	end

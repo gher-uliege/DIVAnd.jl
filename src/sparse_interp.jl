@@ -38,8 +38,6 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
         end
     end
 
-    scale = strides(mask)
-
     # integer index
     ind = floor.(Int,I)
     out = falses(mi)
@@ -77,11 +75,12 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
             for i=1:2^n
                 si[i,k] = k2
 
+                # stride for array
+                scale = 1
+
                 # loop over all dimensions
                 for j=1:n
-
                     bit = (i >> (j-1)) & 1
-
 
                     # the j-index of the i-th corner has the index ip
                     # this index ip is zero-based
@@ -92,7 +91,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
                     # so, if it is outside this range then it is because of periodicity
                     ip = mod(ip,sz[j])
 
-                    sj[i,k] = sj[i,k] + scale[j] * ip
+                    sj[i,k] = sj[i,k] + scale * ip
 
                     # interpolation coefficient
                     α = I[j,k2] - ind[j,k2]
@@ -102,6 +101,8 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
                     else
                         ss[i,k] = ss[i,k] * α
                     end
+
+                    scale = scale * size(mask,j)
                 end
             end
 

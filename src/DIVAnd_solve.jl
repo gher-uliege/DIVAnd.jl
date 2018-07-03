@@ -96,7 +96,7 @@ function DIVAnd_solve!(s,fi0,f0;btrunc=[])
 
     fi, = statevector_unpack(sv,fpi);
 
-    fi[.!s.mask] = NaN;
+    fi[.!s.mask] .= NaN;
 
     return fi
 end

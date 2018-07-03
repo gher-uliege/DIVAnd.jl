@@ -382,9 +382,9 @@ end
 
 function Base.show(io::IO,qt::QT; indent = "  ")
     if isleaf(qt)
-        print_with_color(io, indent,"Leaf $(length(qt))",color=:green)
+        printstyled(io, indent,"Leaf $(length(qt))",color=:green)
     else
-        print_with_color(io, indent,"Node ",color=:blue)
+        printstyled(io, indent,"Node ",color=:blue)
     end
     print(io,"  from $(qt.min) to $(qt.max)\n")
 
