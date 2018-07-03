@@ -837,7 +837,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
    covarweight_range = view(covarweight,range)
 
     if (np < 10)
-        @show nbmax, n, nsamp, nstart, ncross
+        #@show nbmax, n, nsamp, nstart, ncross
         warn("Too few data. Will use guesses (np = $(np), RLz = $(RLz), )")
         RL=RLz
         VAR=0.01*variance
@@ -986,7 +986,7 @@ function fithorzlen(x,value::Vector{T},z;
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
 
-        println("Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])")
+        info("Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])")
     end
 
     lenoptf = copy(lenopt)
@@ -1044,7 +1044,7 @@ function fitvertlen(x,value::Vector{T},z;
         #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
         var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,ones(size(value)),nsamp,iter)
 
-        println("Vert. correlation length at z=$(z[k]): $(lenopt[k])")
+        info("Vert. correlation length at z=$(z[k]): $(lenopt[k])")
     end
 
     lenoptf = copy(lenopt)

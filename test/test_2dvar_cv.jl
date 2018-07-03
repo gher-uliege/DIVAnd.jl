@@ -63,14 +63,16 @@ for imeth=0:3
     #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     #@test 0.3 < bestfactorl*len/len_true < 3
     @test 1.6 < bestfactor < 1.8
-    
+
     #@show bestfactor
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
 end
 
 for imeth=0:3
-    bestfactor,cvvalues = DIVAnd_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
+    bestfactor,cvvalues = @test_warn r".*no parameter optimisation.*" DIVAnd_cv(
+        mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
+
     #@show bestfactor
     @test 0.8 < bestfactor < 1.
 

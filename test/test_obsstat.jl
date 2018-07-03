@@ -10,7 +10,7 @@ v[1] = NaN
 v[2] = Inf
 
 buf = IOBuffer()
-DIVAnd.checkobs(buf,x,v,ids)
+@test_warn r".*Checking.*" DIVAnd.checkobs(buf,x,v,ids)
 
 output = lowercase(String(take!(buf)))
 

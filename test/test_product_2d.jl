@@ -125,7 +125,7 @@ metadata = OrderedDict(
     "doi" => "...")
 
 
-DIVAnd.diva3d((lonr,latr,TS),
+@test_warn r".*" DIVAnd.diva3d((lonr,latr,TS),
               (lon[sel],lat[sel],time[sel]),
               value[sel],
               (lenx,leny),
