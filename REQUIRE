@@ -2,7 +2,6 @@ julia 0.6
 Interpolations
 NCDatasets
 SpecialFunctions
-DataArrays
 DataStructures
 HTTP
 EzXML
