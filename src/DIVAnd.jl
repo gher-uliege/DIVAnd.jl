@@ -340,7 +340,11 @@ include("DIVAnd_solve.jl");
 include("DIVAnd_metric.jl");
 include("DIVAnd_constr_advec.jl");
 include("DIVAnd_constr_fluxes.jl");
+export DIVAnd_constr_fluxes
+
 include("DIVAnd_constr_constcoast.jl");
+export DIVAnd_constr_constcoast
+
 include("DIVAndjog.jl");
 include("DIVAndrun.jl");
 include("DIVAndgo.jl");

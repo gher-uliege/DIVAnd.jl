@@ -118,4 +118,3 @@ function DIVAnd_constr_constcoast(mask,eps2)
 end
 
 
-export DIVAnd_constr_constcoast
