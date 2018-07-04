@@ -56,7 +56,7 @@ function DIVAnd_rectdom(coords...)
     xyi = ndgrid(coords...)
 
     # mask (all points are valid)
-    mask = trues(xyi[1])
+    mask = trues(size(xyi[1]))
 
     # metric (inverse of the resolution)
     pmn = ndgrid([1 ./ localresolution(coords[i]) for i = 1:length(coords)]...)

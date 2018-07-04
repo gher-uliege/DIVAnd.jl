@@ -22,7 +22,7 @@ end
 """create empty quadtree
 """
 QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
-    QT(QT{T,TA,size(min,1)}[],Matrix{T}(size(min,1),0),min,max,TA[])
+    QT(QT{T,TA,size(min,1)}[],Matrix{T}(undef,size(min,1),0),min,max,TA[])
 
 """create a quadtree
 """

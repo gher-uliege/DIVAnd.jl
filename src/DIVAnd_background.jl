@@ -118,7 +118,7 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
             cat(2,[pm[:] for pm in pmn]...)
         end
 
-	pmnv[:,findall(Ld .== 0)] = 1
+	pmnv[:,findall(Ld .== 0)] .= 1
 
 # staggered version of norm
 

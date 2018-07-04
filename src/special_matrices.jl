@@ -33,6 +33,22 @@ function A_mul_B(C::CovarIS, M::AbstractMatrix{Float64})
     end
 end
 
+# workaround
+# https://github.com/JuliaLang/julia/issues/27860
+function Base.:\(
+    A::LinearAlgebra.Hermitian{TA,SparseArrays.SparseMatrixCSC{TA,Int}},
+    B::LinearAlgebra.Adjoint{TB,TM}) where TM <: AbstractMatrix{TB} where {TA,TB} 
+    return A \ copy(B)
+end
+
+using SuiteSparse
+function Base.:\(A::SuiteSparse.CHOLMOD.FactorComponent{Float64,:PtL},
+                 B::LinearAlgebra.Adjoint{Float64,SparseArrays.SparseMatrixCSC{Float64,Int}})
+    return A \ copy(B)
+end
+
+# end workaround for julia 0.7.0
+
 # call to C * M
 Base.:*(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 
@@ -42,7 +58,7 @@ Base.:*(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 # call to C * M' (conjugate transpose: C Mᴴ)
 Base.A_mul_Bc(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
 # call to C * M.' (transpose: C Mᵀ)
-Base.A_mul_Bt(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M.')
+Base.A_mul_Bt(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
 
 
 function Base.getindex(C::CovarIS, i::Int,j::Int)
@@ -84,13 +100,19 @@ function diagLtCM(L::AbstractMatrix{Float64}, C::CovarIS, M::AbstractMatrix{Floa
     if C.factors != nothing
 
         PtL =
-            if VERSION >= v"0.7.0-beta.0"
+            @static if VERSION >= v"0.7.0-beta.0"
                 C.factors.PtL
             else
                 C.factors[:PtL]
             end
 
-        return squeeze(sum((PtL \ M).*(PtL \ L),1),1)
+        @static if VERSION >= v"0.7.0-beta.0"
+            # workaround for issue
+            # https://github.com/JuliaLang/julia/issues/27860
+            return squeeze(sum((PtL \ M).*(PtL \ copy(L)),1),1)
+        else
+            return squeeze(sum((PtL \ M).*(PtL \ L),1),1)
+        end
     else
         return diag(L'*(C.IS \ M))
     end

@@ -563,7 +563,8 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
         # Search for velocity argument:
         jfound=0
-        for j=1:size(otherargs)[1]
+
+        for j=1:length(otherargs)
             if otherargs[j][1]==:velocity
                 jfound=j
                 break
@@ -597,7 +598,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         # For the coarse model, slightly adapth alphabc assuming a typical ratio of 4 is used
         # Search for alphabc argument:
         kfound=0
-        for j=1:size(otherargs)[1]
+        for j=1:length(otherargs)
             if otherargs[j][1]==:alphabc
                 kfound=j
                 break
@@ -611,7 +612,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             otherargsc[kfound]=(:alphabc,0.25)
         else
             #       warn("Need to expand")
+            @show "here",typeof(otherargsc)
+            
             otherargsc=vcat(otherargsc,(:alphabc,0.25))
+            @show "here",typeof(otherargsc)
         end
 
 
@@ -645,6 +649,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			#fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
 			fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
+
 		    scP=1
 			figuess=zeros(size(mask))
 			xguess=1

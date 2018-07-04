@@ -5,30 +5,29 @@ diagonalterms = DIVAnd_diagHK(s);
 
 """
 function DIVAnd_diagHK(s)
-
-    #
-
-
     H = s.H;
     R = s.R;
-
-    Z=eye(size(R)[1],size(R)[1]);
-
-
 
     # to be replaced later exploiting the factors of P ?
     #
     P = s.P;
-    #   WW=P * (H'* (R \ Z));
-    #   ZtHKZ =  Z'*H*WW;
+    #   WW=P * (H'* (R \ I));
+    #   ItHKI =  I'*H*WW;
 
     # parenthesis to force the order of operations
 
-    #ZtHKZ =  Z' * (H * (P * (H' * (R \ Z))));
-    #    ZtHKZ =   (H * (P * (H' * (R \ Z))));
-    #    diagHKb = diag(ZtHKZ);
+    #ItHKI =  I' * (H * (P * (H' * (R \ I))));
+    #    ItHKI =   (H * (P * (H' * (R \ I))));
+    #    diagHKb = diag(ItHKI);
 
-    diagHK=diagLtCM(H',P,(H' * (R \ Z)))
+    diagHK =
+        @static if VERSION >= v"0.7.0-beta.0"
+            # workaround for bug
+            # https://github.com/JuliaLang/julia/issues/27860
+            diagLtCM(copy(H'),P,(H' * (R \ I)))
+        else
+            diagLtCM(H',P,(H' * (R \ I)))
+        end
     #    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7)
     #     warn("WTF")
     #    end

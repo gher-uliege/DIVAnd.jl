@@ -216,7 +216,12 @@ function Base.ind2sub(sv::statevector,index::Integer)
     vind = index - sv.ind[ivar]
 
     # spatial subscript
-    subscript = ind2sub(sv.size[ivar],sv.packed2unpacked[ivar][vind])
+    subscript =        
+        @static if VERSION >= v"0.7.0-beta.0"
+            Tuple(CartesianIndices(sv.size[ivar])[sv.packed2unpacked[ivar][vind]])
+        else
+            ind2sub(sv.size[ivar],sv.packed2unpacked[ivar][vind])
+        end
 
     return (ivar,subscript...)
 
@@ -238,7 +243,7 @@ function Base.sub2ind(sv::statevector,subscripts::Tuple)
     ioff = sv.ind[ivar]
 
     # linear index in ivar-th array
-    index = sub2ind(sv.size[ivar],Tuple(subscripts[2:end])...)
+    index = LinearIndices(sv.size[ivar])[subscripts[2:end]...]
 
     return ioff + sv.unpacked2packed[ivar][index]
 

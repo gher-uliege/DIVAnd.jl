@@ -41,7 +41,8 @@ fi2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
 # extract boundary values around the island and check
 # if the standard deviation is small
 
-@test std(fi2[mi0-1:mi1+1,mj0-1:mj1+1][mask[mi0-1:mi1+1,mj0-1:mj1+1]]) < 1e-5
+fi_coast = fi2[mi0-1:mi1+1,mj0-1:mj1+1][mask[mi0-1:mi1+1,mj0-1:mj1+1]]
+@test fi_coast ≈ fill(fi_coast[1],size(fi_coast)) atol=1e-5
 
 
 # more complex example

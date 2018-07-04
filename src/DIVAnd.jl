@@ -11,6 +11,7 @@ import HTTP
 import Mustache
 import ZipFile
 using Missings
+using StatsBase
 #using JLD
 
 if VERSION >= v"0.7.0-beta.0"
