@@ -103,7 +103,7 @@ end
         iB = copy(sempty)
         iB_ = Vector{SparseMatrixCSC{Float64,Int}}()
         Ld = Float64[]
-        P = Matrix{Float64}(0,0)
+        P = Matrix{Float64}(undef,0,0)
 
         isinterior = Bool[]
         isinterior_stag = [Bool[] for i in 1:n]
@@ -129,10 +129,10 @@ end
 
         #obsout = Array{Bool,1}()
         obsout = BitArray{1}()
-        obsconstrain = DIVAnd_constrain(Float64[],Matrix{Float64}(0,0),Matrix{Float64}(0,0))
+        obsconstrain = DIVAnd_constrain(Float64[],Matrix{Float64}(undef,0,0),Matrix{Float64}(undef,0,0))
 
-        WEs = Array{Any,1}(n)
-        WEss = Array{Any,1}(n)
+        WEs = Array{Any,1}(undef,n)
+        WEss = Array{Any,1}(undef,n)
 
 
         compPC(iB,R,H) = identity
