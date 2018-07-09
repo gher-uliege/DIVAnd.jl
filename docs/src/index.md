@@ -286,6 +286,15 @@ backend      : TkAgg
 
 The `matplotlibrc` need to be created if it does not exists.
 
+## C runtime library when calling PyPlot
+
+`R6034 an application has made an attempt to load the C runtime library incorrectly` on Windows 10 with julia 0.6.1, matplotlib 2.1.0, PyPlot 2.3.2:
+
+```julia
+ENV["MPLBACKEND"]="qt4agg"
+```
+You can put this line in a file `.juliarc.jl` placed in your home directory (the output of `homedir()` in Julia).
+
 ## Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
 
 Cloning METADATA or downloading a julia packages fails with:
@@ -453,3 +462,15 @@ Stacktrace:
 
  might be due to a wrong choice in the analysis parameters, for example a too long
  correlation length.
+
+
+## Installing additional packages when using a git clone
+
+If `DIVAnd` is installed without the package manager, it can be necessary
+to install additional packages. This will be explicitly shown,
+for example:
+
+```julia
+LoadError: ArgumentError: Module Roots not found in current path.
+Run `Pkg.add("Roots")` to install the Roots package.
+```
