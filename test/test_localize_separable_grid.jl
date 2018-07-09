@@ -34,8 +34,8 @@ gridindices = localize_separable_grid(xi,mask,x)
 
 # 2D with 1 point outside
 
-x1,y1 = ndgrid(range(0.5,stop=1,length=50),
-               range(0.,stop=1,length=30));
+x1,y1 = ndgrid(Compat.range(0.5,stop=1,length=50),
+               Compat.range(0.,stop=1,length=30));
 x = (x1,y1)
 xi = ([0.2],[0.5])
 mask = trues(size(x1))

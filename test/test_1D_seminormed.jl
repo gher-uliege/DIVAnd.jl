@@ -10,12 +10,12 @@ using DIVAnd
 
 
 # observations with points outside
-x = collect(linspace(0,1,7))
+x = collect(Compat.range(0,stop=1,length=7))
 f = sin.(3*pi*x) ;
 
 # final grid
 
-xi=collect(linspace(-0.1,1.1,100));
+xi = collect(Compat.range(-0.1,stop=1.1,length=100))
 
 # reference field
 fref = sin.(xi*6*pi) ;
@@ -50,7 +50,7 @@ alpha = [binomial(m,k) for k = 0:m];
 firef,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;);
 
 alpha = [binomial(m,k) for k = 0:m];
-alpha=2.*alpha
+alpha = 2 * alpha
 # fi is the interpolated field
 fi1,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 @test 0.4 < maximum(fi1) < 0.6

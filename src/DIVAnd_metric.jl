@@ -41,8 +41,8 @@ the mean Earth radius.
 """
 function DIVAnd_metric(lon::Array{T,2},lat::Array{T,2}) where T
     sz = size(lon)
-    pm = zeros(T,sz)
-    pn = zeros(T,sz)
+    pm = zeros(sz)
+    pn = zeros(sz)
 
 
     for i = 1:sz[1]
@@ -53,8 +53,8 @@ function DIVAnd_metric(lon::Array{T,2},lat::Array{T,2}) where T
             j0 = max(j-1,1)
             j1 = min(j+1,sz[2])
 
-            dx = distance(lat[i0,j],lon[i0,j],lat[i1,j],lon[i1,j])/2
-            dy = distance(lat[i,j0],lon[i,j0],lat[i,j1],lon[i,j1])/2
+            dx = distance(lat[i0,j],lon[i0,j],lat[i1,j],lon[i1,j])/(i1-i0)
+            dy = distance(lat[i,j0],lon[i,j0],lat[i,j1],lon[i,j1])/(j1-j0)
 
             dx = real(dx)
             dy = real(dy)

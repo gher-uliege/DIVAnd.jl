@@ -2,15 +2,20 @@ using DIVAnd
 # Testing DIVAnd in 1 dimension.
 
 # grid of background field
-xi = collect(linspace(0,1,21));
+xi =
+    if VERSION >= v"0.7.0-beta.0"
+        collect(range(0,stop=1,length=21))
+    else
+        collect(linspace(0,1,21))
+    end
 
 x = [.4; .6];
 f = [.4; .6];
 
 mask = trues(size(xi));
-mask[[1,end]] = false;
+mask[[1,end]] .= false;
 
-pm = ones(xi) / (xi[2]-xi[1]);
+pm = ones(size(xi)) / (xi[2]-xi[1]);
 
 len = 0.1
 epsilon2 = 0.5

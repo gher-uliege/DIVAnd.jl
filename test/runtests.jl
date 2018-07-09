@@ -8,10 +8,10 @@ if VERSION >= v"0.7.0-beta.0"
     using Printf
     using Statistics
 else
-    using Compat
     using Base.Test
     import Base.LinAlg.BLAS
 end
+using Compat
 
 @testset "DIVAnd" begin
     include("test_quadtrees.jl");
