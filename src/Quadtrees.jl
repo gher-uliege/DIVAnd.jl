@@ -1,5 +1,8 @@
 module Quadtrees
 
+if VERSION >= v"0.7.0-beta.0"
+    using Dates
+end
 using Compat
 import Base.length
 
