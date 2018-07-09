@@ -26,7 +26,7 @@ function DIVAnd_GCVKii(s,nr=5)
     ZtZ  =  Z'*Z;
 
     # correction for points out of the domain:
-    nrealdata=sum(1-s.obsout);
+    nrealdata=sum(1 .- s.obsout);
     ndata=size(s.obsout)[1];
     if nrealdata==0
         Kii=0.0;

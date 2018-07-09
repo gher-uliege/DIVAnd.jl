@@ -93,7 +93,11 @@ function diagMtCM(C::CovarIS, M::AbstractMatrix{Float64})
                 C.factors[:PtL]
             end
 
-        return squeeze(sum((abs.(PtL \ M)).^2,1),1)
+        @static if VERSION >= v"0.7.0-beta.0"
+            return squeeze(sum((abs.(PtL \ M)).^2,dims = 1),dims = 1)
+        else
+            return squeeze(sum((abs.(PtL \ M)).^2,1),1)
+        end
     else
         return diag(M'*(C.IS \ M))
     end
@@ -112,7 +116,7 @@ function diagLtCM(L::AbstractMatrix{Float64}, C::CovarIS, M::AbstractMatrix{Floa
         @static if VERSION >= v"0.7.0-beta.0"
             # workaround for issue
             # https://github.com/JuliaLang/julia/issues/27860
-            return squeeze(sum((PtL \ M).*(PtL \ copy(L)),1),1)
+            return squeeze(sum((PtL \ M).*(PtL \ copy(L)),dims = 1),dims = 1)
         else
             return squeeze(sum((PtL \ M).*(PtL \ L),1),1)
         end

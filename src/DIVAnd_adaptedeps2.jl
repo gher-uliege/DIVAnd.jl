@@ -18,8 +18,8 @@ estimate of the R matrix. If you cannot use `DIVAndrun` but use `DIVAndgo`, the 
 function DIVAnd_adaptedeps2(s,fi);
 
     residual=DIVAnd_residualobs(s,fi);
-    d0d=dot((1-s.obsout).*(s.yo),(s.yo));
-    d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
+    d0d=dot((1 .- s.obsout).*(s.yo),(s.yo));
+    d0dmd1d=dot((1 .- s.obsout).*residual,(s.yo));
     ll1= d0d/(d0dmd1d)-1;
     eps1=1/ll1;
     eps2 = mean(diag(s.obsconstrain.R));

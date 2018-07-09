@@ -164,13 +164,18 @@ var1, var2, ... have also an additional trailing dimension.
 """
 function unpack(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0) where {nvar_,N,T}
     out = ntuple(i -> begin
-                v = Array{T,N}(undef,sv.size[i]);
-                v[:] .= fillvalue
-                v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
+                 v = Array{T,N}(undef,sv.size[i]);
+                 v[:] .= fillvalue
+                 v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
 
-                return v
-                end,Val{nvar_})
-
+                 return v
+                 end,
+                 @static if VERSION >= v"0.7.0-beta.0"
+                    Val(nvar_)
+                 else
+                    Val{nvar_}
+                 end
+                 )
     return out
 end
 
@@ -216,7 +221,7 @@ function Base.ind2sub(sv::statevector,index::Integer)
     vind = index - sv.ind[ivar]
 
     # spatial subscript
-    subscript =        
+    subscript =
         @static if VERSION >= v"0.7.0-beta.0"
             Tuple(CartesianIndices(sv.size[ivar])[sv.packed2unpacked[ivar][vind]])
         else

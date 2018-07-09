@@ -19,7 +19,7 @@ function DIVAnd_GCVKiiobs(s,nr=30;FIELD=())
 	#
 	
 	if nr<0
-	nrealdata=sum(1-s.obsout);
+	nrealdata=sum(1 .- s.obsout);
     ndata=size(s.obsout)[1];
 	
 	#@show nrealdata,ndata,size(s.obsconstrain.yo)
@@ -53,7 +53,7 @@ function DIVAnd_GCVKiiobs(s,nr=30;FIELD=())
     ZtZ  =  Z'*Z;
 
     # correction for points out of the domain:
-    nrealdata=sum(1-s.obsout);
+    nrealdata=sum(1 .- s.obsout);
     ndata=size(s.obsout)[1];
     if nrealdata==0
         Kii=0.0;

@@ -19,6 +19,8 @@ if VERSION >= v"0.7.0-beta.0"
     using LinearAlgebra
     using SparseArrays
     using Distributed
+    using Random
+    using Statistics
 else
     using Compat
 end
