@@ -972,7 +972,6 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				    #return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
 				    #return x -> diagshift*x+scalef2*(PC1*(HI*(PC2*(HI'*(PC1*x)))))
 				    #return x -> diagshift*x+scalef2*((HI*(PC2*(HI'*(x)))))
-                    @show size(x)
                     fx[:] = diagshift*x+scalef2*(PC1a*(PC1b*(HI*(PC2*(HI'*(PC1b*(PC1a*x)))))))
                 end
                 return fun!

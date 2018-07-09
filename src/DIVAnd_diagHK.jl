@@ -26,7 +26,8 @@ function DIVAnd_diagHK(s)
             # https://github.com/JuliaLang/julia/issues/27860
             diagLtCM(copy(H'),P,(H' * (R \ I)))
         else
-            diagLtCM(H',P,(H' * (R \ I)))
+            # copy should not be needed
+            diagLtCM(H',P,(copy(H') * (R \ I)))
         end
     #    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7)
     #     warn("WTF")
