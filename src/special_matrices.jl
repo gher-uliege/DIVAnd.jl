@@ -33,6 +33,8 @@ function A_mul_B(C::CovarIS, M::AbstractMatrix{Float64})
     end
 end
 
+
+@static if VERSION >= v"0.7.0-beta.0"
 # workaround
 # https://github.com/JuliaLang/julia/issues/27860
 function Base.:\(
@@ -45,6 +47,7 @@ using SuiteSparse
 function Base.:\(A::SuiteSparse.CHOLMOD.FactorComponent{Float64,:PtL},
                  B::LinearAlgebra.Adjoint{Float64,SparseArrays.SparseMatrixCSC{Float64,Int}})
     return A \ copy(B)
+end
 end
 
 # end workaround for julia 0.7.0

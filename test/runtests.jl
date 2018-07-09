@@ -6,6 +6,7 @@ if VERSION >= v"0.7.0-beta.0"
     using LinearAlgebra
     using Dates
     using Printf
+    using Statistics
 else
     using Compat
     using Base.Test

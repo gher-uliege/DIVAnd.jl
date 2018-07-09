@@ -561,25 +561,14 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 
 
+        otherargsc = Dict(otherargs)        
+
         # Search for velocity argument:
-        jfound=0
-
-        for j=1:length(otherargs)
-            if otherargs[j][1]==:velocity
-                jfound=j
-                break
-            end
-        end
-
-        if jfound>0
+        if haskey(otherargsc,:velocity)
             # modify the parameter only in the coarse model
-            otherargsc=deepcopy(otherargs)
-            otherargsc[jfound]=(:velocity,([ x[coarsegridpoints...] for x in otherargs[jfound][2] ]...,))
-        else
-            otherargsc=otherargs
+            vel = otherargsc[:velocity]
+            otherargsc[:velocity] = ([ x[coarsegridpoints...] for x in vel]...,)
         end
-
-
 
         # For other constraints:
         # TODO TODO TODO TODO IF DIVAndjog should accept other constraints
@@ -592,32 +581,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         # Prepare run of the coarse grid problem
 
 
-
-
-
         # For the coarse model, slightly adapth alphabc assuming a typical ratio of 4 is used
         # Search for alphabc argument:
-        kfound=0
-        for j=1:length(otherargs)
-            if otherargs[j][1]==:alphabc
-                kfound=j
-                break
-            end
-        end
-        if kfound>0
-            if jfound==0
-                otherargsc=deepcopy(otherargs)
-            end
-            # modify the parameter only in the coarse model
-            otherargsc[kfound]=(:alphabc,0.25)
-        else
-            #       warn("Need to expand")
-            @show "here",typeof(otherargsc)
-            
-            otherargsc=vcat(otherargsc,(:alphabc,0.25))
-            @show "here",typeof(otherargsc)
-        end
-
+        # modify the parameter only in the coarse model
+        otherargsc[:alphabc] = 0.25
 
         # maybe try another norm using btrunc=3 or even btrunc=2 but full L here for the coarser version ?
 
@@ -1005,6 +972,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				    #return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
 				    #return x -> diagshift*x+scalef2*(PC1*(HI*(PC2*(HI'*(PC1*x)))))
 				    #return x -> diagshift*x+scalef2*((HI*(PC2*(HI'*(x)))))
+                    @show size(x)
                     fx[:] = diagshift*x+scalef2*(PC1a*(PC1b*(HI*(PC2*(HI'*(PC1b*(PC1a*x)))))))
                 end
                 return fun!
