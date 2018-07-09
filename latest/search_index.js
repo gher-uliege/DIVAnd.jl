@@ -1261,15 +1261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Information for developers",
     "category": "section",
-    "text": ""
-},
-
-{
-    "location": "index.html#Update-the-documentation-1",
-    "page": "DIVAnd.jl documentation",
-    "title": "Update the documentation",
-    "category": "section",
-    "text": "InstallPkg.add(\"Documenter\")"
+    "text": "To update the documentation locally, install the package Documenter and run the script include(\"docs/make.jl\").Pkg.add(\"Documenter\")"
 },
 
 {
@@ -1309,7 +1301,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "MbedTLS.jl does not install on Windows 7",
     "category": "section",
-    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133The solution is to install the Windows Management Framework 4.0."
+    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133.The solution is to install the Windows Management Framework 4.0."
 },
 
 {
@@ -1357,7 +1349,15 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Error in the factorisation",
     "category": "section",
-    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with:Stacktrace:\n [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360\n .................\n [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147\n ```\n\n might be due to a wrong choice in the analysis parameters, for example a too long\n correlation length.\n\n\n## Installing additional packages when using a git clone\n\nIf `DIVAnd` is installed without the package manager, it can be necessary\nto install additional packages. This will be explicitly shown,\nfor example:\njulia LoadError: ArgumentError: Module Roots not found in current path. Run Pkg.add(\"Roots\") to install the Roots package. ```"
+    "text": "The error message Base.LinAlg.PosDefException(95650) followed by the stack-trace below might be due to a wrong choice in the analysis parameters, for example a too long correlation length.Stacktrace:\n [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360\n .................\n [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147"
+},
+
+{
+    "location": "index.html#Installing-additional-packages-when-using-a-git-clone-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "Installing additional packages when using a git clone",
+    "category": "section",
+    "text": "If DIVAnd is installed without the package manager, it can be necessary to install additional packages. This will be explicitly shown, for example:LoadError: ArgumentError: Module Roots not found in current path.\nRun `Pkg.add(\"Roots\")` to install the Roots package."
 },
 
 ]}
