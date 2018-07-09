@@ -240,9 +240,7 @@ BLAS.set_num_threads(2)
 
 # Information for developers
 
-## Update the documentation
-
-Install
+To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.
 
 ```julia
 Pkg.add("Documenter")
@@ -324,7 +322,7 @@ At line:1 char:35
     [...]
 ```
 
-See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133
+See also the issue <https://github.com/JuliaWeb/MbedTLS.jl/issues/133>.
 
 The solution is to install the [Windows Management Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=40855).
 
@@ -357,7 +355,7 @@ However, the following command should work:
 ```
 
 Lukily, EzZML.jl includes a newer version of the `zlib` library, but it does not load the library automatically.
-(see also https://github.com/JuliaLang/julia/issues/7004 and https://github.com/JuliaIO/HDF5.jl/issues/97)
+(see also <https://github.com/JuliaLang/julia/issues/7004> and <https://github.com/JuliaIO/HDF5.jl/issues/97>)
 
 To make Julia use this library, a user on RedHat 6 should always start Julia with:
 
@@ -407,7 +405,7 @@ git reset --hard
 
 and then in Julia run `Pkg.update()` again.
 
-If this does not work, then, you can also delete `~/.julia` (https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521) and in Julia enter `Pkg.init(); Pkg.update()`.
+If this does not work, then, you can also delete `~/.julia` (<https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521>) and in Julia enter `Pkg.init(); Pkg.update()`.
 
 
 ## Convert error in `DIVAnd_obs`
@@ -445,23 +443,15 @@ should be written as
 
 ## Error in the factorisation
 
-The following message
-
-```julia
-Base.LinAlg.PosDefException(95650)
-```
-
-followed by the stack-trace starting with:
+The error message `Base.LinAlg.PosDefException(95650)`
+followed by the stack-trace below might be due to a wrong choice in the analysis parameters, for example a too long correlation length.
 
 ```
 Stacktrace:
  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360
  .................
  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147
- ```
-
- might be due to a wrong choice in the analysis parameters, for example a too long
- correlation length.
+```
 
 
 ## Installing additional packages when using a git clone
@@ -470,7 +460,7 @@ If `DIVAnd` is installed without the package manager, it can be necessary
 to install additional packages. This will be explicitly shown,
 for example:
 
-```julia
+```
 LoadError: ArgumentError: Module Roots not found in current path.
 Run `Pkg.add("Roots")` to install the Roots package.
 ```
