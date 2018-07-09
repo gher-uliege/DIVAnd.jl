@@ -9,14 +9,12 @@ else
 end
 
 # grid of background field (its size should be odd)
-xi,yi = DIVAnd.ndgrid(linspace(0.0,1.0,15),linspace(0.0,1.0,15))
-
-# mask (all points are valid)
-mask = trues(xi)
-
-# metric (inverse of the resolution)
-pm = ones(xi) / (xi[2,1]-xi[1,1])
-pn = ones(xi) / (yi[1,2]-yi[1,1])
+mask,(pm,pn),(xi,yi) =
+    if VERSION >= v"0.7.0-beta.0"
+        DIVAnd_squaredom(2,range(0.0,stop=1.0,length=15))
+    else
+        DIVAnd_squaredom(2,linspace(0.0,1.0,15))
+    end
 
 # grid of observations
 x = [0.5]

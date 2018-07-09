@@ -22,7 +22,7 @@ end
 """
     d = distance([lon1,lat1],[lon2,lat2])
 
-The same as `distance(lat1,lon1,lat2,lon2)` but there the arguments are vectors 
+The same as `distance(lat1,lon1,lat2,lon2)` but there the arguments are vectors
 and the order is longitude then latitude.
 
 The units of all input and output parameters are degrees.
@@ -41,23 +41,31 @@ the mean Earth radius.
 """
 function DIVAnd_metric(lon::Array{T,2},lat::Array{T,2}) where T
     sz = size(lon)
-    i = 2:sz[1]-1
-    j = 2:sz[2]-1
+    pm = zeros(T,sz)
+    pn = zeros(T,sz)
 
-    dx = distance.(lat[i-1,:],lon[i-1,:],lat[i+1,:],lon[i+1,:])/2
-    dx = cat(1,dx[1:1,:],dx,dx[end:end,:])
 
-    dy = distance.(lat[:,j-1],lon[:,j-1],lat[:,j+1],lon[:,j+1])/2
-    dy = cat(2,dy[:,1:1],dy,dy[:,end:end])
+    for i = 1:sz[1]
+        i0 = max(i-1,1)
+        i1 = min(i+1,sz[1])
 
-    dx = real(dx)
-    dy = real(dy)
+        for j = 1:sz[2]
+            j0 = max(j-1,1)
+            j1 = min(j+1,sz[2])
 
-    dx = deg2m(dx)
-    dy = deg2m(dy)
+            dx = distance(lat[i0,j],lon[i0,j],lat[i1,j],lon[i1,j])/2
+            dy = distance(lat[i,j0],lon[i,j0],lat[i,j1],lon[i,j1])/2
 
-    pm = 1 ./ dx
-    pn = 1 ./ dy
+            dx = real(dx)
+            dy = real(dy)
+
+            dx = deg2m(dx)
+            dy = deg2m(dy)
+
+            pm[i,j] = 1 / dx
+            pn[i,j] = 1 / dy
+        end
+    end
 
     return pm,pn
 end

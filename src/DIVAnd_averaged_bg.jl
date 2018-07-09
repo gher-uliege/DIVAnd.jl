@@ -100,7 +100,7 @@ function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
     #maskm=maskmf[ind1]
 
-    maskm=trues(xim[1])
+    maskm=trues(size(xim[1]))
     #       @show size(maskm)
 
 

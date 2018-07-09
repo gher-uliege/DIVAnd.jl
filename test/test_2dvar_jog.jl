@@ -13,9 +13,9 @@ x = [.4]
 y = [.4]
 f = [1.]
 
-mask = trues(xi);
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+mask = trues(size(xi));
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 
 a = 5;
 u = a*yi;

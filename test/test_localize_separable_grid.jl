@@ -13,7 +13,7 @@ gridindices = localize_separable_grid(([4],),ones(10),(2*collect(1:10),))
 x1,y1 = ndgrid(2 * collect(1:5),collect(1:6))
 x = (x1,y1)
 xi = (3,3)
-mask = trues(x1);
+mask = trues(size(x1))
 
 gridindices = localize_separable_grid(xi,mask,x)
 
@@ -25,7 +25,7 @@ gridindices = localize_separable_grid(xi,mask,x)
 x1,y1 = ndgrid(2 * collect(1:5),collect(1:6))
 x = (x1,y1)
 xi = ([3,4],[3,5])
-mask = trues(x1);
+mask = trues(size(x1))
 
 gridindices = localize_separable_grid(xi,mask,x)
 
@@ -34,9 +34,10 @@ gridindices = localize_separable_grid(xi,mask,x)
 
 # 2D with 1 point outside
 
-x1,y1 = ndgrid(linspace(0.5,1,50),linspace(0.,1,30));
+x1,y1 = ndgrid(range(0.5,stop=1,length=50),
+               range(0.,stop=1,length=30));
 x = (x1,y1)
 xi = ([0.2],[0.5])
-mask = trues(x1);
+mask = trues(size(x1))
 gridindices = localize_separable_grid(xi,mask,x)
 @test gridindices[1] < 1

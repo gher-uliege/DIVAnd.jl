@@ -288,7 +288,7 @@ end
 xi2D,yi2D   = ndgrid(linspace(-worderl*1.1,1.1*worderl,71),linspace(-wordere*1.1,1.1*wordere,71))
 
 
-maskcv = trues(xi2D)
+maskcv = trues(size(xi2D))
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

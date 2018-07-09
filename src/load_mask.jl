@@ -43,8 +43,8 @@ function extract_bath(bath_name,isglobal,xi,yi)
     b = zeros(length(i),length(j));
 
     if isglobal
-        i2 = mod.(i-1,size(nc["bat"] ,1))+1;
-        jumps = [0; find(abs.(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
+        i2 = mod.(i .- 1,size(nc["bat"] ,1)) .+ 1;
+        jumps = [0; findall(abs.(i2[2:end]-i2[1:end-1]) .> 1); length(i2)];
 
         for l=1:length(jumps)-1
             b[(jumps[l]+1):jumps[l+1],:] = nc["bat"].var[i2[jumps[l]+1]:i2[jumps[l+1]],j];
@@ -55,8 +55,8 @@ function extract_bath(bath_name,isglobal,xi,yi)
         b[:,:] = nc["bat"].var[i,j];
     end
 
-    bx = X0 + rx*(i-1)
-    by = Y0 + ry*(j-1)
+    bx = X0 .+ rx*(i .- 1)
+    by = Y0 .+ ry*(j .- 1)
 
     return bx,by,-b
 end

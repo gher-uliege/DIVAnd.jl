@@ -10,11 +10,11 @@ end
 xi,yi = ndgrid(linspace(0,1,9),linspace(0,1,9))
 
 # mask (all points are valid)
-mask = trues(xi)
+mask = trues(size(xi))
 
 # metric (inverse of the resolution)
-pm = ones(xi) / (xi[2,1]-xi[1,1])
-pn = ones(xi) / (yi[1,2]-yi[1,1])
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
 
 
 # grid of observations

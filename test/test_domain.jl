@@ -48,6 +48,6 @@ mask,pmn,xyi = DIVAnd.DIVAnd_rectdom(1:5,1:2:10,[10,20,30,100,200,300])
 
 
 @test all(pmn[1] .== 1)
-@test all(pmn[2] .== 1./2)
+@test all(pmn[2] .== 1/2)
 @test all(pmn[3][:,:,1] .== 1/10)
 @test all(pmn[3][:,:,end] .== 1/100)

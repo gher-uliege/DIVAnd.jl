@@ -53,7 +53,7 @@ end
 
 
 """
-    x,success,niter = conjugategradient(fun!,b)
+    x,cgsuccess,niter = conjugategradient(fun!,b)
 
 Solve a linear system with the preconditioned conjugated-gradient method:
 A x = b
@@ -87,7 +87,7 @@ The function `fun!` works in-place to reduce the amount of memory allocations.
 
 # Output
 * `x`: the solution
-* `success`: true if the interation converged (otherwise false)
+* `cgsuccess`: true if the interation converged (otherwise false)
 * `niter`: the number of iterations
 """
 function conjugategradient(fun!, b::Vector{T};

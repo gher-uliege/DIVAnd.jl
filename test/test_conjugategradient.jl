@@ -29,17 +29,17 @@ kwargs = [(:tol, tol)]
 xAy, yATx = DIVAnd.checksym(n,fun!)
 @test xAy ≈ yATx
 
-x,success,niter0 = DIVAnd.conjugategradient(fun!,zeros(size(b)); kwargs...)
+x,cgsuccess,niter0 = DIVAnd.conjugategradient(fun!,zeros(size(b)); kwargs...)
 @test x ≈ zeros(size(b))
 
-x,success,niter1 = DIVAnd.conjugategradient(fun!,b; kwargs...)
+x,cgsuccess,niter1 = DIVAnd.conjugategradient(fun!,b; kwargs...)
 @test norm(A*x - b)/norm(b) < tol
 
-x,success,niter2 = DIVAnd.conjugategradient(fun!,b; kwargs..., pc! = pc_exact!)
+x,cgsuccess,niter2 = DIVAnd.conjugategradient(fun!,b; kwargs..., pc! = pc_exact!)
 @test norm(A*x - b)/norm(b) < tol
 @test niter2 == 1
 
-x,success,niter3 = DIVAnd.conjugategradient(fun!,b; kwargs..., pc! = pc_jacobi!)
+x,cgsuccess,niter3 = DIVAnd.conjugategradient(fun!,b; kwargs..., pc! = pc_jacobi!)
 @test norm(A*x - b)/norm(b) < tol
 @test niter3 <= niter1
 

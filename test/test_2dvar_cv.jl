@@ -27,7 +27,7 @@ f = f+sqrt(epsilon2_true) * randn(nobs);
 xi,yi = ndgrid(linspace(0,1,14),linspace(0,1,13));
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

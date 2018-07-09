@@ -200,7 +200,7 @@ function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {
                 tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
 
                 return v
-                end,Val{nvar_})::NTuple{nvar_,Array{T,N+1}}
+                end,Val(nvar_))::NTuple{nvar_,Array{T,N+1}}
 
     return out
 end

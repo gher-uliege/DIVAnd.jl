@@ -1,4 +1,5 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
+using DIVAnd
 
 if VERSION >= v"0.7.0-beta.0"
     using Test
@@ -10,7 +11,7 @@ end
 xi,yi = ndgrid(linspace(0,1,10),linspace(0,1,10))
 
 # mask (all points are valid)
-mask = trues(xi)
+mask = trues(size(xi))
 
 # metric (inverse of the resolution)
 pm = ones(xi) / (xi[2,1]-xi[1,1])

@@ -16,13 +16,13 @@ mask_v[5,7] = true
 
 sv = statevector((mask,mask_u,mask_v));
 var = rand(10,10);
-var[mask.==0] = 0;
+var[mask.==0] .= 0;
 
 var_u = rand(9,10);
-var_u[mask_u.==0] = 0;
+var_u[mask_u.==0] .= 0;
 
 var_v = rand(10,9);
-var_v[mask_v.==0] = 0;
+var_v[mask_v.==0] .= 0;
 
 E = pack(sv,(var,var_u,var_v));
 Ezeta2,Eu2,Ev2 = unpack(sv,E);

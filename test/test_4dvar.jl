@@ -26,7 +26,7 @@ t = t[:];
 f = fun.(x,y,z,t)
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi))
 
 # this problem has a simple cartesian metric
 # pm (pn,po,pp) is the inverse of the resolution along the 1st (2nd, 3rd, 4th) dimension

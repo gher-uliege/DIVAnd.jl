@@ -21,6 +21,21 @@ if VERSION >= v"0.7.0-beta.0"
     using Distributed
     using Random
     using Statistics
+
+    # workaround for
+    # https://github.com/JuliaLang/julia/issues/28011
+    import Base: *
+    Base.:*(A::SparseArrays.SparseMatrixCSC,B::BitArray) = A*Int8.(B)
+
+    # workaround for
+    # https://github.com/JuliaLang/julia/issues/28012
+    import Base: +, -
+    function Base.:+(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
+        A + copy(B)
+    end
+    function Base.:-(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
+        A - copy(B)
+    end
 else
     using Compat
 end

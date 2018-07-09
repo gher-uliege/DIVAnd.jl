@@ -22,7 +22,7 @@ xi,yi = ndgrid(linspace(0,1,23),linspace(0,1,22));
 
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi))
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

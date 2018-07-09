@@ -43,11 +43,11 @@ function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscycli
 
     # extraction operator of sea points
     H = oper_pack(operatortype,mask)
-	
+
     sz = size(mask)
 	# Already include final operation *H' on DD to reduce problem size so resized the matrix
     # DD = spzeros(prod(sz),prod(sz))
-	DD = spzeros(size(H)[2],size(H)[1])
+	DD = spzeros(size(H,2),size(H,1))
 
     for i=1:n
         # operator for staggering in dimension i
@@ -79,13 +79,13 @@ function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscycli
 		# Already include final operation to reduce problem size in real problems with land mask
 
         D = oper_diag(operatortype,d) * (oper_diff(operatortype,sz,i,iscyclic[i])*H')
-		
+
         if !iscyclic[i]
             # extx: extension operator
-            szt = sz
-            tmp_szt = collect(szt)
+            tmp_szt = collect(sz)
             tmp_szt[i] = tmp_szt[i]+1
-            szt = (tmp_szt...,)
+            szt = (tmp_szt...,) :: NTuple{n,Int}
+            #szt = ntuple(j -> (j == i ? size(mask,i)+1 : size(mask,i) ),n)
 
             extx = oper_trim(operatortype,szt,i)'
 			# Tried to save an explicitely created intermediate matrix D
@@ -132,7 +132,7 @@ function DIVAnd_laplacian_prepare(mask::BitArray{$N},
 
     nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
 
-    # This heavily uses macros to generate fast code 
+    # This heavily uses macros to generate fast code
     # In e.g. 3 dimensions
     # (@nref $N tmp i) corresponds to tmp[i_1,i_2,i_3]
     # (@nref $N nu_i l->(l==j?i_l+1:i_l)  corresponds to nu_i[i_1+1,i_2,i_3] if j==1
@@ -177,14 +177,14 @@ function DIVAnd_laplacian_apply!(ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArr
 
     @inbounds @nloops $N i d->1:sz[d]  begin
         (@nref $N Lx i) = 0
-        @nexprs $N d1->begin      
+        @nexprs $N d1->begin
             tmp2 = nus[d1]
-            
+
             if i_d1 < sz[d1]
                 @inbounds (@nref $N Lx i) += (@nref $N tmp2 i) * (
                     (@nref $N x d2->(d2==d1 ? i_d2+1 : i_d2)) - (@nref $N x i))
             end
-            
+
             if i_d1 > 1
                 @inbounds (@nref $N Lx i) -= (@nref $N tmp2 d2->(d2==d1 ? i_d2-1 : i_d2)) * (
                     (@nref $N x i) -  (@nref $N x d2->(d2==d1 ? i_d2-1 : i_d2)))
@@ -202,7 +202,7 @@ function DIVAnd_laplacian_apply(ivol,nus,x::AbstractArray{T,$N})::AbstractArray{
 end
 
 
-    
+
 end # begin eval
 end # for N = 1:6
 

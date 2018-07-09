@@ -1,3 +1,4 @@
+using DIVAnd
 # Testing DIVAnd in 1 dimension.
 
 # grid of background field
@@ -6,8 +7,8 @@ xi = collect(linspace(0,1,21));
 x = [.4; .6];
 f = [.4; .6];
 
-mask = trues(xi);
-mask[[1 end]] = false;
+mask = trues(size(xi));
+mask[[1,end]] = false;
 
 pm = ones(xi) / (xi[2]-xi[1]);
 
