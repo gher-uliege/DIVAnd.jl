@@ -1289,6 +1289,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#C-runtime-library-when-calling-PyPlot-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "C runtime library when calling PyPlot",
+    "category": "section",
+    "text": "R6034 an application has made an attempt to load the C runtime library incorrectly on Windows 10 with julia 0.6.1, matplotlib 2.1.0, PyPlot 2.3.2:ENV[\"MPLBACKEND\"]=\"qt4agg\"You can put this line in a file .juliarc.jl placed in your home directory (the output of homedir() in Julia)."
+},
+
+{
     "location": "index.html#Julia-cannot-connect-to-GitHub-on-Windows-7-and-Windows-Server-2012-1",
     "page": "DIVAnd.jl documentation",
     "title": "Julia cannot connect to GitHub on Windows 7 and Windows Server 2012",
@@ -1349,7 +1357,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Error in the factorisation",
     "category": "section",
-    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with:Stacktrace:  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360  .................  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147might be due to a wrong choice in the analysis parameters, for example a too long  correlation length."
+    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with:Stacktrace:\n [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360\n .................\n [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147\n ```\n\n might be due to a wrong choice in the analysis parameters, for example a too long\n correlation length.\n\n\n## Installing additional packages when using a git clone\n\nIf `DIVAnd` is installed without the package manager, it can be necessary\nto install additional packages. This will be explicitly shown,\nfor example:\njulia LoadError: ArgumentError: Module Roots not found in current path. Run Pkg.add(\"Roots\") to install the Roots package. ```"
 },
 
 ]}
