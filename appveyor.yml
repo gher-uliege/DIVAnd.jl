@@ -16,6 +16,7 @@ branches:
   only:
     - master
     - Alex
+    - Alex-0.7
     - /release-.*/
 
 notifications:
