@@ -1,7 +1,7 @@
-# Testing divand in 2 dimensions with independent verification.
+# Testing DIVAnd in 2 dimensions with independent verification.
 
 using Base.Test
-#using divand
+#using DIVAnd
 
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30))
@@ -25,7 +25,7 @@ leny = .15;
 epsilon2 = 0.05;
 
 #,err,s
-va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
 
 #Z = randn(size(s.H,1),size(s.H,1));
 Z = eye(size(s.H,1));

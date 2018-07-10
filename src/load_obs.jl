@@ -5,7 +5,6 @@ Load data from the text file `filename` and returns vectors with
 the value, longitude, latitude, depth and time (as DateTime).
 A list string identifiers is also returned.
 """
-
 function loadbigfile(fname)
 
     info("Loading data from 'big file' $(fname)")
@@ -43,9 +42,36 @@ function loadbigfile(fname)
     return value,lon,lat,depth,timeval,id
 end
 
+function loadobsid(filename::AbstractString,varname = "obsid")
+    Dataset(filename,"r") do ds
+        return loadobsid(ds,varname)
+    end
+end
+
+
+function loadobsid(ds,varname = "obsid")
+    obsids = nomissing(ds[varname][:]) :: Matrix{Char}
+
+    obsid = Vector{String}(size(obsids,2))
+
+    for i = 1:size(obsids,2)
+        id = view(obsids,:,i)
+        index = findfirst(c -> c .== '\0',id)
+
+        obsid[i] =
+            if index == 0
+                convert(String,id)
+            else
+                convert(String,view(id,1:index-1))
+            end
+    end
+
+    return obsid
+end
+
 
 """
-    value,lon,lat,depth,time,obsid = loadobs(T,filename,varname)
+    obsvalue,obslon,obslat,obsdepth,obstime,obsid = loadobs(T,filename,varname)
 
 Load the variable `varname` from the NetCDF file `filename`.
 Coordinates (the NetCDF variables "obslon", "obslat", "obsdepth"),
@@ -54,29 +80,15 @@ Numeric output arguments will have the type `T`.
 
 """
 function loadobs(T,filename,varname)
-    @inline function missingasNaN(v)
-        v2 = fill(T(NaN),size(v))
-        v2[.!ismissing.(v)] = v[.!ismissing.(v)]
-        return v2
-    end
-
-
     ds = Dataset(filename,"r")
-    time = ds["obstime"][:].data;
+    time = nomissing(ds["obstime"][:]) :: Vector{DateTime}
 
-    lon = missingasNaN(ds["obslon"][:])
-    lat = missingasNaN(ds["obslat"][:])
-    depth = missingasNaN(ds["obsdepth"][:])
-    value = missingasNaN(ds[varname][:])
+    lon = Vector{T}(nomissing(ds["obslon"][:],NaN))
+    lat = Vector{T}(nomissing(ds["obslat"][:],NaN))
+    depth = Vector{T}(nomissing(ds["obsdepth"][:],NaN))
+    value = Vector{T}(nomissing(ds[varname][:],NaN))
 
-
-    obsids = ds["obsid"][:]
-
-    obsid = Vector{String}(size(obsids,2))
-
-    for i = 1:size(obsids,2)
-        obsid[i] = strip(join(obsids[:,i]),'\0')
-    end
+    obsid = loadobsid(ds,"obsid")
 
     close(ds)
     return value,lon,lat,depth,time,obsid

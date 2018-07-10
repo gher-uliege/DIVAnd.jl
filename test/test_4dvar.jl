@@ -1,4 +1,4 @@
-# Testing divand in 4 dimensions.
+# Testing DIVAnd in 4 dimensions.
 
 using Base.Test
 
@@ -38,7 +38,7 @@ len = 0.12;
 epsilon2 = 0.1;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
+fi,s = DIVAndrun(mask,(pm,pn,po,pp),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
 
 # compute RMS to background field
 rms = sqrt(mean((fi_ref[:] - fi[:]).^2));

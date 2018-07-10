@@ -1,8 +1,18 @@
-using divand
-using Base.Test
-import Base.LinAlg.BLAS
+using DIVAnd
 
-@testset "divand" begin
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+    using Random
+    using LinearAlgebra
+    using Dates
+    using Printf
+else
+    using Compat
+    using Base.Test
+    import Base.LinAlg.BLAS
+end
+
+@testset "DIVAnd" begin
     include("test_quadtrees.jl");
 
     # ndgrid
@@ -50,7 +60,7 @@ import Base.LinAlg.BLAS
     # comparision with analytical kernels
     include("test_ndvar_point.jl");
 
-    include("test_divandgo.jl");
+    include("test_DIVAndgo.jl");
 
 
     # test kernel
@@ -106,10 +116,10 @@ import Base.LinAlg.BLAS
     include("test_interp.jl");
 
     
-    # test divand_filter3
+    # test DIVAnd_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1
-    z = divand_filter3(A,9999,1)
+    z = DIVAnd_filter3(A,9999,1)
 
     @test maximum(z) ≈ 0.00411522633744856
 
@@ -121,24 +131,24 @@ import Base.LinAlg.BLAS
     @test distance(1,2,3,4) ≈ 2.82749366820155;
 
     
-    # test divand_metric
+    # test DIVAnd_metric
     lon,lat = ndgrid([0:10;],[0:5;])
-    pm,pn = divand_metric(lon,lat)
-    @test 111e3 < mean(1./pm) < 112e3
-    @test 111e3 < mean(1./pn) < 112e3
+    pm,pn = DIVAnd_metric(lon,lat)
+    @test 111e3 < mean(1 ./ pm) < 112e3
+    @test 111e3 < mean(1 ./ pn) < 112e3
 
     
-    # test divand_kernel
-    mu,K,len_scale = divand_kernel(2,[1,2,1])
+    # test DIVAnd_kernel
+    mu,K,len_scale = DIVAnd_kernel(2,[1,2,1])
     @test mu ≈ 4π
     @test K(0) ≈ 1
     @test K(1) ≈ SpecialFunctions.besselk(1,1)
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
-    mu,K,len_scale = divand_kernel(2,[1,3,3,1])
+    mu,K,len_scale = DIVAnd_kernel(2,[1,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
-    mu,K,len_scale = divand_kernel(2,[0,3,3,1])
+    mu,K,len_scale = DIVAnd_kernel(2,[0,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 
 

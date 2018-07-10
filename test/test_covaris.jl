@@ -1,4 +1,10 @@
-using Base.Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+    using LinearAlgebra
+    using SparseArrays
+else
+    using Base.Test
+end
 
 function testprod(C,C2)
 
@@ -11,15 +17,15 @@ function testprod(C,C2)
     @test a ≈ a2
 
     # C times a matrix tranposed
-    b = randn(2,n);
-    a = C*b.';
-    a2 = C2*b.';
+    b = randn(2,n)
+    a = C * copy(transpose(b))
+    a2 = C2 * copy(transpose(b))
     @test a ≈ a2
 
     # C times a matrix conjugate tranposed
     b = randn(2,n);
-    a = C*b';
-    a2 = C2*b';
+    a = C * copy(b')
+    a2 = C2 * copy(b')
     @test a ≈ a2
 
     # C times a vector
@@ -44,7 +50,7 @@ n = 2;
 det(IS)
 
 C = CovarIS(IS);
-C2 = inv(full(IS));
+C2 = inv(Matrix(IS));
 
 iC = inv(C);
 @test iC ≈ IS

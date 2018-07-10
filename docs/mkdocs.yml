@@ -1,5 +1,5 @@
-site_name:        divand.jl
-repo_url:         https://github.com/gher-ulg/divand.jl
+site_name:        DIVAnd.jl
+repo_url:         https://github.com/gher-ulg/DIVAnd.jl
 site_description: an n-dimensional variational analysis of arbitrarily located observations
 site_author:      Alexander Barth, Jean-Marie Beckers
 

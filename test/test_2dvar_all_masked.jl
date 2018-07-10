@@ -1,11 +1,11 @@
-# Testing divand in 2 dimensions
-# divandrun should not fail if all grid points are masked
+# Testing DIVAnd in 2 dimensions
+# DIVAndrun should not fail if all grid points are masked
 
 using Base.Test
-import divand
+import DIVAnd
 
 # grid of background field
-xi,yi = divand.ndgrid(linspace(0,1,30),linspace(0,1,30))
+xi,yi = DIVAnd.ndgrid(linspace(0,1,30),linspace(0,1,30))
 
 mask = falses(size(xi))
 pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
@@ -14,7 +14,7 @@ pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
 epsilon = 1e-10;
 
 # grid of observations
-x,y = divand.ndgrid(linspace(epsilon,1-epsilon,20),linspace(epsilon,1-epsilon,20))
+x,y = DIVAnd.ndgrid(linspace(epsilon,1-epsilon,20),linspace(epsilon,1-epsilon,20))
 x = x[:]
 y = y[:]
 v = sin.(x*6) .* cos.(y*6)
@@ -25,9 +25,8 @@ leny = .15;
 
 epsilon2 = 0.05;
 
-#@test_warn "no sea point" va,s = divand.divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
-va,s = divand.divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
-
+va,s = @test_warn r".*No sea point.*" DIVAnd.DIVAndrun(
+    mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
 @test s.sv.size[1] == size(xi)
 
 

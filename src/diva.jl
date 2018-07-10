@@ -30,7 +30,7 @@ NetCDF file `filename` under the variable `varname`.
 
 ## Optional input arguments:
 
-* `bathname`: path to the NetCDF bathymetry (default ../../divand-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
+* `bathname`: path to the NetCDF bathymetry (default ../../DIVAnd-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
 * `bathisglobal`: true (default) is the bathymetry is a global data set
 * `plotres`: Call-back routine for plotting ((timeindex,sel,fit,erri) -> nothing)
 * `timeorigin`: Time origin (default DateTime(1900,1,1,0,0,0))
@@ -46,7 +46,7 @@ NetCDF file `filename` under the variable `varname`.
 * `fitcorrlen`: true of the correlation length is determined from the observation (default `false`).
 * `fithorz_param`: dictionary with additional optional parameters for `fithorzlen`.
 * `fitvert_param`: dictionary with additional optional parameters for `fitvertlen`.
-* `distfun`: function to compute the distance (default `(xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1])`).
+* `distfun`: function to compute the distance (default `(xi,xj) -> DIVAnd.distance(xi[2],xi[1],xj[2],xj[1])`).
 * `mask`: if different from `nothing`, then this mask overrides land-sea mask based on the bathymetry
 (default `nothing`).
 * `background`: if different from `nothing`, then this parameter allows one
@@ -59,13 +59,12 @@ to load the background from a call-back function
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
 
-Any additional keywoard arguments understood by `divandgo` can also be used here
+Any additional keywoard arguments understood by `DIVAndgo` can also be used here
 (e.g. velocity constrain)
 
 """
-
 function diva3d(xi,x,value,len,epsilon2,filename,varname;
-                datadir = joinpath(dirname(@__FILE__),"..","..","divand-example-data"),
+                datadir = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data"),
                 bathname = joinpath(datadir,"Global","Bathymetry","gebco_30sec_16.nc"),
                 bathisglobal = true,
                 plotres = (timeindex,sel,fit,erri) -> nothing,
@@ -75,17 +74,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 ncvarattrib = Dict(),
                 ncglobalattrib = Dict(),
                 transform = Anam.notransform(),
-                distfun = (xi,xj) -> divand.distance(xi[2],xi[1],xj[2],xj[1]),
+                distfun = distfun_m,
                 mask = nothing,
                 background = nothing,
                 background_epsilon2_factor::Float64 = 10.,
                 background_len = (len[1],len[2],4*len[3]),
                 fitcorrlen::Bool = false,
                 fithorz_param = Dict(),
-                fitvert_param = Dict(
-                    :distbin => collect([0.:50:400; 500:100:600]),
-                    :nmean => 500,
-                ),
+                fitvert_param = Dict(),
                 memtofit = 3,
                 niter_e::Int = 1,
                 kwargs...
@@ -117,11 +113,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     # xi[end] is time, which is skipped for the definition of the domain
     mask2,pmn,xyi =
         if length(xi) == 4
-            divand.domain(
+            DIVAnd.domain(
                 bathname,bathisglobal,xi[1],xi[2],xi[3];
                 zlevel = zlevel)
         else
-            divand.domain(bathname,bathisglobal,xi[1],xi[2])
+            DIVAnd.domain(bathname,bathisglobal,xi[1],xi[2])
         end
 
     # allow to the user to override the mask
@@ -142,7 +138,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         depth = copy(depth)
         info("analysis from the sea floor")
 
-        bxi,byi,bi = divand.load_bath(bathname,bathisglobal,lonr,latr)
+        bxi,byi,bi = DIVAnd.load_bath(bathname,bathisglobal,lonr,latr)
 
         itp = interpolate((bxi,byi), bi, Gridded(Linear()))
 
@@ -190,7 +186,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     info("Creating netCDF file")
     Dataset(filename,"c") do ds
         ncvar, ncvar_relerr, ncvar_Lx =
-            divand.ncfile(
+            DIVAnd.ncfile(
                 ds,filename,(xi[1:end-1]...,timeclim),varname;
                 ncvarattrib = ncvarattrib,
                 ncglobalattrib = ncglobalattrib,
@@ -198,7 +194,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 relerr = true)
 
         # Prepare background as mean vertical profile and time evolution.
-        # Just call divand in two dimensions forgetting x and y ...
+        # Just call DIVAnd in two dimensions forgetting x and y ...
         toaverage =
             if n == 4
                 [true,true,false]
@@ -211,24 +207,19 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             if n == 4
                 # vertical info
-                pmax = length(fitvert_param[:distbin])-1
                 dbinfo[:fitvertlen] = Dict{Symbol,Any}(
                     :len => zeros(kmax,length(TS)),
                     :var0 => zeros(kmax,length(TS)),
-                    :covar => zeros(pmax,kmax,length(TS)),
-                    :stdcovar => zeros(pmax,kmax,length(TS)),
-                    :fitcovar => zeros(pmax,kmax,length(TS)),
-                    :distx => zeros(pmax)
+                    :fitinfos => Array{Dict{Symbol,Any},2}(kmax,length(TS))
                 )
             end
         end
 
         dbinfo[:factore] = zeros(niter_e,length(TS))
 
-        info("Starting loop on time indices")
+        #info("Starting loop on time indices")
         for timeindex = 1:length(TS)
             info("Time step $(timeindex) / $(length(TS))")
-            info("------------")
 
             # select observation to be used for the time instance timeindex
             sel = select(TS,timeindex,time)
@@ -242,10 +233,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 erri[.!mask] = NaN
 
                 if n == 4
-                    divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                    DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                       fit, erri, (:,:,:,timeindex))
                 else
-                    divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                    DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                       fit, erri, (:,:,timeindex))
                 end
 
@@ -270,7 +261,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     va = value_trans - vm
 
                     # background profile
-                    fi,vaa = divand.divand_averaged_bg(
+                    fi,vaa = DIVAnd.DIVAnd_averaged_bg(
                         mask,pmn,xyi,
                         xsel,
                         va,
@@ -280,7 +271,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         moddim = moddim)
 
                     fbackground = fi + vm
-
                     fbackground,vaa
                 else
                     # anamorphosis transform must already be included to the
@@ -288,10 +278,20 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     background(xsel,timeindex,value_trans,trans)
                 end
 
+            # the background is not computed for points outside of the domain
+            # exclude those in vaa and xsel
+            selbackground = isfinite.(vaa)
+            vaa = vaa[selbackground]
+            xsel = map(xc -> xc[selbackground],xsel)
+            # unselect the data points out of the domain
+            view(sel,sel)[.!selbackground] = false
+
+
             if fitcorrlen
                 # info("Applying fit of the correlation length")
                 # fit correlation length
-                lenxy1,infoxy = divand.fithorzlen(
+
+                lenxy1,infoxy = DIVAnd.fithorzlen(
                     xsel,vaa,depthr;
                     distfun = distfun,
                     fithorz_param...
@@ -301,14 +301,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     # propagate
                     for j = 1:sz[2]
                         for i = 1:sz[1]
-                            len_scaled[1][i,j] = len0[1][i,j] * lenxy1[1] * pi/180 * EarthRadius
-                            len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1] * pi/180 * EarthRadius
+                            len_scaled[1][i,j] = len0[1][i,j] * lenxy1[1]
+                            len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1]
                         end
                     end
                 end
 
                 if n == 4
-                    lenz1,infoz = divand.fitvertlen(
+                    lenz1,infoz = DIVAnd.fitvertlen(
                         xsel,vaa,depthr;
                         distfun = distfun,
                         fitvert_param...
@@ -316,17 +316,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
                     dbinfo[:fitvertlen][:len][:,timeindex] = infoz[:len]
                     dbinfo[:fitvertlen][:var0][:,timeindex] = infoz[:var0]
-                    dbinfo[:fitvertlen][:distx][:] = infoz[:distx]
-                    for key in [:covar,:fitcovar,:stdcovar]
-                        dbinfo[:fitvertlen][key][:,:,timeindex] = infoz[key]
-                    end
+                    dbinfo[:fitvertlen][:fitinfos][:,timeindex] = infoz[:fitinfos]
 
                     # propagate
                     for k = 1:sz[3]
                         for j = 1:sz[2]
                             for i = 1:sz[1]
-                                len_scaled[1][i,j,k] = len0[1][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
-                                len_scaled[2][i,j,k] = len0[2][i,j,k] * lenxy1[k] * pi/180 * EarthRadius
+                                len_scaled[1][i,j,k] = len0[1][i,j,k] * lenxy1[k]
+                                len_scaled[2][i,j,k] = len0[2][i,j,k] * lenxy1[k]
                                 len_scaled[3][i,j,k] = len0[3][i,j,k] * lenz1[k]
                             end
                         end
@@ -356,7 +353,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
                 # analysis
                 fi2, erri, residuals[sel], qcdata, scalefactore =
-                    divand.divandgo(mask,pmn,xyi,
+                    DIVAnd.DIVAndgo(mask,pmn,xyi,
                                     xsel,
                                     vaa,
                                     len_scaled,
@@ -384,10 +381,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             fit[.!mask] = NaN
             erri[.!mask] = NaN
             if n == 4
-                divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                   fit, erri, (:,:,:,timeindex))
             else
-                divand.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
+                DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                   fit, erri, (:,:,timeindex))
             end
 

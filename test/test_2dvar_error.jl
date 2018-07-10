@@ -1,4 +1,4 @@
-# Testing divand in 2 dimensions with independent verification.
+# Testing DIVAnd in 2 dimensions with independent verification.
 
 using Base.Test
 
@@ -24,23 +24,23 @@ len = 0.6
 # normalized error variance
 epsilon2 = 1.;
 
-function divand_error(args...)
-    f,s = divandrun(args...)
+function DIVAnd_error(args...)
+    f,s = DIVAndrun(args...)
     return statevector_unpack(s.sv,diag(s.P))[1]
 end
 
-function divand_almostexacterror(args...)
-    err,bjmb,fa,sa = divand_aexerr(args...)
+function DIVAnd_almostexacterror(args...)
+    err,bjmb,fa,sa = DIVAnd_aexerr(args...)
     return err
 end
 
 errormethods = [
                 # consistent error (expensive)
-                divand_error,
+                DIVAnd_error,
                 # clever poor man's error
-                divand_cpme,
+                DIVAnd_cpme,
                 # almost exact error
-                divand_almostexacterror
+                DIVAnd_almostexacterror
                 ]
 
 

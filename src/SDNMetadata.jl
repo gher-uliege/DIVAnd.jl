@@ -40,9 +40,8 @@ encodeWMSStyle(params) = join([k * ':' * string(v) for (k,v) in  params ],"+")
     ncglobalattrib,ncvarattrib = SDNMetadata(metadata,fi)
 
 Based on the information in the dictionary `metadata` and the analysed 4D field
-`fi` produce a list of NetCDF global and variable attributes for `divand_save2`.
+`fi` produce a list of NetCDF global and variable attributes for `DIVAnd_save2`.
 """
-
 function SDNMetadata(metadata,filename,varname,lonr,latr;
                      field = nothing,
                      default_field_min = nothing,
@@ -165,20 +164,20 @@ end
 
 
 function getedmoinfo(edmo_code,role)
-    entry = divand.Vocab.EDMO()[edmo_code]
+    entry = DIVAnd.Vocab.EDMO()[edmo_code]
 
     contact = Dict{String,String}(
         "EDMO_CODE" => string(edmo_code),
         "EDMO_URL" => "http://seadatanet.maris2.nl/v_edmo/print.asp?n_code=$(edmo_code)",
-        "name" => divand.Vocab.name(entry),
-        "phone" => divand.Vocab.phone(entry),
-        "fax" => divand.Vocab.fax(entry),
-        "address" => divand.Vocab.address(entry),
-        "city" => divand.Vocab.city(entry),
-        "zip" => divand.Vocab.zipcode(entry),
-        "country" => divand.Vocab.country(entry),
-        "mail" => divand.Vocab.email(entry),
-        "website" => divand.Vocab.website(entry),
+        "name" => DIVAnd.Vocab.name(entry),
+        "phone" => DIVAnd.Vocab.phone(entry),
+        "fax" => DIVAnd.Vocab.fax(entry),
+        "address" => DIVAnd.Vocab.address(entry),
+        "city" => DIVAnd.Vocab.city(entry),
+        "zip" => DIVAnd.Vocab.zipcode(entry),
+        "country" => DIVAnd.Vocab.country(entry),
+        "mail" => DIVAnd.Vocab.email(entry),
+        "website" => DIVAnd.Vocab.website(entry),
         "role" => role,
     )
 
@@ -191,7 +190,6 @@ end
 Load the CDI list from the file `fname`
 (zip with a csv file, or csv file directly).
 """
-
 function loadoriginators(fname::AbstractString)
     if endswith(fname,"zip")
         zp = ZipFile.Reader(fname);
@@ -233,20 +231,6 @@ function loadoriginators(csvfile::IO)
     return db
 end
 
-
-function loadobsid(filepath)
-    nc = Dataset(filepath,"r")
-    obsids = nc["obsid"][:]
-    close(nc)
-
-    obsid = Vector{String}(size(obsids,2))
-
-    for i = 1:size(obsids,2)
-        obsid[i] = strip(join(obsids[:,i]),'\0')
-    end
-
-    return obsid
-end
 
 function writeerrors(notfound,errname)
     info("Write error message in file: $(errname)")
@@ -327,7 +311,7 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     originators = []
     for ae in sort(collect(originators_edmo))
         originator = getedmoinfo(ae,"resourceProvider")
-        println("resource provider: $(originator["name"])")
+        info("resource provider: $(originator["name"])")
         push!(originators,originator)
     end
 
@@ -335,9 +319,9 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
 end
 
 function labelandURL(s)
-    c = divand.Vocab.resolve(s)
-    return Dict("label" => divand.Vocab.prefLabel(c),
-                "URL" => divand.Vocab.URL(c))
+    c = DIVAnd.Vocab.resolve(s)
+    return Dict("label" => DIVAnd.Vocab.prefLabel(c),
+                "URL" => DIVAnd.Vocab.URL(c))
 end
 
 
@@ -345,7 +329,7 @@ function gettemplatevars(filepath,varname,project,cdilist;
                 errname = split(filepath,".nc")[1] * ".cdi_import_errors.csv",
                 ignore_errors = false)
 
-    const isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
+    isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
 
     baseurl_wms = PROJECTS[project]["baseurl_wms"]
     filename = basename(filepath)
@@ -459,8 +443,8 @@ function gettemplatevars(filepath,varname,project,cdilist;
     P35_keywords = labelandURL.(split(ds.attrib["parameter_keyword_urn"]))
     C19_keywords = labelandURL.(split(ds.attrib["area_keywords_urn"]))
 
-    area = divand.Vocab.resolve(split(ds.attrib["area_keywords_urn"])[1])
-    domain = divand.Vocab.prefLabel(area)
+    area = DIVAnd.Vocab.resolve(split(ds.attrib["area_keywords_urn"])[1])
+    domain = DIVAnd.Vocab.prefLabel(area)
 
     edmo_code = rmprefix.(ds.attrib["institution_urn"])
 
@@ -615,7 +599,7 @@ function rendertemplate(templatefile,templateVars,xmlfilename)
 end
 
 """
-    divand.divadoxml(filepath,varname,project,cdilist,xmlfilename;
+    DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename;
                      ignore_errors = false)
 
 Generate the XML metadata file `xmlfilename` from the NetCDF
@@ -628,7 +612,6 @@ will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignore if `ignore_errors` is
 set to true.
 """
-
 function divadoxml(filepath,varname,project,cdilist,xmlfilename;
                    ignore_errors = false)
 
@@ -651,8 +634,6 @@ Return a link to the SeaDataNet metadata page of the observation with the
 identifier `id` (a combination of the EDMO code and local CDI ID).
 This works only in IJulia.
 """
-
-
 function SDNObsMetadata(id)
     edmo,local_CDI_ID = split(id,'-')
     url = "http://seadatanet.maris2.nl/v_cdi_v3/print_wfs.asp" * string(

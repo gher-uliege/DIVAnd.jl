@@ -1,6 +1,6 @@
 # download data to run test script
 
-basedir = joinpath(dirname(@__FILE__),"..","..","divand-example-data")
+basedir = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data")
 bathname = joinpath(basedir,
                     "Global","Bathymetry","gebco_30sec_16.nc")
 

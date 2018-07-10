@@ -1,7 +1,7 @@
-# A simple example of divand in 2 dimensions
+# A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 using Base.Test
-using divand
+using DIVAnd
 
 
 # observations
@@ -56,12 +56,11 @@ len = 0.1;
 epsilon2 = 1.;
 
 # fi is the interpolated field
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
+fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
 
 for method in [0, 1, 3, 4]
-
-    qcval=divand_qc(fi,s,method)
+    qcval=DIVAnd_qc(fi,s,method)
 
     if method==4
         # Provide fake THETA value
@@ -69,16 +68,12 @@ for method in [0, 1, 3, 4]
     end
 
     # Find suspect points
-
     sp=find(x-> x.>9,qcval)
-
     @test sum(sp)==3
-
-
-    qcval=divand_qc(fi,s,2)
-    @test qcval==0
-
 end
+
+qcval = @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
+@test qcval==0
 
 
 

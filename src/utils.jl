@@ -4,7 +4,6 @@
 Replace values in `c` equal to `valex` by averages of surrounding points.
 
 """
-
 function ufill(c::Array{T,3},valex::Number) where T
     imax,jmax,kmax = size(c)
     work = zeros(eltype(c),imax+2, jmax+2, kmax+2)
@@ -39,13 +38,14 @@ function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     return ufill(c2,valex)
 end
 
-ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
-
+@static if isdefined(:DataArrays)
+    ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
+end
 
 function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
-    const A1 = 5
-    const A2 = 0
-    const A3 = 0
+    A1 = 5
+    A2 = 0
+    A3 = 0
 
     imax,jmax,kmax = size(c)
 
@@ -208,7 +208,6 @@ end
 """
     hx,hy = cgradient(pmn,h)
 
-
 """
 function cgradient(pmn,h)
 
@@ -307,7 +306,6 @@ R_L = 1 / (1 + L |∇h| / max(h2,hmin))
 Per default `h2` is equal to `h`. The depth `h` must be positive. `hmin` must 
 have the same units as h (usually meters).
 """
-
 function lengraddepth(pmn,h::Array{T,2}, L;
                       h2 = h,
                       hmin = 0.001 #m
@@ -389,9 +387,7 @@ It is defined as 2Tν  where T is the integration time.
 It uses the Greens functions for 1D diffusion:
 1/sqrt(4 π ν t) * exp(-x^2 / (4νt))
 
-
 """
-
 function smoothfilter(x,f::Vector{T},scale) where T
     ff = copy(f)
     smoothfilter!(x,ff,scale)
@@ -400,14 +396,13 @@ end
 
 
 """
-    field = divand.random(mask,pmn,len,Nens)
+    field = DIVAnd.random(mask,pmn,len,Nens)
 
 Create `Nens` random fields with the correlation length `len` in 
 a domain with the mask `mask` and the metric `pmn`.
 
-See `divand.divandrun` for more information about these parameters.
+See `DIVAnd.DIVAndrun` for more information about these parameters.
 """
-
 function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
                 alpha::Vector{T} = T[],
                 moddim::Vector{T} = T[],
@@ -415,7 +410,7 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
                 btrunc = [],
                 ) where {N,T}
     
-    s = divand.divand_background(
+    s = DIVAnd.DIVAnd_background(
         Val{:sparse},mask,pmn,len,alpha,moddim,scale_len,[];
         btrunc = btrunc);
     
@@ -428,7 +423,7 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
     # F[:UP] ==  L'*P
     
     ff = (F[:UP]) \ z;
-    field = divand.unpackens(s.sv,ff)[1] :: Array{T,N+1}
+    field = DIVAnd.unpackens(s.sv,ff)[1] :: Array{T,N+1}
     return field
 end
 
@@ -439,11 +434,8 @@ end
 Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
 n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
 The interpolated field is stored in `f`.
-The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+The grid in `xi` must be align with the axis (e.g. produced by DIVAnd.ndgrid).
 """
-
-
-
 function interp!(xi::NTuple{N,Vector{T}},
                  fi::Array{T,N},
                  x::NTuple{N,Array{T,Nf}},
@@ -479,9 +471,8 @@ end
 
 Interpolate field `fi` (n-dimensional array) defined at `xi` (tuble of
 n-dimensional arrays or vectors) onto grid `x` (tuble of n-dimensional arrays).
-The grid in `xi` must be align with the axis (e.g. produced by divand.ndgrid).
+The grid in `xi` must be align with the axis (e.g. produced by DIVAnd.ndgrid).
 """
-
 function interp(xi,fi,x)
     f = similar(x[1])
     interp!(xi,fi,x,f)
@@ -502,12 +493,11 @@ defined in the NetCDF variable `varname` in the NetCDF file
 same grid as the analysis.
 
 """
-
 function backgroundfile(fname,varname)
     ds = Dataset(fname)
-    lon = ds["lon"][:].data
-    lat = ds["lat"][:].data
-    depth = ds["depth"][:].data
+    lon = nomissing(ds["lon"][:])
+    lat = nomissing(ds["lat"][:])
+    depth = nomissing(ds["depth"][:])
     #time = ds["time"][:].data
     
     v = ds[varname]
@@ -519,8 +509,8 @@ function backgroundfile(fname,varname)
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
 
         
-        vn .= trans.(divand.ufill(vn,.!isnan.(vn)))
-        fi = divand.interp(x,vn,xi)
+        vn .= trans.(DIVAnd.ufill(vn,.!isnan.(vn)))
+        fi = DIVAnd.interp(x,vn,xi)
 
         return vn,value - fi
     end

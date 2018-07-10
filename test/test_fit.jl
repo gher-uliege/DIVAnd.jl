@@ -1,5 +1,5 @@
 using Base.Test
-import divand
+import DIVAnd
 #include("../src/fit.jl")
 
 # test data for basic statistics
@@ -13,8 +13,8 @@ sumy2 = sum(y.^2)
 
 sumxy = sum(x .* y)
 
-meanx,stdx = divand.stats(sumx,sumx2,length(x))
-meanx,meany,stdx,stdy,covar,corr = divand.stats(sumx,sumx2,sumy,sumy2,sumxy,length(x))
+meanx,stdx = DIVAnd.stats(sumx,sumx2,length(x))
+meanx,meany,stdx,stdy,covar,corr = DIVAnd.stats(sumx,sumx2,sumy,sumy2,sumxy,length(x))
 
 @test meanx ≈ mean(x)
 @test stdx ≈ std(x)
@@ -25,7 +25,7 @@ meanx,meany,stdx,stdy,covar,corr = divand.stats(sumx,sumx2,sumy,sumy2,sumxy,leng
 
 mincount = 50
 
-xi,yi = divand.ndgrid(linspace(0,1,100),linspace(0,1,100))
+xi,yi = DIVAnd.ndgrid(linspace(0,1,100),linspace(0,1,100))
 mask = trues(size(xi))
 pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
 pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
@@ -37,13 +37,13 @@ distbin = 0:0.02:0.3
 mincount = 100
 
 srand(1234)
-field = divand.random(mask,(pm,pn),(lenx,leny),Nens)
+field = DIVAnd.random(mask,(pm,pn),(lenx,leny),Nens)
 
 
 x = (xi[:],yi[:])
 v = field[:]
 
-distx,covar,corr,varx,count,stdcovar = divand.empiriccovarmean(
+distx,covar,corr,varx,count,stdcovar = DIVAnd.empiriccovarmean(
     x,v,distbin,mincount)
 
 minlen = 0.001
@@ -52,14 +52,14 @@ maxlen = 0.1
 var0opt = covar[1]
 L = linspace(minlen,maxlen,100);
 
-mu,K,len_scale = divand.divand_kernel(2,[1,2,1])
+mu,K,len_scale = DIVAnd.DIVAnd_kernel(2,[1,2,1])
 
 J(L) = sum(((covar - var0opt * K.(distx * len_scale/L))./stdcovar).^2)
 Jmin,imin = findmin(J.(L))
 lenopt = L[imin]
 
 
-var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
+var0opt,lensopt,distx,covar,fitcovar = DIVAnd.fit_isotropic(
     x,v,distbin,mincount)
 
 
@@ -71,7 +71,7 @@ var0opt,lensopt,distx,covar,fitcovar = divand.fit_isotropic(
 #fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/smalltestdata.txt"
 #A = readdlm(fname) :: Array{Float64,2}
 
-#const fitlen = divand.fitlen
+#const fitlen = DIVAnd.fitlen
 
 A = readdlm(joinpath(dirname(@__FILE__),"..","data","testdata.txt")) :: Array{Float64,2}
 
@@ -83,7 +83,7 @@ weight = A[:,4]
 
 # use all pairs
 nsamp = 0
-varbak,RL,dbinfo = divand.fitlen((x,y),d,weight,nsamp)
+varbak,RL,dbinfo = DIVAnd.fitlen((x,y),d,weight,nsamp)
 
 # reference value are  from DIVA fit (Fortran version)
 # git commit
@@ -96,7 +96,7 @@ varbak,RL,dbinfo = divand.fitlen((x,y),d,weight,nsamp)
 
 # random samples
 nsamp = 150
-varbak,RL,dbinfo = divand.fitlen((x,y),d,weight,nsamp)
+varbak,RL,dbinfo = DIVAnd.fitlen((x,y),d,weight,nsamp)
 
 # reference value from Julia implementation with seed set to 150
 # fluctuations are large for different seeds

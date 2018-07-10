@@ -1,7 +1,7 @@
 module ODVspreadsheet
 
 #using Logging
-using StringEncodings
+#using StringEncodings
 
 # Set logging level(DEBUG, INFO, WARNING, ERROR or CRITICAL)
 #loglevel = WARNING
@@ -30,9 +30,8 @@ Define composite type that will contain:
 * the column labels (array) and
 * the profiles (array of arrays).
 """
-
 global Spreadsheet
-type Spreadsheet
+mutable struct Spreadsheet
     metadata::Dict{String,String}
     # local name to a tuple of object and unit
     # //<subject>SDN:LOCAL:Chronological Julian Date</subject><object>SDN:P01::CJDY1101</object><units>SDN:P06::UTAA</units>
@@ -50,7 +49,6 @@ end
 Return the number of profiles in a ODV Spreadsheet `ODVData` loaded by
 `readODVspreadsheet`.
 """
-
 nprofiles(ODVData) = length(ODVData.profileList)
 
 
@@ -295,7 +293,6 @@ localnames(sheet) = String[strip(split(l,'[')[1]) for l in sheet.columnLabels]
 Return the column number `cn` of the first column with the local name
 `localname` (without the prefix "SDN:LOCAL:") in the ODV spreadsheet `sheet`.
 """
-
 colnumber(sheet,localname) = findfirst(localnames(sheet) .== localname)
 
 
@@ -312,7 +309,6 @@ elapsed in days from 00:00 on January 1 st 4713 BC. ... "
 
 The time origin is _not_ noon (12:00) on Monday, January 1, 4713 BC as for the Julia Date Number.
 """
-
 parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454142.) * (24*60*60*1000)))
 
 
@@ -344,7 +340,6 @@ of the vector `data`. Empty values are either replaced by `fillvalue`
 (if fillmode is :fill) or the previous value if repeated (if fillmode
 is :repeat)
 """
-
 function SDNparse!(col,fillmode,fillvalue,data)
     for i = 1:length(col)
         if col[i] == ""
@@ -380,7 +375,6 @@ Load a single column referred by the local name `locname` in the profile
 by `fillvalue` (if fillmode is :fill) or the previous value if repeated (if fillmode
 is :repeat)
 """
-
 function loaddata(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where T
     lenprof = size(profile,2)
 
@@ -404,7 +398,6 @@ The same as `loaddata`, but now the quality flag are also loaded.
 profile[i][j] is the j-th column of the i-th row of a profile.
 profile[i,j] is the i-th column of the j-th row of a profile.
 """
-
 function loaddataqv(sheet,profile,locname,fillvalue::T;
                     fillmode = :repeat,
                     qvlocalname = "QV:SEADATANET"
@@ -447,14 +440,13 @@ dataname is the P01 vocabulary name with the SDN prefix. If nametype is
  The resulting vectors have the data type `T`
 (expect the quality flag and `obstime`) .
 """
-
 function loadprofile(T,sheet,iprofile,dataname;
                      nametype = :P01,
                      qvlocalname = "QV:SEADATANET"
                      )
-    const fillvalue = T(NaN)
-    const filldate_jd = 0.
-    const filldate = parsejd(filldate_jd)
+    fillvalue = T(NaN)
+    filldate_jd = 0.
+    filldate = parsejd(filldate_jd)
 
     profile = sheet.profileList[iprofile]
     locnames = localnames(sheet)
@@ -564,8 +556,8 @@ end
 
 """
      profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
-        qv_flags = [divand.ODVspreadsheet.GOOD_VALUE,
-                    divand.ODVspreadsheet.PROBABLY_GOOD_VALUE],
+        qv_flags = [DIVAnd.ODVspreadsheet.GOOD_VALUE,
+                    DIVAnd.ODVspreadsheet.PROBABLY_GOOD_VALUE],
         nametype = :P01,
         qvlocalname = "QV:SEADATANET")
 
@@ -580,7 +572,7 @@ are vectors of `DateTime` and `String` respectively). Only values matching the
 quality flag `qv_flags` are retained. `qv_flags` is a vector of Strings
 (based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. "1" means "good value").
 One can also use the constants these constants (prefixed with
-`divand.ODVspreadsheet.`):
+`DIVAnd.ODVspreadsheet.`):
 
 `qvlocalname` is the column name to denote quality flags. It is assumed that the
 quality flags follow immediatly the data column.
@@ -604,14 +596,13 @@ If the ODV does not contain a semantic header (e.g. for the aggregated ODV files
 then local names must be used.
 
 ```julia-repl
-julia> data,lon,lat,depth,time,ids = divand.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
+julia> data,lon,lat,depth,time,ids = DIVAnd.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
       ["Water body salinity"]; nametype = :localname );
 ```
 
 No checks are done if the units are consistent.
 
 """
-
 function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
               nametype = :P01,
@@ -694,8 +685,6 @@ type `T` (expect `times` and `ids` which are vectors of `DateTime` and
 
 No checks are done if the units are consistent.
 """
-
-
 function load(T,dir::AbstractString,datanames;
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
               nametype = :P01)

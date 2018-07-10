@@ -1,5 +1,5 @@
 using Base.Test
-import divand
+import DIVAnd
 
 
 T = Float32
@@ -14,9 +14,9 @@ value = randn(T,nobs)
 ids = String[randstring(10) for i in 1:nobs]
 
 
-divand.saveobs(fname,"Salinity",value,(lon,lat,depth,time),ids;type_save = T)
+DIVAnd.saveobs(fname,"Salinity",value,(lon,lat,depth,time),ids;type_save = T)
 
-value2,lon2,lat2,depth2,time2,ids2 = divand.loadobs(T,fname,"Salinity")
+value2,lon2,lat2,depth2,time2,ids2 = DIVAnd.loadobs(T,fname,"Salinity")
 
 @test value == value2
 @test lon == lon2

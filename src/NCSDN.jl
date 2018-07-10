@@ -1,7 +1,6 @@
 module NCSDN
 
 using NCDatasets
-using DataArrays
 using Missings
 
 # import ODVspreadsheet:
@@ -59,8 +58,7 @@ function loadvar(ds,param;
     end
     
     dataarray = ds[param][:]
-    data = fill(fillvalue,size(dataarray))
-    data[.!ismissing.(dataarray)] =  dataarray.data[.!ismissing.(dataarray)]
+    data = nomissing(dataarray,fillvalue)
        
     if qfname in ds
         qf = ds[qfname].var[:]
@@ -73,7 +71,7 @@ function loadvar(ds,param;
 
         data[(.!keep_data)] = fillvalue
     end
-    
+
     return data
 end
 
@@ -165,7 +163,6 @@ Load all data in the vector of file names `fnames` corresponding to the paramete
 The output parameters correspondata to the data, longitude, latitude,
 depth, time (as `DateTime`) and an identifier (as `String`).
 """
-
 function load(T,fnames::Vector{TS},param;
               qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE]) where TS <: AbstractString
     data = T[]

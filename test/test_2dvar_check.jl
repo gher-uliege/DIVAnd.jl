@@ -1,4 +1,4 @@
-# Testing divand in 2 dimensions with independent verification.
+# Testing DIVAnd in 2 dimensions with independent verification.
 
 using Base.Test
 
@@ -40,7 +40,7 @@ end
 # diagonal R with constant diagonal elements
 
 epsilon2 = 0.05;
-xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
 @test xa ≈ xa_check
@@ -49,7 +49,7 @@ xa_check, diagP_check = naive_analysis(s,v)
 # diagonal R with varying diagonal elements
 
 diagR = sin(4x) + 2
-xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),diagR,primal=true)
+xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),diagR,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
 @test xa ≈ xa_check
@@ -59,7 +59,7 @@ xa_check, diagP_check = naive_analysis(s,v)
 # diagonal R with varying diagonal elements (2)
 
 R = Diagonal(sin(4x) + 2)
-xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
+xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
 @test xa ≈ xa_check
@@ -70,7 +70,7 @@ m = length(x)
 
 R = spdiagm((ones(m-1),4*ones(m),ones(m-1)),(-1,0,1))
 
-xa,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
+xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
 @test xa ≈ xa_check

@@ -1,13 +1,12 @@
 using NCDatasets
-using DataArrays
 using Missings
-import divand
+import DIVAnd
 
-NCSDN = divand.NCSDN
+NCSDN = DIVAnd.NCSDN
 
 
 basedir = joinpath(dirname(@__FILE__),"..","..",
-                   "divand-example-data","SDN_D85_WP8_netCDF_files_examples")
+                   "DIVAnd-example-data","SDN_D85_WP8_netCDF_files_examples")
 
 fname = joinpath(basedir,"netCDF_vertical_profiles_ctd.nc")
 

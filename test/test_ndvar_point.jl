@@ -1,7 +1,7 @@
-# A simple example of divand in 4 dimensions
+# A simple example of DIVAnd in 4 dimensions
 # with observations from an analytical function.
 
-using divand
+using DIVAnd
 using Base.Test
 
 # final grid
@@ -18,7 +18,7 @@ f = [2.]
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension,...
 
-mask,pmn,xyi = divand_rectdom([linspace(-1,1,s) for s in gridsize]...)
+mask,pmn,xyi = DIVAnd_rectdom([linspace(-1,1,s) for s in gridsize]...)
 
 
 sv = statevector((mask,))
@@ -31,24 +31,24 @@ epsilon2 = 1.;
 
 
 alpha = [1,2,1]
-fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
-mu,K,len_scale = divand_kernel(n,alpha);
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
+mu,K,len_scale = DIVAnd_kernel(n,alpha);
 # xy is a tuple with the coordinates in every dimensions
 fit = [ K(len_scale * norm([xy...]./[len...])) for xy in zip(xyi...)]
 @test fi ≈ fit rtol=1e-2
 
 
 alpha = [1,3,3,1]
-fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
-mu,K,len_scale = divand_kernel(n,alpha);
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
+mu,K,len_scale = DIVAnd_kernel(n,alpha);
 # xy is a tuple with the coordinates in every dimensions
 fit = [ K(len_scale * norm([xy...]./[len...])) for xy in zip(xyi...)]
 @test fi ≈ fit rtol=1e-2
 
 
 alpha = [1,0,1]
-fi,s = divandrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha,scale_len = false)
-mu,K,len_scale = divand_kernel(n,alpha);
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha,scale_len = false)
+mu,K,len_scale = DIVAnd_kernel(n,alpha);
 # xy is a tuple with the coordinates in every dimensions
 fit = [ K(len_scale * norm([xy...]./[len...])) for xy in zip(xyi...)]
 @test fi ≈ fit rtol=0.5

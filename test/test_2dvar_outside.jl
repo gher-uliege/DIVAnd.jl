@@ -1,6 +1,6 @@
-# Testing divand in 2 dimensions with data outside of the domain
+# Testing DIVAnd in 2 dimensions with data outside of the domain
 
-#using divand
+#using DIVAnd
 
 # grid of background field
 xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100))
@@ -23,11 +23,11 @@ leny = .15;
 epsilon2 = 0.05;
 
 # analysis with all values
-va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
+va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
 
 # analysis with only values inside the domain
 inside = 1:1
-va2,s = divandrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,leny),epsilon2)
+va2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,leny),epsilon2)
 
 @test va == va2
 
@@ -36,10 +36,10 @@ x = [0.5, .9]
 y = [0.5, .5]
 v = [1.,  1.]
 mask[end-40:end,:] = false
-va,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
+va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
 
 inside = 1:1
-va2,s = divandrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,leny),epsilon2)
+va2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,leny),epsilon2)
 
 @test va[mask] == va2[mask]
 

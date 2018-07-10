@@ -1,19 +1,19 @@
-# divand
+# DIVAnd
 
-[![Build Status Linux and macOS](https://travis-ci.org/gher-ulg/divand.jl.svg?branch=master)](https://travis-ci.org/gher-ulg/divand.jl)
-[![Build Status Windows](https://ci.appveyor.com/api/projects/status/github/gher-ulg/divand.jl?branch=master&svg=true)](https://ci.appveyor.com/project/Alexander-Barth/divand-jl)
+[![Build Status Linux and macOS](https://travis-ci.org/gher-ulg/DIVAnd.jl.svg?branch=master)](https://travis-ci.org/gher-ulg/DIVAnd.jl)
+[![Build Status Windows](https://ci.appveyor.com/api/projects/status/github/gher-ulg/DIVAnd.jl?branch=master&svg=true)](https://ci.appveyor.com/project/Alexander-Barth/DIVAnd-jl)
 
-[![Coverage Status](https://coveralls.io/repos/gher-ulg/divand.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/gher-ulg/divand.jl?branch=master)
-[![codecov.io](http://codecov.io/github/gher-ulg/divand.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/divand.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/gher-ulg/DIVAnd.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/gher-ulg/DIVAnd.jl?branch=master)
+[![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 
-<!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/divand.jl/stable/)-->
-[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/divand.jl/latest/)
+<!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)-->
+[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
 
-`divand` performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
+`DIVAnd` performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
 
-Please cite this paper as follows if you use `divand` in a publication:
+Please cite this paper as follows if you use `DIVAnd` in a publication:
 
-Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: divand-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
+Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: DIVAnd-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
 
 
 # Installing
@@ -24,14 +24,14 @@ Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` 
 apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
 ```
 
-Your need [Julia](http://julialang.org) to run `divand`. The command line version is sufficient for `divand`.
+Your need [Julia](http://julialang.org) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
-Pkg.clone("https://github.com/gher-ulg/divand.jl")
+Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl")
 ```
 
-It is not recommended to download the source of `divand.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `divand.jl` manually.
+It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
 
 # Testing
 
@@ -41,16 +41,16 @@ Make sure to be in a directory with write-access (for example your home director
 You can change the directory to your home directory with the `cd(homedir())` command.
 
 ```julia
-Pkg.test("divand")
+Pkg.test("DIVAnd")
 ```
 
 All tests should pass without error.
 
 ```
-INFO: Testing divand
+INFO: Testing DIVAnd
 Test Summary: | Pass  Total
-  divand      |   100     100
-INFO: divand tests passed
+  DIVAnd      |   100     100
+INFO: DIVAnd tests passed
 ```
 
 The test suite will download some sample data.
@@ -58,21 +58,21 @@ You need to have internet access and run the test function from a directory with
 
 # Documentation
 
-The main routine of this toolbox is called `divand` which performs an n-dimensional variational analysis of arbitrarily located observations. Type the following in Julia to view a list of parameters:
+The main routine of this toolbox is called `DIVAnd` which performs an n-dimensional variational analysis of arbitrarily located observations. Type the following in Julia to view a list of parameters:
 
 ```julia
-using divand
-?divandrun
+using DIVAnd
+?DIVAndrun
 ```
 
-see also https://gher-ulg.github.io/divand.jl/latest/index.html
+see also https://gher-ulg.github.io/DIVAnd.jl/latest/index.html
 
 ## Example
 
-[divand_simple_example_4D.jl](https://github.com/gher-ulg/divand.jl/blob/master/examples/divand_simple_example_4D.jl) is a basic example in fours dimensions. The call to `divandrun` looks like this:
+[DIVAnd_simple_example_4D.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/DIVAnd_simple_example_4D.jl) is a basic example in fours dimensions. The call to `DIVAndrun` looks like this:
 
 ```julia
-fi,s = divandrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
+fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
 
 ```
 where
@@ -88,16 +88,16 @@ The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
 
 ## Note on which analysis function to use
 
-`divandrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when muliplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
+`DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when muliplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
 
-`divandgo` is only needed for very large problems when a call to `divandrun` leads to memory or CPU time problems. This functions tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `divandrun` are available.
+`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This functions tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
 
-`diva3D` is higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `divandrun`.
+`diva3D` is higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
 
 
 ## Note about the background field
 
-If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling divand and then add the first guess back in.
+If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling DIVAnd and then add the first guess back in.
 
 ## Determining the analysis parameters
 
@@ -114,7 +114,7 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
-Tools to help you are included in  ([divand_cv.jl](https://github.com/gher-ulg/divand.jl/blob/master/src/divand_cv.jl)).
+Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
 
 ## Advanced usage
 
@@ -124,7 +124,7 @@ An arbitrary number of additional constraints can be included to the cost functi
 
 *J*(**x**) = ∑<sub>*i*</sub> (**C**<sub>*i*</sub> **x**  - **z**<sub>*i*</sub>)ᵀ **Q**<sub>*i*</sub><sup>-1</sup> (**C**<sub>*i*</sub> **x** - **z**<sub>*i*</sub>)
 
-For every constrain, a structure with the following fields is passed to `divand`:
+For every constrain, a structure with the following fields is passed to `DIVAnd`:
 
 * `yo`: the vector **z**<sub>*i*</sub>
 * `H`: the matrix **C**<sub>*i*</sub>
@@ -134,9 +134,9 @@ Internally the observations are also implemented as constraint defined in this w
 
 # Example data
 
-Some examples in `divand.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `divand-example-data` should be placed on the same level than the directory `divand.jl`.
+Some examples in `DIVAnd.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `DIVAnd-example-data` should be placed on the same level than the directory `DIVAnd.jl`.
 
 
 # Fun
 
-An [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
+An [educational web application](http://data-assimilation.net/Tools/DIVAnd_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.

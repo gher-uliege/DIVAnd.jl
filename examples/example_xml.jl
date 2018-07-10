@@ -1,11 +1,11 @@
 
 
 using Base.Test
-import divand
+import DIVAnd
 
 
 basedir = joinpath(dirname(@__FILE__),"..","..",
-                   "divand-example-data","CDI-list")
+                   "DIVAnd-example-data","CDI-list")
 
 ignore_errors = true
 filepath = joinpath(basedir,"Water_body_Salinity.4Danl.nc")
@@ -26,5 +26,5 @@ if !isfile(cdilist)
 end
 
 
-divand.divadoxml(filepath,varname,project,cdilist,xmlfilename,
+DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename,
           ignore_errors = ignore_errors)

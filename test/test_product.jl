@@ -1,4 +1,4 @@
-import divand
+import DIVAnd
 using Base.Test
 using DataStructures
 using Missings
@@ -9,11 +9,11 @@ varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
 
-bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data",
+bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
                     "Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
 
-obsname = joinpath(dirname(@__FILE__),"..","..","divand-example-data",
+obsname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
                     "Provencal","WOD-Salinity.nc")
 
 cdilist = joinpath(dirname(@__FILE__),"..","data","CDI-list-export.csv")
@@ -27,7 +27,7 @@ if !isfile(obsname)
     obsname = download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download")
 end
 
-value,lon,lat,depth,time,ids = divand.loadobs(Float64,obsname,"Salinity")
+value,lon,lat,depth,time,ids = DIVAnd.loadobs(Float64,obsname,"Salinity")
 
 # for testing only
 ids[1] = "100-123"
@@ -66,7 +66,7 @@ monthlists = [
 ];
 
 
-TS = divand.TimeSelectorYW(years,year_window,monthlists)
+TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 
 varname = "Salinity"
 
@@ -133,16 +133,16 @@ metadata = OrderedDict(
 
 
 # edit the bathymetry
-mask,(pm,pn,po),(xi,yi,zi) = divand.domain(bathname,bathisglobal,lonr,latr,depthr)
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr,depthr)
 mask[3,3,1] = false
 
-ncglobalattrib,ncvarattrib = divand.SDNMetadata(metadata,filename,varname,lonr,latr)
+ncglobalattrib,ncvarattrib = DIVAnd.SDNMetadata(metadata,filename,varname,lonr,latr)
 
 if isfile(filename)
    rm(filename) # delete the previous analysis
 end
 
-divand.diva3d((lonr,latr,depthr,TS),
+@test_warn r".netCDF.*" DIVAnd.diva3d((lonr,latr,depthr,TS),
               (lon,lat,depth,time),
               value,
               (lenx,leny,lenz),
@@ -155,15 +155,16 @@ divand.diva3d((lonr,latr,depthr,TS),
               mask = mask,
        )
 
-divand.saveobs(filename,(lon,lat,depth,time),ids)
+DIVAnd.saveobs(filename,(lon,lat,depth,time),ids)
 
 
 project = "SeaDataCloud"
 xmlfilename = "test.xml"
 ignore_errors = true
 
-divand.divadoxml(filename,varname,project,cdilist,xmlfilename,
-          ignore_errors = ignore_errors)
+@test_warn r".*Not all.*" DIVAnd.divadoxml(
+    filename,varname,project,cdilist,xmlfilename,
+    ignore_errors = ignore_errors)
 
 errname = "$(replace(filename,r"\.nc$","")).cdi_import_errors_test.csv"
 
@@ -188,7 +189,7 @@ if isfile(filename2)
    rm(filename2) # delete the previous analysis
 end
 
-dbinfo = divand.diva3d(
+dbinfo = @test_warn r".*Be patient.*" DIVAnd.diva3d(
     (lonr,latr,depthr,TS),
     (lon,lat,depth,time),
     value,
@@ -199,19 +200,14 @@ dbinfo = divand.diva3d(
     bathisglobal = bathisglobal,
     ncvarattrib = ncvarattrib,
     ncglobalattrib = ncglobalattrib,
-    background = divand.backgroundfile(filename,varname),
+    background = DIVAnd.backgroundfile(filename,varname),
     fitcorrlen = true,
     background_len = (lenx,leny,lenz),
     fithorz_param = Dict(
-        :distbin => collect(0.:0.1:6),
-        :nmean => 50,
-        :minlen => 1.,
         :maxnsamp => 500,
     ),
     fitvert_param = Dict(
-        :distbin => collect([0.:50:400; 500:100:600]),
-        :nmean => 50,
-        :minlen => 10.,
+        :maxnsamp => 100,
     ),
     mask = mask,
     niter_e = 2,

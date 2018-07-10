@@ -10,7 +10,6 @@ Output:
   Dx1,Dx2,...,Dxn: operators represeting a gradient along
     different dimensions
 """
-
 function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
 
     H = oper_pack(operatortype,mask)
@@ -32,7 +31,7 @@ function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
         push!(out,oper_pack(operatortype,m) * oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
     end
 
-    return (out...)
+    return (out...,)
 end
 
 

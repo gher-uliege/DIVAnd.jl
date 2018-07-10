@@ -5,7 +5,7 @@
 # https://github.com/PetterS/SuiteSparse/blob/27e5a8516464a6ac40bd3fa0e5b46e51b11f4765/CHOLMOD/MatrixOps/cholmod_ssmult.c#L239
 
 """compute non-zero values of A*B"""
-function myspmatmul_nnz{Tv,Ti}(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti})
+function myspmatmul_nnz(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}) where {Tv,Ti}
 
     mA, nA = size(A)
     mB, nB = size(B)
@@ -39,7 +39,7 @@ end
 
 
 
-function myspmatmul_unsorted{Tv,Ti}(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}, nnzC::Ti)
+function myspmatmul_unsorted(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}, nnzC::Ti) where {Tv,Ti}
 
     mA, nA = size(A)
     mB, nB = size(B)

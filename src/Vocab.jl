@@ -2,7 +2,7 @@ module Vocab
 
 using Base
 using EzXML
-import Requests
+import HTTP
 import Base.find
 import Base.findfirst
 import Base.repr
@@ -18,11 +18,11 @@ const namespaces = Dict(
 const CFStandardNameURL = "http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml"
 const CFAreaTypesURL = "http://cfconventions.org/Data/area-type-table/current/src/area-type-table.xml"
 
-type CFVocab
+mutable struct CFVocab
     xdoc :: EzXML.Document
 end
 
-type CFEntry
+mutable struct CFEntry
     node :: EzXML.Node
 end
 
@@ -44,8 +44,8 @@ entry = collection["sea_water_temperature"]
 
 """
 function CFVocab(; url = CFStandardNameURL)
-    r = Requests.get(url)
-    data = readstring(r)
+    r = HTTP.get(url)
+    data = String(r.body)
     try
         xdoc = EzXML.parsexml(data)
         return CFVocab(xdoc)
@@ -65,7 +65,6 @@ end
 Return true if `stdname` is part of the NetCDF CF Standard Name vocabulary
 `collection`.
 """
-
 Base.haskey(c::CFVocab,stdname) = length([e for e in find(c.xdoc,"//entry") if e["id"] == stdname ]) > 0
 
 for (method,tag) in [(:description,"description"),
@@ -87,7 +86,6 @@ end
 Split a concept URL into collection, tag and key.
 url must finishe with a slash.
 """
-
 function splitURL(url)
     collection,tag,key = split(url,"/")[end-3:end-1]
     return collection,tag,key
@@ -117,13 +115,13 @@ function resolve(urn)
     end
 end
 
-type Concept
+mutable struct Concept
     xdoc :: EzXML.Document
 end
 
 function Concept(url::AbstractString)
-    r = Requests.get(url)
-    xdoc = parsexml(readstring(r))
+    r = HTTP.get(url)
+    xdoc = parsexml(String(r.body))
     return Concept(xdoc)
 end
 
@@ -181,12 +179,11 @@ end
 Return the first related concepts in the collection `collection`.
 `name` can be the string "related", "narrower", "broader".
 """
-
 Base.findfirst(c::Concept,name,collection) = find(c,name,collection)[1]
 
 # baseurl e.g. http://www.seadatanet.org/urnurl/collection/P01/current/
 # must containt a trailing /
-type Collection{T <: AbstractString}
+mutable struct Collection{T <: AbstractString}
     baseurl :: T
 end
 
@@ -200,16 +197,15 @@ http://www.seadatanet.org/urnurl/collection/
 The collection can be indexed with brackets using the identifier.
 
 ```
-using divand
+using DIVAnd
 collection = Vocab.SDNCollection("P01")
 concept = collection["PSALPR01"]
 @show Vocab.prefLabel(concept)
 ```
 """
-
 SDNCollection(name) = Collection("http://www.seadatanet.org/urnurl/collection/$(name)/current/")
 
-type EDMO{T <: AbstractString}
+mutable struct EDMO{T <: AbstractString}
     baseurl :: T
 end
 
@@ -218,13 +214,13 @@ EDMO() = EDMO("http://www.seadatanet.org/urnurl/SDN:EDMO::")
 Base.getindex(e::EDMO,identifier) = EDMOEntry("$(e.baseurl)$(identifier)")
 
 
-type EDMOEntry
+mutable struct EDMOEntry
     xdoc :: EzXML.Document
 end
 
 function EDMOEntry(url::AbstractString)
-    r = Requests.get(url)
-    xdoc = parsexml(readstring(r))
+    r = HTTP.get(url)
+    xdoc = parsexml(String(r.body))
     return EDMOEntry(xdoc)
 end
 

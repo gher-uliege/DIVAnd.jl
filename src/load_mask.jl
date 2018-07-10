@@ -1,6 +1,6 @@
 
 """
-    bx,by,b = divand.extract_bath(bath_name,isglobal,xi,yi)
+    bx,by,b = DIVAnd.extract_bath(bath_name,isglobal,xi,yi)
 
 Extract the bathymetry from the NetCDF file `bathname`. The parameter `isglobal`
  is true if the NetCDF file covers the whole globe and thus the last longitude
@@ -12,7 +12,7 @@ interpolation is performed.
 """
 function extract_bath(bath_name,isglobal,xi,yi)
 
-    info("Extracting bathymetry from file: $(bath_name)")
+    #info("Extracting bathymetry from file: $(bath_name)")
     # if isglobal == true
         #info("Working with a global bathymetry");
     # end;
@@ -62,7 +62,7 @@ function extract_bath(bath_name,isglobal,xi,yi)
 end
 
 """
-    xi,yi,bath = divand.load_bath(bath_name,isglobal,xi,yi)
+    xi,yi,bath = DIVAnd.load_bath(bath_name,isglobal,xi,yi)
 
 Load the bathymetry from the NetCDF file `bathname`. The parameter `isglobal` is true if the NetCDF file covers
 the whole globe and thus the last longitude point can be considered to be right next to the first longitude point.
@@ -70,7 +70,6 @@ the whole globe and thus the last longitude point can be considered to be right 
 interpolated.
 
 """
-
 function load_bath(bath_name,isglobal,xi,yi)
 
     bx,by,b = extract_bath(bath_name,isglobal,xi,yi)
@@ -117,10 +116,9 @@ interpolated.
 **Convention:** in the water, `level` is positive and in the air `level` is negative.
 
 """
-
 function load_mask(bath_name,isglobal,xi,yi,level::Number)
 
-    info("Creating land-sea mask on level: $(level)")
+    #info("Creating land-sea mask on level: $(level)")
 
     bx,by,b = extract_bath(bath_name,isglobal,xi,yi)
 

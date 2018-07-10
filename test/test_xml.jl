@@ -1,7 +1,5 @@
-### DDR3 12800
-
 using Base.Test
-import divand
+import DIVAnd
 
 
 db = Dict{Tuple{Int64,String},Tuple{Bool,Vector{Int64}}}(
@@ -13,7 +11,7 @@ db = Dict{Tuple{Int64,String},Tuple{Bool,Vector{Int64}}}(
 
 obsids = ["1-A","2-B","1000-A","2-C"]
 
-originators,notfound = divand.get_originators_from_obsid(
+originators,notfound = @test_warn r".*EDMO.*" DIVAnd.get_originators_from_obsid(
     db,obsids; ignore_errors = true)
 
 @test originators[1]["EDMO_CODE"] == "1"
@@ -21,7 +19,7 @@ originators,notfound = divand.get_originators_from_obsid(
 @test notfound[1]["local_cdi"] == "A"
 
 
-contact = divand.getedmoinfo(1579,"role")
+contact = DIVAnd.getedmoinfo(1579,"role")
 @test contact["country"] == "Belgium"
 
 
@@ -34,7 +32,7 @@ csvfile = IOBuffer(""""active","author_edmo","cdi_identifier","originator_edmo"
 "True","42","A_63","12"
 """)
 
-db = divand.loadoriginators(csvfile)
+db = DIVAnd.loadoriginators(csvfile)
 
 @test db[(42,"A_53")] == (true,[12])
 @test db[(42,"A_55")] == (true,[13,17])

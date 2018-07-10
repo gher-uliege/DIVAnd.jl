@@ -1,7 +1,3 @@
-"""
-
-"""
-
 function jmBix(s,x::Array{Float64,1};btrunc=[])
 
     iBx=s.iB*x   ::Array{Float64,1}
@@ -25,7 +21,7 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
         # @show size(x)
         # @show size(s.iB)
         #iBx_ = spzeros(iBx);
-        iBx_=0.*iBx ::Array{Float64,1};
+        iBx_=0 * iBx ::Array{Float64,1};
 # Certainly a gain to make; not recompute D^(k+1) but Dk*D if k+1 is one larger than already calculated value if it exists
 # But only for n larger than 5 probably, so not an urgent thing
         
@@ -83,7 +79,7 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
     return iBx
 end
 
-# LocalWords:  iB divand
+# LocalWords:  iB DIVAnd
 
 # Copyright (C) 2014-2017 Alexander Barth	  	 <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	 <JM.Beckers@ulg.ac.be>

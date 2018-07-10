@@ -1,89 +1,89 @@
 
-divand
+DIVAnd
 
 
-# divand.jl documentation
+# DIVAnd.jl documentation
 
 
 
 ```@docs
-divand.diva3d
-divand.divandrun
-divand.divandgo
-divand.divand_averaged_bg
-divand.SDNMetadata
-divand.save
-divand.loadbigfile
-divand.checkobs
-divand.smoothfilter
-divand.Anam.loglin
-divand.Anam.logit
-divand.divadoxml
-divand.random
-divand.distance
-divand.interp
-divand.backgroundfile
-divand.Quadtrees.checkduplicates
+DIVAnd.diva3d
+DIVAnd.DIVAndrun
+DIVAnd.DIVAndgo
+DIVAnd.DIVAnd_averaged_bg
+DIVAnd.SDNMetadata
+DIVAnd.save
+DIVAnd.loadbigfile
+DIVAnd.checkobs
+DIVAnd.smoothfilter
+DIVAnd.Anam.loglin
+DIVAnd.Anam.logit
+DIVAnd.divadoxml
+DIVAnd.random
+DIVAnd.distance
+DIVAnd.interp
+DIVAnd.backgroundfile
+DIVAnd.Quadtrees.checkduplicates
 ```
 
 # Bathymetry and spatial-temporal domain
 
 ```@docs
-divand.load_bath
-divand.extract_bath
-divand.load_mask
-divand.divand_metric
-divand.domain
-divand.divand_rectdom
-divand.divand_squaredom
-divand.TimeSelectorYW
-divand.TimeSelectorYearListMonthList
+DIVAnd.load_bath
+DIVAnd.extract_bath
+DIVAnd.load_mask
+DIVAnd.DIVAnd_metric
+DIVAnd.domain
+DIVAnd.DIVAnd_rectdom
+DIVAnd.DIVAnd_squaredom
+DIVAnd.TimeSelectorYW
+DIVAnd.TimeSelectorYearListMonthList
 ```
 
 # Load observations
 
 ```@docs
-divand.saveobs
-divand.loadobs
-divand.NCSDN.load
-divand.NCSDN.loadvar
-divand.ODVspreadsheet.loaddata
-divand.ODVspreadsheet.parsejd
-divand.ODVspreadsheet.myparse
+DIVAnd.saveobs
+DIVAnd.loadobs
+DIVAnd.NCSDN.load
+DIVAnd.NCSDN.loadvar
+DIVAnd.ODVspreadsheet.loaddata
+DIVAnd.ODVspreadsheet.parsejd
+DIVAnd.ODVspreadsheet.myparse
 ```
 
 # Parameter optimization
 
 ```@docs
-divand.fit_isotropic
-divand.fit
-divand.divand_cv
-divand.empiriccovar
-divand.fithorzlen
-divand.fitvertlen
-divand.lengraddepth
-divand.divand_cvestimator
-divand.weight_RtimesOne
-divand.Rtimesx!
+DIVAnd.fit_isotropic
+DIVAnd.fit
+DIVAnd.DIVAnd_cv
+DIVAnd.empiriccovar
+DIVAnd.fithorzlen
+DIVAnd.fitvertlen
+DIVAnd.lengraddepth
+DIVAnd.DIVAnd_cvestimator
+DIVAnd.weight_RtimesOne
+DIVAnd.Rtimesx!
 ```
 
 # Vocabulary
 
 
 ```@docs
-divand.Vocab.@urn_str
-divand.Vocab.CFVocab
-Base.haskey(collection::divand.Vocab.CFVocab,stdname)
-divand.Vocab.SDNCollection
-divand.Vocab.prefLabel
-divand.Vocab.altLabel
-divand.Vocab.notation
-divand.Vocab.definition
-divand.Vocab.resolve
-divand.Vocab.find(c::divand.Vocab.Concept,name,collection)
-divand.Vocab.description
-divand.Vocab.canonical_units
-divand.Vocab.splitURL
+DIVAnd.Vocab.@urn_str
+DIVAnd.Vocab.CFVocab
+Base.haskey(collection::DIVAnd.Vocab.CFVocab,stdname)
+DIVAnd.Vocab.SDNCollection
+DIVAnd.Vocab.prefLabel
+DIVAnd.Vocab.altLabel
+DIVAnd.Vocab.notation
+DIVAnd.Vocab.definition
+DIVAnd.Vocab.resolve
+DIVAnd.Vocab.find(c::DIVAnd.Vocab.Concept,name,collection)
+DIVAnd.Vocab.description
+DIVAnd.Vocab.canonical_units
+DIVAnd.Vocab.splitURL
 ```
 
 # Internal API or advanced usage
@@ -92,9 +92,9 @@ divand.Vocab.splitURL
 ## State vector
 
 ```@docs
-divand.statevector
-divand.pack
-divand.unpack
+DIVAnd.statevector
+DIVAnd.pack
+DIVAnd.unpack
 Base.sub2ind
 Base.ind2sub
 Base.length
@@ -103,111 +103,109 @@ Base.length
 ## Constraints
 
 ```@docs
-divand_constr_fluxes
-divand_constr_constcoast
+DIVAnd_constr_fluxes
+DIVAnd_constr_constcoast
 ```
 
 ## ODV files
 
 ```@docs
-divand.ODVspreadsheet.listSDNparams
-divand.ODVspreadsheet.load
-divand.ODVspreadsheet.localnames
-divand.ODVspreadsheet.Spreadsheet
-divand.ODVspreadsheet.loadprofile
-divand.ODVspreadsheet.loaddataqv
-divand.ODVspreadsheet.SDNparse!
-divand.ODVspreadsheet.colnumber
-divand.ODVspreadsheet.nprofiles
+DIVAnd.ODVspreadsheet.listSDNparams
+DIVAnd.ODVspreadsheet.load
+DIVAnd.ODVspreadsheet.localnames
+DIVAnd.ODVspreadsheet.Spreadsheet
+DIVAnd.ODVspreadsheet.loadprofile
+DIVAnd.ODVspreadsheet.loaddataqv
+DIVAnd.ODVspreadsheet.SDNparse!
+DIVAnd.ODVspreadsheet.colnumber
+DIVAnd.ODVspreadsheet.nprofiles
 ```
 
 ## Operators
 
 ```@docs
-divand.sparse_interp
-divand.sparse_interp_g
-divand.sparse_gradient
-divand.sparse_diff
-divand.matfun_trim
-divand.matfun_stagger
-divand.matfun_diff
-divand.matfun_shift
+DIVAnd.sparse_interp
+DIVAnd.sparse_interp_g
+DIVAnd.sparse_gradient
+DIVAnd.sparse_diff
+DIVAnd.matfun_trim
+DIVAnd.matfun_stagger
+DIVAnd.matfun_diff
+DIVAnd.matfun_shift
 ```
 
 ## Quadtree
 
 ```@docs
-divand.Quadtrees.QT
-divand.Quadtrees.rsplit!
-divand.Quadtrees.add!
-divand.Quadtrees.within
-divand.Quadtrees.bitget
-divand.Quadtrees.inside
-divand.Quadtrees.intersect
-divand.Quadtrees.split!
+DIVAnd.Quadtrees.QT
+DIVAnd.Quadtrees.rsplit!
+DIVAnd.Quadtrees.add!
+DIVAnd.Quadtrees.within
+DIVAnd.Quadtrees.bitget
+DIVAnd.Quadtrees.inside
+DIVAnd.Quadtrees.intersect
+DIVAnd.Quadtrees.split!
 ```
 
 
 ## Conjugate gradient
 
 ```@docs
-divand.conjugategradient
-divand.pc_none!
-divand.checksym
+DIVAnd.conjugategradient
+DIVAnd.pc_none!
+DIVAnd.checksym
 ```
 
 ## Utility functions
 
 ```@docs
-divand.divand_laplacian
-divand.divand_obscovar
-divand.divand_adaptedeps2
-divand.divand_diagHKobs
-divand.divand_residual
-divand.divand_addc
-divand.divand_erroratdatapoints
-divand.divand_iBpHtiRHx!
-divand.divand_GCVKii
-divand.divand_fittocpu
-divand.divand_background
-divand.divand_obs
-divand.divand_bc_stretch
-divand.divand_diagHK
-divand.divand_kernel
-divand.divand_residualobs
-divand.divand_aexerr
-divand.divand_cpme
-divand.divand_cpme_go
-divand.divand_datainboundingbox
-divand.divand_Lpmnrange
-divand.divand_pc_sqrtiB
-divand.divand_pc_none
-divand.divand_GCVKiiobs
-divand.divand_cutter
-divand.divand_qc
-divand.divand_solve!
-divand.divand_sampler
-divand.divandjog
-divand.divand_background_components
-divand.stats
-divand.statpos
-divand.blkdiag
+DIVAnd.DIVAnd_laplacian
+DIVAnd.DIVAnd_obscovar
+DIVAnd.DIVAnd_adaptedeps2
+DIVAnd.DIVAnd_diagHKobs
+DIVAnd.DIVAnd_residual
+DIVAnd.DIVAnd_addc
+DIVAnd.DIVAnd_erroratdatapoints
+DIVAnd.DIVAnd_GCVKii
+DIVAnd.DIVAnd_fittocpu
+DIVAnd.DIVAnd_background
+DIVAnd.DIVAnd_obs
+DIVAnd.DIVAnd_bc_stretch
+DIVAnd.DIVAnd_diagHK
+DIVAnd.DIVAnd_kernel
+DIVAnd.DIVAnd_residualobs
+DIVAnd.DIVAnd_aexerr
+DIVAnd.DIVAnd_cpme
+DIVAnd.DIVAnd_cpme_go
+DIVAnd.DIVAnd_datainboundingbox
+DIVAnd.DIVAnd_Lpmnrange
+DIVAnd.DIVAnd_pc_sqrtiB
+DIVAnd.DIVAnd_pc_none
+DIVAnd.DIVAnd_GCVKiiobs
+DIVAnd.DIVAnd_cutter
+DIVAnd.DIVAnd_qc
+DIVAnd.DIVAnd_solve!
+DIVAnd.DIVAnd_sampler
+DIVAnd.DIVAndjog
+DIVAnd.DIVAnd_background_components
+DIVAnd.stats
+DIVAnd.statpos
+DIVAnd.blkdiag
 Base.findfirst
-divand.formatsize
-divand.interp!
-divand.ufill
-divand.jmBix
-divand.cgradient
-divand.fzero
-divand.localize_separable_grid
-divand.decompB!
-divand.varanalysis
-divand.len_harmonize
-divand.alpha_default
-divand.ncfile
-divand.writeslice
-divand.encodeWMSStyle
-divand.loadoriginators
+DIVAnd.formatsize
+DIVAnd.interp!
+DIVAnd.ufill
+DIVAnd.cgradient
+DIVAnd.fzero
+DIVAnd.localize_separable_grid
+DIVAnd.decompB!
+DIVAnd.varanalysis
+DIVAnd.len_harmonize
+DIVAnd.alpha_default
+DIVAnd.ncfile
+DIVAnd.writeslice
+DIVAnd.encodeWMSStyle
+DIVAnd.loadoriginators
 ```
 
 
@@ -215,14 +213,14 @@ divand.loadoriginators
 # Examples
 
 To run the example, you need to install `PyPlot`.
-In the folder `examples` of divand, you can run e.g. the example `divand_simple_example_1D.jl` by issuing:
+In the folder `examples` of DIVAnd, you can run e.g. the example `DIVAnd_simple_example_1D.jl` by issuing:
 
 ```julia
-# cd("/path/to/divand/examples")
-include("divand_simple_example_1D.jl")
+# cd("/path/to/DIVAnd/examples")
+include("DIVAnd_simple_example_1D.jl")
 ```
 
-Replace `/path/to/divand/` by the installation directory of divand which is the output of `Pkg.dir("divand")` if you installed `divand` using Julias package manager.
+Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of `Pkg.dir("DIVAnd")` if you installed `DIVAnd` using Julias package manager.
 
 
 # Performance considerations
@@ -230,7 +228,7 @@ Replace `/path/to/divand/` by the installation directory of divand which is the 
 
 ## Tuning the domain decomposition
 
-The functions `diva3d` and `divandgo` split the domain into overlapping subdomains to reduce the required amount of memory. In some circumstances (in particular few vertical levels), this can unnecessarily degrade the performance. The CPU time of the analysis can be improved by increasing the `diva3d` option `memtofit` from 3 (default) to higher values (as long as one does not run out of memory). If this parameter is set to a very high value then the domain decomposition is effectively disabled.
+The functions `diva3d` and `DIVAndgo` split the domain into overlapping subdomains to reduce the required amount of memory. In some circumstances (in particular few vertical levels), this can unnecessarily degrade the performance. The CPU time of the analysis can be improved by increasing the `diva3d` option `memtofit` from 3 (default) to higher values (as long as one does not run out of memory). If this parameter is set to a very high value then the domain decomposition is effectively disabled.
 
 ## Multiple CPU system
 
@@ -242,9 +240,7 @@ BLAS.set_num_threads(2)
 
 # Information for developers
 
-## Update the documentation
-
-Install
+To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.
 
 ```julia
 Pkg.add("Documenter")
@@ -288,6 +284,15 @@ backend      : TkAgg
 
 The `matplotlibrc` need to be created if it does not exists.
 
+## C runtime library when calling PyPlot
+
+`R6034 an application has made an attempt to load the C runtime library incorrectly` on Windows 10 with julia 0.6.1, matplotlib 2.1.0, PyPlot 2.3.2:
+
+```julia
+ENV["MPLBACKEND"]="qt4agg"
+```
+You can put this line in a file `.juliarc.jl` placed in your home directory (the output of `homedir()` in Julia).
+
 ## Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
 
 Cloning METADATA or downloading a julia packages fails with:
@@ -317,7 +322,7 @@ At line:1 char:35
     [...]
 ```
 
-See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133
+See also the issue <https://github.com/JuliaWeb/MbedTLS.jl/issues/133>.
 
 The solution is to install the [Windows Management Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=40855).
 
@@ -350,7 +355,7 @@ However, the following command should work:
 ```
 
 Lukily, EzZML.jl includes a newer version of the `zlib` library, but it does not load the library automatically.
-(see also https://github.com/JuliaLang/julia/issues/7004 and https://github.com/JuliaIO/HDF5.jl/issues/97)
+(see also <https://github.com/JuliaLang/julia/issues/7004> and <https://github.com/JuliaIO/HDF5.jl/issues/97>)
 
 To make Julia use this library, a user on RedHat 6 should always start Julia with:
 
@@ -371,7 +376,7 @@ The script should be marked executable and it can be included in your Linux sear
 
 ## The DIVAnd test suite fails with `automatic download failed`
 
-Running `Pkg.test("divand")` fails with the error:
+Running `Pkg.test("DIVAnd")` fails with the error:
 
 ```julia
 automatic download failed (error: 2147500036)
@@ -400,16 +405,16 @@ git reset --hard
 
 and then in Julia run `Pkg.update()` again.
 
-If this does not work, then, you can also delete `~/.julia` (https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521) and in Julia enter `Pkg.init(); Pkg.update()`.
+If this does not work, then, you can also delete `~/.julia` (<https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521>) and in Julia enter `Pkg.init(); Pkg.update()`.
 
 
-## Convert error in `divand_obs`
+## Convert error in `DIVAnd_obs`
 
 The full error message:
 
 ```
-MethodError: Cannot `convert` an object of type divand.divand_constrain{Float32,Diagonal{Float64},SparseMatrixCSC{Float64,Int64}} to an object of type divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)
-This may have arisen from a call to the constructor divand.divand_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)(...),
+MethodError: Cannot `convert` an object of type DIVAnd.DIVAnd_constrain{Float32,Diagonal{Float64},SparseMatrixCSC{Float64,Int64}} to an object of type DIVAnd.DIVAnd_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)
+This may have arisen from a call to the constructor DIVAnd.DIVAnd_constrain{Float64,TR,TH} where TH<:(AbstractArray{#s370,2} where #s370<:Number) where TR<:(AbstractArray{#s371,2} where #s371<:Number)(...),
 since type constructors fall back to convert methods.
 ```
 
@@ -438,19 +443,24 @@ should be written as
 
 ## Error in the factorisation
 
-The following message
+The error message `Base.LinAlg.PosDefException(95650)`
+followed by the stack-trace below might be due to a wrong choice in the analysis parameters, for example a too long correlation length.
 
-```julia
-Base.LinAlg.PosDefException(95650)
 ```
-
-followed by the stack-trace starting with:
-```julia
 Stacktrace:
  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360
  .................
- [9] divandrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/divand/src/divandrun.jl:147
- ```
+ [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147
+```
 
- might be due to a wrong choice in the analysis parameters, for example a too long
- correlation length.
+
+## Installing additional packages when using a git clone
+
+If `DIVAnd` is installed without the package manager, it can be necessary
+to install additional packages. This will be explicitly shown,
+for example:
+
+```
+LoadError: ArgumentError: Module Roots not found in current path.
+Run `Pkg.add("Roots")` to install the Roots package.
+```

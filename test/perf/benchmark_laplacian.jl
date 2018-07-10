@@ -1,15 +1,15 @@
 using Base.Cartesian
 using Base.Test
-import divand
+import DIVAnd
 
 for N = 1:6
     @show N
     @eval begin
 
-        function divand_laplacian_prepare2{T}(mask::BitArray{$N},
-                                              pmn::NTuple{$N,Vector{T}},
-                                              nu::NTuple{$N,Vector{T}})
-            const sz = size(mask)
+        function DIVAnd_laplacian_prepare2(mask::BitArray{$N},
+                                           pmn::NTuple{$N,Vector{T}},
+                                           nu::NTuple{$N,Vector{T}}) where T
+            sz = size(mask)
             ivol = ones(T,sz)
 
             @nloops $N i d->1:sz[d] begin
@@ -19,7 +19,7 @@ for N = 1:6
                 end
             end
 
-            const nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
+            nus = ntuple(i -> zeros(T,sz),$N)::NTuple{$N,Array{T,$N}}
 
             # This heavily uses macros to generate fast code
             # In e.g. 3 dimensions
@@ -49,7 +49,7 @@ for N = 1:6
                             (@nref $N tmp i) /= pm_i[i_m]
                         end
 
-                        if !(@nref $N mask i) || !(@nref $N mask l->(l==j?i_l+1:i_l))
+                        if !(@nref $N mask i) || !(@nref $N mask l->(l==j ? i_l+1 : i_l))
                             (@nref $N tmp i) = 0
                         end
                     end
@@ -75,7 +75,7 @@ for N = 1:6
         end
 
 
-        function divand_laplacian_apply2!{T}(mask,ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N})
+        function DIVAnd_laplacian_apply2!(mask,ivol,nus,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N}) where T
             sz = size(x)
             Lx[:] = 0
 
@@ -86,14 +86,14 @@ for N = 1:6
 
                     if (@nref $N mask i)
                         if i_d1 < sz[d1]
-                            @inbounds if (@nref $N mask d2->(d2==d1?i_d2+1:i_d2))
-                                @inbounds (@nref $N Lx i) += tmp2[i_d1] * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                            @inbounds if (@nref $N mask d2->(d2==d1 ? i_d2+1 : i_d2))
+                                @inbounds (@nref $N Lx i) += tmp2[i_d1] * ((@nref $N x d2->(d2==d1 ? i_d2+1 : i_d2)) - (@nref $N x i))
                             end
                         end
 
                         if i_d1 > 1
-                            @inbounds if (@nref 2 mask d2->(d2==d1?i_d2-1:i_d2))
-                                @inbounds (@nref $N Lx i) -= tmp2[i_d1-1] * ((@nref $N x i) - (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                            @inbounds if (@nref 2 mask d2->(d2==d1 ? i_d2-1 : i_d2))
+                                @inbounds (@nref $N Lx i) -= tmp2[i_d1-1] * ((@nref $N x i) - (@nref $N x d2->(d2==d1 ? i_d2-1 : i_d2)))
                             end
                         end
                     end
@@ -105,7 +105,7 @@ for N = 1:6
 
 
 
-        function divand_laplacian_apply3!{T}(mask,pmn,nu,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N})
+        function DIVAnd_laplacian_apply3!(mask,pmn,nu,x::AbstractArray{T,$N},Lx::AbstractArray{T,$N}) where T
             sz = size(x)
 
             # This heavily uses macros to generate fast code
@@ -127,7 +127,7 @@ for N = 1:6
 
                         #
                         if i_d1 < sz[d1]
-                            if (@nref $N mask l->(l==d1?i_l+1:i_l))
+                            if (@nref $N mask l->(l==d1 ? i_l+1 : i_l))
 
                                 mytmp = 0.5 * (nu_i[i_d1+1] + nu_i[i_d1])
                                 @nexprs $N m->begin
@@ -139,12 +139,12 @@ for N = 1:6
                                     end
                                 end
 
-                                @inbounds (@nref $N Lx i) += mytmp * ((@nref $N x d2->(d2==d1?i_d2+1:i_d2)) - (@nref $N x i))
+                                @inbounds (@nref $N Lx i) += mytmp * ((@nref $N x d2->(d2==d1 ? i_d2+1 : i_d2)) - (@nref $N x i))
                             end
                         end
 
                         if i_d1 > 1
-                            if (@nref $N mask l->(l==d1?i_l-1:i_l))
+                            if (@nref $N mask l->(l==d1 ? i_l-1 : i_l))
 
                                 mytmp = 0.5 * (nu_i[i_d1] + nu_i[i_d1-1])
                                 @nexprs $N m->begin
@@ -157,7 +157,7 @@ for N = 1:6
                                 end
 
 
-                                @inbounds (@nref $N Lx i) -= mytmp * ((@nref $N x i) - (@nref $N x d2->(d2==d1?i_d2-1:i_d2)))
+                                @inbounds (@nref $N Lx i) -= mytmp * ((@nref $N x i) - (@nref $N x d2->(d2==d1 ? i_d2-1 : i_d2)))
                             end
                         end
                     end
@@ -175,7 +175,7 @@ function test_sp(mask,pmn,nu,x0,Nmax=1)
     sz = size(x0)
     x = x0[mask]
 
-    L = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
+    L = DIVAnd.DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
 
     @time @inbounds for nt = 1:Nmax
         x = L*x
@@ -191,7 +191,7 @@ function test_sp_inplace(mask,pmn,nu,x0,Nmax=1)
     sz = size(x0)
     x = x0[mask]
 
-    L = divand.divand_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
+    L = DIVAnd.DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(ndims(mask)))
     Lx = similar(x)
 
     @time @inbounds for nt = 1:Nmax
@@ -206,12 +206,12 @@ function test_sp_inplace(mask,pmn,nu,x0,Nmax=1)
 end
 
 function test_lap8(mask,pmn,nu,x0,Nmax=1)
-    ivol,nus = divand.divand_laplacian_prepare(mask,pmn,nu)
+    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
     x = copy(x0)
     Lx = similar(x)
 
     @time @inbounds for nt = 1:Nmax
-        divand.divand_laplacian_apply!(ivol,nus,x,Lx)
+        DIVAnd.DIVAnd_laplacian_apply!(ivol,nus,x,Lx)
         x[:] = Lx
     end
 
@@ -219,13 +219,13 @@ function test_lap8(mask,pmn,nu,x0,Nmax=1)
 end
 
 function test_lapv(mask,pmn,nu,x0,Nmax=1)
-    ivol,nus = divand_laplacian_prepare2(mask,pmn,nu)
+    ivol,nus = DIVAnd_laplacian_prepare2(mask,pmn,nu)
     x = copy(x0)
     Lx = similar(x)
 
     @time @inbounds for nt = 1:Nmax
-        #divand_laplacian_apply2!(mask,ivol,nus,x,Lx)
-        divand.divand_laplacian_apply!(ivol,nus,x,Lx)
+        #DIVAnd_laplacian_apply2!(mask,ivol,nus,x,Lx)
+        DIVAnd.DIVAnd_laplacian_apply!(ivol,nus,x,Lx)
         x[:] = Lx
     end
 
@@ -239,7 +239,7 @@ function test_lapv3(mask,pmn,nu,x0,Nmax=1)
     Lx = similar(x)
 
     @time @inbounds for nt = 1:Nmax
-        divand_laplacian_apply3!(mask,pmn,nu,x,Lx)
+        DIVAnd_laplacian_apply3!(mask,pmn,nu,x,Lx)
         x[:] = Lx
     end
 
@@ -258,7 +258,7 @@ sz = (50,50,50)
 x = randn(sz)
 mask = trues(sz)
 
-ij = divand.ndgrid([Float64.(1:s) for s in sz]...)
+ij = DIVAnd.ndgrid([Float64.(1:s) for s in sz]...)
 x = ij[1].^2
 
 if length(sz) == 20
@@ -270,8 +270,8 @@ else
     pmnv = ntuple(i -> (i+2.) * collect(1:sz[i]),length(sz))
     nuv = ntuple(i -> (i+2.) * collect(1:sz[i]).^2,length(sz))
 
-    pmn = divand.ndgrid(pmnv...)
-    nu = divand.ndgrid(nuv...)
+    pmn = DIVAnd.ndgrid(pmnv...)
+    nu = DIVAnd.ndgrid(nuv...)
 
 end
 

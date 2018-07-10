@@ -1,4 +1,4 @@
-import divand
+import DIVAnd
 using Base.Test
 using DataStructures
 using Missings
@@ -9,11 +9,11 @@ varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
 
-bathname = joinpath(dirname(@__FILE__),"..","..","divand-example-data",
+bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
                     "Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
 
-obsname = joinpath(dirname(@__FILE__),"..","..","divand-example-data",
+obsname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
                     "Provencal","WOD-Salinity.nc")
 
 cdilist = joinpath(dirname(@__FILE__),"..","data","CDI-list-export.csv")
@@ -27,7 +27,7 @@ if !isfile(obsname)
     obsname = download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download")
 end
 
-value,lon,lat,depth,time,ids = divand.loadobs(Float64,obsname,"Salinity")
+value,lon,lat,depth,time,ids = DIVAnd.loadobs(Float64,obsname,"Salinity")
 
 sel = depth .< 10
 
@@ -59,7 +59,7 @@ monthlists = [
 ];
 
 
-TS = divand.TimeSelectorYW(years,year_window,monthlists)
+TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 
 varname = "Salinity"
 
@@ -125,7 +125,7 @@ metadata = OrderedDict(
     "doi" => "...")
 
 
-divand.diva3d((lonr,latr,TS),
+@test_warn r".*" DIVAnd.diva3d((lonr,latr,TS),
               (lon[sel],lat[sel],time[sel]),
               value[sel],
               (lenx,leny),

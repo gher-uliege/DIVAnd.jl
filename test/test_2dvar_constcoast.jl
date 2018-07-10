@@ -1,9 +1,9 @@
-# Testing divand in 2 dimensions with advection.
-using divand
+# Testing DIVAnd in 2 dimensions with advection.
+using DIVAnd
 using Base.Test
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(-1,1,30))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(-1,1,30))
 
 # island at these location
 mi0 = 12
@@ -21,16 +21,16 @@ f = [1.]
 epsilon2 = 1/200
 len = 0.3
 
-fi,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 eps2 = 1e-7
 
-c = divand_constr_constcoast(mask,eps2)
+c = DIVAnd_constr_constcoast(mask,eps2)
 
-@test divand.gradcoast(mask,fi[mask]) ≈ divand.sparse_gradcoast(mask) * fi[mask]
+@test DIVAnd.gradcoast(mask,fi[mask]) ≈ DIVAnd.sparse_gradcoast(mask) * fi[mask]
 
 
-fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
+fi2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
                   constraints = [c]);
 
 
@@ -43,16 +43,16 @@ fi2,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
 # more complex example
 
 srand(1234)
-mask0,(pm,pn),(xi,yi) = divand_squaredom(2,linspace(0,1,100))
-mask = divand.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
+mask0,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(0,1,100))
+mask = DIVAnd.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
 x = rand(100)
 y = rand(size(x))
 f = sin.(2*π*x) .* sin.(2*π*y)
 
 len = 0.1
 
-fi3,s = divandrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
-                  constraints = [divand_constr_constcoast(mask,eps2)]);
+fi3,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
+                  constraints = [DIVAnd_constr_constcoast(mask,eps2)]);
 
 
 nothing

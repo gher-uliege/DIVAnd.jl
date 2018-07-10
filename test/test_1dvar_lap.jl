@@ -1,4 +1,4 @@
-# Testing divand in 1 dimension.
+# Testing DIVAnd in 1 dimension.
 
 # grid of background field
 xi = collect(linspace(0,1,11));
@@ -13,10 +13,10 @@ pm = ones(xi) / (xi[2]-xi[1]);
 len = 1
 epsilon2 = 0.5
 
-fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+fi,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
 
 
-D = divand_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
+D = DIVAnd_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
 Dsym = +([s.Dx[i]'*(s.WEs[i] *(s.WEs[i] *(s.Dx[i]))) for i in 1:ndims(mask)]...)
 
 # only the same if pm = 1
@@ -50,12 +50,12 @@ xi = (xe[1:end-1] +xe[2:end])/2
 len = 0.1
 epsilon2 = 0.5
 
-fi,s = divandrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+fi,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
 
 fimax = maximum(fi[2:end-1])
 #@test xi[fi .== fimax][1] == x[2]
 
-D = divand_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
+D = DIVAnd_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
 Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
 
 Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)

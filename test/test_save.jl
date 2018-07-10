@@ -1,7 +1,7 @@
-import divand
+import DIVAnd
 using NCDatasets
 using Base.Test
-using DataArrays
+using Missings
 
 # longitude, latitude, depth and time
 xyi = (0:3, 10:13, [0,10], [1,2])
@@ -18,7 +18,7 @@ mask = .!isnan.(fi)
 
 relerr = rand(T,sz)
 
-divand.save(filename,xyi,fi,varname; type_save = T, relerr = relerr)
+DIVAnd.save(filename,xyi,fi,varname; type_save = T, relerr = relerr)
 
 ds = Dataset(filename)
 fi2 = ds[varname][:]

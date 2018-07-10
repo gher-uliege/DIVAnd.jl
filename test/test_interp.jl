@@ -1,4 +1,4 @@
-import divand
+import DIVAnd
 using NCDatasets
 using Interpolations
 using Missings
@@ -8,10 +8,10 @@ fname = "Water_body_Salinity.4Danl.nc"
 varname = "Salinity"
 
 ds = Dataset(fname)
-lon = ds["lon"][:].data
-lat = ds["lat"][:].data
-depth = ds["depth"][:].data
-time = ds["time"][:].data
+lon = nomissing(ds["lon"][:])
+lat = nomissing(ds["lat"][:])
+depth = nomissing(ds["depth"][:])
+time = nomissing(ds["time"][:])
 
 v = ds["Salinity"]
 
@@ -32,7 +32,7 @@ xi = (loni,lati,depthi)
 vn = zeros(size(v[:,:,:,n]))
 vn[:] = map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
 
-fi = divand.interp(x,vn,xi)
+fi = DIVAnd.interp(x,vn,xi)
 
 
 firef = [(v[i,j,1,n] + v[i,j,2,n])/2]
@@ -42,8 +42,8 @@ firef = [(v[i,j,1,n] + v[i,j,2,n])/2]
 
 
 
-background = divand.backgroundfile(fname,varname)
-vn2,fi = background(xi,n,firef,divand.Anam.notransform()[1])
+background = DIVAnd.backgroundfile(fname,varname)
+vn2,fi = background(xi,n,firef,DIVAnd.Anam.notransform()[1])
 
 @test fi ≈ [0] atol=1e-5
 
