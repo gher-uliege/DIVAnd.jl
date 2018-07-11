@@ -14,7 +14,7 @@ function DIVAnd_diagHKobs(s,indexlist=[])
     m = size(R,1)
 
     if indexlist==[]
-        diagHK=diagLtCM(H',P,(H' * (R \ Matrix(I,m,m)))
+        diagHK=diagLtCM(H',P,(H' * (R \ Matrix(I,m,m))))
         #diagHK=diagLtCM(H',P,(H' * (R \ I)))
     else
         Z=zeros(m,length(indexlist));

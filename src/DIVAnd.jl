@@ -37,9 +37,9 @@ if VERSION >= v"0.7.0-beta.0"
         A - copy(B)
     end
 else
-    using Compat
     mul! = A_mul_B!
 end
+using Compat
 
 const EarthRadius = 6372795.477598; # m
 
