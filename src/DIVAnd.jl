@@ -36,6 +36,8 @@ if VERSION >= v"0.7.0-beta.0"
     function Base.:-(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
         A - copy(B)
     end
+
+    mul! = A_mul_B!
 else
     using Compat
 end

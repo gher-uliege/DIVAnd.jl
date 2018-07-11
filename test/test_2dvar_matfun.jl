@@ -13,12 +13,12 @@ n = 2
 fun(xy...) = .*([cos.(6*x) for x in xy]...)
 
 # grid of background field
-mask,pmn,xyi = DIVAnd_squaredom(2,linspace(0,1,20))
+mask,pmn,xyi = DIVAnd_squaredom(2,Compat.range(0, stop = 1, length = 20))
 
 epsilon = 1e-10;
 
 # grid of observations
-xy = ndgrid([linspace(epsilon,1-epsilon,10) for i = 1:n]...)
+xy = ndgrid([Compat.range(epsilon,stop = 1-epsilon,length = 10) for i = 1:n]...)
 v = fun([x[:] for x in xy]...);
 
 # correlation length
