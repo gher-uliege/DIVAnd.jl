@@ -24,6 +24,7 @@ using Compat
     # conjugate gradient
     include("test_conjugategradient.jl");
 
+    if VERSION < v"0.7.0-beta.0"
     include("test_sparse_diff.jl");
     include("test_laplacian.jl");
     include("test_localize_separable_grid.jl");
@@ -43,7 +44,8 @@ using Compat
     include("test_2dvar_error.jl");
 
     include("test_2dvar_all_masked.jl");
-
+    end
+    
     if VERSION < v"0.7.0-beta.0"
         # cross-validation
         include("test_2dvar_cv.jl");
