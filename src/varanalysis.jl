@@ -176,7 +176,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
         decompB!(s.sv,β,ivol,nus,nmax,α,sW * x,work1,work2,tmpx)
 
         # Htmpx = H * SB^½ W^½ x
-        A_mul_B!(Htmpx,H,tmpx)
+        mul!(Htmpx,H,tmpx)
 
         # Htmpx = R \ (H * SB^½ W^½ x)
         A_ldiv_B!(R,Htmpx)
@@ -188,7 +188,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
         decompB!(s.sv,β,ivol,nus,nmax,α,HRHtmpx,work1,work2,tmpx)
         
         # fx = x + W^½ SB^½ * H' * (R \ (H * SB^½ x ))
-        A_mul_B!(fx,sW,tmpx)
+        mul!(fx,sW,tmpx)
         for i in 1:length(fx)
             fx[i] += x[i]
         end

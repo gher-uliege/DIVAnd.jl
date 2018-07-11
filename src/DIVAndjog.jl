@@ -680,16 +680,16 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 					else
 						work3b[:]=scP*work3 ::Array{Float64,1}
 						# not yet defined for covariance
-						#A_mul_B!(work3b::Array{Float64,1},scP,work3::Array{Float64,1})
+						#mul!(work3b::Array{Float64,1},scP,work3::Array{Float64,1})
 					end
 
 					#
 
-					A_mul_B!(fx::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int},work3b::Array{Float64,1})
+					mul!(fx::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int},work3b::Array{Float64,1})
 					#fx[:]=HI*work3b ::Array{Float64,1}
 					fx[:]=scalef2*fx ::Array{Float64,1}
 					#fx[:]=work1+work2 ::Array{Float64,1}
-					#A_mul_B!(fx,scalef2,fx)
+					#mul!(fx,scalef2,fx)
 					fx[:]=BLAS.axpy!(diagshift,x,fx)
                     #fx[:] = diagshift*x+scalef2*HI*(scP*(HI'*x));
                 end
