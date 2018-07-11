@@ -30,7 +30,7 @@ Same as for `DIVAndrun` with three more parameters `nl`,`ne` and `method`
 * `ne`: number of testing points around the current value of epsilon2. `0` is allowed as for `nl`
 
 * `method`: cross validation estimator method
-  1: full CV 
+  1: full CV
   2: sampled CV
   3: GCV
   0: automatic choice between the three possible ones, default value
@@ -82,7 +82,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
     # sample multiplication factor to optimise in log space
     if nl>0
-        logfactorsl=collect(linspace(-worderl,worderl,2*nl+1));
+        logfactorsl=collect(Compat.range(-worderl,stop=worderl,length=2*nl+1));
     else
         logfactorsl=[0]
     end
@@ -90,7 +90,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 
     if ne>0
-        logfactorse=collect(linspace(-wordere,wordere,2*ne+1));
+        logfactorse=collect(Compat.range(-wordere,stop=wordere,length=2*ne+1));
     else
         logfactorse=[0]
     end
@@ -126,9 +126,9 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
             fi,s =  DIVAndrun(mask,pmn,xi,x,f,len.*factorsl[i],epsilon2.*factorse[j]; otherargs...);
             residual=DIVAnd_residualobs(s,fi);
-            nrealdata=sum(1-s.obsout);
-            d0d=dot((1-s.obsout).*(s.yo),(s.yo));
-            d0dmd1d=dot((1-s.obsout).*residual,(s.yo));
+            nrealdata=sum(1 .- s.obsout);
+            d0d=dot((1 .- s.obsout).*(s.yo),(s.yo));
+            d0dmd1d=dot((1 .- s.obsout).*residual,(s.yo));
 
             # Determine which method to use
 
@@ -238,7 +238,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     if nl==0
 
         # interpolate only on epsilon
-        epsilon2inter=collect(linspace(-wordere*1.1,1.1*wordere,101))
+        epsilon2inter=collect(Compat.range(-wordere*1.1,stop=1.1*wordere,length=101))
         maskcv = trues(size(epsilon2inter))
         pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
         lenin = wordere;
@@ -261,7 +261,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 if ne==0
 
     # interpolate only on L
-    linter=collect(linspace(-worderl*1.1,1.1*worderl,101))
+    linter=collect(Compat.range(-worderl*1.1,stop=1.1*worderl,length=101))
     maskcv = trues(size(linter))
     pmcv = ones(size(linter)) / (linter[2]-linter[1])
     lenin = worderl;
@@ -285,18 +285,9 @@ end
 
 # Otherwise 2D
 
-xi2D,yi2D   = ndgrid(linspace(-worderl*1.1,1.1*worderl,71),linspace(-wordere*1.1,1.1*wordere,71))
-
-
-maskcv = trues(size(xi2D))
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-pm2D = ones(xi2D) / (xi2D[2,1]-xi2D[1,1]);
-pn2D = ones(xi2D) / (yi2D[1,2]-yi2D[1,1]);
-
-
+maskcv,(pm2D,pn2D),(xi2D,yi2D) = DIVAnd_rectdom(
+    Compat.range(-worderl*1.1,stop=worderl*1.1,length=71),
+    Compat.range(-wordere*1.1,stop=wordere*1.1,length=71))
 
 # correlation length
 lenin = (worderl,wordere);
