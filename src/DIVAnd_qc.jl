@@ -63,28 +63,24 @@ function DIVAnd_qc(fi, s, method=0)
 
     # Third method
     if mymethod==4
-
         cvval=1
-        qcval=residual.^2 ./ (cvval*(diag(R)/invlam).*(1-DIVAnd_GCVKiiobs(s)).^2);
+        qcval=residual.^2 ./ (cvval*(diag(R)/invlam).*(1 .- DIVAnd_GCVKiiobs(s)).^2);
         return qcval
     end
 
 
     if mymethod==1
-
-        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1-DIVAnd_diagHKobs(s)));
+        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1 .- DIVAnd_diagHKobs(s)));
         return qcval
     end
 
     if mymethod==3
-
-        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1-DIVAnd_GCVKiiobs(s)));
+        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1 .- DIVAnd_GCVKiiobs(s)));
         return qcval
     end
 
 	if mymethod==5
-
-        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1-DIVAnd_GCVKiiobs(s,-1;FIELD=fi)));
+        qcval=residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1 .- DIVAnd_GCVKiiobs(s,-1;FIELD=fi)));
         return qcval
     end
 

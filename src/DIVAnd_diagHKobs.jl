@@ -14,7 +14,8 @@ function DIVAnd_diagHKobs(s,indexlist=[])
 
 
     if indexlist==[]
-        diagHK=diagLtCM(H',P,(H' * (R \ eye(size(R)[1]))) )
+        #diagHK=diagLtCM(H',P,(H' * (R \ eye(size(R)[1]))) )
+        diagHK=diagLtCM(H',P,(H' * (R \ I)))
     else
         Z=zeros(size(R)[1],length(indexlist));
 
