@@ -22,7 +22,7 @@ f = [2.]
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension,...
 
-mask,pmn,xyi = DIVAnd_rectdom([linspace(-1,1,s) for s in gridsize]...)
+mask,pmn,xyi = DIVAnd_rectdom([Compat.range(-1,stop=1,length=s) for s in gridsize]...)
 
 
 sv = statevector((mask,))

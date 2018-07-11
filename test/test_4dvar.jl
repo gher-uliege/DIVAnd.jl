@@ -11,12 +11,19 @@ k = π
 fun(x,y,z,t) = sin(k*x) * sin(k*y) * sin(k*z) * sin(k*t)
 
 # grid of background field
-xi,yi,zi,ti = ndgrid(linspace(0,1.,7),linspace(0,1.,7),linspace(0,1.,7),linspace(0,1.,7));
+mask,(pm,pn,po,pp),(xi,yi,zi,ti) = DIVAnd_squaredom(4,
+    Compat.range(0,stop=1,length=7))
+
 fi_ref = fun.(xi,yi,zi,ti)
 
 # grid of observations
 ϵ = eps()
-x,y,z,t = ndgrid(linspace(ϵ,1-ϵ,5),linspace(ϵ,1-ϵ,5),linspace(ϵ,1-ϵ,5),linspace(ϵ,1-ϵ,5));
+
+x,y,z,t = ndgrid(Compat.range(ϵ, stop=1-ϵ, length=5),
+                 Compat.range(ϵ, stop=1-ϵ, length=5),
+                 Compat.range(ϵ, stop=1-ϵ, length=5),
+                 Compat.range(ϵ, stop=1-ϵ, length=5));
+
 x = x[:];
 y = y[:];
 z = z[:];
@@ -24,16 +31,6 @@ t = t[:];
 
 # observations
 f = fun.(x,y,z,t)
-
-# all points are valid points
-mask = trues(size(xi))
-
-# this problem has a simple cartesian metric
-# pm (pn,po,pp) is the inverse of the resolution along the 1st (2nd, 3rd, 4th) dimension
-pm = ones(xi) / (xi[2,1,1,1]-xi[1,1,1,1]);
-pn = ones(xi) / (yi[1,2,1,1]-yi[1,1,1,1]);
-po = ones(xi) / (zi[1,1,2,1]-zi[1,1,1,1]);
-pp = ones(xi) / (ti[1,1,1,2]-zi[1,1,1,1]);
 
 # correlation length
 len = 0.12;
