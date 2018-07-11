@@ -38,20 +38,8 @@ y[2]=0.25
 
 
 
-
 # final grid
-xi,yi = ndgrid(linspace(0,1,20),linspace(0,1,20));
-
-
-# all points are valid points
-mask = trues(size(xi))
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(0,stop=1,length=20))
 
 # correlation length
 len = 0.1;
@@ -64,7 +52,7 @@ fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 
 
 for method in [0, 1, 3, 4]
-    qcval=DIVAnd_qc(fi,s,method)
+    qcval = DIVAnd_qc(fi,s,method)
 
     if method==4
         # Provide fake THETA value
@@ -72,12 +60,12 @@ for method in [0, 1, 3, 4]
     end
 
     # Find suspect points
-    sp=find(x-> x.>9,qcval)
+    sp=findall(x-> x.>9,qcval)
     @test sum(sp)==3
 end
 
-qcval = @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
-@test qcval==0
+qcval_2 = @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
+@test qcval_2 == 0
 
 
 

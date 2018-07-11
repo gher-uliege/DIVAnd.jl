@@ -39,14 +39,14 @@ function DIVAnd_qc(fi, s, method=0)
 
     nd=size(s.obsout)[1];
     invlam=mean(diag(R));
-    d0d=dot((1-s.obsout).*(s.yo),(s.yo));
-    nrealdata=sum(1-s.obsout);
+    d0d=dot((1 .- s.obsout).*(s.yo),(s.yo));
+    nrealdata=sum(1 .- s.obsout);
 
     meaneps2=(d0d/nrealdata) *invlam/(1+invlam);
 
-    qcval=zeros(nd);
+    qcval = zeros(nd);
 
-    residual=(1-s.obsout).*DIVAnd_residualobs(s,fi);
+    residual = (1 .- s.obsout) .* DIVAnd_residualobs(s,fi);
 
 
 

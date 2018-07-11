@@ -30,7 +30,7 @@ the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
 
 # Example
 
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(0,1,50))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0,stop=1,length=50))
 """
 function DIVAnd_squaredom(n,coord)
     coords = ntuple(i-> coord,n)
@@ -48,7 +48,7 @@ the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
 For example:
 
 ```julia-repl
-julia> mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(linspace(0,1,50),linspace(0,1,50))
+julia> mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(range(0,stop=1,length=50),linspace(0,stop=1,length=50))
 ```
 """
 function DIVAnd_rectdom(coords...)
