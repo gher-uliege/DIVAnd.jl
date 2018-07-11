@@ -84,8 +84,6 @@ function DIVAnd_qc(fi, s, method=0)
         return qcval
     end
 
-
-
     warn("DIVAnd_qc not defined for method  $method")
 
     return 0
