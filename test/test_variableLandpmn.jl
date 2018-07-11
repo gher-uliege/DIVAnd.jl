@@ -13,19 +13,10 @@ x = [2  3  4];
 y = [2  3  4];
 f=ones(3)
 
+
 # final grid
-xi,yi = ndgrid(linspace(0,6,15),linspace(0,5,15));
-
-
-# all points are valid points
-mask = trues(size(xi))
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
+    Compat.range(0,stop=6,length=15),Compat.range(0,stop=5,length=15))
 
 # correlation length
 len = 1;
@@ -48,11 +39,11 @@ sampler1=DIVAnd_sampler((pm,pn),(len*0.5,len*1.5))
 @test sampler1==[1,1]
 @test 0.59 < maximum(fis) < 0.7
 
-pm=ones(xi)./((1+xi/5).*(xi[2,1]-xi[1,1]));
-pn=ones(yi)./((1+yi/5).*(yi[1,2]-yi[1,1]));
+pm=ones(size(xi))./((1 .+ xi/5).*(xi[2,1] .- xi[1,1]));
+pn=ones(size(yi))./((1 .+ yi/5).*(yi[1,2] .- yi[1,1]));
 
-lx=0.5+xi/5
-ly=0.5+yi/5
+lx = 0.5 .+ xi/5
+ly = 0.5 .+ yi/5
 
 finu,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(ly,lx),epsilon2);
 

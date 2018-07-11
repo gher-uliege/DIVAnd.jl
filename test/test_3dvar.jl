@@ -10,29 +10,22 @@ end
 fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)
 
 # grid of background field
-xi,yi,zi = ndgrid(linspace(0,1.,15),linspace(0,1.,15),linspace(0,1.,15));
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_squaredom(3,
+    Compat.range(0,stop=1,length=15))
+
 fi_ref = fun.(xi,yi,zi)
 
 ϵ = eps()
 # grid of observations
-x,y,z = ndgrid(linspace(ϵ,1-ϵ,10),linspace(ϵ,1-ϵ,10),linspace(ϵ,1-ϵ,10));
+x,y,z = ndgrid(Compat.range(ϵ, stop=1-ϵ, length=10),
+               Compat.range(ϵ, stop=1-ϵ, length=10),
+               Compat.range(ϵ, stop=1-ϵ, length=10));
 x = x[:];
 y = y[:];
 z = z[:];
 
 # observations
 f = fun.(x,y,z)
-
-# all points are valid points
-mask = trues(size(xi))
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-# po is the inverse of the resolution along the 3rd dimension
-pm = ones(xi) / (xi[2,1,1]-xi[1,1,1]);
-pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
-po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
 
 # correlation length
 len = 0.1;
