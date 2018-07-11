@@ -11,13 +11,13 @@ function DIVAnd_diagHKobs(s,indexlist=[])
     H = s.obsconstrain.H;
     R = s.obsconstrain.R;
     P=s.P;
-
+    m = size(R,1)
 
     if indexlist==[]
-        #diagHK=diagLtCM(H',P,(H' * (R \ eye(size(R)[1]))) )
-        diagHK=diagLtCM(H',P,(H' * (R \ I)))
+        diagHK=diagLtCM(H',P,(H' * (R \ Matrix(I,m,m)))
+        #diagHK=diagLtCM(H',P,(H' * (R \ I)))
     else
-        Z=zeros(size(R)[1],length(indexlist));
+        Z=zeros(m,length(indexlist));
 
         for i = 1:length(indexlist)
             Z[indexlist[i],i] = 1;
