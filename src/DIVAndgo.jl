@@ -27,6 +27,7 @@ IMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use 
 """
 function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme;
                   moddim = zeros(N),
+                  velocity = (),
                   MEMTOFIT = 16,
                   QCMETHOD = (),
                   RTIMESONESCALES = (),
@@ -103,22 +104,13 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
         #################################################
 
         #################################
-        # Search for velocity argument:
-        jfound = 0
-        for j = 1:length(otherargs)
-            if otherargs[j][1]==:velocity
-                jfound = j
-                break
-            end
-        end
 
-        extraargs = []
-        if jfound > 0
+        # Search for velocity argument:
+        if velocity != ()
             warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
             # modify the parameter
-            push!(extraargs,(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...,)))
+            velocity = ([ x[windowpoints...] for x in velocity ]...,)
         end
-
 
         # If C is square then maybe just take the sub-square corresponding to the part taken from x hoping the constraint is a local one ?
         #
@@ -142,17 +134,8 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
             end
         end
 
-        kfound = 0
-        for j = 1:length(otherargs)
-            if otherargs[j][1]==:alphabc
-                kfound = j
-                break
-            end
-        end
+        # code seeting alphabc to 1 was disabled (and now removed)
 
-        if 3==2
-            push!(extraargs,(:alphabc,1))
-        end
 		# Work only on data which fall into bounding box
 
 		xinwin,finwin,winindex,epsinwin = DIVAnd_datainboundingbox(xiw,x,f;Rmatrix = epsilon2)
@@ -163,7 +146,6 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
 
 		# The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
 		if size(winindex,1) > 0
-
 		    # work only when data are there
 
 
@@ -174,12 +156,13 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                     mask[windowpoints...],
                     ([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,
                     finwin,Labsw,epsinwin,csteps,lmask;
-                    alphapc = alphanormpc, moddim = moddim,
+                    alphapc = alphanormpc,
+                    moddim = moddim,
                     MEMTOFIT = MEMTOFIT,
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
-                    otherargs...,
-                    extraargs... )
+                    velocity = velocity,
+                    otherargs...)
 
                 fi[windowpointsstore...]= fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
@@ -215,8 +198,8 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                         MEMTOFIT = MEMTOFIT,
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
-                        otherargs...,
-                        extraargs...  )
+                        velocity = velocity,
+                        otherargs...)
                 end
                 # for errors here maybe add a parameter to DIVAndjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
             else
@@ -229,8 +212,8 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                     MEMTOFIT = MEMTOFIT,
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
-                    otherargs...,
-                    extraargs...)
+                    velocity = velocity,
+                    otherargs...)
 
 			    fi[windowpointsstore...]= fw[windowpointssol...];
 			    finwindata = DIVAnd_residualobs(s,fw)
@@ -256,8 +239,8 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                         MEMTOFIT = MEMTOFIT,
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
-                        otherargs...,
-                        extraargs...)
+                        velocity = velocity,
+                        otherargs...)
                 end
             end
 
