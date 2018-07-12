@@ -310,15 +310,15 @@ The problem is that Windows 7 and Windows Server 2012 uses outdated encryption p
 The installion of `MbedTLS.jl` fails with the error message:
 
 ```
-INFO: Building MbedTLS                                                                                                                                    
+INFO: Building MbedTLS
 Info: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\Users\Jeremy\.julia\v0.6\MbedTLS
-\deps\usr\downloads\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  
+\deps\usr\downloads\MbedTLS.x86_64-w64-mingw32.tar.gz...
 Exception setting "SecurityProtocol": "Cannot convert null to type "System.Net.SecurityProtocolType" due to invalid enumeration values. Specify one of th
-e following enumeration values and try again. The possible enumeration values are "Ssl3, Tls"."                                                           
-At line:1 char:35                                                                                                                                         
-+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              
-    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  
-    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 
+e following enumeration values and try again. The possible enumeration values are "Ssl3, Tls"."
+At line:1 char:35
++ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : PropertyAssignmentException
     [...]
 ```
 
