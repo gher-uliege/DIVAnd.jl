@@ -21,6 +21,7 @@ if VERSION >= v"0.7.0-beta.0"
     using Distributed
     using Random
     using Statistics
+    using SharedArrays
 
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
