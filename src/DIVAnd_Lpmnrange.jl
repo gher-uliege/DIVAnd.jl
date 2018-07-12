@@ -21,34 +21,24 @@ Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
 * `Lpmnrange`: Array of range tuples (minimum and maximum of L times metric)
 
 """
-function DIVAnd_Lpmnrange(pmn,len)
+function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}},len) where {N,T}
+    Lpmnrange = Vector{NTuple{2,T}}(undef,N)
 
-
-    n = ndims(pmn[1])
-    Lpmnrange=Array{Tuple}(n)
-
-    for i=1:n
+    for i=1:N
         if isa(len,Number)
             Lpmnrange[i] = extrema(len*pmn[i]);
         elseif isa(len,Tuple)
 
             if isa(len[1],Number)
                 Lpmnrange[i] = extrema(len[i]*pmn[i]);
-
             else
                 Lpmnrange[i] = extrema(len[i].*pmn[i])
-
             end
 
         end
     end
 
-
-
     return Lpmnrange
-
-
-
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
