@@ -82,7 +82,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
 	qcdata = ()
 	if doqc
-	    qcdata = SharedArray{Float32}(size(f)[1])
+	    qcdata = SharedArray{Float32}(size(f,1))
 	    qcdata[:] = 0
 	end
 
@@ -114,7 +114,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         #################################
         # Search for velocity argument:
         jfound = 0
-        for j = 1:size(otherargs)[1]
+        for j = 1:size(otherargs,1)
             if otherargs[j][1]==:velocity
                 jfound = j
                 break
@@ -155,7 +155,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         end
 
         kfound = 0
-        for j = 1:size(otherargs)[1]
+        for j = 1:size(otherargs,1)
             if otherargs[j][1]==:alphabc
                 kfound = j
                 break
@@ -188,7 +188,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 		end
 
 		# The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
-		if size(winindex)[1]>0
+		if size(winindex,1) > 0
 
 		    # work only when data are there
 
@@ -201,7 +201,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                     ([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,
                     finwin,Labsw,epsinwin,csteps,lmask;
                     alphapc = alphanormpc, otherargsw... )
-                
+
                 fi[windowpointsstore...]= fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 
@@ -282,7 +282,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                 else
                     sverr = s.sv
                 end
-                svn = size(sverr)[1]
+                svn = size(sverr,1)
 
                 errv = statevector_pack(sverr,(errw,))
                 # Loop over window points. From grid index to statevector index so that ve is
