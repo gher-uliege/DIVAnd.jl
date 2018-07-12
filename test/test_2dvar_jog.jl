@@ -1,21 +1,19 @@
+# Testing DIVAnd in 2 dimensions with advection.
+
 if VERSION >= v"0.7.0-beta.0"
     using Test
 else
     using Base.Test
 end
 import DIVAnd
-# Testing DIVAnd in 2 dimensions with advection.
 
 # grid of background field
-xi,yi = DIVAnd.ndgrid(linspace(-1,1,30),linspace(-1,1,30));
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
+    2,Compat.range(-1, stop = 1, length = 30))
 
 x = [.4]
 y = [.4]
 f = [1.]
-
-mask = trues(size(xi));
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 
 a = 5;
 u = a*yi;
