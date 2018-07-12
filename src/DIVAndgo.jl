@@ -25,30 +25,21 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 IMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use if DIVAndrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see `addprocs` for example)
 
 """
-function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
-                  )
+function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme;
+                  moddim = zeros(N),
+                  MEMTOFIT = 16,
+                  QCMETHOD = (),
+                  RTIMESONESCALES = (),
+                  otherargs...
+                  ) where N
 
     n = ndims(mask)
     # Needed to make sure results are saved.
     fi = 0
     s = 0
 
-    # Need to check for cyclic boundaries
-
-    moddim = zeros(n);
-
-    kwargs_dict = Dict(otherargs)
-    moddim = get(kwargs_dict,:moddim,zeros(n))
-
-	# optional argument for window fitting.
-    MEMTOFIT = get(kwargs_dict,:MEMTOFIT,16)
-
-	RTIMESONESCALES=()
-	dothinning = haskey(kwargs_dict,:RTIMESONESCALES)
-    RTIMESONESCALES = get(kwargs_dict,:RTIMESONESCALES,())
-
-	doqc = haskey(kwargs_dict,:QCMETHOD)
-    QCMETHOD = get(kwargs_dict,:QCMETHOD,())
+	dothinning = RTIMESONESCALES != ()
+	doqc = QCMETHOD != ()
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to DIVAndrun
@@ -72,12 +63,12 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     #fi = SharedArray(Float64,size(mask));
     #erri = SharedArray(Float64,size(mask));
     fi = SharedArray{Float32}(size(mask));
-	fi[:] = 0
+	fi[:] .= 0
 	if errormethod==:none
         erri = [1.]
     else
 	    erri = SharedArray{Float32}(size(mask));
-		erri[:] = 1.0
+		erri[:] .= 1.0
     end
 
 	qcdata = ()
@@ -88,7 +79,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 
     # Add now analysis at data points for further output
     fidata = SharedArray{Float32}(size(f,1))
-	fidata[:] = NaN
+	fidata[:] .= NaN
 
     @sync @parallel for iwin = 1:size(windowlist,1)
 
@@ -114,21 +105,18 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         #################################
         # Search for velocity argument:
         jfound = 0
-        for j = 1:size(otherargs,1)
+        for j = 1:length(otherargs)
             if otherargs[j][1]==:velocity
                 jfound = j
                 break
             end
         end
 
-
+        extraargs = []
         if jfound > 0
             warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
             # modify the parameter
-            otherargsw = deepcopy(otherargs)
-            otherargsw[jfound]=(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...,))
-        else
-            otherargsw = otherargs
+            push!(extraargs,(:velocity,([ x[windowpoints...] for x in otherargs[jfound][2] ]...,)))
         end
 
 
@@ -155,7 +143,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         end
 
         kfound = 0
-        for j = 1:size(otherargs,1)
+        for j = 1:length(otherargs)
             if otherargs[j][1]==:alphabc
                 kfound = j
                 break
@@ -163,28 +151,14 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
         end
 
         if 3==2
-            if kfound>0
-                # modify the parameter only in the window model
-                if jfound>0
-                    # Ok this is alreay a copy and you can change it
-                    otherargsw[kfound]=(:alphabc,1)
-                else
-                    otherargsw = deepcopy(otherargs)
-                    otherargsw[kfound]=(:alphabc,1)
-                end
-            else
-                warn("Need to expand")
-                otherargsw = vcat(otherargsw,(:alphabc,1))
-            end
+            push!(extraargs,(:alphabc,1))
         end
 		# Work only on data which fall into bounding box
 
 		xinwin,finwin,winindex,epsinwin = DIVAnd_datainboundingbox(xiw,x,f;Rmatrix = epsilon2)
 
 		if dothinning
-
-		    epsinwin = epsinwin./weight_RtimesOne(xinwin,RTIMESONESCALES)
-
+		    epsinwin = epsinwin ./ weight_RtimesOne(xinwin,RTIMESONESCALES)
 		end
 
 		# The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
@@ -200,7 +174,12 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                     mask[windowpoints...],
                     ([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,
                     finwin,Labsw,epsinwin,csteps,lmask;
-                    alphapc = alphanormpc, otherargsw... )
+                    alphapc = alphanormpc, moddim = moddim,
+                    MEMTOFIT = MEMTOFIT,
+                    QCMETHOD = QCMETHOD,
+                    RTIMESONESCALES = RTIMESONESCALES,
+                    otherargs...,
+                    extraargs... )
 
                 fi[windowpointsstore...]= fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
@@ -232,7 +211,12 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                         ([ x[windowpoints...] for x in pmn ]...,),
                         xiw,xinwin,finwin,Labsw,epsinwin;
                         csteps = csteps,lmask = lmask,alphapc = alphanormpc,
-                        otherargsw... )
+                        moddim = moddim,
+                        MEMTOFIT = MEMTOFIT,
+                        QCMETHOD = QCMETHOD,
+                        RTIMESONESCALES = RTIMESONESCALES,
+                        otherargs...,
+                        extraargs...  )
                 end
                 # for errors here maybe add a parameter to DIVAndjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
             else
@@ -240,7 +224,13 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                 fw,s = DIVAndrun(
                     mask[windowpoints...],
                     ([ x[windowpoints...] for x in pmn ]...,),
-                    xiw,xinwin,finwin,Labsw,epsinwin; otherargsw...)
+                    xiw,xinwin,finwin,Labsw,epsinwin;
+                    moddim = moddim,
+                    MEMTOFIT = MEMTOFIT,
+                    QCMETHOD = QCMETHOD,
+                    RTIMESONESCALES = RTIMESONESCALES,
+                    otherargs...,
+                    extraargs...)
 
 			    fi[windowpointsstore...]= fw[windowpointssol...];
 			    finwindata = DIVAnd_residualobs(s,fw)
@@ -261,7 +251,13 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                     errw = DIVAnd_cpme(
                         mask[windowpoints...],
                         ([ x[windowpoints...] for x in pmn ]...,),
-                        xiw,xinwin,finwin,Labsw,epsinwin; otherargsw... )
+                        xiw,xinwin,finwin,Labsw,epsinwin;
+                        moddim = moddim,
+                        MEMTOFIT = MEMTOFIT,
+                        QCMETHOD = QCMETHOD,
+                        RTIMESONESCALES = RTIMESONESCALES,
+                        otherargs...,
+                        extraargs...)
                 end
             end
 
@@ -303,14 +299,10 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
                 # End error fields
             end
 
-
             # copy, deepcopy or just = ???
 
-
-
-
 		    if errormethod==:none
-                erri = eye(1);
+                erri = [1.];
 			else
 			    erri[windowpointsstore...]=errw[windowpointssol...];
 		    end
