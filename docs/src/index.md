@@ -246,6 +246,15 @@ To update the documentation locally, install the package `Documenter` and run th
 Pkg.add("Documenter")
 ```
 
+# API changes
+
+We do are best to avoid changing the API, but sometimes it is unfortunately necessary.
+
+* 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
+* 2018-06-18: The options `nmean` and `distbin` of `fithorzlen` and `fitvertlen` have been removed. The functions now choose appropriate values for these parameters automatically.
+
+
+
 # Troubleshooting
 
 
