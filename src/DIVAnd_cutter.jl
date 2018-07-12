@@ -117,7 +117,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
 
     ntiles=prod(subsz)
 
-    windowlist = Vector{NTuple{6,Vector{Int}}}(ntiles)
+    windowlist = Vector{NTuple{6,Vector{Int}}}(undef,ntiles)
 
     iw=0
     for cr in CartesianRange(subsz)
