@@ -301,7 +301,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
 
     #@show size(fidata)
     # Add desroziers type of correction
-    ongrid = find(~isnan(x) for x in fidata)
+    ongrid = findall(x -> !isnan(x), fidata)
 
     #d0d = dot((1-s.obsout).*(s.yo),(s.yo));
 	d0d = dot(f[ongrid],f[ongrid])
