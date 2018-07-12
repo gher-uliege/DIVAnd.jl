@@ -38,30 +38,17 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     moddim = zeros(n);
 
     kwargs_dict = Dict(otherargs)
+    moddim = get(kwargs_dict,:moddim,zeros(n))
 
-    if haskey(kwargs_dict,:moddim)
-        moddim = kwargs_dict[:moddim]
-    end
 	# optional argument for window fitting.
-	MEMTOFIT = 16
-	if haskey(kwargs_dict,:MEMTOFIT)
-        MEMTOFIT = kwargs_dict[:MEMTOFIT]
-    end
+    MEMTOFIT = get(kwargs_dict,:MEMTOFIT,16)
 
 	RTIMESONESCALES=()
-	dothinning = false
-	if haskey(kwargs_dict,:RTIMESONESCALES)
-        RTIMESONESCALES = kwargs_dict[:RTIMESONESCALES]
-		dothinning = true
-    end
+	dothinning = haskey(kwargs_dict,:RTIMESONESCALES)
+    RTIMESONESCALES = get(kwargs_dict,:RTIMESONESCALES,())
 
-	QCMETHOD=()
-	doqc = false
-	if haskey(kwargs_dict,:QCMETHOD)
-        QCMETHOD = kwargs_dict[:QCMETHOD]
-		doqc = true
-    end
-
+	doqc = haskey(kwargs_dict,:QCMETHOD)
+    QCMETHOD = get(kwargs_dict,:QCMETHOD,())
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to DIVAndrun
@@ -87,7 +74,7 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
     fi = SharedArray{Float32}(size(mask));
 	fi[:] = 0
 	if errormethod==:none
-        erri = eye(1)
+        erri = [1.]
     else
 	    erri = SharedArray{Float32}(size(mask));
 		erri[:] = 1.0
@@ -100,10 +87,10 @@ function DIVAndgo(mask,pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme; otherargs...
 	end
 
     # Add now analysis at data points for further output
-    fidata = SharedArray{Float32}(size(f)[1])
+    fidata = SharedArray{Float32}(size(f,1))
 	fidata[:] = NaN
 
-    @sync @parallel for iwin = 1:size(windowlist)[1]
+    @sync @parallel for iwin = 1:size(windowlist,1)
 
         iw1 = windowlist[iwin][1]
         iw2 = windowlist[iwin][2]
