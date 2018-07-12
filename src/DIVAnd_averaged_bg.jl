@@ -27,7 +27,7 @@ function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
     if sum(toaverage)==n
         vm=mean(f)
         fma=fill(vm,size(mask));
-        faanom=f-vm
+        faanom=f .- vm
         return fma,faanom
     end
 
@@ -106,8 +106,8 @@ function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
     fm,sm=DIVAndrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
     vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
-    vaanalyzed[sm.obsout] = NaN
-    faanom=f-vaanalyzed
+    vaanalyzed[sm.obsout] .= NaN
+    faanom = f - vaanalyzed
     #@show extrema(vaanalyzed), sum(sm.obsout), extrema(faanom)
 
     reshapeshape = ntuple(i -> (toaverage[i] ? 1 : size(mask,i)),n)

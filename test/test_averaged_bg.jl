@@ -14,7 +14,8 @@ z=randn(100)
 t=randn(100)
 f=z
 
-mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_rectdom(linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5),linspace(-1,1,5))
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_squaredom(4,
+    Compat.range(-1,stop=1,length=5))
 
 # correlation length
 len = 1
@@ -22,10 +23,14 @@ len = 1
 # obs. error variance normalized by the background error variance
 epsilon2 = 0.01;
 
-fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true false true]);
+fi,fanom= DIVAnd_averaged_bg(
+    mask,(pm,pn,po,pq),
+    (xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true false true]);
 @test -1.6 < fi[1,1,1,1] < -1.4
 
-fi,fanom= DIVAnd_averaged_bg(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[true true true true]);
+fi,fanom= DIVAnd_averaged_bg(
+    mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),
+    f,len,epsilon2,[true true true true]);
 @test -0.15 < fi[1,1,1,1] < 0
 
 

@@ -19,10 +19,10 @@ epsilon2 = 1.;
 # dimension
 for n = 1:3
     # domain
-    mask,pmn,xyi = DIVAnd_squaredom(n,linspace(0,1,20))
+    mask,pmn,xyi = DIVAnd_squaredom(n,Compat.range(0, stop = 1, length = 20))
 
     # grid of observations
-    xy = ([[0.5] for i = 1:n]...)
+    xy = ntuple(i -> 0.5, n)
 
     # make the analysis
     fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2);
@@ -40,10 +40,10 @@ end
 n = 2
 
 # domain
-mask,pmn,xyi = DIVAnd_squaredom(n,linspace(0,1,50))
+mask,pmn,xyi = DIVAnd_squaredom(n,Compat.range(0, stop = 1, length = 50))
 
 # grid of observations
-xy = ([[0.5] for i = 1:n]...)
+xy = ntuple(i -> 0.5, n)
 
 # make the analysis
 fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[2,4,2]);
