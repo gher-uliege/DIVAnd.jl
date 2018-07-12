@@ -1265,6 +1265,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#API-changes-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "API changes",
+    "category": "section",
+    "text": "We do are best to avoid changing the API, but sometimes it is unfortunately necessary.2018-07-02: The module divand has been renamed DIVAnd and likewise functions containing divand\n2018-06-18: The options nmean and distbin of fithorzlen and fitvertlen have been removed. The functions now choose appropriate values for these parameters automatically."
+},
+
+{
     "location": "index.html#Troubleshooting-1",
     "page": "DIVAnd.jl documentation",
     "title": "Troubleshooting",
@@ -1301,7 +1309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "MbedTLS.jl does not install on Windows 7",
     "category": "section",
-    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133.The solution is to install the Windows Management Framework 4.0."
+    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS\nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...\nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"\nAt line:1 char:35\n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =\n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException\n    + FullyQualifiedErrorId : PropertyAssignmentException\n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133.The solution is to install the Windows Management Framework 4.0."
 },
 
 {
