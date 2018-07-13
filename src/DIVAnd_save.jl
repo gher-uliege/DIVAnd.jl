@@ -244,7 +244,7 @@ function ncfile(ds,filename,xyi,varname;
         ds.attrib["Conventions"] = "CF-1.6"
         ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
         ds.attrib["file_name"] = filename
-        ds.attrib["product_id"] =  repr(Base.Random.uuid1())
+        ds.attrib["product_id"] = repr(uuid1())
         ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
 
         for (k,v) in ncglobalattrib
@@ -287,21 +287,21 @@ White a slice of data in a NetCDF given by the index `index`. The variable
 """
 function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
     fillval = NC_FILL_FLOAT
-    
+
     tmp = copy(fi)
-    tmp[isnan.(fi)] = fillval
+    tmp[isnan.(fi)] .= fillval
     ncvar[index...] = tmp
 
     if relerr != nothing
 
         for (thresholds_value,ncvar_L) in ncvar_Lx
             tmp = copy(fi)
-            tmp[isnan.(fi) .| (relerr .> thresholds_value)] = fillval
+            tmp[isnan.(fi) .| (relerr .> thresholds_value)] .= fillval
             ncvar_L[index...] = tmp
         end
 
         tmp = copy(relerr)
-        tmp[isnan.(relerr)] = fillval
+        tmp[isnan.(relerr)] .= fillval
         ncvar_relerr[index...] = tmp
     end
 

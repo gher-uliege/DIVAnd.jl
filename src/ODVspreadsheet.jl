@@ -1,5 +1,9 @@
 module ODVspreadsheet
 
+if VERSION >= v"0.7.0-beta.0"
+    using Dates
+end
+
 #using Logging
 #using StringEncodings
 
@@ -276,7 +280,7 @@ Return a list `list` of all local names mapping to the specified `P01name` in th
 ODV spreadsheet `sheet` without the prefix "SDN:LOCAL:".
 
 """
-localnames(sheet,P01name) = String[replace(v,r"^SDN:LOCAL:","") for (v,d) in sheet.SDN_parameter_mapping if d["object"] == P01name]
+localnames(sheet,P01name) = String[replace(v,r"^SDN:LOCAL:" => "") for (v,d) in sheet.SDN_parameter_mapping if d["object"] == P01name]
 
 """
     list = localnames(sheet)
@@ -379,7 +383,7 @@ function loaddata(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where 
     lenprof = size(profile,2)
 
     cn_data = colnumber(sheet,locname)
-    data = Vector{T}(lenprof)
+    data = Vector{T}(undef,lenprof)
 
     if cn_data == 0
         data[:] = fillvalue
@@ -406,7 +410,7 @@ function loaddataqv(sheet,profile,locname,fillvalue::T;
     lenprof = size(profile,2)
 
     cn_data = colnumber(sheet,locname)
-    data = Vector{T}(lenprof)
+    data = Vector{T}(undef,lenprof)
     data_qv = fill("",(lenprof,))
 
 
@@ -507,8 +511,8 @@ function loadprofile(T,sheet,iprofile,dataname;
         # end
     end
 
-    time = Vector{DateTime}(sz)
-    time_qv = Vector{String}(sz)
+    time = Vector{DateTime}(undef,sz)
+    time_qv = Vector{String}(undef,sz)
 
     # chronological julian day
     if "SDN:P01::CJDY1101" in P01names

@@ -7,6 +7,10 @@ import Base.find
 import Base.findfirst
 import Base.repr
 
+if VERSION >= v"0.7.0-beta.0"
+    using Dates
+end
+
 const namespaces = Dict(
     "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "skos" => "http://www.w3.org/2004/02/skos/core#",

@@ -3,6 +3,10 @@ module NCSDN
 using NCDatasets
 using Missings
 
+if VERSION >= v"0.7.0-beta.0"
+    using Dates
+end
+
 # import ODVspreadsheet:
 #     NO_QUALITY_CONTROL,
 #     GOOD_VALUE,
@@ -41,7 +45,7 @@ const QC_SUFFIX = "SEADATANET_QC"
                    qfname = param * QC_SUFFIX,
                    )
 
-Load the NetCDF variable `param` from the NCDataset `ds`. 
+Load the NetCDF variable `param` from the NCDataset `ds`.
 Data points not having the provide quality flags will be masked by `fillvalue`.
 `qfname` is the NetCDF variable name for the quality flags.
 
@@ -56,15 +60,15 @@ function loadvar(ds,param;
         #@show "no data for",param
         return T[]
     end
-    
+
     dataarray = ds[param][:]
     data = nomissing(dataarray,fillvalue)
-       
+
     if qfname in ds
         qf = ds[qfname].var[:]
 
         keep_data = falses(size(qf))
-        
+
         for flag in qualityflags
             keep_data[:] =  keep_data .| (qf .== flag[1])
         end
@@ -85,7 +89,7 @@ function load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE
     fillvalueDT = DateTime(1000,1,1)
 
     #@show fname
-    
+
     ds = Dataset(fname)
     data = loadvar(ds,param;
                    fillvalue = fillvalue,
@@ -103,16 +107,16 @@ function load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE
     if ndims(lon) == 1
         #@show fname,param,size(lon),size(data)
         @assert size(lon,1) == size(data,2)
-        lon = repmat(reshape(lon,1,size(lon,1)),size(data,1),1)
+        lon = repeat(reshape(lon,1,size(lon,1)),inner = (size(data,1),1))
     end
-    
+
     lat = loadvar(ds,"LATITUDE";
                   fillvalue = fillvalue,
                   qfname = "POSITION" * QC_SUFFIX,
                   qualityflags = qualityflags)
     if ndims(lat) == 1
         @assert size(lat,1) == size(data,2)
-        lat = repmat(reshape(lat,1,size(lat,1)),size(data,1),1)
+        lat = repeat(reshape(lat,1,size(lat,1)), inner = (size(data,1),1))
     end
 
     z =
@@ -126,14 +130,14 @@ function load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE
                     fillvalue = fillvalue,
                     qualityflags = qualityflags)
         end
-    
+
     time = loadvar(ds,"TIME";
                    fillvalue = fillvalueDT,
                    qualityflags = qualityflags)
     #@show time
     if ndims(time) == 1
         @assert size(time,1) == size(data,2)
-        time = repmat(reshape(time,1,size(time,1)),size(data,1),1)
+        time = repeat(reshape(time,1,size(time,1)), inner = (size(data,1),1))
     end
 
     edmo = ds["SDN_EDMO_CODE"][:]
@@ -142,23 +146,23 @@ function load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE
     @assert size(edmo,1) == size(data,2)
     @assert size(cdiid,2) == size(data,2)
 
-    ids = Array{String,ndims(data)}(size(data))
+    ids = Array{String,ndims(data)}(undef,size(data))
     for j = 1:size(data,2)
         for i = 1:size(data,1)
             ids[i,j] = "$(edmo[j])-$(join(cdiid[:,j]))"
         end
     end
-            
+
     close(ds)
 
     return data,lon,lat,z,time,ids
 end
-    
+
 """
     data,lon,lat,z,time,ids = SDN.load(T,fnames,param; qualityflags = ...)
 
-Load all data in the vector of file names `fnames` corresponding to the parameter 
-`param` as the data type `T`. Only the data with the quality flags 
+Load all data in the vector of file names `fnames` corresponding to the parameter
+`param` as the data type `T`. Only the data with the quality flags
 `SDN.good_data` and `SDN.probably_good_data` are loaded per default.
 The output parameters correspondata to the data, longitude, latitude,
 depth, time (as `DateTime`) and an identifier (as `String`).
@@ -171,7 +175,7 @@ function load(T,fnames::Vector{TS},param;
     z = T[]
     time = DateTime[]
     ids = String[]
-    
+
     for fname in fnames
         #@show fname
         data_,lon_,lat_,z_,time_,ids_ = load(T,fname,param;
@@ -182,7 +186,7 @@ function load(T,fnames::Vector{TS},param;
         append!(lat,lat_[:])
         append!(z,z_[:])
         append!(time,time_[:])
-        append!(ids,ids_[:])        
+        append!(ids,ids_[:])
     end
 
     return data,lon,lat,z,time,ids

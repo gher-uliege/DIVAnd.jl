@@ -22,6 +22,8 @@ if VERSION >= v"0.7.0-beta.0"
     using Random
     using Statistics
     using SharedArrays
+    using UUIDs
+    using Dates
 
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
@@ -38,8 +40,10 @@ if VERSION >= v"0.7.0-beta.0"
         A - copy(B)
     end
 else
-    mul! = A_mul_B!
+    const uuid1 = Base.Random.uuid1
+    const mul! = A_mul_B!
 end
+
 using Compat
 
 const EarthRadius = 6372795.477598; # m

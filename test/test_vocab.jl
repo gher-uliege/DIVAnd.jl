@@ -13,7 +13,7 @@ collection = DIVAnd.Vocab.CFVocab()
 
 entry = collection["sea_water_temperature"]
 
-@test contains(DIVAnd.Vocab.description(entry),"water")
+@test occursin("water",DIVAnd.Vocab.description(entry))
 @test DIVAnd.Vocab.canonical_units(entry) == "K"
 
 
@@ -30,11 +30,11 @@ collectionname,tag,key = DIVAnd.Vocab.splitURL(url)
 @test key == "PSALPR01"
 
 concept = collection["PSALPR01"]
-@test contains(DIVAnd.Vocab.prefLabel(concept),"salinity")
-@test contains(DIVAnd.Vocab.notation(concept),"P01")
-@test contains(DIVAnd.Vocab.altLabel(concept),"sal")
-@test contains(DIVAnd.Vocab.definition(concept),"is")
-@test contains(DIVAnd.Vocab.URL(concept),key)
+@test occursin("salinity",DIVAnd.Vocab.prefLabel(concept) )
+@test occursin("P01"     ,DIVAnd.Vocab.notation(concept)  )
+@test occursin("sal"     ,DIVAnd.Vocab.altLabel(concept)  )
+@test occursin("is"      ,DIVAnd.Vocab.definition(concept))
+@test occursin(key       ,DIVAnd.Vocab.URL(concept)       )
 
 @test typeof(DIVAnd.Vocab.date(concept)) == DateTime
 
