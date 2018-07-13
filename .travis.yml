@@ -2,7 +2,7 @@
 language: julia
 os:
   - linux
-  - osx
+#  - osx
 julia:
   - 0.6
   - nightly
@@ -19,6 +19,7 @@ notifications:
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone("https://github.com/Alexander-Barth/NCDatasets.jl"); Pkg.build("NCDatasets")'
+  - julia -e 'Pkg.clone("https://github.com/JuliaMath/Interpolations.jl")'
   - julia -e 'Pkg.clone(pwd()); Pkg.build("DIVAnd"); Pkg.test("DIVAnd"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
