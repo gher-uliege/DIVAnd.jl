@@ -13,7 +13,7 @@ nobs = 10
 lon = randn(T,nobs)
 lat = randn(T,nobs)
 depth = randn(T,nobs)
-time = rand(DateTime(2000,1,1):DateTime(2010,1,1),nobs)
+time = rand(DateTime(2000,1,1):Day(1):DateTime(2010,1,1),nobs)
 value = randn(T,nobs)
 ids = String[randstring(10) for i in 1:nobs]
 

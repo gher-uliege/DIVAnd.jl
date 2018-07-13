@@ -416,13 +416,20 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
     
     n = size(s.iB,1)::Int
     z = randn(n,Nens);
-    F = cholfact(s.iB::SparseMatrixCSC{T,Int})
 
+    F_UP =
+        @static if VERSION >= v"0.7.0-beta.0"
+            F = cholesky(s.iB::SparseMatrixCSC{T,Int})
+            F.UP
+        else
+            F = cholfact(s.iB::SparseMatrixCSC{T,Int})
+            F[:UP]
+        end
     # P pivoting matrix
     # s.iB == P'*L*L'*P
     # F[:UP] ==  L'*P
-    
-    ff = (F[:UP]) \ z;
+
+    ff = F_UP \ z;
     field = DIVAnd.unpackens(s.sv,ff)[1] :: Array{T,N+1}
     return field
 end

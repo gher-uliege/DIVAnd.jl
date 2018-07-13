@@ -18,7 +18,12 @@ function DIVAnd_addc(s,constrain)
     else
         s.H = cat(1,s.H,constrain.H);
         s.R = blkdiag(s.R,constrain.R);
-        s.yo = cat(1,s.yo,constrain.yo);
+        s.yo =
+            if VERSION >= v"0.7.0-beta.0"
+                cat(s.yo,constrain.yo, dims = 1)
+            else
+                cat(1,s.yo,constrain.yo)
+            end
     end
     return s
 end

@@ -163,7 +163,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
             # unique(collect(rand(1:1000,200)))[1:30]
 
             if mymethod==1
-                cvval=DIVAnd_cvestimator(s,residual./(1-DIVAnd_diagHKobs(s)));
+                cvval = DIVAnd_cvestimator(s,residual ./ (1 .- DIVAnd_diagHKobs(s)));
                 epsilon2in[ip] = 1/5000;
             end
 
@@ -173,7 +173,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
                 # alternate version to test: sampling
                 # find(x -> x == 3,z)
                 #   onsea=find(x->x == 0,s.obsout);
-                onsea=find(s.obsout.==0);
+                onsea = findall(s.obsout.==0);
                 lonsea=length(onsea)
                 #   warn("So",lonsea)
                 # if optimisation is to be used, make sure to use the same reference random points

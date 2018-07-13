@@ -3,6 +3,7 @@ module ODVspreadsheet
 if VERSION >= v"0.7.0-beta.0"
     using Dates
 end
+using Compat
 
 #using Logging
 #using StringEncodings

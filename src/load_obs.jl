@@ -52,17 +52,24 @@ end
 function loadobsid(ds,varname = "obsid")
     obsids = nomissing(ds[varname][:]) :: Matrix{Char}
 
-    obsid = Vector{String}(size(obsids,2))
+    obsid = Vector{String}(undef,size(obsids,2))
 
     for i = 1:size(obsids,2)
         id = view(obsids,:,i)
         index = findfirst(c -> c .== '\0',id)
 
-        obsid[i] =
-            if index == 0
-                convert(String,id)
+        hasnonull =
+            @static if VERSION >= v"0.7.0-beta.0"
+                index == nothing
             else
-                convert(String,view(id,1:index-1))
+                index == 0
+            end
+
+        obsid[i] =
+            if hasnonull
+                String(id)
+            else
+                String(view(id,1:index-1))
             end
     end
 
