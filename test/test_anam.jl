@@ -10,7 +10,7 @@ include("../src/anamorphosis.jl")
 threshold = 10.
 trans,invtrans = Anam.loglin(threshold)
 
-x = linspace(0.03,200,100)
+x = Compat.range(0.03,stop = 200,length = 100)
 x2 = invtrans.(trans.(x))
 
 @test x ≈ x2
@@ -20,7 +20,7 @@ x2 = invtrans.(trans.(x))
 
 trans,invtrans = Anam.loglin(threshold; epsilon = 0.05)
 
-x = linspace(-0.03,200,100)
+x = Compat.range(-0.03,stop = 200,length = 100)
 x2 = invtrans.(trans.(x))
 
 @test x ≈ x2
@@ -30,7 +30,7 @@ x2 = invtrans.(trans.(x))
 
 trans,invtrans = Anam.logit()
 
-x = linspace(0.01,0.99,100)
+x = Compat.range(0.01, stop = 0.99, length = 100)
 x2 = invtrans.(trans.(x))
 
 @test x ≈ x2
@@ -40,7 +40,7 @@ trans,invtrans = Anam.logit(min = -2.1, max = 2.1)
 
 @test 1 ≈ invtrans(trans(1))
 
-x = linspace(-2,2,100)
+x = Compat.range(-2, stop = 2,length = 100)
 x2 = invtrans.(trans.(x))
 @test x ≈ x2
 
@@ -48,7 +48,7 @@ x2 = invtrans.(trans.(x))
 
 trans,invtrans = Anam.notransform()
 
-x = linspace(0.03,200,100)
+x = Compat.range(0.03,stop = 200,length = 100)
 
 @test collect(x) == invtrans.(trans.(x))
 @test collect(x) == trans.(x)

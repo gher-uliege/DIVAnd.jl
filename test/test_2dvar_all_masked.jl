@@ -9,16 +9,17 @@ end
 import DIVAnd
 
 # grid of background field
-xi,yi = DIVAnd.ndgrid(linspace(0,1,30),linspace(0,1,30))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(0, stop = 1, length = 30))
 
-mask = falses(size(xi))
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
+mask .= false
 
 epsilon = 1e-10;
 
 # grid of observations
-x,y = DIVAnd.ndgrid(linspace(epsilon,1-epsilon,20),linspace(epsilon,1-epsilon,20))
+x,y = DIVAnd.ndgrid(
+    Compat.range(epsilon, stop = 1-epsilon, length = 20),
+    Compat.range(epsilon, stop = 1-epsilon, length = 20))
+
 x = x[:]
 y = y[:]
 v = sin.(x*6) .* cos.(y*6)

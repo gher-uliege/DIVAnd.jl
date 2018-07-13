@@ -18,10 +18,10 @@ buf = IOBuffer()
 
 output = lowercase(String(take!(buf)))
 
-@test contains(output,"nan")
-@test contains(output,"1")
+@test occursin("nan",output)
+@test occursin("1",output)
 
-@test contains(output,"inf")
-@test contains(output,"2")
+@test occursin("inf",output)
+@test occursin("2",output)
 
 

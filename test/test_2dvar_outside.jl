@@ -3,11 +3,8 @@
 #using DIVAnd
 
 # grid of background field
-xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100))
-
-mask = trues(size(xi))
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
+    2,Compat.range(0, stop = 1, length = 100))
 
 epsilon = 1e-10;
 

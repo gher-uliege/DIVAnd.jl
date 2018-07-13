@@ -7,12 +7,16 @@ else
 end
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(0,1,15))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
+    2,Compat.range(0, stop = 1, length = 15))
 
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(linspace(epsilon,1-epsilon,5),linspace(epsilon,1-epsilon,5))
+x,y = ndgrid(
+    Compat.range(epsilon, stop = 1-epsilon, length = 5),
+    Compat.range(epsilon, stop = 1-epsilon, length = 5))
+
 x = x[:]
 y = y[:]
 v = sin.(x*6) .* cos.(y*6)
@@ -86,7 +90,7 @@ va_dual,s_np = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
 # This is not efficient for large cases, only a consistency check
 function compPCdual(iB,H,R)
     B = CovarIS(iB)
-    M = H * (B * full(H)') + sparse_diag(diag(R));
+    M = H * (B * Matrix(H)') + sparse_diag(diag(R));
 
     iM = CovarIS(M);
     factorize!(iM);

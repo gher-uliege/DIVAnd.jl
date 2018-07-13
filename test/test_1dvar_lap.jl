@@ -1,7 +1,7 @@
 # Testing DIVAnd in 1 dimension.
 
 # grid of background field
-xi = collect(linspace(0,1,11));
+xi = collect(Compat.range(0,stop=1,length=11))
 
 x = [.4; .6];
 f = [.4; .6];
@@ -20,8 +20,8 @@ D = DIVAnd_laplacian(Val{:sparse},mask,(pm,),ones(size(mask)),falses(2))
 Dsym = +([s.Dx[i]'*(s.WEs[i] *(s.WEs[i] *(s.Dx[i]))) for i in 1:ndims(mask)]...)
 
 # only the same if pm = 1
-display(full(D))
-display(full(Dsym))
+display(Matrix(D))
+display(Matrix(Dsym))
 
 Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
 # note s.Dx is not equal to Dx at the boundary
@@ -34,7 +34,7 @@ mask_staggerd = [(S[i] * mask[:]) .== 1 for i in 1:ndims(mask)];
 Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)
 
 # works!
-display(full(Dsym2))
+display(Matrix(Dsym2))
 
 @show Dsym2 * xi[:].^2
 @show D * xi[:].^2
@@ -42,7 +42,7 @@ display(full(Dsym2))
 
 # variable resolution
 
-pm = [Float64(i)+1 for i in linspace(0,1,11)]
+pm = [Float64(i)+1 for i in Compat.range(0,stop=1,length=11)]
 pmn = (pm,)
 xe = [0; cumsum(1./pm)]
 xi = (xe[1:end-1] +xe[2:end])/2
@@ -61,8 +61,8 @@ Dx = sparse_gradient(Val{:sparse},mask,(pm,),falses(ndims(mask)))
 Dsym2 = +([Dx[i]' * Dx[i] for i in 1:ndims(mask)]...)
 
 # small differences
-display(full(D))
-display(full(Dsym2))
+display(Matrix(D))
+display(Matrix(Dsym2))
 
 # Dsym2 is not as precise
 @show Dsym2 * xi[:].^2

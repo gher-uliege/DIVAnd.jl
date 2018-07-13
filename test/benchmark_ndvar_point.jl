@@ -7,6 +7,7 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
 end
+using Compat
 
 # final grid
 #gridsize = (101,101)
@@ -23,7 +24,7 @@ f = [2.]
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension,...
 
-mask,pmn,xyi = DIVAnd_rectdom([linspace(-1,1,s) for s in gridsize]...)
+mask,pmn,xyi = DIVAnd_rectdom([Compat.range(-1,stop = 1,length = s) for s in gridsize]...)
 
 
 sv = statevector((mask,))

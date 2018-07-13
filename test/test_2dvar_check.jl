@@ -8,21 +8,17 @@ else
 end
 
 # grid of background field
-xi,yi = ndgrid(linspace(0,1,10),linspace(0,1,10))
-
-# mask (all points are valid)
-mask = trues(size(xi))
-
-# metric (inverse of the resolution)
-pm = ones(xi) / (xi[2,1]-xi[1,1])
-pn = ones(xi) / (yi[1,2]-yi[1,1])
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(-1, stop = 1, length = 10))
 
 # make sure that observations are strictly inside the domain
 # defined by xi and yi
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(linspace(epsilon,1-epsilon,10),linspace(epsilon,1-epsilon,10))
+x,y = ndgrid(
+    Compat.range(epsilon,stop = 1-epsilon,length = 10),
+    Compat.range(epsilon,stop = 1-epsilon,length = 10))
+
 x = x[:]
 y = y[:]
 v = sin.(6x) .* cos.(6y)
@@ -33,9 +29,9 @@ leny = .15;
 
 """naive analysis using full matrices"""
 function naive_analysis(s,v)
-    iR = inv(full(s.R));
-    iB = full(s.iB);
-    H = full(s.H);
+    iR = inv(Matrix(s.R));
+    iB = Matrix(s.iB);
+    H = Matrix(s.H);
     iP = iB + H'*iR*H;
     P = inv(iP);
     xa = P* (H'*iR*v[:]);

@@ -26,19 +26,7 @@ f = f+sqrt(epsilon2_true) * randn(nobs);
 # final grid
 mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
     Compat.range(0,stop=1,length=14),Compat.range(0,stop=1,length=13))
-#=
-xi,yi = ndgrid(linspace(0,1,14),linspace(0,1,13));
 
-# all points are valid points
-mask = trues(size(xi));
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
-=#
 # correlation length (first guess)
 len = 0.1;
 

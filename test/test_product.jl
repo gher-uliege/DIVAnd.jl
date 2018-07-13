@@ -184,7 +184,7 @@ errdata,header = readdlm(errname,'\t'; header = true)
 xmlstr = readstring(open(xmlfilename));
 
 keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
-@test contains(xmlstr,keyword_code)
+@test occursin(keyword_code,xmlstr)
 
 # new analysis with background from file
 

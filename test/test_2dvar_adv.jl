@@ -7,7 +7,7 @@ else
 end
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(-1,1,30))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(-1, stop = 1, length = 30))
 
 x = [.4]
 y = [.4]

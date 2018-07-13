@@ -17,19 +17,9 @@ y = [0.5];
 f = [1.];
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,23),linspace(0,1,22));
-
-
-
-# all points are valid points
-mask = trues(size(xi))
-
-# this problem has a simple cartesian metric
-# pm is the inverse of the resolution along the 1st dimension
-# pn is the inverse of the resolution along the 2nd dimension
-
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
+    Compat.range(0,stop=1,length=23),
+    Compat.range(0,stop=1,length=22))
 
 # correlation length
 len = 0.005;

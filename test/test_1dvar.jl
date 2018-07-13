@@ -2,12 +2,7 @@ using DIVAnd
 # Testing DIVAnd in 1 dimension.
 
 # grid of background field
-xi =
-    if VERSION >= v"0.7.0-beta.0"
-        collect(range(0,stop=1,length=21))
-    else
-        collect(linspace(0,1,21))
-    end
+xi = collect(Compat.range(0,stop=1,length=21))
 
 x = [.4; .6];
 f = [.4; .6];

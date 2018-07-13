@@ -29,10 +29,8 @@ meanx,meany,stdx,stdy,covar,corr = DIVAnd.stats(sumx,sumx2,sumy,sumy2,sumxy,leng
 
 mincount = 50
 
-xi,yi = DIVAnd.ndgrid(linspace(0,1,100),linspace(0,1,100))
-mask = trues(size(xi))
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1])
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1])
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
+    2,Compat.range(0,stop=1,length=100))
 
 lenx = .05;
 leny = .05;
@@ -54,7 +52,7 @@ minlen = 0.001
 maxlen = 0.1
 
 var0opt = covar[1]
-L = linspace(minlen,maxlen,100);
+L = Compat.range(minlen,stop = maxlen,length = 100);
 
 mu,K,len_scale = DIVAnd.DIVAnd_kernel(2,[1,2,1])
 

@@ -9,12 +9,8 @@ else
 end
 
 # grid of background field (its size should be odd)
-mask,(pm,pn),(xi,yi) =
-    if VERSION >= v"0.7.0-beta.0"
-        DIVAnd_squaredom(2,range(0.0,stop=1.0,length=15))
-    else
-        DIVAnd_squaredom(2,linspace(0.0,1.0,15))
-    end
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
+    2,Compat.range(0.0,stop=1.0,length=15))
 
 # grid of observations
 x = [0.5]

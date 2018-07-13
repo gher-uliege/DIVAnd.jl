@@ -113,7 +113,12 @@ representing the correlation length. `len[i]` is the correlation length in the
 i-th dimension.
 """
 function weight_RtimesOne(x::NTuple{ndim,Vector{T}},len) where T where ndim
-    coord = cat(2,x...)'
+    coord =
+        @static if VERSION >= v"0.7.0-beta.0"
+            cat(x..., dims = 2)'
+        else
+            cat(2,x...)'
+        end
 
     # geometric mean
     geomean(v) = prod(v)^(1/length(v))
