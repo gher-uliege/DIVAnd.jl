@@ -149,7 +149,7 @@ end
 
 Base.:*(MF::MatFun, x::AbstractVector) = MF.fun(x)
 
-if VERSION >= v"0.7.0-beta.0"
+@static if VERSION >= v"0.7.0-beta.0"
     Base.:*(MF::MatFun, M::AbstractMatrix) = cat([MF.fun(M[:,i]) for i = 1:size(M,2)]..., dims = 2)
 else
     Base.:*(MF::MatFun, M::AbstractMatrix) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)

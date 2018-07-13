@@ -157,5 +157,11 @@ end
 function load_mask(bath_name,isglobal,x,y,levels::AbstractVector)
     data = [load_mask(bath_name,isglobal,x,y,level) for level in levels ];
 
-    return data[1][1],data[1][2],cat(3,[d[3] for d in data]...)
+    catdata =
+        @static if VERSION >= v"0.7.0-beta.0"
+            cat([d[3] for d in data]..., dims = 3)
+        else
+            cat(3,[d[3] for d in data]...)
+        end
+    return data[1][1],data[1][2],catdata
 end
