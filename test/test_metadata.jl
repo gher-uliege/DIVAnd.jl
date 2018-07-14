@@ -70,6 +70,6 @@ ncglobalattrib,ncvarattrib = DIVAnd.SDNMetadata(metadata,filename,varname,1:10,1
                                          default_field_min = -123,
                                          default_field_max = 123)
 
-@test contains(ncglobalattrib["preview"],"123")
+@test occursin("123",ncglobalattrib["preview"])
 
 

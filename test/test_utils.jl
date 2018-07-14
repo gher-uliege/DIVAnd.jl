@@ -38,13 +38,13 @@ fx,fy,fz = DIVAnd.cgradientn((pm,pn,po),f)
 
 c = randn(10,10)
 valex = -9999
-c[3:5,6:10] = valex
+c[3:5,6:10] .= valex
 cf = DIVAnd.ufill(c,valex);
 @test sum(cf == valex) == 0
 
 c = randn(10,10,20)
 valex = -9999
-c[3:5,6:10,1:4] = valex
+c[3:5,6:10,1:4] .= valex
 cf = DIVAnd.ufill(c,valex);
 @test sum(cf == valex) == 0
 
@@ -66,7 +66,7 @@ RL = DIVAnd.lengraddepth((pm,pn),h,L)
 # 1/sqrt(4 π k t) * exp(-x^2 / (4kt))
 
 z = Compat.range(-50,stop = 50,length = 201);
-f = zeros(z)
+f = zeros(size(z))
 f[(end+1)÷2] = 1
 
 filterscale = 10

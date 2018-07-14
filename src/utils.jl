@@ -321,7 +321,7 @@ function lengraddepth(pmn,h::Array{T,2}, L;
     h2 = max.(h2,hmin)
 
     # creating the RL field
-    RL = 1 ./ (1 + L * normgrad ./ h2)
+    RL = 1 ./ (1 .+ L * normgrad ./ h2)
 
     #RL[isnan(h)] = valex
     #RL = fill(RL,valex)
