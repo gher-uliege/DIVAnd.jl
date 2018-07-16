@@ -24,13 +24,13 @@ using SpecialFunctions
 
     # conjugate gradient
     include("test_conjugategradient.jl");
-    if VERSION < v"0.7.0-beta.0"
 
     include("test_sparse_diff.jl");
     include("test_laplacian.jl");
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
 
+    if VERSION < v"0.7.0-beta.0"
     include("test_diagnostic_tools.jl");
 
     include("test_1dvar.jl");
