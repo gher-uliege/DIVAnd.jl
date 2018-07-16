@@ -144,7 +144,7 @@ for opertype in [Val{:sparse}, Val{:MatFun}]
     masktest = trues(size(coordx1))
     pm = ones(size(coordx1))/2
     pn = ones(size(coordx1))/3
-    Dx,Dy = sparse_gradient(opertype,masktest,(pm,pn))
+    Dx,Dy = DIVAnd_gradient(opertype,masktest,(pm,pn))
     field = 2*coordx1 + coordx2
     Df1 = 2 * ones(3,3)
     Df2 = Dx * field[:]

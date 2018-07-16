@@ -23,7 +23,7 @@
 
 function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscyclic,mapindex,Labs) where n
 
-    s = DIVAnd_struct(mask)
+    s = DIVAnd_struct(operatortype,mask)
 
     sz = size(mask)
 

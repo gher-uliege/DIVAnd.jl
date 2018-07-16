@@ -18,13 +18,13 @@ Output:
 
 Note make sure not to mix Float32 and Float64 for DIVAnd_constrain.
 """
-function DIVAnd_obs(s,xi,x,yo,R; I = [])
+function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = Matrix{T}(0,0)) where T
     mask = s.mask
     iscyclic = s.iscyclic
     moddim = s.moddim
 
     if isempty(I)
-        I = localize_separable_grid(x,mask,xi)
+        I = localize_separable_grid(x,mask,xi) :: Matrix{T}
     end
 
     H,out,outbbox = sparse_interp(mask,I,iscyclic)

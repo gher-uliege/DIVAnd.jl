@@ -49,6 +49,7 @@ using Compat
 const EarthRadius = 6372795.477598; # m
 
 include("statevector.jl")
+include("special_matrices.jl");
 
 mutable struct DIVAnd_constrain{T <: AbstractFloat, TR <: AbstractMatrix{<: Number}, TH <: AbstractMatrix{<: Number}}
     yo::Vector{T}
@@ -59,7 +60,8 @@ end
 # T is the type of floats and
 # Ti: the type of integers
 # N: the number of dimensions
-mutable struct DIVAnd_struct{T <: AbstractFloat,Ti <: Int,N}
+mutable struct DIVAnd_struct{T,Ti,N,OT}
+#mutable struct DIVAnd_struct{T,Ti,N,OT} where T <: AbstractFloat where Ti <: Int where N where OT
     n::Ti
     neff::Ti
     coeff::T
@@ -67,18 +69,17 @@ mutable struct DIVAnd_struct{T <: AbstractFloat,Ti <: Int,N}
 #    D::SparseMatrixCSC{T,Ti}
     D::AbstractMatrix{T}
     mask::BitArray{N}
-    WE::AbstractMatrix{T}
+    WE::OT
     isinterior::Vector{Bool}
     isinterior_stag::Vector{Vector{Bool}}
     isinterior_unpacked::Vector{Bool}
     mapindex_packed::Vector{Ti}
     mask_stag::Vector{BitArray{N}}
-    #WEs:: Vector{AbstractMatrix{T}} # does not work
-    WEs::Vector{Any}
-    WEss::Vector{Any}
+    WEs::Vector{OT}
+    WEss::Vector{OT}
     Dx::NTuple{N,AbstractMatrix{T}}
     alpha::Vector{T}
-    iB::AbstractMatrix{T}
+    iB::OT
     #iB_::Vector{Any}
     iB_
     Ld::Array{T,1}
@@ -106,9 +107,16 @@ mutable struct DIVAnd_struct{T <: AbstractFloat,Ti <: Int,N}
     obsconstrain::DIVAnd_constrain{T}
 end
 
+function myempty(::Type{SparseMatrixCSC{T,Int}},sz) where T
+    return sparse(Int[],Int[],Float64[],prod(sz),sz[1],sz[2])
+end
 
-    function DIVAnd_struct(mask)
-        n = ndims(mask)
+function myempty(::Type{MatFun{Int}},sz)
+    return MatFun(sz, x -> zero(x), x -> zero(x))
+end
+
+
+    function DIVAnd_struct(::Type{OT},mask::AbstractArray{Bool,n}) where {OT,n}
         neff = 0
         coeff = 1.
         moddim = Float64[]
@@ -120,12 +128,12 @@ end
 
         sv = statevector_init((mask,))
         sz = size(mask)
-        sempty = sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([]),prod(sz),prod(sz))
+        sempty = myempty(OT,(prod(sz),prod(sz)))
 
-        D = copy(sempty)
-        WE = copy(sempty)
-        iB = copy(sempty)
-        iB_ = Vector{SparseMatrixCSC{Float64,Int}}()
+        D = myempty(OT,(prod(sz),prod(sz)))
+        WE = myempty(OT,(prod(sz),prod(sz)))
+        iB = myempty(OT,(prod(sz),prod(sz)))
+        iB_ = OT[]
         Ld = Float64[]
         P = Matrix{Float64}(undef,0,0)
 
@@ -135,10 +143,10 @@ end
         mapindex_packed = Int[]
         #mask_stag = [Array{Bool,1}() for i in 1:n]
         mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
-        WEs = Vector{SparseMatrixCSC{Float64,Int}}()
-        WEss = [sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]
-        Dx = ([sparse(Array{Int}([]),Array{Int}([]),Array{Float64}([])) for i in 1:n]...,)
-        applybc = copy(sempty)
+        WEs = Array{OT,1}(undef,n)
+        WEss = Array{OT,1}(undef,n)
+        Dx = ([myempty(OT,(prod(sz),prod(sz))) for i in 1:n]...,)
+        applybc = myempty(OT,(prod(sz),prod(sz)))
 
         betap = 0.
         EOF_lambda = Float64[]
@@ -151,19 +159,14 @@ end
         niter = 0
         keepLanczosVectors = false
 
-        #obsout = Array{Bool,1}()
         obsout = BitArray{1}()
         obsconstrain = DIVAnd_constrain(Float64[],Matrix{Float64}(undef,0,0),Matrix{Float64}(undef,0,0))
-
-        WEs = Array{Any,1}(undef,n)
-        WEss = Array{Any,1}(undef,n)
-
 
         compPC(iB,R,H) = identity
         progress(iter,x,r,tol2,fun,b) = nothing
         preconditioner = identity
 
-        return DIVAnd_struct(n,
+        return DIVAnd_struct{Float64,Int,n,OT}(n,
             neff,
             coeff,
             sv,
@@ -206,6 +209,19 @@ end
             obsconstrain
             )
     end
+
+function DIVAnd_struct(mask::AbstractArray{Bool,n}) where n
+    DIVAnd_struct(SparseMatrixCSC{Float64,Int},mask)
+end
+
+function DIVAnd_struct(::Type{Val{:sparse}},mask::AbstractArray{Bool,n}) where n
+    DIVAnd_struct(SparseMatrixCSC{Float64,Int},mask)
+end
+
+function DIVAnd_struct(::Type{Val{:MatFun}},mask::AbstractArray{Bool,n}) where n
+    DIVAnd_struct(MatFun{Int},mask)
+end
+
 
 # ndgrid* functions are from
 # https://github.com/JuliaLang/julia/blob/master/examples/ndgrid.jl
@@ -351,7 +367,6 @@ include("sparse_gradient.jl");
 
 include("localize_separable_grid.jl");
 
-include("special_matrices.jl");
 include("conjugategradient.jl");
 include("DIVAnd_laplacian.jl");
 include("DIVAnd_operators.jl");
@@ -469,7 +484,7 @@ export packens, unpackens
 
 export MatFun,DIVAnd_obscovar,DIVAnd_pc_sqrtiB,DIVAnd_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, DIVAnd_save, varanalysis, dvmaskexpand, jmBix, DIVAnd_iBpHtiRHx!
 
-export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, DIVAnd_laplacian,
+export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, DIVAnd_gradient, sparse_gradient, DIVAnd_laplacian,
 statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, DIVAndrun, DIVAnd_metric, distance, CovarIS, factorize!, DIVAnd_kernel, DIVAnd_cpme, DIVAnd_aexerr, DIVAnd_GCVKii, DIVAnd_diagHK, DIVAnd_GCVKiiobs, DIVAnd_diagHKobs, diagMtCM, diagLtCM, DIVAnd_residual, DIVAnd_residualobs,
 DIVAnd_cvestimator, DIVAnd_erroratdatapoints, DIVAnd_cv, DIVAnd_qc, DIVAnd_adaptedeps2, DIVAndgo, DIVAndjog, DIVAnd_sampler, DIVAnd_filter3, DIVAnd_fill!, DIVAnd_Lpmnrange, DIVAnd_cutter, DIVAnd_fittocpu, DIVAnd_bc_stretch, DIVAnd_averaged_bg, DIVAnd_datainboundingbox, DIVAnd_cpme_go, scaleseparation
 
