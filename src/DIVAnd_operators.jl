@@ -21,12 +21,10 @@
 #     of a grid cell
 
 
-function DIVAnd_operators(operatortype,mask,pmn,nu,iscyclic,mapindex,Labs)
+function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscyclic,mapindex,Labs) where n
 
     s = DIVAnd_struct(mask)
 
-    # number of dimensions
-    n = ndims(mask)
     sz = size(mask)
 
     sv = statevector_init((mask,))
@@ -36,32 +34,30 @@ function DIVAnd_operators(operatortype,mask,pmn,nu,iscyclic,mapindex,Labs)
 
         # range of packed indices
         # land point map to 1, but those points are remove by statevector_pack
-        i2 = statevector_unpack(sv,collect(1:sv.n),1)
-        mapindex_packed = statevector_pack(sv,(i2[mapindex],))
+        i2, = statevector_unpack(sv,collect(1:sv.n),1)
+        s.mapindex_packed = statevector_pack(sv,(i2[mapindex],))
 
         # applybc*x applies the boundary conditions to x
-        i = 1:sv.n
-        applybc = sparse(collect(i),mapindex_packed[i],ones(sv.n),sv.n,sv.n)
+        ind = 1:sv.n
+        applybc = sparse(collect(ind),s.mapindex_packed[ind],ones(sv.n),sv.n,sv.n)
 
         # a halo point is points which maps to a (different) interior point
         # a interior point maps to itself
-        s.isinterior = i .== mapindex_packed[i]
+        s.isinterior = ind .== s.mapindex_packed[ind]
         s.isinterior_unpacked = statevector_unpack(sv,s.isinterior)
-
-        s.mapindex_packed = mapindex_packed
     end
 
     D = DIVAnd_laplacian(operatortype,mask,pmn,nu,iscyclic)
 
-    s.Dx = sparse_gradient(operatortype,mask,pmn,iscyclic)
+    s.Dx = DIVAnd_gradient(operatortype,mask,pmn,iscyclic)
 
     if !isempty(mapindex)
         D = applybc * D * applybc
-        WE = oper_diag(operatortype,s.isinterior) * WE
+        s.WE = oper_diag(operatortype,s.isinterior) * s.WE
 
         for i=1:n
             S = sparse_stagger(sz,i,iscyclic[i])
-            s.isinterior_stag[i] =  oper_pack(operatortype,s.mask_stag[i]) * S * s.isinterior_unpacked(:)
+            s.isinterior_stag[i] =  oper_pack(operatortype,s.mask_stag[i]) * S * s.isinterior_unpacked[:]
 
             # the results of 's.Dx[i] * field' satisfies the bc is field does
             # there is need to reapply the bc on the result

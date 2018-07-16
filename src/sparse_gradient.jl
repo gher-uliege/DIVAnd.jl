@@ -1,6 +1,8 @@
+for OT in [:sparse,:MatFun]
+    ot = Val{Symbol(OT)}
 """
 Sparse operator for a gradient.
-Dx1,Dx2,...,Dxn = sparse_gradient(mask,pmn)
+Dx1,Dx2,...,Dxn = sparse_gradient(operatortype,mask,pmn,iscyclic)
 Form the gradient using finite differences in all n-dimensions
 Input:
   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
@@ -10,29 +12,30 @@ Output:
   Dx1,Dx2,...,Dxn: operators represeting a gradient along
     different dimensions
 """
-function sparse_gradient(operatortype,mask,pmn,iscyclic = falses(ndims(mask)))
+    @eval function DIVAnd_gradient(::Type{$ot},mask::AbstractArray{Bool,N},pmn::NTuple{N,AbstractArray{T,N}},iscyclic = falses(ndims(mask))) where {N,T}
 
-    H = oper_pack(operatortype,mask)
-
+    iscyclic = falses(N)
+    H = oper_pack($ot,mask)
     sz = size(mask)
-    n = ndims(mask)
 
-    out = []
+    out = ntuple(i ->
+                 begin
+                 # staggering operator
+                 S = oper_stagger($ot,sz,i,iscyclic[i])
 
-    for i=1:n
-        # staggering operator
-        S = oper_stagger(operatortype,sz,i,iscyclic[i])
+                 # mask for staggered variable
+                 m = (S * mask[:]) .== 1
 
-        # mask for staggered variable
-        m = (S * mask[:]) .== 1
+                 d = m .* (S * pmn[i][:])
 
-        d = m .* (S * pmn[i][:])
-
-        push!(out,oper_pack(operatortype,m) * oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i]) * H')
+                 return oper_pack($ot,m) * oper_diag($ot,d) * oper_diff($ot,sz,i,iscyclic[i]) * H'
+                  end,
+                 Val(N))
+        return out
     end
-
-    return (out...,)
 end
+
+@deprecate sparse_gradient DIVAnd_gradient
 
 
 # Copyright (C) 2009,2016 Alexander Barth <a.barth@ulg.ac.be>

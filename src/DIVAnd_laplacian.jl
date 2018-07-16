@@ -17,34 +17,29 @@
    Lap: sparce matrix represeting a Laplacian
 
 """
-function DIVAnd_laplacian(operatortype,mask,pmn,nu::Float64,iscyclic)
-    n = ndims(mask)
-    nu_ = ntuple(fill(nu,size(mask)),n)
+function DIVAnd_laplacian(operatortype,mask::AbstractArray{Bool,N},pmn,nu::Float64,iscyclic) where N
+    nu_ = ntuple(fill(nu,size(mask)),Val(N))
 
     return DIVAnd_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 
 end
 
 function DIVAnd_laplacian(operatortype,mask,pmn,nu::Array{Float64,N},iscyclic) where N
-    nu_ = ntuple(i -> nu[i],N)
+    nu_ = ntuple(i -> nu[i],Val(N))
     return DIVAnd_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 
 function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Number,N}},iscyclic) where N
-    nu_ = ntuple(i -> fill(nu[i],size(mask)),N)
+    nu_ = ntuple(i -> fill(nu[i],size(mask)),Val(N))
     return DIVAnd_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 
-function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscyclic) where n
-
+function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{AbstractArray{T,n},n}},iscyclic) where {T,n}
     sz = size(mask)
-
-    # default float type
 
     # extraction operator of sea points
     H = oper_pack(operatortype,mask)
-	
-    sz = size(mask)
+
 	# Already include final operation *H' on DD to reduce problem size so resized the matrix
     # DD = spzeros(prod(sz),prod(sz))
 	DD = spzeros(size(H)[2],size(H)[1])
@@ -85,7 +80,8 @@ function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscycli
             szt = sz
             tmp_szt = collect(szt)
             tmp_szt[i] = tmp_szt[i]+1
-            szt = (tmp_szt...,)
+            szt = NTuple{n,Int}(tmp_szt)
+            #szt = ntuple(j -> (j == i ? size(mask,j)+1 : size(mask,j) ),Val(n))
 
             extx = oper_trim(operatortype,szt,i)'
 			# Tried to save an explicitely created intermediate matrix D
@@ -117,6 +113,7 @@ function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Any,n}},iscycli
 # Possible test to force symmetric Laplacian
 #    Lap=0.5*(Lap+Lap')
 
+    return Lap
 end
 
 
