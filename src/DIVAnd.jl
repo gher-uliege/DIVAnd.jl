@@ -458,7 +458,7 @@ export packens, unpackens
 
 export MatFun,DIVAnd_obscovar,DIVAnd_pc_sqrtiB,DIVAnd_pc_none,sparse_diag, statevector, pack, unpack, ind2sub, sub2ind, CovarHPHt, oper_diag, oper_stagger, oper_diff, oper_pack, oper_trim, oper_shift, DIVAnd_save, varanalysis, dvmaskexpand, jmBix, DIVAnd_iBpHtiRHx!
 
-export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, sparse_gradient, DIVAnd_laplacian,
+export sparse_stagger, sparse_diff, localize_separable_grid, ndgrid, sparse_pack, sparse_interp, sparse_trim, sparse_shift, DIVAnd_gradient, sparse_gradient, DIVAnd_laplacian,
 statevector_init, statevector_pack, statevector_unpack, statevector_ind2sub, statevector_sub2ind, DIVAndrun, DIVAnd_metric, distance, CovarIS, factorize!, DIVAnd_kernel, DIVAnd_cpme, DIVAnd_aexerr, DIVAnd_GCVKii, DIVAnd_diagHK, DIVAnd_GCVKiiobs, DIVAnd_diagHKobs, diagMtCM, diagLtCM, DIVAnd_residual, DIVAnd_residualobs,
 DIVAnd_cvestimator, DIVAnd_erroratdatapoints, DIVAnd_cv, DIVAnd_qc, DIVAnd_adaptedeps2, DIVAndgo, DIVAndjog, DIVAnd_sampler, DIVAnd_filter3, DIVAnd_fill!, DIVAnd_Lpmnrange, DIVAnd_cutter, DIVAnd_fittocpu, DIVAnd_bc_stretch, DIVAnd_averaged_bg, DIVAnd_datainboundingbox, DIVAnd_cpme_go, scaleseparation
 
