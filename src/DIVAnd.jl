@@ -30,15 +30,15 @@ if VERSION >= v"0.7.0-beta.0"
     import Base: *
     Base.:*(A::SparseArrays.SparseMatrixCSC,B::BitArray) = A*Int8.(B)
 
-    # workaround for
-    # https://github.com/JuliaLang/julia/issues/28012
-    import Base: +, -
-    function Base.:+(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
-        A + copy(B)
-    end
-    function Base.:-(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
-        A - copy(B)
-    end
+    # # workaround for
+    # # https://github.com/JuliaLang/julia/issues/28012
+    # import Base: +, -
+    # function Base.:+(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
+    #     A + copy(B)
+    # end
+    # function Base.:-(A::SparseArrays.SparseMatrixCSC,B::Adjoint{T,SparseMatrixCSC{T,Ti}}) where {T,Ti}
+    #     A - copy(B)
+    # end
 else
     const uuid1 = Base.Random.uuid1
     const mul! = A_mul_B!
