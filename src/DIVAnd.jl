@@ -66,8 +66,7 @@ mutable struct DIVAnd_struct{T,Ti,N,OT}
     neff::Ti
     coeff::T
     sv::statevector{1,N}
-#    D::SparseMatrixCSC{T,Ti}
-    D::AbstractMatrix{T}
+    D::OT
     mask::BitArray{N}
     WE::OT
     isinterior::Vector{Bool}
@@ -100,7 +99,8 @@ mutable struct DIVAnd_struct{T,Ti,N,OT}
     preconditioner
     keepLanczosVectors::Bool
     yo::Vector{T}
-    R::SparseMatrixCSC{T,Int}
+    R::Diagonal{T}
+    #R::Union{Diagonal{T},SparseMatrixCSC{T,Int}}
     H::SparseMatrixCSC{T,Int}
     P::AbstractMatrix{T}
     obsout::BitArray{1}
@@ -123,8 +123,8 @@ end
         iscyclic = convert(Vector{Bool},falses(n))
         alpha = Float64[]
         yo = Float64[]
-        R = Matrix{Float64}(undef,0,0)
-        H = Matrix{Float64}(undef,0,0)
+        R = Diagonal(Float64[])
+        H = sparse(Int[],Int[],Float64[],0,0)
 
         sv = statevector_init((mask,))
         sz = size(mask)

@@ -177,18 +177,19 @@ function DIVAndrun(mask::BitArray,pmnin,xiin,x,f::Vector{T},lin,epsilon2;
     #info("Adding observation constraint to cost function")
     obscon = DIVAnd_obs(s,xi,x,f,R,fracindex)
 
-    @code_warntype DIVAnd_addc(s,obscon)
     s = DIVAnd_addc(s,obscon);
 
     # add advection constraint to cost function
     if !isempty(velocity)
         #info("Adding advection constraint to cost function")
-        s = DIVAnd_addc(s,DIVAnd_constr_advec(s,velocity));
+        velcon = DIVAnd_constr_advec(s,velocity)
+        s = DIVAnd_addc(s,velcon);
 	end
 
 	if !isempty(topographyforfluxes)
         #info("Adding integral constraints")
-		s = DIVAnd_addc(s,DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin));
+        fluxcon = DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
+		s = DIVAnd_addc(s,fluxcon);
     end
 
     # add all additional constrains
