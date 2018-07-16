@@ -17,7 +17,7 @@ mi1 = 13
 mj0 = 12
 mj1 = 13
 
-mask[mi0:mi1,mj0:mj1] = false
+mask[mi0:mi1,mj0:mj1] .= false
 
 x = [0.]
 y = [0.]
@@ -52,8 +52,8 @@ srand(1234)
 mask0,(pm,pn),(xi,yi) = DIVAnd_squaredom(
     2,Compat.range(0, stop = 1, length = 100))
 mask = DIVAnd.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
-x = rand(100)
-y = rand(size(x))
+x = rand(Float64,100)
+y = rand(Float64,size(x))
 f = sin.(2*π*x) .* sin.(2*π*y)
 
 len = 0.1

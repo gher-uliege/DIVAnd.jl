@@ -124,7 +124,7 @@ function DIVAndrun(mask::BitArray,pmnin,xiin,x,f::Vector{T},lin,epsilon2;
                    constraints = (),
                    inversion = :chol,
                    moddim = [],
-                   fracindex = Matrix{T}(0,0),
+                   fracindex = Matrix{T}(undef,0,0),
                    alpha = [],
                    keepLanczosVectors = 0,
                    compPC = DIVAnd_pc_none,

@@ -12,8 +12,10 @@ else
     import Base.LinAlg.BLAS
 end
 using Compat
+using SpecialFunctions
 
 @testset "DIVAnd" begin
+    if VERSION < v"0.7.0-beta.0"
     include("test_quadtrees.jl");
 
     # ndgrid
@@ -153,7 +155,7 @@ using Compat
 
     mu,K,len_scale = DIVAnd_kernel(2,[1,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
-
+    end
     mu,K,len_scale = DIVAnd_kernel(2,[0,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
 

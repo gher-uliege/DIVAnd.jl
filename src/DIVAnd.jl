@@ -141,8 +141,7 @@ end
         isinterior_stag = [Bool[] for i in 1:n]
         isinterior_unpacked = Bool[]
         mapindex_packed = Int[]
-        #mask_stag = [Array{Bool,1}() for i in 1:n]
-        mask_stag = [BitArray{n}(zeros(Int,n)...) for i in 1:n]
+        mask_stag = Vector{BitArray{n}}(undef,n)
         WEs = Array{OT,1}(undef,n)
         WEss = Array{OT,1}(undef,n)
         Dx = ([myempty(OT,(prod(sz),prod(sz))) for i in 1:n]...,)

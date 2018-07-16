@@ -13,23 +13,7 @@ function DIVAnd_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
 
     iscyclic = moddim .> 0
 
-    Labs=deepcopy(Lin)
-
-    if isa(Labs,Number)
-        Labs = ((Labs * ones(size(mask)) for i=1:n)...,)
-    elseif isa(Labs,Tuple)
-
-        if isa(Labs[1],Number)
-            Labs = ([Labs[i] * ones(size(mask)) for i = 1:n]...,)
-        end
-
-        for i=1:n
-            if !isequal(size(mask),size(Labs[i]))
-                error("mask $(formatsize(size(mask))) and correlation length $(formatsize(size(Labs[i]))) have incompatible size")
-            end
-        end
-    end
-
+    Labs = len_harmonize(Lin,mask)
 
     # Just used to fill the Labs tuple (so background will not fill it again)
     #
@@ -39,19 +23,11 @@ function DIVAnd_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
         return pmnin,xiin,Labs
     end
 
-
-
     if alphabc>0
-
         pmn=deepcopy(pmnin)
         xi=deepcopy(xiin)
 
         for i=1:n
-
-
-
-
-
 
             if ~iscyclic[i]
                 ind1 = [(j == i ? (1) : (:)) for j = 1:n]
