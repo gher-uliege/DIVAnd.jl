@@ -160,15 +160,9 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 	s.n = n
 
 	# mean correlation legth
-
-
 	s.Ld = Ld
 
-
-
 	iB = DIVAnd_background_components(s,D,alpha,btrunc=btrunc)
-
-
 
 	# inverse of background covariance matrix
 	s.iB = iB
