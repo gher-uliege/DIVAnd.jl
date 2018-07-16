@@ -39,22 +39,19 @@ the coordinates `x`. The array `cpme` represent the error field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`. If you cannot run `DIVAndrun` you can use `DIVAndgo` with error field calculation `:cpme`
 
 """
-function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
+#function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
+function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2)
+    csteps=[0]; lmask=[]; alphapc=[]; otherargs = Dict()
 
-
-    
     errorscale=1;
 
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
     # Could be a small improvement. Also used in DIVAnd_aexerr
 
-
-    if isa(Labs,Tuple)
-        len=([x./1.70766 for x in Labs]...,);
-    else
-        len=Labs./1.70766
+    len = len_harmonize(Labs,mask)
+    for i = 1:length(len)
+        len[i] = len[i] / 1.70766
     end
-
 
     if sum(csteps)>0
         cpme,s =  DIVAndjog(mask,pmn,xi,x,ones(size(f)),len,epsilon2,csteps,lmask; alphapc=alphapc, otherargs...);

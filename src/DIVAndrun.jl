@@ -177,6 +177,7 @@ function DIVAndrun(mask::BitArray,pmnin,xiin,x,f::Vector{T},lin,epsilon2;
     #info("Adding observation constraint to cost function")
     obscon = DIVAnd_obs(s,xi,x,f,R,fracindex)
 
+    @code_warntype DIVAnd_addc(s,obscon)
     s = DIVAnd_addc(s,obscon);
 
     # add advection constraint to cost function

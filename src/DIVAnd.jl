@@ -100,8 +100,8 @@ mutable struct DIVAnd_struct{T,Ti,N,OT}
     preconditioner
     keepLanczosVectors::Bool
     yo::Vector{T}
-    R::AbstractMatrix{T}
-    H::AbstractMatrix{T}
+    R::SparseMatrixCSC{T,Int}
+    H::SparseMatrixCSC{T,Int}
     P::AbstractMatrix{T}
     obsout::BitArray{1}
     obsconstrain::DIVAnd_constrain{T}

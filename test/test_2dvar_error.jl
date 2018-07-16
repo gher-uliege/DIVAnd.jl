@@ -47,14 +47,19 @@ for errormethod in errormethods
 
     errmin,minloc = findmin(err)
 
-    # should be the middle of the domain
-    minsub = ind2sub(size(mask),minloc)
+    if VERSION >= v"0.7.0-beta.0"
+        for i = 1:ndims(mask)
+            @test minloc[i] == (size(xi,i)+1) ÷ 2
+        end
+    else
+        # should be the middle of the domain
+        minsub = ind2sub(size(mask),minloc)
 
-    for i = 1:ndims(mask)
-        @test minsub[i] == (size(xi,i)+1) ÷ 2
+        for i = 1:ndims(mask)
+            @test minsub[i] == (size(xi,i)+1) ÷ 2
+        end
     end
 end
-
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
