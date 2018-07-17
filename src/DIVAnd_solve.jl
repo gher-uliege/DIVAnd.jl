@@ -10,13 +10,14 @@ Input:
   s: structure created by DIVAnd_factorize
   fi0: starting point for iterative primal methods
   f0: starting point for the iterative dual method
-  
+
   btrunc: the value at which the stored value of s.iB was truncated and needs to be completed on the fly using jmBix
 
 Output:
   fi: analyzed field
 """
-function DIVAnd_solve!(s,fi0,f0;btrunc=[])
+function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT},fi0,f0; btrunc = []) where {T,Ti,N,OT}
+#    btrunc=[]
 
     H = s.H;
     sv = s.sv;
@@ -35,19 +36,19 @@ function DIVAnd_solve!(s,fi0,f0;btrunc=[])
             #fun(x) = s.iB*x + H'*(R \ (H * x));
 
             function fun!(x,fx)
-				
-                
-			#Probably not a good way to change function definition depending on types	
+
+
+			#Probably not a good way to change function definition depending on types
 				if isa(s.iB,DIVAnd.MatFun{Int})
-				    
+
 					fx[:] = jmBix(s,x;btrunc=btrunc) + H'*(R \ (H * x))
 				  else
-				    
+
 					workstate1=zeros(Float64,size(x))
 					workstate2=zeros(Float64,size(x))
 					workobs1=zeros(Float64,size(R)[1])
 					iBx_=zeros(Float64,size(x))
-					fx[:] = DIVAnd_iBpHtiRHx!(s,x,fx,workobs1,workstate1,workstate2,iBx_;btrunc=btrunc) 
+					fx[:] = DIVAnd_iBpHtiRHx!(s,x,fx,workobs1,workstate1,workstate2,iBx_;btrunc=btrunc)
 			    end
             end
 
@@ -101,9 +102,9 @@ function DIVAnd_solve!(s,fi0,f0;btrunc=[])
     return fi
 end
 
-# Copyright (C) 2014,2017 Alexander Barth 		<a.barth@ulg.ac.be>
+# Copyright (C) 2014,2018 Alexander Barth 		<a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
-#						
+#
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at your option) any later

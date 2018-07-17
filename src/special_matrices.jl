@@ -1,12 +1,19 @@
 
-mutable struct CovarIS{T} <: AbstractMatrix{T}
-    IS:: AbstractMatrix{T}
-    factors
+@static if VERSION >= v"0.7.0-beta.0"
+    mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
+        IS:: TA
+        factors:: Union{SuiteSparse.CHOLMOD.Factor{T},Nothing}
+    end
+else
+    mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
+        IS:: TA
+        factors:: Union{SparseArrays.CHOLMOD.Factor{T},Nothing}
+    end
 end
 
-function CovarIS(IS::AbstractMatrix)
+function CovarIS(IS::TA) where TA <: AbstractMatrix
     factors = nothing
-    CovarIS(IS,factors)
+    CovarIS{eltype(TA),TA}(IS,factors)
 end
 
 
@@ -14,7 +21,7 @@ Base.inv(C::CovarIS) = C.IS
 
 Base.size(C::CovarIS) = size(C.IS)
 
-function Base.:*(C::CovarIS, v::AbstractVector{Float64})
+function Base.:*(C::CovarIS, v::TV)::TV where TV <: AbstractVector{Float64}
     if C.factors != nothing
         return C.factors \ v
     else
@@ -25,7 +32,7 @@ end
 Base.:*(C::CovarIS, v::SparseVector{Float64,Int}) = C*full(v)
 
 
-function A_mul_B(C::CovarIS, M::AbstractMatrix{Float64})
+function A_mul_B(C::CovarIS, M::TM)::TM where TM <: AbstractMatrix{Float64}
     if C.factors != nothing
         return C.factors \ M
     else

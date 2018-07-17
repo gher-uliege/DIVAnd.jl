@@ -102,7 +102,7 @@ mutable struct DIVAnd_struct{T,Ti,N,OT}
     R::Diagonal{T}
     #R::Union{Diagonal{T},SparseMatrixCSC{T,Int}}
     H::SparseMatrixCSC{T,Int}
-    P::AbstractMatrix{T}
+    P::CovarIS{T,OT}
     obsout::BitArray{1}
     obsconstrain::DIVAnd_constrain{T}
 end
@@ -135,7 +135,7 @@ end
         iB = myempty(OT,(prod(sz),prod(sz)))
         iB_ = OT[]
         Ld = Float64[]
-        P = Matrix{Float64}(undef,0,0)
+        P = CovarIS{Float64,OT}(sempty,nothing)
 
         isinterior = Bool[]
         isinterior_stag = [Bool[] for i in 1:n]
