@@ -90,9 +90,9 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
     # info("Solving...")
     fi0_pack = statevector_pack(s.sv,(fi0,))[:,1]
 
-    @code_warntype DIVAnd_solve2!(s,fi0_pack,f0)
-    #fi = DIVAnd_solve!(s,fi0_pack,f0;btrunc=btrunc) :: Array{T,N}
-    fi = DIVAnd_solve!(s,fi0_pack,f0) :: Array{T,N}
+    #@code_warntype DIVAnd_solve!(s,fi0_pack,f0)
+    fi = DIVAnd_solve!(s,fi0_pack,f0;btrunc=btrunc) :: Array{T,N}
+
     # info("Done solving")
     return fi,s
 end
