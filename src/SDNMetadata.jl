@@ -248,10 +248,11 @@ end
 
 # EDMO information from originators
 
-function getoriginators(db,filepath,errname; ignore_errors = false)
-    obsids = loadobsid(filepath)
-    errname = replace(filepath,r".nc$","") * ".cdi_import_errors_test.csv"
+function getoriginators(db,filepaths::Vector{<:AbstractString},
+                        errname; ignore_errors = false)
 
+    obsids = Iterators.flatten(loadobsid.(filepaths))
+    errname = replace(filepaths[1],r".nc$","") * ".cdi_import_errors_test.csv"
     originators,notfound = get_originators_from_obsid(
         db,obsids; ignore_errors = ignore_errors)
 
@@ -325,10 +326,13 @@ function labelandURL(s)
 end
 
 
-function gettemplatevars(filepath,varname,project,cdilist;
+function gettemplatevars(filepaths,varname,project,cdilist;
                 errname = split(filepath,".nc")[1] * ".cdi_import_errors.csv",
                 ignore_errors = false)
 
+    # assume that grid and time coverage is the same as the
+    # first file
+    filepath = filepaths[1]
     isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
 
     baseurl_wms = PROJECTS[project]["baseurl_wms"]
@@ -528,7 +532,7 @@ contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
 #filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
 
 originators = getoriginators(
-    db,filepath,errname,
+        db,filepaths,errname,
     ignore_errors = ignore_errors)
 
 append!(contacts,originators)
@@ -598,6 +602,8 @@ function rendertemplate(templatefile,templateVars,xmlfilename)
     end
 end
 
+
+
 """
     DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename;
                      ignore_errors = false)
@@ -612,17 +618,24 @@ will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignore if `ignore_errors` is
 set to true.
 """
-function divadoxml(filepath,varname,project,cdilist,xmlfilename;
+function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,xmlfilename;
                    ignore_errors = false)
 
     # template file we will use.
     templatefile = PROJECTS[project]["template"]
 
     templateVars = gettemplatevars(
-        filepath,varname,project,cdilist,
+        filepaths,varname,project,cdilist,
         ignore_errors = ignore_errors)
 
     rendertemplate(templatefile,templateVars,xmlfilename)
+end
+
+function divadoxml(filepath::AbstractString,varname,project,cdilist,xmlfilename;
+                   ignore_errors = false)
+
+    divadoxml([filepath],varname,project,cdilist,xmlfilename;
+              ignore_errors = ignore_errors)
 end
 
 
