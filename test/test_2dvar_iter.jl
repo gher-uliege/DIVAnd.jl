@@ -43,10 +43,10 @@ va_chol,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
                       kwargs..., inversion=:chol)
 
 for jj=1:4
-# iterative (without preconditioner)
-va_iter,s_np = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
-                         kwargs..., inversion=:pcg,btrunc=jj)
-@test norm(va_chol[mask] - va_iter[mask]) < tolres
+    # iterative (without preconditioner)
+    va_iter,s_np = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
+                             kwargs..., inversion=:pcg,btrunc=jj)
+    @test norm(va_chol[mask] - va_iter[mask]) < tolres
 end
 
 # iterative (without preconditioner)
@@ -90,10 +90,12 @@ va_dual,s_np = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2;
 # This is not efficient for large cases, only a consistency check
 function compPCdual(iB,H,R)
     B = CovarIS(iB)
-    M = H * (B * Matrix(H)') + sparse_diag(diag(R));
+    factorize!(B)
 
-    iM = CovarIS(M);
-    factorize!(iM);
+    M = H * (B * H') + sparse_diag(diag(R));
+
+    iM = CovarIS(M)
+    factorize!(iM)
 
     function fun!(x,fx)
         fx[:] = iM * x
