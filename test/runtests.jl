@@ -22,14 +22,18 @@ using SpecialFunctions
 
     include("test_covaris.jl");
 
-    if VERSION < v"0.7.0-beta.0"
     # conjugate gradient
     include("test_conjugategradient.jl");
+#    if VERSION < v"0.7.0-beta.0" ok
 
     include("test_sparse_diff.jl");
     include("test_laplacian.jl");
-    include("test_localize_separable_grid.jl");
+    if VERSION < v"0.7.0-beta.0"
+        include("test_localize_separable_grid.jl"); # stack overflow v0.7
+    end
+
     include("test_statevector.jl");
+    if VERSION < v"0.7.0-beta.0"
 
     include("test_diagnostic_tools.jl");
 
