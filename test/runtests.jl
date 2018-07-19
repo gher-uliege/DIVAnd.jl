@@ -22,6 +22,7 @@ using SpecialFunctions
 
     include("test_covaris.jl");
 
+    if VERSION < v"0.7.0-beta.0"
     # conjugate gradient
     include("test_conjugategradient.jl");
 
@@ -39,25 +40,20 @@ using SpecialFunctions
     include("test_2dvar_adv.jl");
     include("test_2dvar_constcoast.jl");
 
-    if VERSION < v"0.7.0-beta.0"
         include("test_2dvar_iter.jl");
         include("test_2dvar_jog.jl");
-    end
 
     include("test_2dvar_error.jl");
 
     include("test_2dvar_all_masked.jl");
 
-    if VERSION < v"0.7.0-beta.0"
         # cross-validation
-        include("test_2dvar_cv.jl");
-    end
+        include("test_2dvar_cv.jl"); # problematic
 
     include("test_2dvar_matfun.jl");
     include("test_2dvar_qc.jl");
 
     include("test_2dvar_outside.jl");
-    if VERSION < v"0.7.0-beta.0"
 
     include("test_variableLandpmn.jl")
 
@@ -119,7 +115,6 @@ using SpecialFunctions
     # Test product generation
     include("test_product.jl");
     include("test_product_2d.jl");
-    end
 
     # interpolate background from a NetCDF file
     include("test_interp.jl");
@@ -158,4 +153,5 @@ using SpecialFunctions
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
     mu,K,len_scale = DIVAnd_kernel(2,[0,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
+    end
 end
