@@ -30,7 +30,6 @@ using SpecialFunctions
     include("test_localize_separable_grid.jl");
     include("test_statevector.jl");
 
-    if VERSION < v"0.7.0-beta.0"
     include("test_diagnostic_tools.jl");
 
     include("test_1dvar.jl");
@@ -40,8 +39,8 @@ using SpecialFunctions
     include("test_2dvar_adv.jl");
     include("test_2dvar_constcoast.jl");
 
-    include("test_2dvar_iter.jl");
     if VERSION < v"0.7.0-beta.0"
+        include("test_2dvar_iter.jl");
         include("test_2dvar_jog.jl");
     end
 
@@ -58,6 +57,7 @@ using SpecialFunctions
     include("test_2dvar_qc.jl");
 
     include("test_2dvar_outside.jl");
+    if VERSION < v"0.7.0-beta.0"
 
     include("test_variableLandpmn.jl")
 
@@ -119,6 +119,7 @@ using SpecialFunctions
     # Test product generation
     include("test_product.jl");
     include("test_product_2d.jl");
+    end
 
     # interpolate background from a NetCDF file
     include("test_interp.jl");
@@ -155,8 +156,6 @@ using SpecialFunctions
 
     mu,K,len_scale = DIVAnd_kernel(2,[1,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
-    end
     mu,K,len_scale = DIVAnd_kernel(2,[0,3,3,1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
-
 end
