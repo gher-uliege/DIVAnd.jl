@@ -150,16 +150,16 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
 
     end
 
-ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],
-                          "standard_name" => metadata["netcdf_standard_name"],
-                          "long_name" => metadata["netcdf_long_name"],
-                          #  "sdn_parameter_urn" => sdn_parameter_urn,
-                          #  "sdn_parameter_name" => sdn_parameter_name,
-                          #  "sdn_uom_urn" => sdn_uom_urn,
-                          #  "sdn_uom_name" => sdn_uom_name,
-                          )
+    ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],
+                              "standard_name" => metadata["netcdf_standard_name"],
+                              "long_name" => metadata["netcdf_long_name"],
+                              #  "sdn_parameter_urn" => sdn_parameter_urn,
+                              #  "sdn_parameter_name" => sdn_parameter_name,
+                              #  "sdn_uom_urn" => sdn_uom_urn,
+                              #  "sdn_uom_name" => sdn_uom_name,
+                              )
 
-return ncglobalattrib,ncvarattrib
+    return ncglobalattrib,ncvarattrib
 end
 
 
@@ -248,10 +248,11 @@ end
 
 # EDMO information from originators
 
-function getoriginators(db,filepath,errname; ignore_errors = false)
-    obsids = loadobsid(filepath)
-    errname = replace(filepath,r".nc$","") * ".cdi_import_errors_test.csv"
+function getoriginators(db,filepaths::Vector{<:AbstractString},
+                        errname; ignore_errors = false)
 
+    obsids = Iterators.flatten(loadobsid.(filepaths))
+    errname = replace(filepaths[1],r".nc$","") * ".cdi_import_errors_test.csv"
     originators,notfound = get_originators_from_obsid(
         db,obsids; ignore_errors = ignore_errors)
 
@@ -325,10 +326,13 @@ function labelandURL(s)
 end
 
 
-function gettemplatevars(filepath,varname,project,cdilist;
-                errname = split(filepath,".nc")[1] * ".cdi_import_errors.csv",
-                ignore_errors = false)
+function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
+                         errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
+                         ignore_errors = false)
 
+    # assume that grid and time coverage is the same as the
+    # first file
+    filepath = filepaths[1]
     isodateformat = DateFormat("yyyy-mm-ddTHH:MM:SS")
 
     baseurl_wms = PROJECTS[project]["baseurl_wms"]
@@ -505,86 +509,84 @@ function gettemplatevars(filepath,varname,project,cdilist;
     end
     close(ds)
 
-    filename = basename(filepath)
+    DOI_URL =
+        if doi != ""
+            "http://dx.doi.org/" * doi
+        else
+            "na"
+        end
 
-DOI_URL =
-    if doi != ""
-        "http://dx.doi.org/" * doi
-    else
-        "na"
+    baseurl_wms = PROJECTS[project]["baseurl_wms"]
+    baseurl_http = PROJECTS[project]["baseurl_http"]
+    baseurl_opendap = PROJECTS[project]["baseurl_opendap"]
+
+    info("Loading EDMO information")
+
+    contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
+
+    db = loadoriginators(cdilist)
+
+    #UPDATE!! fixme
+    #filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
+
+    originators = getoriginators(
+        db,filepaths,errname,
+        ignore_errors = ignore_errors)
+
+    append!(contacts,originators)
+
+    bbox = join([string(templateVars[c]) for c in [
+        "longitude_min","latitude_min",
+        "longitude_max","latitude_max"]],',')
+
+
+    preview_url = PROJECTS[project]["baseurl_wms"] * string(
+        HTTP.URI(;query=
+                 OrderedDict(
+                     "service" => "WMS",
+                     "request" => "GetMap",
+                     "version" => "1.3.0",
+                     "crs" => "CRS:84",
+                     "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
+                     "decorated" => "true",
+                     "format" => "image/png",
+                     "layers" => domain * "/" * filename * layersep * varname,
+                     "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
+                                                     "vmax" => default_field_max)),
+                     #"elevation" => "-0.0",
+                     #"time" => "03",
+                     "transparent" => "true",
+                     "height" => "500",
+                     "width" => "800")))
+
+
+
+    # Specify any input variables to the template as a dictionary.
+    merge!(templateVars, Dict(
+        "preview" => preview_url,
+        "L02_URL" => " http://vocab.nerc.ac.uk/collection/L02/current/006/",
+        "L02_label" => "surface",
+        "DOI_URL" => DOI_URL,
+        # URL for the global data set
+        "WMS_dataset_getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+        "WMS_dataset_layer" => domain * "/" * filename * layersep * varname,
+        "WMS_layers"  => [],
+        "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filename,
+        "NetCDF_URL_description" => "Link to download the following file: " * filename,
+        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filename * ".html",
+        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
+        "contacts" => contacts,
+    ))
+
+    for (name, description) in templateVars["netcdf_variables"]
+        push!(templateVars["WMS_layers"],Dict(
+            "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+            "name" => domain * "/" * filename * layersep * name,
+            "description" => "WMS layer for " * description)
+              )
     end
 
-baseurl_wms = PROJECTS[project]["baseurl_wms"]
-baseurl_http = PROJECTS[project]["baseurl_http"]
-baseurl_opendap = PROJECTS[project]["baseurl_opendap"]
-
-info("Loading EDMO information")
-
-contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
-
-            db = loadoriginators(cdilist)
-
-            #UPDATE!! fixme
-#filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
-
-originators = getoriginators(
-    db,filepath,errname,
-    ignore_errors = ignore_errors)
-
-append!(contacts,originators)
-
-bbox = join([string(templateVars[c]) for c in [
-    "longitude_min","latitude_min",
-    "longitude_max","latitude_max"]],',')
-
-
-preview_url = PROJECTS[project]["baseurl_wms"] * string(
-    HTTP.URI(;query=
-             OrderedDict(
-                 "service" => "WMS",
-                 "request" => "GetMap",
-                 "version" => "1.3.0",
-                 "crs" => "CRS:84",
-                 "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
-                 "decorated" => "true",
-                 "format" => "image/png",
-                 "layers" => domain * "/" * filename * layersep * varname,
-                 "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
-                                                 "vmax" => default_field_max)),
-                 #"elevation" => "-0.0",
-                 #"time" => "03",
-                 "transparent" => "true",
-                 "height" => "500",
-                 "width" => "800")))
-
-
-
-# Specify any input variables to the template as a dictionary.
-merge!(templateVars, Dict(
-    "preview" => preview_url,
-    "L02_URL" => " http://vocab.nerc.ac.uk/collection/L02/current/006/",
-    "L02_label" => "surface",
-    "DOI_URL" => DOI_URL,
-    # URL for the global data set
-    "WMS_dataset_getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-    "WMS_dataset_layer" => domain * "/" * filename * layersep * varname,
-    "WMS_layers"  => [],
-    "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filename,
-    "NetCDF_URL_description" => "Link to download the following file: " * filename,
-    "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filename * ".html",
-    "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
-    "contacts" => contacts,
-))
-
-       for (name, description) in templateVars["netcdf_variables"]
-       push!(templateVars["WMS_layers"],Dict(
-           "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-           "name" => domain * "/" * filename * layersep * name,
-           "description" => "WMS layer for " * description)
-             )
-       end
-
-       return templateVars
+    return templateVars
 end
 
 
@@ -597,6 +599,8 @@ function rendertemplate(templatefile,templateVars,xmlfilename)
         print(f,Mustache.render(template,templateVars))
     end
 end
+
+
 
 """
     DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename;
@@ -612,17 +616,24 @@ will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignore if `ignore_errors` is
 set to true.
 """
-function divadoxml(filepath,varname,project,cdilist,xmlfilename;
+function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,xmlfilename;
                    ignore_errors = false)
 
     # template file we will use.
     templatefile = PROJECTS[project]["template"]
 
     templateVars = gettemplatevars(
-        filepath,varname,project,cdilist,
+        filepaths,varname,project,cdilist,
         ignore_errors = ignore_errors)
 
     rendertemplate(templatefile,templateVars,xmlfilename)
+end
+
+function divadoxml(filepath::AbstractString,varname,project,cdilist,xmlfilename;
+                   ignore_errors = false)
+
+    divadoxml([filepath],varname,project,cdilist,xmlfilename;
+              ignore_errors = ignore_errors)
 end
 
 
@@ -630,7 +641,7 @@ end
 """
     SDNObsMetadata(id)
 
-Return a link to the SeaDataNet metadata page of the observation with the 
+Return a link to the SeaDataNet metadata page of the observation with the
 identifier `id` (a combination of the EDMO code and local CDI ID).
 This works only in IJulia.
 """
@@ -642,9 +653,9 @@ function SDNObsMetadata(id)
                      "popup" => "yes",
                      "edmo" => edmo,
                      "identifier" => local_CDI_ID)))
-    
-  display("text/html", """
+
+    display("text/html", """
         Open in a new window <a target="blank" href="$(url)" >$(id)</a>
-        <iframe width="900" height="700" src="$(url)"</iframe>    
+        <iframe width="900" height="700" src="$(url)"</iframe>
 """)
 end
