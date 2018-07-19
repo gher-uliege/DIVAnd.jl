@@ -326,8 +326,8 @@ function labelandURL(s)
 end
 
 
-function gettemplatevars(filepaths,varname,project,cdilist;
-                         errname = split(filepath,".nc")[1] * ".cdi_import_errors.csv",
+function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
+                         errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
                          ignore_errors = false)
 
     # assume that grid and time coverage is the same as the
@@ -508,8 +508,6 @@ function gettemplatevars(filepaths,varname,project,cdilist;
         end
     end
     close(ds)
-
-    filename = basename(filepath)
 
     DOI_URL =
         if doi != ""
