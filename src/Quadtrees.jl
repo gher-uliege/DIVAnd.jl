@@ -166,12 +166,7 @@ function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
         return false
     else
         if isleaf(qt)
-            qt.points =
-                if VERSION >= v"0.7.0-beta.0"
-                    cat(qt.points,x,dims=2)
-                else
-                    cat(2,qt.points,x)
-                end
+            qt.points = hcat(qt.points,x)
 
             push!(qt.attribs,attrib)
 

@@ -31,12 +31,7 @@ for opertype in [Val{:sparse}, Val{:MatFun}]
     # cyclic
 
     # dim 1 cyclic
-    fc =
-        if VERSION >= v"0.7.0-beta.0"
-            cat(field,reshape(field[1,:,:],(1,size(field,2),size(field,3))), dims=1)
-        else            
-            cat(1,field,reshape(field[1,:,:],(1,size(field,2),size(field,3))))
-        end
+    fc = vcat(field,reshape(field[1,:,:],(1,size(field,2),size(field,3))))
     dfc = fc[2:end,:,:] - fc[1:end-1,:,:]
 
     Sdiff = oper_diff(opertype,size(field),1,true)
@@ -45,12 +40,7 @@ for opertype in [Val{:sparse}, Val{:MatFun}]
 
 
     # dim 2 cyclic
-    fc =
-        if VERSION >= v"0.7.0-beta.0"
-            cat(field,reshape(field[:,1,:],(size(field,1),1,size(field,3))), dims = 2)
-        else
-            cat(2,field,reshape(field[:,1,:],(size(field,1),1,size(field,3))))
-        end
+    fc = hcat(field,reshape(field[:,1,:],(size(field,1),1,size(field,3))))
     f1 = fc[:,2:end,:] - fc[:,1:end-1,:]
 
     Sdiff = oper_diff(opertype,size(field),2,true)
@@ -66,12 +56,7 @@ for opertype in [Val{:sparse}, Val{:MatFun}]
 
 
     # dim 1 cyclic
-    fc =
-        if VERSION >= v"0.7.0-beta.0"            
-            cat(field,reshape(field[1,:,:],(1,size(field,2),size(field,3))), dims=1)
-        else
-            cat(1,field,reshape(field[1,:,:],(1,size(field,2),size(field,3))))
-        end
+    fc = vcat(field,reshape(field[1,:,:],(1,size(field,2),size(field,3))))
     f1 = (fc[2:end,:,:] + fc[1:end-1,:,:])/2
 
     Sdiff = oper_stagger(opertype,size(field),1,true)

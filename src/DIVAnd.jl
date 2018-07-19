@@ -265,11 +265,7 @@ ndgrid(vs...) = ndgrid(promote_array(vs...)...)
 
 """concatenate diagonal matrices"""
 function blkdiag(X::Diagonal...)
-    @static if VERSION >= v"0.7.0-beta.0"
-        Diagonal(cat([diag(x) for x in X]..., dims = 1))
-    else
-        Diagonal(cat(1,[diag(x) for x in X]...))
-    end
+    Diagonal(vcat([diag(x) for x in X]...))
 end
 
 """display size as a string """

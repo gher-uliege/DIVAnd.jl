@@ -110,12 +110,7 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 	coeff = coeff * Ln # units length^n
 
-	pmnv =
-        @static if VERSION >= v"0.7.0-beta.0"
-            cat([pm[:] for pm in pmn]..., dims = 2)
-        else
-            cat(2,[pm[:] for pm in pmn]...)
-        end
+	pmnv = hcat([pm[:] for pm in pmn]...)
 
 	pmnv[:,findall(Ld .== 0)] .= 1
 

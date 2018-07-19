@@ -693,7 +693,7 @@ No checks are done if the units are consistent.
 function load(T,dir::AbstractString,datanames;
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
               nametype = :P01)
-    fnames = cat(1,[[joinpath(root, file) for file in files if endswith(file,".txt")] for (root, dirs, files) in walkdir(dir)]...)
+    fnames = vcat([[joinpath(root, file) for file in files if endswith(file,".txt")] for (root, dirs, files) in walkdir(dir)]...)
     return load(T,fnames,datanames; qv_flags = qv_flags, nametype = nametype)
 end
 

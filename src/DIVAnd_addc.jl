@@ -12,24 +12,13 @@ Jc(x) = (H x - yo)ᵀ R⁻¹ (H x - yo)
 """
 function DIVAnd_addc(s,constrain)
     if isempty(s.H)
-        s.H = constrain.H;
-        s.R = constrain.R;
-        s.yo = constrain.yo;
+        s.H = constrain.H
+        s.R = constrain.R
+        s.yo = constrain.yo
     else
-        s.H =
-            if VERSION >= v"0.7.0-beta.0"
-                cat(s.H,constrain.H, dims = 1);
-            else
-                cat(1,s.H,constrain.H);
-            end
-
-        s.R = blkdiag(s.R,constrain.R);
-        s.yo =
-            if VERSION >= v"0.7.0-beta.0"
-                cat(s.yo,constrain.yo, dims = 1)
-            else
-                cat(1,s.yo,constrain.yo)
-            end
+        s.H = vcat(s.H,constrain.H)
+        s.R = blkdiag(s.R,constrain.R)
+        s.yo = vcat(s.yo,constrain.yo)
     end
     return s
 end

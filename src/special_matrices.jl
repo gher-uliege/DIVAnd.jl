@@ -155,12 +155,7 @@ end
 end
 
 Base.:*(MF::MatFun, x::AbstractVector) = MF.fun(x)
-
-@static if VERSION >= v"0.7.0-beta.0"
-    Base.:*(MF::MatFun, M::AbstractMatrix) = cat([MF.fun(M[:,i]) for i = 1:size(M,2)]..., dims = 2)
-else
-    Base.:*(MF::MatFun, M::AbstractMatrix) = cat(2,[MF.fun(M[:,i]) for i = 1:size(M,2)]...)
-end
+Base.:*(MF::MatFun, M::AbstractMatrix) = hcat([MF.fun(M[:,i]) for i = 1:size(M,2)]...)
 
 function A_mul_B(MF1::MatFun, MF2::MatFun)
     if size(MF1,2) != size(MF2,1)
