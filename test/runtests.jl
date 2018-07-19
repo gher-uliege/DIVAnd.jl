@@ -33,17 +33,18 @@ using SpecialFunctions
     end
 
     include("test_statevector.jl");
-    if VERSION < v"0.7.0-beta.0"
+    if VERSION < v"0.7.0-beta.0" # ok
 
-    include("test_diagnostic_tools.jl");
+        include("test_diagnostic_tools.jl");
 
-    include("test_1dvar.jl");
-    include("test_1D_seminormed.jl");
+        include("test_1dvar.jl");
+        include("test_1D_seminormed.jl");
 
     # dynamical constraints
     include("test_2dvar_adv.jl");
     include("test_2dvar_constcoast.jl");
 
+    if VERSION < v"0.7.0-beta.0" # overflow
         include("test_2dvar_iter.jl");
         include("test_2dvar_jog.jl");
 
