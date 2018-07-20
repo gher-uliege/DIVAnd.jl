@@ -334,8 +334,8 @@ Save the result of the analysis in a NetCDF file .
   * `relerr`: relative error
 
 """
-function save(filename,xyi,fi,varname;
-              kwargs...)
+function save(filename,xyi::NTuple{N,AbstractVector},fi,varname;
+              kwargs...) where N
 
 
     kw = Dict(kwargs)
