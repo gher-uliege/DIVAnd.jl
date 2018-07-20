@@ -27,7 +27,7 @@ Save the result of the analysis in a NetCDF file .
 
 # Input arguments
 
-* `ds`: the NetCDF dataset 
+* `ds`: the NetCDF dataset
 * `filename`: the name of the NetCDF file
 * `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.
 *  `xyi`: tuple with n elements. Every element represents a coordinate
@@ -52,8 +52,8 @@ function ncfile(ds,filename,xyi,varname;
 
     function defnD(ds,varname,dims,ncvarattrib)
         local ncvar = defVar(ds,varname, type_save, dims;
-                       deflatelevel = deflatelevel,
-                       chunksizes = chunksizes[1:length(dims)])
+                             deflatelevel = deflatelevel,
+                             chunksizes = chunksizes[1:length(dims)])
 
         for (k,v) in ncvarattrib
             ncvar.attrib[k] = v
@@ -82,7 +82,7 @@ function ncfile(ds,filename,xyi,varname;
     idepth = -1
     itime = -1
     dimnames = ("lon","lat")
-    
+
     if length(xyi) == 4
         idepth = 3
         itime = 4
@@ -112,11 +112,11 @@ function ncfile(ds,filename,xyi,varname;
     if idepth != -1
         ds.dim["depth"] = sz[idepth]
     end
-    
+
     if itime != -1
         ds.dim["time"] = sz[itime]
     end
-    
+
     ds.dim["nv"] = 2
 
     # Declare variables
@@ -132,7 +132,7 @@ function ncfile(ds,filename,xyi,varname;
     nclat.attrib["standard_name"] = "latitude"
     nclat.attrib["long_name"] = "latitude"
 
-        
+
     if idepth != -1
         ncdepth = defVar(ds,"depth", Float64, ("depth",))
         ncdepth.attrib["units"] = "meters"
@@ -140,7 +140,7 @@ function ncfile(ds,filename,xyi,varname;
         ncdepth.attrib["standard_name"] = "depth"
         ncdepth.attrib["long_name"] = "depth below sea level"
     end
-    
+
     if itime != -1
         nctime = defVar(ds,"time", Float64, ("time",))
         nctime.attrib["units"] = "days since " *
@@ -166,15 +166,15 @@ function ncfile(ds,filename,xyi,varname;
     # ncCLfield.attrib["missing_value"] = type_save(fillval)
 
     # ncCORRLEN = defVar(ds,"CORRLEN", type_save, ("depth", "time"))
-        # ncCORRLEN.attrib["long_name"] = "Correlation Length"
-        # ncCORRLEN.attrib["units"] = "degrees_north"
+    # ncCORRLEN.attrib["long_name"] = "Correlation Length"
+    # ncCORRLEN.attrib["units"] = "degrees_north"
 
-        # ncSNR = defVar(ds,"SNR", type_save, ("depth", "time"))
-        # ncSNR.attrib["long_name"] = "Signal to Noise"
+    # ncSNR = defVar(ds,"SNR", type_save, ("depth", "time"))
+    # ncSNR.attrib["long_name"] = "Signal to Noise"
 
-        # ncVARBACK = defVar(ds,"VARBACK", type_save, ("depth", "time"))
-        # ncVARBACK.attrib["long_name"] = "Background Field Variance"
-        # ncVARBACK.attrib["units"] = "umol/l^2"
+    # ncVARBACK = defVar(ds,"VARBACK", type_save, ("depth", "time"))
+    # ncVARBACK.attrib["long_name"] = "Background Field Variance"
+    # ncVARBACK.attrib["units"] = "umol/l^2"
 
 
     ncvar = def4D(ds,varname,ncvarattrib)
@@ -221,61 +221,61 @@ function ncfile(ds,filename,xyi,varname;
     end
 
 
-        #    ncclimatology_bounds.attrib["climatology_bounds"] = type_save[244.0, 3622.0]
+    #    ncclimatology_bounds.attrib["climatology_bounds"] = type_save[244.0, 3622.0]
 
-        # ncdatabins = defVar(ds,"databins", type_save, ("lon", "lat", "depth", "time");
-        #                     deflatelevel = deflatelevel,
-        #                     chunksizes = chunksizes)
-        # ncdatabins.attrib["long_name"] = "Logarithm10 of number of data in bins"
-        # ncdatabins.attrib["valid_min"] = type_save(0.0)
-        # ncdatabins.attrib["valid_max"] = type_save(1.1)
-        # ncdatabins.attrib['FillValue"] = type_save(fillval)
-        # ncdatabins.attrib["missing_value"] = type_save(fillval)
+    # ncdatabins = defVar(ds,"databins", type_save, ("lon", "lat", "depth", "time");
+    #                     deflatelevel = deflatelevel,
+    #                     chunksizes = chunksizes)
+    # ncdatabins.attrib["long_name"] = "Logarithm10 of number of data in bins"
+    # ncdatabins.attrib["valid_min"] = type_save(0.0)
+    # ncdatabins.attrib["valid_max"] = type_save(1.1)
+    # ncdatabins.attrib['FillValue"] = type_save(fillval)
+    # ncdatabins.attrib["missing_value"] = type_save(fillval)
 
-        # ncoutlbins = defVar(ds,"outlbins", type_save, ("lon", "lat", "depth", "time"))
-        # ncoutlbins.attrib["long_name"] = "Logarithm10 of number of outliers data in bins"
-        # ncoutlbins.attrib["valid_min"] = type_save(0.0)
-        # ncoutlbins.attrib["valid_max"] = type_save(fillval)
-        # ncoutlbins.attrib["_FillValue"] = type_save(fillval)
-        # ncoutlbins.attrib["missing_value"] = type_save(fillval)
+    # ncoutlbins = defVar(ds,"outlbins", type_save, ("lon", "lat", "depth", "time"))
+    # ncoutlbins.attrib["long_name"] = "Logarithm10 of number of outliers data in bins"
+    # ncoutlbins.attrib["valid_min"] = type_save(0.0)
+    # ncoutlbins.attrib["valid_max"] = type_save(fillval)
+    # ncoutlbins.attrib["_FillValue"] = type_save(fillval)
+    # ncoutlbins.attrib["missing_value"] = type_save(fillval)
 
-        # Global attributes
+    # Global attributes
 
-        ds.attrib["Conventions"] = "CF-1.6"
-        ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
-        ds.attrib["file_name"] = filename
-        ds.attrib["product_id"] = repr(uuid1())
-        ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
+    ds.attrib["Conventions"] = "CF-1.6"
+    ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
+    ds.attrib["file_name"] = filename
+    ds.attrib["product_id"] =  repr(Base.Random.uuid1())
+    ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
 
-        for (k,v) in ncglobalattrib
-            ds.attrib[k] = v
-        end
+    for (k,v) in ncglobalattrib
+        ds.attrib[k] = v
+    end
 
 
-# Define variables
+    # Define variables
 
-nclon[:]   = xyi[1]
-nclat[:]   = xyi[2]
+    nclon[:]   = xyi[1]
+    nclat[:]   = xyi[2]
 
-if idepth != -1
-    ds["depth"][:]  = xyi[idepth]
-end
+    if idepth != -1
+        ds["depth"][:]  = xyi[idepth]
+    end
 
-if itime != -1
-    ds["time"][:]  = xyi[itime]
-end
+    if itime != -1
+        ds["time"][:]  = xyi[itime]
+    end
 
-# ncCLfield[:] = ...
-# ncCORRLEN[:] = ...
-# ncSNR[:] = ...
-# ncVARBACK[:] = ...
+    # ncCLfield[:] = ...
+    # ncCORRLEN[:] = ...
+    # ncSNR[:] = ...
+    # ncVARBACK[:] = ...
 
-if itime != -1 && haskey(kw,:climatology_bounds)
-    ds["climatology_bounds"][:] = kw[:climatology_bounds]
-end
+    if itime != -1 && haskey(kw,:climatology_bounds)
+        ds["climatology_bounds"][:] = kw[:climatology_bounds]
+    end
 
-sync(ds)
-return ncvar, ncvar_relerr, ncvar_Lx
+    sync(ds)
+    return ncvar, ncvar_relerr, ncvar_Lx
 end
 
 
@@ -334,8 +334,8 @@ Save the result of the analysis in a NetCDF file .
   * `relerr`: relative error
 
 """
-function save(filename,xyi,fi,varname;
-                      kwargs...)
+function save(filename,xyi::NTuple{N,AbstractVector},fi,varname;
+              kwargs...) where N
 
 
     kw = Dict(kwargs)
@@ -344,7 +344,7 @@ function save(filename,xyi,fi,varname;
 
     Dataset(filename,"c") do ds
         ncvar, ncvar_relerr, ncvar_Lx = ncfile(ds,filename,xyi,varname;
-                                           kwargs...)
+                                               kwargs...)
         writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                    fi, get(kw,:relerr,nothing), index)
     end
@@ -382,27 +382,27 @@ function saveobs(filename,xy,ids;
     end
 
     mode = (isfile(filename) ? "a" : "c")
-    
+
     ds = Dataset(filename,mode)
     #@show length(ids),idlen
-    
+
     ds.dim["observations"] = length(ids)
     ds.dim["idlen"] = idlen
-    
+
     ncobslon = defVar(ds,"obslon", type_save, ("observations",))
     ncobslon.attrib["units"] = "degrees_east"
     ncobslon.attrib["standard_name"] = "longitude"
     ncobslon.attrib["long_name"] = "longitude"
-    
+
     ncobslat = defVar(ds,"obslat", type_save, ("observations",))
     ncobslat.attrib["units"] = "degrees_north"
     ncobslat.attrib["standard_name"] = "latitude"
     ncobslat.attrib["long_name"] = "latitude"
-    
+
     ncobstime = defVar(ds,"obstime", Float64, ("observations",))
     ncobstime.attrib["units"] = "days since " *
         Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
-    
+
     ncobstime.attrib["standard_name"] = "time"
     ncobstime.attrib["long_name"] = "time"
 
@@ -415,7 +415,7 @@ function saveobs(filename,xy,ids;
     ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"))
     ncobsid.attrib["long_name"] = "observation identifier"
     ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
-    
+
     ncobslon[:] = xy[1]
     ncobslat[:] = xy[2]
     ncobsdepth[:] = xy[3]
@@ -436,7 +436,7 @@ end
 
 Save `value` and the location and time of the observation in the NetCDF file `filename` and
 their identifier `ids`. `xy` is a tuple with the vectors longitude, latitude,
-depth and time (as a vector of `DateTime`). The values will be saved in the 
+depth and time (as a vector of `DateTime`). The values will be saved in the
 variable called `varname`.
 
 # Optional arguments:
@@ -461,7 +461,7 @@ function saveobs(filename,varname,value,xy,ids;
     ncobs = defVar(ds,varname, type_save, ("observations",))
     ncobs[:] = value
     close(ds)
-    
+
 end
 
 
