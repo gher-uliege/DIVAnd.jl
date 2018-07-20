@@ -4,7 +4,8 @@ Derive fractional indices on a separable grid.
 
 I = localize_separable_grid(xi,mask,x)
 
-xi and x are a tuples, e.g.
+xi is a tuple of vectors and x and tuple of n-dimensional arrays, e.g.
+
 x1,x2 = ndgrid(2 * collect(1:5),collect(1:6))
 x = (x1,x2)
 
@@ -14,10 +15,10 @@ The output `I` is an n-by-m array where n number of dimensions and m number of
 observations. The correspond element of I is negative if `xi` is outside of
 the grid defined by `x`.
 """
-function localize_separable_grid(xi,mask,x)
-
-    # n dimension of the problem
-    n = length(x)
+function localize_separable_grid(
+    xi::NTuple{n,AbstractArray},
+    mask::AbstractArray{Bool,n},
+    x::NTuple{n,AbstractArray{T,n}}) where n where T
 
     # m is the number of arbitrarily distributed observations
     mi = prod(size(xi[1]))
@@ -25,27 +26,25 @@ function localize_separable_grid(xi,mask,x)
     # sz is the size of the grid
     sz = size(x[1])
 
-    vi = []
-    X = []
     I = zeros(n,mi)
+    X = ntuple(i -> Vector{T}(undef,sz[i]),Val{n})
+    vi = ntuple(i -> 1:sz[i],Val{n})
 
     for i=1:n
-        push!(X,[x[i][(j-1)*stride(x[i],i) + 1] for j in 1:sz[i]])
-        push!(vi,collect(1:sz[i]))
+        for j = 1:sz[i]
+            X[i][j] = x[i][(j-1)*stride(x[i],i) + 1]
+        end
     end
 
-    IJ = ndgrid(vi...)
+    IJ = ndgrid(vi...) :: NTuple{n,Array{Int,n}}
 
     for i=1:n
-        #@show typeof(X[1])
-        #@show (X...)
-        #@show size(IJ[i])
-
-        itp = interpolate((X...,),IJ[i],Gridded(Linear()))
+        itp = interpolate(X,IJ[i],Gridded(Linear()))
 
         # loop over all point
         for j = 1:mi
-            I[i,j] = itp[[x[j] for x in xi]...]
+            ind = NTuple{n,T}(getindex.(xi,j))
+            I[i,j] = itp[ind...]
         end
     end
 
