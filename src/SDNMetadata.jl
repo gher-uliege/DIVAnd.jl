@@ -311,8 +311,8 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     info("Query EDMO database")
     originators = []
     for ae in sort(collect(originators_edmo))
-        originator = getedmoinfo(ae,"resourceProvider")
-        info("resource provider: $(originator["name"])")
+        originator = getedmoinfo(ae,"originator")
+        info("originator: $(originator["name"])")
         push!(originators,originator)
     end
 
