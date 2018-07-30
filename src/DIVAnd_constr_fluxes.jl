@@ -85,7 +85,7 @@ function DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 
 		 #@show squeeze(jmw,1),fluxes[i][j]
 
-         A[j+joffset,:] = A[j+joffset,:] + squeeze(jmw,1);
+         A[j+joffset,:] = A[j+joffset,:] + jmw[1,:]
 		 # test is kept in case flux signs are changed to x,y instead normal direction
 		 if i==1
          yo[j+joffset]=-fluxes[i][j]

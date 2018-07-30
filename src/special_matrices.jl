@@ -46,7 +46,7 @@ end
 # https://github.com/JuliaLang/julia/issues/27860
 function Base.:\(
     A::LinearAlgebra.Hermitian{TA,SparseArrays.SparseMatrixCSC{TA,Int}},
-    B::LinearAlgebra.Adjoint{TB,TM}) where TM <: AbstractMatrix{TB} where {TA,TB} 
+    B::LinearAlgebra.Adjoint{TB,TM}) where TM <: AbstractMatrix{TB} where {TA,TB}
     return A \ copy(B)
 end
 
@@ -101,9 +101,9 @@ function diagMtCM(C::CovarIS, M::AbstractMatrix{Float64})
             end
 
         @static if VERSION >= v"0.7.0-beta.0"
-            return squeeze(sum((abs.(PtL \ M)).^2,dims = 1),dims = 1)
+            return sum((abs.(PtL \ M)).^2,dims = 1)[1,:]
         else
-            return squeeze(sum((abs.(PtL \ M)).^2,1),1)
+            return sum((abs.(PtL \ M)).^2,1)[1,:]
         end
     else
         return diag(M'*(C.IS \ M))
@@ -123,9 +123,9 @@ function diagLtCM(L::AbstractMatrix{Float64}, C::CovarIS, M::AbstractMatrix{Floa
         @static if VERSION >= v"0.7.0-beta.0"
             # workaround for issue
             # https://github.com/JuliaLang/julia/issues/27860
-            return squeeze(sum((PtL \ M).*(PtL \ copy(L)),dims = 1),dims = 1)
+            return sum((PtL \ M).*(PtL \ copy(L)),dims = 1)[1,:]
         else
-            return squeeze(sum((PtL \ M).*(PtL \ L),1),1)
+            return sum((PtL \ M).*(PtL \ L),1)[1,:]
         end
     else
         return diag(L'*(C.IS \ M))
