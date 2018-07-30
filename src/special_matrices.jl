@@ -62,6 +62,12 @@ end
 # call to C * M
 Base.:*(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 
+@static if VERSION >= v"0.7.0-beta.0"
+# another workaround for julia 0.7.0
+# https://github.com/JuliaLang/julia/issues/28363
+Base.:*(C::CovarIS, M::Adjoint{Float64,SparseMatrixCSC{Float64,Int64}}) = A_mul_B(C,copy(M))
+end
+
 # The following two definitions are necessary; otherwise the full C matrix will be formed when
 # calculating C * M' or C * M.'
 

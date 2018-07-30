@@ -36,13 +36,14 @@ using SpecialFunctions
     include("test_1dvar.jl");
     include("test_1D_seminormed.jl");
 
-    if VERSION < v"0.7.0-beta.0" # ok
-        # dynamical constraints
-        include("test_2dvar_adv.jl");
-        include("test_2dvar_constcoast.jl");
+    # dynamical constraints
+    include("test_2dvar_adv.jl");
+    include("test_2dvar_constcoast.jl");
 
 
-        include("test_2dvar_iter.jl");
+    include("test_2dvar_iter.jl");
+
+    if VERSION < v"0.7.0-beta.0"
         include("test_2dvar_jog.jl");
 
         include("test_2dvar_error.jl");
