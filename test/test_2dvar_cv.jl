@@ -10,7 +10,11 @@ end
 # true error variance of observation
 epsilon2_true = 1.
 
-srand(1234)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 # observations
 nobs = 99
 x = rand(nobs);

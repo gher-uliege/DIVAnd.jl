@@ -24,22 +24,19 @@ using SpecialFunctions
 
     # conjugate gradient
     include("test_conjugategradient.jl");
-#    if VERSION < v"0.7.0-beta.0" ok
 
     include("test_sparse_diff.jl");
     include("test_laplacian.jl");
-    if VERSION < v"0.7.0-beta.0"
-        include("test_localize_separable_grid.jl"); # stack overflow v0.7
-    end
+    include("test_localize_separable_grid.jl");
 
     include("test_statevector.jl");
+
+    include("test_diagnostic_tools.jl");
+
+    include("test_1dvar.jl");
+    include("test_1D_seminormed.jl");
+
     if VERSION < v"0.7.0-beta.0" # ok
-
-        include("test_diagnostic_tools.jl");
-
-        include("test_1dvar.jl");
-        include("test_1D_seminormed.jl");
-
         # dynamical constraints
         include("test_2dvar_adv.jl");
         include("test_2dvar_constcoast.jl");

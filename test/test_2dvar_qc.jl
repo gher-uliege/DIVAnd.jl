@@ -10,7 +10,11 @@ using DIVAnd
 
 # observations
 # same random set used as sometimes qc flags vary depending on actual noise
-srand(11)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(11)
+else
+   srand(11)
+end
 x = rand(150);
 y = rand(150);
 

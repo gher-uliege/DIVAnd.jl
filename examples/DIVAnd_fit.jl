@@ -46,7 +46,11 @@ legend()
 # 3D
 # general fit in 3D without transformation
 
-srand(12345)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(12345)
+else
+   srand(12345)
+end
 
 sel = Dates.month.(time) .== 1;
 

@@ -10,7 +10,11 @@ import DIVAnd.Quadtrees
 
 # Quadtrees = DIVAnd.Quadtrees
 
-srand(123)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(123)
+else
+   srand(123)
+end
 
 X = [0  0;
      1  0;

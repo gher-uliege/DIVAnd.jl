@@ -14,19 +14,19 @@ function DIVAnd_GCVKiiobs(s,nr=30;FIELD=())
 
     H = s.obsconstrain.H;
     R = s.obsconstrain.R;
-	
+
 	# if nr <0 use the data and analysis itself as random vector and KZ. Allows to use the function when s.P is not available
 	#
-	
+
 	if nr<0
 	nrealdata=sum(1 .- s.obsout);
     ndata=size(s.obsout)[1];
-	
+
 	#@show nrealdata,ndata,size(s.obsconstrain.yo)
-	
+
 	#@show size(s.yo),size(((s.H)*statevector_pack(s.sv,(FIELD,))))
 	Kii=s.yo'*((s.H)*statevector_pack(s.sv,(FIELD,)))/(s.yo'*s.yo)
-	
+
     if nrealdata==0
         Kii=0.0;
     else
@@ -35,16 +35,24 @@ function DIVAnd_GCVKiiobs(s,nr=30;FIELD=())
         Kii=factorc*Kii;
     end
 	return Kii
-	
+
 	end
-	
+
 
     #if optimisation is to be used, make sure to use the same reference random points
-    srand(nr)
+    if VERSION >= v"0.7.0-beta.0"
+        Random.seed!(nr)
+    else
+        srand(nr)
+    end
 
     Z=randn(size(R)[1],nr);
 
-    srand()
+    if VERSION >= v"0.7.0-beta.0"
+        Random.seed!()
+    else
+        srand()
+    end
 
 
     P = s.P;

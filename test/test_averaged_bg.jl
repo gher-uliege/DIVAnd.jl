@@ -7,7 +7,11 @@ else
 end
 
 using DIVAnd
-srand(1)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1)
+else
+   srand(1)
+end
 x=randn(100)
 y=randn(100)
 z=randn(100)

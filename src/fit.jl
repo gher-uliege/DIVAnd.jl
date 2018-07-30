@@ -433,7 +433,11 @@ function fit(x,v,distbin,mincount;
         local distx, covar, corr, varx, count, stdcovar, fitcovar
 
         # fix seed to get the same observations
-        srand(seed)
+        if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(seed)
+else
+   srand(seed)
+end
 
         distx,covar,corr,varx,count,stdcovar =
             empiriccovarmean(
@@ -682,7 +686,11 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     x0 = zeros(ndims)
     x1 = zeros(ndims)
 
-    srand(n)
+    if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(n)
+else
+   srand(n)
+end
     for (i,j) in iter
         # compute the distance
         for l = 1:ndims
@@ -743,7 +751,12 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
 
     covarweight = zeros(nbmax)
 
-    srand(n)
+    if VERSION >= v"0.7.0-beta.0"
+        Random.seed!(n)
+    else
+        srand(n)
+    end
+
     for (i,j) in iter
         # compute the distance
         for l = 1:ndims
@@ -957,7 +970,7 @@ function fithorzlen(x,value::Vector{T},z;
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
     fitinfos = Vector{Dict{Symbol,Any}}(kmax)
-    
+
     nsamp =
         if length(value) > maxnsamp
             maxnsamp

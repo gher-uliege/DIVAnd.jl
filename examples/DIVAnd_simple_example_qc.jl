@@ -5,7 +5,11 @@ using DIVAnd
 using PyPlot
 
 # observations
-srand(1234)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 # some points outside of box to check how this is dealt with
 x = -0.1+1.2*rand(300);
 y = -0.1*1.2*rand(300);

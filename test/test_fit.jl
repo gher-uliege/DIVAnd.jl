@@ -38,7 +38,11 @@ Nens = 1
 distbin = 0:0.02:0.3
 mincount = 100
 
-srand(1234)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 field = DIVAnd.random(mask,(pm,pn),(lenx,leny),Nens)
 
 
@@ -108,10 +112,10 @@ varbak,RL,dbinfo = DIVAnd.fitlen((x,y),d,weight,nsamp)
 @test 18.48072398826336   ≈ varbak         rtol=0.1
 @test 0.7338792203547216  ≈ dbinfo[:rqual] rtol=0.1
 
-  
-  
-  
-#=       
+
+
+
+#=
 fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/testdata.txt"
 A = readdlm(fname) :: Array{Float64,2}
 

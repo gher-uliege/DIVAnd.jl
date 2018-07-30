@@ -90,7 +90,11 @@ leny = .05;
 Nens = 100
 pmn = (pm,pn)
 len = (lenx,leny)
-srand(123)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(123)
+else
+   srand(123)
+end
 field = DIVAnd.random(mask,pmn,len,Nens)
 @test size(field) == (size(mask,1),size(mask,2),Nens)
 

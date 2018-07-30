@@ -13,7 +13,11 @@ y=[0]
 z=[0]
 f=[1]
 
-srand(1)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1)
+else
+   srand(1)
+end
 nobs=400
 x=randn(nobs)
 y=randn(nobs)

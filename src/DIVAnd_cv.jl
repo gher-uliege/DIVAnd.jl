@@ -177,10 +177,20 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
                 lonsea=length(onsea)
                 #   warn("So",lonsea)
                 # if optimisation is to be used, make sure to use the same reference random points
-                srand(nrealdata)
+                if VERSION >= v"0.7.0-beta.0"
+                    Random.seed!(nrealdata)
+                else
+                    srand(nrealdata)
+                end
+
                 # otherwise you add noise to the cv field
                 indexlist1=unique(collect(rand(1:lonsea,50*samplesforHK)))[1:samplesforHK]
-                srand()
+                if VERSION >= v"0.7.0-beta.0"
+                    Random.seed!()
+                else
+                    srand()
+                end
+
                 indexlist=onsea[indexlist1];
                 #   indexlist=collect(1:lonsea);
                 residualc=zeros(length(residual));

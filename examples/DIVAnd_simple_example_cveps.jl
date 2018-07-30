@@ -6,7 +6,11 @@ using PyPlot
 
 include("./prep_dirs.jl")
 
-srand(1234)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 # observations
 nobs = 90
 x = rand(nobs);

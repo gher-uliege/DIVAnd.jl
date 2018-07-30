@@ -5,7 +5,11 @@ using PyPlot
 include("./prep_dirs.jl")
 
 # fix seed of random number generator
-srand(12345)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(12345)
+else
+   srand(12345)
+end
 
 # observations
 # uniformly distributed data with a cluster at (0.2,0.3)

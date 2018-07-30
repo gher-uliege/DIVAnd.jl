@@ -39,7 +39,7 @@ end
 
 function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
     factor = 3
-    
+
     n = size(coord,1)
     Nobs = size(coord,2)
 
@@ -49,7 +49,7 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
 
     xmin = zeros(ndim)
     xmax = zeros(ndim)
-    
+
     ilen = 1./len
 
     @fastmath @inbounds for i = 1:Nobs
@@ -57,21 +57,21 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
             xmin[j] = coord[j,i] - factor * len[j]
             xmax[j] = coord[j,i] + factor * len[j]
         end
-        
-        index = DIVAnd.Quadtrees.within(qt,xmin,xmax)    
+
+        index = DIVAnd.Quadtrees.within(qt,xmin,xmax)
         Rx[i] = 0.
-        
+
         for ii in index
-            
-            dist = 0.                
+
+            dist = 0.
             for j = 1:ndim
                 dist += ((coord[j,i]-coord[j,ii]) * ilen[j])^2
             end
-            
+
             cov = exp(-dist)
             Rx[i] += cov * w[ii]
-        end    
-    end   
+        end
+    end
 end
 
 
@@ -86,7 +86,11 @@ Rtimesx2!(coord,LS,x,Rx)
 @test Rx1 ≈ Rx rtol=1e-4
 
 # fix seed of random number generator
-srand(12345)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(12345)
+else
+   srand(12345)
+end
 
 # observations
 # uniformly distributed data with a cluster at (0.2,0.3)
@@ -139,4 +143,3 @@ Rx2 = zeros(ndata)
   evals/sample:     1
 
 =#
-

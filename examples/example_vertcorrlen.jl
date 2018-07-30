@@ -9,7 +9,7 @@ using PyPlot
 varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
-if !isfile(filename)    
+if !isfile(filename)
     download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download",filename)
 end
 
@@ -24,10 +24,17 @@ v = value[sel]
 z = [0.,10,100,200,300,400,500,700,1000,1500]
 
 
-srand(1234);
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 @time lenxy,infoxy = DIVAnd.fithorzlen(x,v,z)
 
 
-srand(1234);
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 @time lenz,infoz = DIVAnd.fitvertlen(x,v,z; maxnsamp = 50)
-

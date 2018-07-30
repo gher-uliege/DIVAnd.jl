@@ -48,7 +48,11 @@ fi_coast = fi2[mi0-1:mi1+1,mj0-1:mj1+1][mask[mi0-1:mi1+1,mj0-1:mj1+1]]
 
 # more complex example
 
-srand(1234)
+if VERSION >= v"0.7.0-beta.0"
+   Random.seed!(1234)
+else
+   srand(1234)
+end
 mask0,(pm,pn),(xi,yi) = DIVAnd_squaredom(
     2,Compat.range(0, stop = 1, length = 100))
 mask = DIVAnd.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
