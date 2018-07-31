@@ -5,10 +5,11 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
 end
+using Compat
 import DIVAnd
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
+mask,(pm,pn),(xi,yi) = DIVAnd.DIVAnd_squaredom(
     2,Compat.range(-1, stop = 1, length = 30))
 
 x = [.4]

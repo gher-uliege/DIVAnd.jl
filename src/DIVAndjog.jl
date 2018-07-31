@@ -713,9 +713,9 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			Labsccut=Labsc
 			lmask1=0.0.*lmask
-			lmask1[1:end]=1.0;
+			lmask1[1:end] .= 1.0
 			if n>3
-				lmask1[3]=0.0;
+				lmask1[3] = 0.0
 			end
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,btrunc=3)
@@ -768,7 +768,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		#Method 3
 		if methodpccoarse==3
 			lmask1=0.0.*lmask;
-			lmask1[1:end]=1.0;
+			lmask1[1:end] .= 1.0;
 			if n>3
 				lmask1[3]=0;
 			end
@@ -862,7 +862,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			Labsccut=Labsc
 			lmask1=0.0.*lmask
-			lmask1[1:end]=1.0;
+			lmask1[1:end] .= 1.0;
 			if n>3
 				lmask1[3]=0.0;
 			end
