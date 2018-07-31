@@ -25,6 +25,7 @@ if VERSION >= v"0.7.0-beta.0"
     using SharedArrays
     using UUIDs
     using Dates
+    using DelimitedFiles
 
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
