@@ -170,12 +170,7 @@ function unpack(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0) where {nvar
 
                  return v
                  end,
-                 @static if VERSION >= v"0.7.0-beta.0"
-                    Val(nvar_)
-                 else
-                    Val{nvar_}
-                 end
-                 )
+                 Val(nvar_))
     return out
 end
 

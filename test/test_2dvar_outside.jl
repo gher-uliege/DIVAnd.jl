@@ -32,7 +32,7 @@ va2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x[inside],y[inside]),v[inside],(lenx,len
 x = [0.5, .9]
 y = [0.5, .5]
 v = [1.,  1.]
-mask[end-40:end,:] = false
+mask[end-40:end,:] .= false
 va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2)
 
 inside = 1:1

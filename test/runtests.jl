@@ -47,31 +47,32 @@ using SpecialFunctions
         include("test_2dvar_jog.jl");
     end
 
+    include("test_2dvar_error.jl");
+
+    include("test_2dvar_all_masked.jl");
+
     if VERSION < v"0.7.0-beta.0"
-        include("test_2dvar_error.jl");
-
-        include("test_2dvar_all_masked.jl");
-
         # cross-validation
         include("test_2dvar_cv.jl"); # problematic
+    end
 
-        include("test_2dvar_matfun.jl");
-        include("test_2dvar_qc.jl");
+    include("test_2dvar_matfun.jl");
+    include("test_2dvar_qc.jl");
 
-        include("test_2dvar_outside.jl");
+    include("test_2dvar_outside.jl");
 
-        include("test_variableLandpmn.jl")
+    include("test_variableLandpmn.jl");
 
-        include("test_3dvar.jl");
+    include("test_3dvar.jl");
 
-        include("test_4dvar.jl");
+    include("test_4dvar.jl");
 
-        # comparision with analytical kernels
-        include("test_ndvar_point.jl");
+    # comparision with analytical kernels
+    include("test_ndvar_point.jl");
 
-        include("test_DIVAndgo.jl");
+    include("test_DIVAndgo.jl");
 
-
+    if VERSION < v"0.7.0-beta.0"
         # test kernel
         include("test_kernel.jl");
 

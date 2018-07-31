@@ -32,7 +32,7 @@ windowlist,csteps,lmask,alphapc = DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOF
 * `alphapc` : Norm defining coefficients for preconditionner
 
 """
-function DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
+function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT) where n
     #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange, 
     #         "gridsize", gridsize,"moddim",moddim,"MEMTOFIT",MEMTOFIT)
 
@@ -42,14 +42,6 @@ function DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     # Minimum number of points per length scale for the preconditionner can be fractional
     minimumpointsperlpc=5.0
 
-
-
-
-
-
-    #################################################################################
-    # Number of dimensions
-    n = size(Lpmnrange)[1]
 
     ######################################################
     # Calculate the sampling steps for the preconditionner
@@ -108,20 +100,29 @@ function DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT)
     # Running pointer
     ij=ones(Int,n)
 
+    subsz = Vector{Int}(undef,n)
+    subrange = Vector{UnitRange{Int}}(undef,n)
 
-    #
-    # need to subtract two overlap regions from total size to determine the number of tiles
-    #subsz = ([ceil(Int,sz[i] / stepsize[i]) for i = 1:ndims(mask)]...)
-
-    subsz = ([max(ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]),1) for i = 1:n]...,)
+    for i = 1:n
+        # need to subtract two overlap regions from total size to determine the number of tiles
+        subsz[i] = max(ceil(Int,(gridsize[i]-2*overlapping[i]) / stepsize[i]))
+        subrange[i] = 1:subsz[i]
+    end
 
     ntiles=prod(subsz)
 
     windowlist = Vector{NTuple{6,Vector{Int}}}(undef,ntiles)
 
     iw=0
-    for cr in CartesianRange(subsz)
-        ij = [[(cr[i]-1)*stepsize[i]+1  for i = 1:n]...]
+    for cr in (@static if VERSION >= v"0.7.0-beta.0"
+                  CartesianIndices(NTuple{n,UnitRange{Int}}(subrange))
+               else
+                  CartesianRange(NTuple{n,Int}(subsz))
+               end)
+
+        for i = 1:n
+            ij[i] = (cr[i]-1)*stepsize[i]+1
+        end
 
         iw=iw+1
 

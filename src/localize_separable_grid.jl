@@ -27,8 +27,8 @@ function localize_separable_grid(
     sz = size(x[1])
 
     I = zeros(n,mi)
-    X = ntuple(i -> Vector{T}(undef,sz[i]),Val{n})
-    vi = ntuple(i -> 1:sz[i],Val{n})
+    X = ntuple(i -> Vector{T}(undef,sz[i]),Val(n))
+    vi = ntuple(i -> 1:sz[i],Val(n))
 
     for i=1:n
         for j = 1:sz[i]
