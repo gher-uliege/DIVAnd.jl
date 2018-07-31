@@ -7,20 +7,10 @@
 #
 
 function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
-
-    function dvisvalue(x)
-        if isnan(fillvalue)
-            return !isnan(x)
-        else
-            return x != fillvalue
-        end
-    end
-
     ntimes=1
     nd=ndims(A)
 
     # central weight
-    cw=3^nd-1
     cw=1
 
     RI =
@@ -39,7 +29,7 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
             s = zero(eltype(A))
 
             B[indI] = A[indI]
-            if !dvisvalue(A[indI])
+            if !isequal(A[indI],fillvalue)
 
                 RJ =
                     @static if VERSION >= v"0.7.0-beta.0"
@@ -56,7 +46,7 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
 
                 for indJ in RJ
 
-                    if dvisvalue(A[indJ])
+                    if !isequal(A[indJ],fillvalue)
                         s += A[indJ]
                         if (indI==indJ)
                             w += cw

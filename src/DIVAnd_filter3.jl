@@ -5,17 +5,19 @@
 # and central point weight equals sum of all other points if present
 # to add: loop ntimes over the filter; need to check how to copy/update the arrays...
 
+
 function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
     nd=ndims(A)
     # central weight
     cw=1.
 
     out = similar(A)
-    if ntimes>1
-        B=deepcopy(A)
-    else
-        B=A
-    end
+    B =
+        if ntimes > 1
+            copy(A)
+        else
+            A
+        end
 
     RI =
         @static if VERSION >= v"0.7.0-beta.0"
@@ -64,7 +66,10 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
                 end
             end
         end
-        B=deepcopy(out);
+
+        if ntimes > 1
+            B .= out
+        end
     end
 
 
