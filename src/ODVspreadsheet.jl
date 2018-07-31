@@ -153,7 +153,13 @@ function readODVspreadsheet(datafile)
 
         goodcols = setdiff(columnLabels, column2discard);
         # Get indices of the good columns
-        index2keep = findin(columnLabels, goodcols);
+        index2keep =
+            @static if VERSION >= v"0.7.0-beta2.188"
+                findall((in)(goodcols,), columnLabels)
+            else
+                findin(columnLabels, goodcols)
+            end
+
         ncols2 = length(index2keep);
         # info("No. of columns after selection: $ncols2")
 
@@ -182,11 +188,11 @@ function readODVspreadsheet(datafile)
         seek(f,pos)
 
         # load all data
-        alldata = Array{SubString{String},2}(ncols2,totallines);
+        alldata = Array{SubString{String},2}(undef,ncols2,totallines);
         ##info("Size (in GB) of data matrix (OLD): " * string(sizeof(alldataold)))
         i = 0
 
-        for row in eachline(f; chomp = true)
+        for row in Compat.eachline(f; keep = false)
             i = i+1
 
             if startswith(row,"//")
@@ -225,7 +231,7 @@ function readODVspreadsheet(datafile)
         end
 
         # count each profiles length
-        profile_start_index = Vector{Int}(nprofiles+1)
+        profile_start_index = Vector{Int}(undef,nprofiles+1)
         j = 0
         for i = 1:size(alldata,2)
             # If the first value (Station) is not empty,
@@ -239,7 +245,7 @@ function readODVspreadsheet(datafile)
 
         # split into profiles
         iprofile = 1
-        profileList = Vector{Array{SubString{String},2}}(nprofiles)
+        profileList = Vector{Array{SubString{String},2}}(undef,nprofiles)
         j = 1
         for i = 1:nprofiles
             profileList[i] = alldata[:,profile_start_index[i]:profile_start_index[i+1]-1]
@@ -298,8 +304,15 @@ localnames(sheet) = String[strip(split(l,'[')[1]) for l in sheet.columnLabels]
 Return the column number `cn` of the first column with the local name
 `localname` (without the prefix "SDN:LOCAL:") in the ODV spreadsheet `sheet`.
 """
-colnumber(sheet,localname) = findfirst(localnames(sheet) .== localname)
-
+function colnumber(sheet,localname)::Int
+    ind = findfirst(localnames(sheet) .== localname)
+    @static if VERSION >= v"0.7.0-beta.0"
+        if ind == nothing
+            return 0
+        end
+    end
+    return ind
+end
 
 """
     dt = parsejd(t)

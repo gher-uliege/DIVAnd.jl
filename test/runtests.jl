@@ -41,7 +41,6 @@ using SpecialFunctions
     include("test_2dvar_adv.jl");
     include("test_2dvar_constcoast.jl");
 
-
     include("test_2dvar_iter.jl");
 
     if VERSION < v"0.7.0-beta.0"
@@ -123,10 +122,11 @@ using SpecialFunctions
         # Test product generation
         include("test_product.jl");
         include("test_product_2d.jl");
+
+        # interpolate background from a NetCDF file
+        include("test_interp.jl");
     end
 
-    # interpolate background from a NetCDF file
-    include("test_interp.jl");
 
     # test DIVAnd_filter3
     A = zeros(5,5,5,5,5)
