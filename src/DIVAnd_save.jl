@@ -244,7 +244,7 @@ function ncfile(ds,filename,xyi,varname;
     ds.attrib["Conventions"] = "CF-1.6"
     ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
     ds.attrib["file_name"] = filename
-    ds.attrib["product_id"] =  repr(Base.Random.uuid1())
+    ds.attrib["product_id"] =  repr(uuid1())
     ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
 
     for (k,v) in ncglobalattrib
@@ -378,7 +378,7 @@ function saveobs(filename,xy,ids;
     idlen = maximum(length.(ids))
     obsids = fill('\0',(idlen,length(ids)))
     for i = 1:length(ids)
-        obsids[1:length(ids[i]),i] = convert(Vector{Char},ids[i])
+        obsids[1:length(ids[i]),i] = Vector{Char}(ids[i])
     end
 
     mode = (isfile(filename) ? "a" : "c")

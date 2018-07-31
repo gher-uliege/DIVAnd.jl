@@ -41,13 +41,13 @@ function cgprogress(iter,x,r,tol2,fun!,b)
     n = length(r)
 
     print("|")
-    print_with_color(:default,"$(@sprintf("%11d",iter))", bold=true)
+    printstyled("$(@sprintf("%11d",iter))", bold=true)
     print(" |")
-    print_with_color(:light_magenta,"$(@sprintf("%14.3f",J))")
+    printstyled("$(@sprintf("%14.3f",J))", color = :light_magenta)
     print(" |")
-    print_with_color(:red,"$(@sprintf("%20f",sqrt((r ⋅ r)/n)))")
+    printstyled("$(@sprintf("%20f",sqrt((r ⋅ r)/n)))", color = :red)
     print(" |")
-    print_with_color(:default,"$(@sprintf("%13f",sqrt(tol2/n)))")
+    printstyled("$(@sprintf("%13f",sqrt(tol2/n)))", color = :default)
     print(" |\n")
 end
 

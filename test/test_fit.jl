@@ -107,11 +107,18 @@ varbak,RL,dbinfo = DIVAnd.fitlen((x,y),d,weight,nsamp)
 # reference value from Julia implementation with seed set to 150
 # fluctuations are large for different seeds
 
-@test 2.6803941824646085  ≈ RL             rtol=0.1
-@test 0.8076378487032164  ≈ dbinfo[:sn]    rtol=0.1
-@test 18.48072398826336   ≈ varbak         rtol=0.1
-@test 0.7338792203547216  ≈ dbinfo[:rqual] rtol=0.1
 
+if VERSION >= v"0.7.0-beta.0"
+    @test 1.233239751232584   ≈ RL             rtol=0.1
+    @test 2.8684064643392313  ≈ dbinfo[:sn]    rtol=0.1
+    @test 30.67060450819036   ≈ varbak         rtol=0.1
+    @test 0.7779495857989941  ≈ dbinfo[:rqual] rtol=0.1
+else
+    @test 2.6803941824646085  ≈ RL             rtol=0.1
+    @test 0.8076378487032164  ≈ dbinfo[:sn]    rtol=0.1
+    @test 18.48072398826336   ≈ varbak         rtol=0.1
+    @test 0.7338792203547216  ≈ dbinfo[:rqual] rtol=0.1
+end
 
 
 

@@ -53,7 +53,7 @@ cf = DIVAnd.ufill(c,valex);
 
 mask,(pm,pn),(xi,yi) = DIVAnd.DIVAnd_squaredom(
     2,Compat.range(-10, stop = 10, length = 100))
-h = 1000 * (tanh.(xi)+1);
+h = 1000 * (tanh.(xi) .+ 1);
 L = 2.
 RL = DIVAnd.lengraddepth((pm,pn),h,L)
 

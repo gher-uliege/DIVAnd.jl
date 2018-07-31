@@ -7,6 +7,7 @@ if VERSION >= v"0.7.0-beta.0"
     using Dates
     using Printf
     using Statistics
+    using DelimitedFiles
 else
     using Base.Test
     import Base.LinAlg.BLAS
@@ -84,26 +85,26 @@ using SpecialFunctions
     include("test_averaged_bg.jl");
     include("test_domain.jl");
 
+    # SDN Vocabulary
+    include("test_vocab.jl");
+
+    # SDN ODVspreadsheet
+    include("test_ODVspreadsheet.jl");
+
+    # SDN NetCDF
+    include("test_ncsdn.jl");
+
+    # SDN metadata
+    include("test_metadata.jl");
+
+    # Saving data as NetCDF file
+    include("test_save.jl");
+    include("test_loadobs.jl");
+
+    # Anamorphosis
+    include("test_anam.jl");
+
     if VERSION < v"0.7.0-beta.0"
-        # SDN Vocabulary
-        include("test_vocab.jl");
-
-        # SDN ODVspreadsheet
-        include("test_ODVspreadsheet.jl");
-
-        # SDN NetCDF
-        include("test_ncsdn.jl");
-
-        # SDN metadata
-        include("test_metadata.jl");
-
-        # Saving data as NetCDF file
-        include("test_save.jl");
-        include("test_loadobs.jl");
-
-        # Anamorphosis
-        include("test_anam.jl");
-
         # Fitting covariance model
         include("test_select_time.jl");
 

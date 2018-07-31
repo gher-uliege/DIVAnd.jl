@@ -330,7 +330,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     mu,K,len_scale = DIVAnd.DIVAnd_kernel(n,alpha)
 
     var0opt = covar[1]
-    L = linspace(minlen,maxlen,10000)
+    L = Compat.range(minlen,stop=maxlen,length=10000)
     J(L) = sum(((covar - var0opt * K.(distx * len_scale/L)) ./ stdcovar).^2)
     Jmin,imin = findmin(J.(L))
     lenopt = L[imin]
@@ -376,8 +376,7 @@ function fitprogress(iter,var0,lens,fitness)
             @printf(" %10g |",lens[i])
         end
 
-        print_with_color(:light_magenta,@sprintf(" %10g ",fitness))
-
+        printstyled(@sprintf(" %10g ",fitness),color = :light_magenta)
         println("|")
     end
 

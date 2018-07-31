@@ -34,7 +34,7 @@ function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     # better way
     valex = T(-99999.)
     c2[.!mask] = valex
-    
+
     return ufill(c2,valex)
 end
 
@@ -91,7 +91,7 @@ function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
     end
 
     icount  =  1
-    
+
     while icount > 0
         icount = 0
 
@@ -106,13 +106,13 @@ function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
                         work2[i,j,k] = valexc
                         icount = icount+1
                         isom = 0
-                        
+
                         if A1 != 0
                             isom += A1 * (
                                 +iwork[i+1,j,k]+iwork[i-1,j,k]
                                 +iwork[i,j+1,k]+iwork[i,j-1,k])
                         end
-                            
+
                         if A2 != 0
                             isom += A2 * (
                                 iwork[i+1,j+1,k+1]+iwork[i+1,j+1,k-1]
@@ -120,7 +120,7 @@ function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
                                 +iwork[i-1,j+1,k+1]+iwork[i-1,j+1,k-1]
                                 +iwork[i-1,j-1,k+1]+iwork[i-1,j-1,k-1])
                         end
-                        
+
                         if A3 != 0
                             isom += A3 * (
                                 iwork[i,j+1,k+1]+iwork[i,j+1,k-1]
@@ -133,7 +133,7 @@ function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
 
                         if isom != 0
                             rsom = zero(eltype(c))
-                            
+
                             # interpolate
 
                             if A1 != 0
@@ -156,7 +156,7 @@ function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
                                     +iwork[i-1,j-1,k-1]*work[i-1,j-1,k-1])
                             end
 
-                            if A3 != 0                                
+                            if A3 != 0
                                 rsom += A3 * (
                                     iwork[i,j+1,k+1]*work[i,j+1,k+1]
                                     +iwork[i,j+1,k-1]*work[i,j+1,k-1]
@@ -171,7 +171,7 @@ function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
                                     +iwork[i-1,j+1,k]*work[i-1,j+1,k]
                                     +iwork[i-1,j-1,k]*work[i-1,j-1,k])
                             end
-                            
+
                             work2[i,j,k] = rsom/isom
                             iwork2[i,j,k] = 1
                         end
@@ -212,7 +212,7 @@ end
 function cgradient(pmn,h)
 
     @assert ndims(h) == 2
-    
+
     hx = similar(h)
     hy = similar(h)
 
@@ -222,7 +222,7 @@ function cgradient(pmn,h)
         # previous j0 and next j1 (but still a valid index)
         j0 = max(j-1,1)
         j1 = min(j+1,sz[2])
-        
+
         for i = 1:size(h,1)
             # previous i0 and next i1 (but still a valid index)
             i0 = max(i-1,1)
@@ -236,21 +236,21 @@ function cgradient(pmn,h)
             if i1 == i0+2
                 hx[i,j] = hx[i,j]/2
             end
-            
+
             if j1 == j0+2
                 hy[i,j] = hy[i,j]/2
             end
 
         end
     end
-    
+
     return hx,hy
 end
 
 
 function beforenext(ind,sz::NTuple{N,Int},dim) where N
     # previous and next index (but still a valid index)
-    
+
     ind0 = ntuple(j -> (j == dim ? max(ind[j]-1,1) : ind[j]), N) :: NTuple{N,Int}
     ind1 = ntuple(j -> (j == dim ? min(ind[j]+1,sz[j]) : ind[j]), N) :: NTuple{N,Int}
     return ind0,ind1
@@ -261,18 +261,25 @@ function cgradient(pmn,h::Array{T,N}, dim) where N where T
     hy = similar(h)
 
     sz = size(h)
-    
+
+    cranges =
+        @static if VERSION >= v"0.7.0-beta.0"
+            CartesianIndices(ntuple(i -> 1:size(h,i),N))
+        else
+            CartesianRange(sz)
+        end
+
     # loop over the domain
-    for ind in CartesianRange(sz)
+    for ind in cranges
         #ind = copy(ind)::CartesianIndex{N}
         #ind = ind::CartesianIndex{N}
-        
+
         # previous and next index (but still a valid index)
         ind0,ind1 = beforenext(ind,sz,dim)
-        
+
         #ind0 = ntuple(j -> (j == dim ? max(ind[j]-1,1) : ind[j]), N) :: NTuple{N,Int}
-        #ind1 = ntuple(j -> (j == dim ? min(ind[j]+1,sz[j]) : ind[j]), N) :: NTuple{N,Int}        
-        
+        #ind1 = ntuple(j -> (j == dim ? min(ind[j]+1,sz[j]) : ind[j]), N) :: NTuple{N,Int}
+
         # finite difference
         hx[ind] = (h[ind1...] - h[ind0...]) * pmn[dim][ind]
 
@@ -281,7 +288,7 @@ function cgradient(pmn,h::Array{T,N}, dim) where N where T
             hx[ind] = hx[ind]/2
         end
     end
-    
+
     return hx
 end
 
@@ -290,20 +297,20 @@ function cgradientn(pmn,h::Array{T,N}) where N where T
 end
 
 
-""" 
+"""
     RL = lengraddepth(pmn,h, L;
                       h2 = h,
                       hmin = 0.001
                       )
 
-Create the relative correlation length-scale field `RL` based on the bathymetry 
-`h` and the metric `pmn` (tuple of arrays). Effectively the correlation-length 
+Create the relative correlation length-scale field `RL` based on the bathymetry
+`h` and the metric `pmn` (tuple of arrays). Effectively the correlation-length
 scale is close to zero if the relative bathymetry gradients (|∇h|/h) are smaller
  than the length-scale `L` (in consistent units as `pmn`).
 
 R_L = 1 / (1 + L |∇h| / max(h2,hmin))
 
-Per default `h2` is equal to `h`. The depth `h` must be positive. `hmin` must 
+Per default `h2` is equal to `h`. The depth `h` must be positive. `hmin` must
 have the same units as h (usually meters).
 """
 function lengraddepth(pmn,h::Array{T,2}, L;
@@ -311,7 +318,7 @@ function lengraddepth(pmn,h::Array{T,2}, L;
                       hmin = 0.001 #m
                       ) where T
 
-    
+
     # gradient of h
     hx,hy = cgradient(pmn,h)
 
@@ -325,22 +332,22 @@ function lengraddepth(pmn,h::Array{T,2}, L;
 
     #RL[isnan(h)] = valex
     #RL = fill(RL,valex)
-    
+
     return RL
 end
 
 function smoothfilter!(x,f::Vector{T},scale) where T
     sz = size(f)
     imax = sz[1]
-    
+
     #      x[1]
     # |     *    |   *   |
     # xf[1]    xf[2]
-    
+
     xf = zeros(T,sz[1]+1)
     xf[1] = x[1] - (x[2]-x[1])/2
     xf[imax+1] = x[imax] + (x[imax]-x[imax-1])/2
-        
+
     for i = 2:imax
         xf[i] = (x[i]+x[i-1])/2
     end
@@ -352,14 +359,14 @@ function smoothfilter!(x,f::Vector{T},scale) where T
 
     Δt_max = Δx_min^2 / (2 * ν)
     Δt = 0.5 * Δt_max
-    
+
     # 4 t * ν  = 2 scale^2
     # 4 niter * Δt * ν  = 2 scale^2
     # niter = scale^2 / (2 * Δt * ν)
     niter = ceil(Int,scale^2 / (2 * Δt * ν))
 
     flux = zeros(T,sz[1]+1)
-    
+
     for i = 1:niter
         # flux
         for i = 2:sz[1]
@@ -370,7 +377,7 @@ function smoothfilter!(x,f::Vector{T},scale) where T
             f[i] = f[i] + Δt * (flux[i+1] - flux[i])/(xf[i+1] - xf[i])
         end
     end
-    
+
 end
 
 
@@ -398,7 +405,7 @@ end
 """
     field = DIVAnd.random(mask,pmn,len,Nens)
 
-Create `Nens` random fields with the correlation length `len` in 
+Create `Nens` random fields with the correlation length `len` in
 a domain with the mask `mask` and the metric `pmn`.
 
 See `DIVAnd.DIVAndrun` for more information about these parameters.
@@ -409,11 +416,11 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
                 scale_len::Bool = true,
                 btrunc = [],
                 ) where {N,T}
-    
+
     s = DIVAnd.DIVAnd_background(
         Val{:sparse},mask,pmn,len,alpha,moddim,scale_len,[];
         btrunc = btrunc);
-    
+
     n = size(s.iB,1)::Int
     z = randn(n,Nens);
 
@@ -446,7 +453,7 @@ The grid in `xi` must be align with the axis (e.g. produced by DIVAnd.ndgrid).
 function interp!(xi::NTuple{N,Vector{T}},
                  fi::Array{T,N},
                  x::NTuple{N,Array{T,Nf}},
-                 f::Array{T,Nf}) where {T,N,Nf}   
+                 f::Array{T,Nf}) where {T,N,Nf}
     itp = interpolate(xi,fi,Gridded(Linear()))
 
     xpos = zeros(N)
@@ -464,7 +471,7 @@ function interp!(xi::NTuple{N,Array{T,N}},
                  fi::Array{T,N},
                  x::NTuple{N,Array{T,Nf}},
                  f::Array{T,Nf}) where {T,N,Nf}
-    
+
     # check size
     @assert all([size(xc) == size(fi) for xc in xi])
 
@@ -492,11 +499,11 @@ end
 """
     fun = backgroundfile(fname,varname)
 
-Return a function `fun` which is used in DIVAnd to make 
+Return a function `fun` which is used in DIVAnd to make
 anomalies out of observations based relative to the field
-defined in the NetCDF variable `varname` in the NetCDF file 
+defined in the NetCDF variable `varname` in the NetCDF file
 `fname`. It is assumed that the NetCDF variables has the variable
-`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the 
+`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the
 same grid as the analysis.
 
 """
@@ -506,16 +513,16 @@ function backgroundfile(fname,varname)
     lat = nomissing(ds["lat"][:])
     depth = nomissing(ds["depth"][:])
     #time = ds["time"][:].data
-    
+
     v = ds[varname]
-    x = (lon,lat,depth)    
-    
+    x = (lon,lat,depth)
+
     return function (xi,n,value,trans)
-        
+
         vn = zeros(size(v[:,:,:,n]))
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
 
-        
+
         vn .= trans.(DIVAnd.ufill(vn,.!isnan.(vn)))
         fi = DIVAnd.interp(x,vn,xi)
 

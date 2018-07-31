@@ -83,10 +83,10 @@ function checkobs(io::IO,x,v,ids)
 
                 if n > 0
                     @printf(io,"%55s","number of values equal to $(str) in $(name): ")
-                    print_with_color(:red,io,n);
+                    printstyled(io,n, color = :red)
 
                     j = findfirst(isnan,xc)
-                    print_with_color(:bold,io," [first value at index $(j) and id $(ids[j])]")
+                    printstyled(io," [first value at index $(j) and id $(ids[j])]",bold = true)
                     println(io)
                 end
             end

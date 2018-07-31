@@ -5,12 +5,12 @@ else
 end
 import DIVAnd
 
-obstime = DateTime(1990,1,1) : DateTime(2010,12,31)
+obstime = DateTime(1990,1,1) : Dates.Day(1) : DateTime(2010,12,31)
 
 
 
 
-years = 1993:1994 
+years = 1993:1994
 yearwindow = 10
 
 # winter: January-March    1,2,3
