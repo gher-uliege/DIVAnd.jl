@@ -10,9 +10,9 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
 
     function dvisvalue(x)
         if isnan(fillvalue)
-            return !isnan(x);
+            return !isnan(x)
         else
-            return !(x==fillvalue);
+            return x != fillvalue
         end
     end
 
@@ -23,20 +23,42 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
     cw=3^nd-1
     cw=1
 
-    R = CartesianRange(size(A))
-    I1, Iend = first(R), last(R)
+    RI =
+        @static if VERSION >= v"0.7.0-beta.0"
+            CartesianIndices(ntuple(i -> 1:size(A,i),nd))
+        else
+            CartesianRange(size(A))
+        end
+
+    I1, Iend = first(RI), last(RI)
+    stencil = 3*one(CartesianIndex(I1))
 
     for nn=1:ntimes
-        for I in R
-            w, s = 0.0, zero(eltype(A))
+        for indI in RI
+            w = 0.0
+            s = zero(eltype(A))
 
-            B[I] = A[I]
-            if !dvisvalue(A[I])
-                for J in CartesianRange(max(I1, I-3*I1), min(Iend, I+3*I1))
-                    #@show J
-                    if dvisvalue(A[J])
-                        s += A[J]
-                        if (I==J)
+            B[indI] = A[indI]
+            if !dvisvalue(A[indI])
+
+                RJ =
+                    @static if VERSION >= v"0.7.0-beta.0"
+                        # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
+                        # let block work-around
+
+                        let indI = indI, I1 = I1, I1 = I1, Iend = Iend, stencil = stencil
+                            CartesianIndices(ntuple(
+                                i-> max(I1[i], indI[i]-stencil[i]):min(Iend[i], indI[i]+stencil[i]),nd))
+                        end
+                    else
+                        CartesianRange(max(I1, indI-stencil), min(Iend, indI+stencil))
+                    end
+
+                for indJ in RJ
+
+                    if dvisvalue(A[indJ])
+                        s += A[indJ]
+                        if (indI==indJ)
                             w += cw
                         else
                             w += 1.
@@ -45,12 +67,12 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
                     # end if not fill value
                 end
                 if w>0.0
-                    B[I] = s/w
+                    B[indI] = s/w
                 end
             end
         end
 
-	    A[:]=B[:]
+	    A .= B
     end
 
     return B
