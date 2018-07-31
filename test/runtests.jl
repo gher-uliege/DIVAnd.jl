@@ -84,6 +84,7 @@ using SpecialFunctions
     include("test_averaged_bg.jl");
     include("test_domain.jl");
 
+    if VERSION < v"0.7.0-beta.0"
         # SDN Vocabulary
         include("test_vocab.jl");
 
