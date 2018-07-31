@@ -13,7 +13,7 @@ function DIVAnd_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 		mul!(workobs1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
 		workobs1[:]=s.R\workobs1
         @static if VERSION >= v"0.7.0-beta.0"
-		    mul!(workstate1::Array{Float64,1},transpose(s.H::SparseMatrixCSC{Float64,Int}),workobs1::Array{Float64,1})
+		    mul!(workstate1::Array{Float64,1},(s.H::SparseMatrixCSC{Float64,Int})',workobs1::Array{Float64,1})
         else
 		    At_mul_B!(workstate1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},workobs1::Array{Float64,1})
         end
@@ -56,7 +56,11 @@ function DIVAnd_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 
 			for kk=1:k
 				#iBx_=Dk'*iBx_
-				At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},iBx_::Array{Float64,1})
+                @static if VERSION >= v"0.7.0-beta.0"
+				    mul!(workstate2::Array{Float64,1},(s.D::SparseMatrixCSC{Float64,Int})',iBx_::Array{Float64,1})
+                else
+				    At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},iBx_::Array{Float64,1})
+                end
 				iBx_[:]=workstate2[:]
 			end
 
@@ -83,7 +87,7 @@ function DIVAnd_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 
 			for kk=1:k+1
                 @static if VERSION >= v"0.7.0-beta.0"
-		            mul!(workstate2::Array{Float64,1},transpose(s.D::SparseMatrixCSC{Float64,Int}),workstate1::Array{Float64,1})
+		            mul!(workstate2::Array{Float64,1},(s.D::SparseMatrixCSC{Float64,Int})',workstate1::Array{Float64,1})
                 else
 		            At_mul_B!(workstate2::Array{Float64,1},s.D::SparseMatrixCSC{Float64,Int},workstate1::Array{Float64,1})
                 end
@@ -107,7 +111,7 @@ function DIVAnd_iBpHtiRHx!(s,x::Array{Float64,1},iBx::Array{Float64,1},workobs1:
 	mul!(workobs1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
 	workobs1[:]=s.R\workobs1
     if VERSION >= v"0.7.0-beta.0"
-	    mul!(workstate1::Array{Float64,1},transpose(s.H::SparseMatrixCSC{Float64,Int}),workobs1::Array{Float64,1})
+	    mul!(workstate1::Array{Float64,1},(s.H::SparseMatrixCSC{Float64,Int})',workobs1::Array{Float64,1})
     else
 	    At_mul_B!(workstate1::Array{Float64,1},s.H::SparseMatrixCSC{Float64,Int},workobs1::Array{Float64,1})
     end

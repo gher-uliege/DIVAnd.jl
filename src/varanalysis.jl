@@ -183,7 +183,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
              ldiv!(R,Htmpx)
 
             # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
-            mul!(HRHtmpx,transpose(H),Htmpx)
+            mul!(HRHtmpx,H',Htmpx)
         else
             # Htmpx = R \ (H * SB^½ W^½ x)
             A_ldiv_B!(R,Htmpx)

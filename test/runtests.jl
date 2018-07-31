@@ -45,7 +45,9 @@ using SpecialFunctions
 
     if VERSION < v"0.7.0-beta.0"
         include("test_2dvar_jog.jl");
+    end
 
+    if VERSION < v"0.7.0-beta.0"
         include("test_2dvar_error.jl");
 
         include("test_2dvar_all_masked.jl");

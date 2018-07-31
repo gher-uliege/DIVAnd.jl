@@ -503,13 +503,13 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         maskf=deepcopy(mask)
         for ii=1:n
             if nsteps[ii]>1
-                maskf=mapslices(dvmaskexpand,maskf,ii)
+                maskf=mapslices(dvmaskexpand,maskf,dims = ii)
             end
         end
 		# One further expansion, but maybe check if updates on the fly are really the way to go ??
 		for ii=n:-1:1
             if nsteps[ii]>1
-                maskf=mapslices(dvmaskexpand,maskf,ii)
+                maskf=mapslices(dvmaskexpand,maskf,dims = ii)
             end
         end
         maskc=maskf[coarsegridpoints...];
@@ -610,8 +610,8 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			Labsccut=([Labsc[i]*lmask[i] for i=1:n]...,)
 			# try classic 2D
-			lmask1=0.0.*lmask;
-			lmask1[1:2]=1.0;
+			lmask1 = 0.0.*lmask;
+			lmask1[1:2] .= 1.0;
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 
 			#fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
@@ -673,7 +673,12 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 function fun!(x::Array{Float64,1},fx::Array{Float64,1})
 					#@show size(x),typeof(HI),typeof(scP)
 					#work1[:]=diagshift*x ::Array{Float64,1}
-					At_mul_B!(work3::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
+
+                    if VERSION >= v"0.7.0-beta.0"
+					    mul!(work3::Array{Float64,1},(HI::SparseMatrixCSC{Float64,Int})',x::Array{Float64,1})
+                    else
+					    At_mul_B!(work3::Array{Float64,1},HI::SparseMatrixCSC{Float64,Int},x::Array{Float64,1})
+                    end
 					#work3[:]=HI'*x  ::Array{Float64,1}
 					if scP==1
     					work3b=work3
