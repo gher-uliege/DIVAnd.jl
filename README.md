@@ -15,6 +15,8 @@ Please cite this paper as follows if you use `DIVAnd` in a publication:
 
 Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: DIVAnd-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
 
+(click [here](./data/DIVAnd.bib) for the BibTeX entry).
+
 
 # Installing
 
@@ -24,7 +26,7 @@ Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` 
 apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
 ```
 
-Your need [Julia](http://julialang.org) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 0.6) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
@@ -54,7 +56,7 @@ INFO: DIVAnd tests passed
 ```
 
 The test suite will download some sample data.
-You need to have internet access and run the test function from a directory with write access.
+You need to have Internet access and run the test function from a directory with write access.
 
 # Documentation
 
@@ -88,16 +90,16 @@ The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
 
 ## Note on which analysis function to use
 
-`DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when muliplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
+`DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when multiplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
 
-`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This functions tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
+`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
 
-`diva3D` is higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
+`diva3D` is a higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
 
 
 ## Note about the background field
 
-If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling DIVAnd and then add the first guess back in.
+If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling `DIVAnd` and then add the first guess back in.
 
 ## Determining the analysis parameters
 
@@ -131,6 +133,18 @@ For every constrain, a structure with the following fields is passed to `DIVAnd`
 * `R`: the matrix **Q**<sub>*i*</sub> (symmetric and positive defined)
 
 Internally the observations are also implemented as constraint defined in this way.
+
+## Run notebooks on a server which has no graphical interface
+
+On the server, launch the notebook with:
+```bash
+~/.julia/v0.6/Conda/deps/usr/bin/jupyter-notebook --no-browser --ip='0.0.0.0' --port=8888
+```
+where the path to `jupyter-notebook` might have to be adapted, depending on your installation. The `ip` and `port` parameters can also be modified.
+
+Then from the local machine it is possible to connect to the server through the browser.
+
+Thanks to Lennert and Bart (VLIZ) for this trick.
 
 # Example data
 
