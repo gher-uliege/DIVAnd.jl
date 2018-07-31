@@ -6,20 +6,10 @@
 # to add: loop ntimes over the filter; need to check how to copy/update the arrays...
 
 function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
-
-    #
-    function dvisvalue(x)
-        if isnan(fillvalue)
-            return !isnan(x);
-        else
-            return !(x==fillvalue);
-        end
-    end
-
     nd=ndims(A)
     # central weight
-    cw=3^nd-1
-    cw=1
+    cw=1.
+
     out = similar(A)
     if ntimes>1
         B=deepcopy(A)
@@ -27,21 +17,41 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
         B=A
     end
 
-    R = CartesianRange(size(A))
-    I1, Iend = first(R), last(R)
-    for nn=1:ntimes
+    RI =
+        @static if VERSION >= v"0.7.0-beta.0"
+            CartesianIndices(ntuple(i -> 1:size(A,i),nd))
+        else
+            CartesianRange(size(A))
+        end
 
-        for I in R
-            w, s = 0.0, zero(eltype(out))
-            # Define out[I] fillvalue
-            out[I] = fillvalue
-            if dvisvalue(B[I])
-                for J in CartesianRange(max(I1, I-I1), min(Iend, I+I1))
-                    # If not a fill value
-                    #                if !(B[J] == fillvalue)
-                    if dvisvalue(B[J])
-                        s += B[J]
-                        if (I==J)
+    I1, Iend = first(RI), last(RI)
+    stencil = one(CartesianIndex(I1))
+
+    for nn=1:ntimes
+        for indI in RI
+            w = 0.0
+            s = zero(eltype(out))
+
+            # Define out[indI] fillvalue
+            out[indI] = fillvalue
+            if !isequal(B[indI],fillvalue)
+                RJ =
+                    @static if VERSION >= v"0.7.0-beta.0"
+                        # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
+                        # let block work-around
+
+                        let indI = indI, I1 = I1, I1 = I1, Iend = Iend, stencil = stencil
+                            CartesianIndices(ntuple(
+                                i-> max(I1[i], indI[i]-stencil[i]):min(Iend[i], indI[i]+stencil[i]),nd))
+                        end
+                    else
+                        CartesianRange(max(I1, indI-stencil), min(Iend, indI+stencil))
+                    end
+
+                for indJ in RJ
+                    if !isequal(B[indJ],fillvalue)
+                        s += B[indJ]
+                        if indI == indJ
                             w += cw
                         else
                             w += 1.
@@ -50,7 +60,7 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
                     # end if not fill value
                 end
                 if w>0.0
-                    out[I] = s/w
+                    out[indI] = s/w
                 end
             end
         end

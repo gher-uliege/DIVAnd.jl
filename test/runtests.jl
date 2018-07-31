@@ -72,17 +72,17 @@ using SpecialFunctions
 
     include("test_DIVAndgo.jl");
 
-    if VERSION < v"0.7.0-beta.0"
-        # test kernel
-        include("test_kernel.jl");
+    #if VERSION < v"0.7.0-beta.0"
+    # test kernel
+    include("test_kernel.jl");
 
-        include("test_fzero.jl");
+    include("test_fzero.jl");
 
-        # test 3D-var analysis
-        include("test_varanalysis.jl");
+    # test 3D-var analysis
+    include("test_varanalysis.jl");
 
-        include("test_averaged_bg.jl");
-        include("test_domain.jl");
+    include("test_averaged_bg.jl");
+    include("test_domain.jl");
 
         # SDN Vocabulary
         include("test_vocab.jl");
