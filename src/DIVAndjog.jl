@@ -880,7 +880,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 # Apply HI; this vector can also be used as a first guess for the PC
 
                 # Preconditionner core
-				PC2=deepcopy(sc.P);
+				PC2 = sc.P
 				xguess=statevector_pack(sc.sv,(fc,));
 			end
 			# Try to clean up some memory here
@@ -914,7 +914,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 # Apply HI; this vector can also be used as a first guess for the PC
 
                 # Preconditionner core
-				PC1a=deepcopy(sc.P);
+				PC1a = sc.P
 			end
 			# Try to clean up some memory here
 			sc=0
@@ -935,7 +935,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 # Apply HI; this vector can also be used as a first guess for the PC
 
                 # Preconditionner core
-				PC1b=deepcopy(sc.P);
+				PC1b = sc.P
 			end
 			# Try to clean up some memory here
 			sc=0
@@ -983,8 +983,6 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			end
 
 			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC =compPC4b,fi0 =figuess,btrunc=2)
-
-
 
 
 		end
@@ -1054,7 +1052,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 # Apply HI; this vector can also be used as a first guess for the PC
 
                 # Preconditionner core
-				PC1a=deepcopy(sc.P);
+				PC1a = sc.P
 			end
 			# Try to clean up some memory here
 			sc=0
@@ -1074,7 +1072,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 # Apply HI; this vector can also be used as a first guess for the PC
 
                 # Preconditionner core
-				PC1b=deepcopy(sc.P);
+				PC1b = sc.P
 			end
 			# Try to clean up some memory here
 			sc=0

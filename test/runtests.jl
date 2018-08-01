@@ -43,9 +43,7 @@ using SpecialFunctions
 
     include("test_2dvar_iter.jl");
 
-    if VERSION < v"0.7.0-beta.0"
-        include("test_2dvar_jog.jl");
-    end
+    include("test_2dvar_jog.jl");
 
     include("test_2dvar_error.jl");
 
