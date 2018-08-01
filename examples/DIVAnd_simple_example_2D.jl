@@ -53,7 +53,7 @@ colorbar()
 clim(-1,1)
 title("Interpolated field");
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_results.png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_results.png")))
 savefig(figname)
 info("Created figure " * figname)
 

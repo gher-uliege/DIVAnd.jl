@@ -99,8 +99,8 @@ fi=fi+fmb+vm
 #fi=DIVAnd_filter3(fi,NaN,2)
 #erri=DIVAnd_filter3(erri,NaN,2)
 
-outputfile1 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$","_salinity.nc")));
-outputfile2 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$","_errorfield.nc")));
+outputfile1 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$" => "_salinity.nc")));
+outputfile2 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$" => "_errorfield.nc")));
 
 info("Salinity field written in file :" * outputfile1)
 info("Error field written in file :" * outputfile2)

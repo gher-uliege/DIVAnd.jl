@@ -79,7 +79,7 @@ monthlists = [
 
 TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 
-filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$",".nc")))
+filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$" => ".nc")))
 info("Output file: " * filename)
 
 varname = "Salinity"
@@ -122,7 +122,7 @@ function plotres(timeindex,sel,fit,erri)
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
     
-    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))));
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",timeindex))));
     savefig(figname)
     info("Saved figure as " * figname)
 end
@@ -140,7 +140,7 @@ figure()
 title("Original bathymetry")
 pcolor(lonr,latr,transpose(bi))
 colorbar()
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_bi0.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_bi0.png")));
 savefig(figname)
 
 # Remove the land values (negative bathymetry)
@@ -150,7 +150,7 @@ figure()
 title("Bathymetry")
 pcolor(lonr,latr,transpose(bi))
 colorbar()
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_bi1.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_bi1.png")));
 savefig(figname)
 
 # Compute topography gradients
@@ -162,7 +162,7 @@ figure()
 title("relative correlation length")
 pcolor(lonr,latr,transpose(RL))
 colorbar()
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_RL.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_RL.png")));
 savefig(figname)
 
 for k = 1:sz[3]

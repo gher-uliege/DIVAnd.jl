@@ -75,7 +75,7 @@ colorbar()
 clim(-0.5,1.5)
 title("Bscaled error");
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 
@@ -95,7 +95,7 @@ colorbar()
 clim(-0.5,1.5)
 title("Analysis");
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

@@ -65,7 +65,7 @@ plot(xi,fi3,":")
 plot(xi,fi4,"+")
 plot(xi,firef,"_",label="Reference")
 legend()
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_results.png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_results.png")))
 savefig(figname)
 info("Created figure " * figname)
 

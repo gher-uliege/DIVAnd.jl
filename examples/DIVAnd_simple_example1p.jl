@@ -85,7 +85,7 @@ fi2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 pcolor(reshape(diag(s.P),59,59)')
 colorbar()
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

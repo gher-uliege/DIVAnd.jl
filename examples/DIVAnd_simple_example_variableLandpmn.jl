@@ -64,7 +64,7 @@ pcolor(xi,yi,finu);
 colorbar()
 clim(0,1)
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

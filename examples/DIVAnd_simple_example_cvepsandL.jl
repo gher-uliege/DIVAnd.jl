@@ -53,7 +53,7 @@ for imeth=0:3
     title("Method $imeth")
 end
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")))
 savefig(figname)
 info("Created figure " * figname)
 

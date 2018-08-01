@@ -55,7 +55,7 @@ epsilon2 = 1.;
 
 @time fi,s = DIVAndgo(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2; moddim=[0,0,0,12]);
 
-outputfile = joinpath(outputdir,basename(replace(@__FILE__,r".jl$",".nc")));
+outputfile = joinpath(outputdir,basename(replace(@__FILE__,r".jl$" => ".nc")));
 DIVAnd_save(outputfile,mask,"analysis",fi)
 info("Results written in $outputfile")
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>

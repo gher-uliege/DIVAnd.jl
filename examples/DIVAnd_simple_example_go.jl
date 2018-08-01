@@ -81,7 +81,7 @@ clim(-0.05,0.05)
 plot(x,y,"k.");
 colorbar()
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 
@@ -113,7 +113,7 @@ clim(-0.05,0.05)
 plot(x,y,"k.");
 colorbar()
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 
@@ -129,7 +129,7 @@ pcolor(xi,yi,errOLD)
 clim(0,1)
 colorbar()
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_3.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_3.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

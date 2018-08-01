@@ -30,6 +30,6 @@ xlabel("x")
 ylabel("y")
 title("weight of observations\n based on their redundancy (method 'RtimesOne')")
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")));
 savefig(figname)
 info("Saved figure as " * figname)

@@ -75,7 +75,7 @@ TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 varname = "Salinity"
 
 # File name based on the variable (but all spaces are replaced by _)
-filename = "Water_body_$(replace(varname,' ','_')).4Danl.nc"
+filename = "Water_body_$(replace(varname,' ' => '_')).4Danl.nc"
 
 
 metadata = OrderedDict(
@@ -170,7 +170,7 @@ ignore_errors = true
     filename,varname,project,cdilist,xmlfilename,
     ignore_errors = ignore_errors)
 
-errname = "$(replace(filename,r"\.nc$","")).cdi_import_errors_test.csv"
+errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
 
 errdata,header = readdlm(errname,'\t'; header = true)
 
@@ -188,7 +188,7 @@ keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
 
 # new analysis with background from file
 
-filename2 = "Water_body_$(replace(varname,' ','_'))2.4Danl.nc"
+filename2 = "Water_body_$(replace(varname,' ' => '_'))2.4Danl.nc"
 if isfile(filename2)
    rm(filename2) # delete the previous analysis
 end

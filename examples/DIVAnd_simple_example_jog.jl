@@ -52,7 +52,7 @@ colorbar()
 clim(-1,1)
 title("result of DIVAndrun")
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

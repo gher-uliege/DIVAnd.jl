@@ -64,7 +64,7 @@ colorbar()
 clim(-0.5,1.5)
 title("Exact error");
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

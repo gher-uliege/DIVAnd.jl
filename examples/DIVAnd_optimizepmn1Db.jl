@@ -41,7 +41,7 @@ figure("Reference")
 rmsdiff=sqrt(var(firef[901:1101]-firefl))
 title("Solution in infinite domain and finite domain, rms = $rmsdiff")
 plot(xiref[801:1201],firef[801:1201],"-",xirefl,firefl,".")
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_reference.png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_reference.png")))
 savefig(figname);
 info("Created figure " * figname)
 # Now try to optimize BC
@@ -121,7 +121,7 @@ plot(aj,vj,"-")
 subplot(1,2,2)
 title("rms(reference-analysis)")
 plot(aj,rj,"-")
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimisation.png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_optimisation.png")))
 savefig(figname);
 info("Created figure " * figname)
 
@@ -147,7 +147,7 @@ subplot(2,1,2)
 bi=diag(s.P)
 title("B in infinite domain, finite domain and modified finite domain, Bversion")
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal1.png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_optimal1.png")))
 savefig(figname);
 info("Created figure " * figname)
 
@@ -170,7 +170,7 @@ subplot(2,1,2)
 bi=diag(s.P)
 title("B in infinite domain, finite domain and modified finite domain, rmsversion", fontsize=14)
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_optimal2.png")))
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_optimal2.png")))
 savefig(figname)
 info("Created figure " * figname)
 

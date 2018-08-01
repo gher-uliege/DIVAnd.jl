@@ -92,7 +92,7 @@ subplot(1,2,2)
 plot(al,rms,"-")
 @show al[indmin(varr)]
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_1.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 
@@ -134,7 +134,7 @@ pcolor(xi,yi,fiold);
 colorbar()
 clim(-1,1)
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 

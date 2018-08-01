@@ -23,6 +23,6 @@ RL = DIVAnd.lengraddepth((pm,pn),h, L)
 
 pcolor(x,y,RL); colorbar()
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",".png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")));
 savefig(figname)
 info("Saved figure as " * figname)

@@ -61,7 +61,7 @@ end
 		  end
 		end
 		
-	return ([ xx[sel] for xx in x ]...,),f[sel],find(sel),Rm
+	return ([ xx[sel] for xx in x ]...,),f[sel],findall(sel),Rm
     
 end
 

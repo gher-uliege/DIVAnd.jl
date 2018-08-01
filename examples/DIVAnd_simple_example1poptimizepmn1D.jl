@@ -153,7 +153,7 @@ for iround=1:2
         colorbar()
         clim(0,0.0025)
 
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_varb.png")));
+        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varb.png")));
         savefig(figname)
         info("Saved figure as " * figname)
 
@@ -163,7 +163,7 @@ for iround=1:2
         colorbar()
         clim(0,0.1)
 
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_varr.png")));
+        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varr.png")));
         savefig(figname)
         info("Saved figure as " * figname)
 
@@ -173,7 +173,7 @@ for iround=1:2
         colorbar()
         clim(0.5,1.5)
 
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_alpha.png")));
+        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_alpha.png")));
         savefig(figname)
         info("Saved figure as " * figname)
 
@@ -189,7 +189,7 @@ for iround=1:2
         pcolor(lpmc,dsoverl,varb')
         colorbar()
         clim(0,0.0025)
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_varbc.png")));
+        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varbc.png")));
         savefig(figname)
         info("Saved figure as " * figname)
 

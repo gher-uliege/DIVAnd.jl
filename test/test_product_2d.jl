@@ -68,7 +68,7 @@ TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 varname = "Salinity"
 
 # File name based on the variable (but all spaces are replaced by _)
-filename = "Water_body_$(replace(varname,' ','_')).3Danl.nc"
+filename = "Water_body_$(replace(varname,' ' => '_')).3Danl.nc"
 
 
 metadata = OrderedDict(

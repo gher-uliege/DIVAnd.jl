@@ -82,7 +82,7 @@ monthlists = [
 
 TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 
-filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$",".nc")))
+filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$" => ".nc")))
 info("Output file: " * filename)
 
 varname = "Salinity"
@@ -115,7 +115,7 @@ function plotres(timeindex,sel,fit,erri)
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
 
-    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",timeindex))));
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",timeindex))));
     savefig(figname)
     info("Saved figure as " * figname)
 end

@@ -141,7 +141,7 @@ function plotiter(i,fi)
         title("level $(k)")
     end
 
-    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$",@sprintf("_%04d.png",i))));
+    figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",i))));
     savefig(figname)
     info("Saved figure as " * figname)
 
@@ -159,7 +159,7 @@ plot(xi[1][1],fi[1],"-",label="analysis (trend)")
 plot(xi[2][1],fa,"-",label="analysis (total)")
 legend()
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$","_2.png")));
+figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
 info("Saved figure as " * figname)
 
