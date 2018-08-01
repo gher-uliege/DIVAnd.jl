@@ -252,7 +252,7 @@ function getoriginators(db,filepaths::Vector{<:AbstractString},
                         errname; ignore_errors = false)
 
     obsids = Iterators.flatten(loadobsid.(filepaths))
-    errname = replace(filepaths[1],r".nc$","") * ".cdi_import_errors_test.csv"
+    errname = replace(filepaths[1],r".nc$" => "") * ".cdi_import_errors_test.csv"
     originators,notfound = get_originators_from_obsid(
         db,obsids; ignore_errors = ignore_errors)
 
@@ -359,7 +359,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     horizontal_resolution_units = "degree"
 
     date = ds.attrib["date"]
-    date = replace(date," ","T")
+    date = replace(date," " => "T")
 
 
     product_id = ds.attrib["product_id"]
@@ -593,7 +593,9 @@ end
 function rendertemplate(templatefile,templateVars,xmlfilename)
     info("Process template")
 
-    template = readstring(open(templatefile))
+    open(templatefile) do templateio
+        template = read(templateio,String)
+    end
 
     open(xmlfilename,"w") do f
         print(f,Mustache.render(template,templateVars))

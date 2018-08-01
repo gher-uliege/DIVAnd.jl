@@ -127,7 +127,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			if methodpc == 2
 				lmask1 = 0 .* lmask;
-				lmask1[1:2]=1.0;
+				lmask1[1:2] .= 1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=DIVAndrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -147,7 +147,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				fc=0
 				#gc()
 				lmask1=0.0.*lmask;
-				lmask1[3:end]=1.0./1.42;
+				lmask1[3:end] .= 1.0./1.42;
 
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				PC1=1
@@ -209,7 +209,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if methodpc==3
 			    # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.0.*lmask;
-				lmask1[1:2]=1.0;
+				lmask1[1:2] .= 1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=DIVAndrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -229,7 +229,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				fc=0
 				#gc()
 				lmask1=0.0.*lmask;
-				lmask1[3:end]=1.0;
+				lmask1[3:end] .= 1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				PC1=1
 				sc=0
@@ -309,7 +309,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if methodpc==4
 			    # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.0.*lmask;
-				lmask1[1:2]=1.0;
+				lmask1[1:2] .= 1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=DIVAndrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -329,7 +329,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				fc=0
 				#gc()
 				lmask1=0.0.*lmask;
-				lmask1[3:end]=1.0;
+				lmask1[3:end] .= 1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				# Try to get iB by using iterative solved stopped at one
 				maxiterb=1
@@ -392,7 +392,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			if methodpc==5
 			    # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
 				lmask1=0.0.*lmask;
-				lmask1[1:2]=1.0;
+				lmask1[1:2] .= 1.0;
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				fc,sc=DIVAndrun(mask,pmn,xi,x,f,Labsccut,epsilon2; otherargs...)
 				PC2=1
@@ -1010,7 +1010,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			fc=0
 			#gc()
 			lmask1=0.0.*lmask;
-            lmask1[3:end]=1.0/1.42;
+            lmask1[3:end] .= 1.0/1.42
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 			PC1=1
 			sc=0

@@ -200,7 +200,7 @@ function climatology_bounds(TS)
 # subinterval used to evaluate the climatological statistics with
 # index i in the time dimension.
 
-    b = Array{DateTime}(2,length(TS))
+    b = Array{DateTime}(undef,2,length(TS))
     b[1,:] = timesstart(TS)
     b[2,:] = timesend(TS)
     return b

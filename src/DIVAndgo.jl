@@ -69,13 +69,13 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
         erri = [1.]
     else
 	    erri = SharedArray{Float32}(size(mask));
-		erri[:] .= 1.0
+		erri .= 1.0
     end
 
 	qcdata = ()
 	if doqc
 	    qcdata = SharedArray{Float32}(size(f,1))
-	    qcdata[:] = 0
+	    qcdata .= 0
 	end
 
     # Add now analysis at data points for further output

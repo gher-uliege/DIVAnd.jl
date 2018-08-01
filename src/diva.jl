@@ -258,7 +258,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 if background == nothing
                     # spatial mean of observations
                     vm = mean(value_trans)
-                    va = value_trans - vm
+                    va = value_trans .- vm
 
                     # background profile
                     fi,vaa = DIVAnd.DIVAnd_averaged_bg(
@@ -270,7 +270,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         toaverage;
                         moddim = moddim)
 
-                    fbackground = fi + vm
+                    fbackground = fi .+ vm
                     fbackground,vaa
                 else
                     # anamorphosis transform must already be included to the
@@ -284,7 +284,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             vaa = vaa[selbackground]
             xsel = map(xc -> xc[selbackground],xsel)
             # unselect the data points out of the domain
-            view(sel,sel)[.!selbackground] = false
+            view(sel,sel)[.!selbackground] .= false
 
 
             if fitcorrlen

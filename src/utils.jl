@@ -33,7 +33,7 @@ function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     c2 = copy(c)
     # better way
     valex = T(-99999.)
-    c2[.!mask] = valex
+    c2[.!mask] .= valex
 
     return ufill(c2,valex)
 end

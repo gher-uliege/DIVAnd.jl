@@ -968,7 +968,7 @@ function fithorzlen(x,value::Vector{T},z;
     kmax = length(z)
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
-    fitinfos = Vector{Dict{Symbol,Any}}(kmax)
+    fitinfos = Vector{Dict{Symbol,Any}}(undef,kmax)
 
     nsamp =
         if length(value) > maxnsamp
@@ -981,13 +981,13 @@ function fithorzlen(x,value::Vector{T},z;
 
         sel =
             if length(x) == 3
-                (abs.(x[3] - z[k]) .< searchz)
+                (abs.(x[3] .- z[k]) .< searchz)
             else
                 trues(size(x[1]))
             end
 
         xsel = (x[1][sel],x[2][sel]);
-        v = value[sel] - mean(value[sel]);
+        v = value[sel] .- mean(value[sel]);
 
         var0opt[k],lenopt[k],fitinfos[k] = DIVAnd.fitlen(
             xsel,v,nsamp;
@@ -1031,20 +1031,20 @@ function fitvertlen(x,value::Vector{T},z;
                      ) where T
 
     zlevel2 = zero(T)
-    zindex = Vector{Int}(length(value))
+    zindex = Vector{Int}(undef,length(value))
     nzindex = 0
 
     kmax = length(z)
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
-    fitinfos = Vector{Dict{Symbol,Any}}(kmax)
+    fitinfos = Vector{Dict{Symbol,Any}}(undef,kmax)
 
     nsamp = min(maxnsamp,length(value))
     count = (nsamp*(nsamp-1)) ÷ 2
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
-        zindex = find(abs.(zlevel2 - x[3]) .< searchz)
+        zindex = find(abs.(zlevel2 .- x[3]) .< searchz)
 
         if length(zindex) == 0
             error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
