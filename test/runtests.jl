@@ -49,10 +49,8 @@ using SpecialFunctions
 
     include("test_2dvar_all_masked.jl");
 
-    if VERSION < v"0.7.0-beta.0"
-        # cross-validation
-        include("test_2dvar_cv.jl"); # problematic
-    end
+    # cross-validation
+    include("test_2dvar_cv.jl"); # problematic
 
     include("test_2dvar_matfun.jl");
     include("test_2dvar_qc.jl");

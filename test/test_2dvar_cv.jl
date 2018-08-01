@@ -38,16 +38,21 @@ len = 0.1;
 epsilon2 = 2.
 
 # loop over all methods
-for imeth=0:3
+for imeth = 0:3
     bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = DIVAnd_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth;alphabc=0);
-    @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
+
+    if VERSION >= v"0.7.0-beta.0"
+        @test 0.5 < bestfactore*epsilon2/epsilon2_true <= 2
+    else
+        @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
+    end
     @test 0.3 < bestfactorl*len/len_true < 3
 
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
 end
 
-for imeth=0:3
+for imeth = 0:3
     bestfactor, cvval,cvvalues, logfactorse,cvinter,epsilon2inter = DIVAnd_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,3,imeth;alphabc=0);
     @test 1. < bestfactor < 1.3
     #@test 0.3 < bestfactorl*len/len_true < 3
@@ -57,32 +62,40 @@ for imeth=0:3
 end
 
 
-for imeth=0:3
+for imeth = 0:3
     bestfactor, cvval,cvvalues, logfactorse,cvinter,epsilon2inter = DIVAnd_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,0,imeth;alphabc=0);
     #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     #@test 0.3 < bestfactorl*len/len_true < 3
-    @test 1.6 < bestfactor < 1.8
+
+    if VERSION >= v"0.7.0-beta.0"
+        @test 1.5 < bestfactor < 1.8
+    else
+        @test 1.6 < bestfactor < 1.8
+    end
 
     #@show bestfactor
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
 end
 
-for imeth=0:3
+for imeth = 0:3
     bestfactor,cvvalues = @test_warn r".*no parameter optimisation.*" DIVAnd_cv(
         mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
 
     #@show bestfactor
-    @test 0.8 < bestfactor < 1.
-
+    if VERSION >= v"0.7.0-beta.0"
+        @test 0.8 < bestfactor < 1.1
+    else
+        @test 0.8 < bestfactor < 1.
+    end
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
 end
 
 
-
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
-#                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
+# Copyright (C) 2014, 2017, 2018
+#   Alexander Barth <a.barth@ulg.ac.be>
+#   Jean-Marie Beckers <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
