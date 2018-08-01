@@ -593,9 +593,7 @@ end
 function rendertemplate(templatefile,templateVars,xmlfilename)
     info("Process template")
 
-    open(templatefile) do templateio
-        template = read(templateio,String)
-    end
+    template = read(templatefile,String)
 
     open(xmlfilename,"w") do f
         print(f,Mustache.render(template,templateVars))
