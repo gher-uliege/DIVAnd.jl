@@ -89,11 +89,8 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
     # norm taking only dimension into account with non-zero correlation
     # WE: units length^(neff/2)
-    #d = prod(pmnp(find(Ld > 0),:),1)'
 
     d = .*(pmn[Ld .> 0]...)
-
-
 
 	WE = oper_diag(operatortype,statevector_pack(sv,(1 ./ sqrt.(d),))[:,1])
 

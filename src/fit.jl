@@ -1044,7 +1044,7 @@ function fitvertlen(x,value::Vector{T},z;
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
-        zindex = find(abs.(zlevel2 .- x[3]) .< searchz)
+        zindex = findall(abs.(zlevel2 .- x[3]) .< searchz)
 
         if length(zindex) == 0
             error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
