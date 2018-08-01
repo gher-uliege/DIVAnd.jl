@@ -31,13 +31,13 @@ if !isfile(obsname)
     obsname = download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download")
 end
 
-value,lon,lat,depth,time,ids = DIVAnd.loadobs(Float64,obsname,"Salinity")
+obsvalue,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.loadobs(Float64,obsname,"Salinity")
 
 # for testing only
-ids[1] = "100-123"
-ids[2] = "100-124"
-ids[3] = "999-missing"
-ids[4:end] = "101-125"
+obsids[1] = "100-123"
+obsids[2] = "100-124"
+obsids[3] = "999-missing"
+obsids[4:end] = "101-125"
 
 
 dx = dy = 0.5
@@ -147,8 +147,8 @@ if isfile(filename)
 end
 
 @test_warn r".netCDF.*" DIVAnd.diva3d((lonr,latr,depthr,TS),
-              (lon,lat,depth,time),
-              value,
+              (obslon,obslat,obsdepth,obstime),
+              obsvalue,
               (lenx,leny,lenz),
               epsilon2,
               filename,varname,
@@ -159,7 +159,7 @@ end
               mask = mask,
        )
 
-DIVAnd.saveobs(filename,(lon,lat,depth,time),ids)
+DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids)
 
 
 project = "SeaDataCloud"
@@ -195,8 +195,8 @@ end
 
 dbinfo = @test_warn r".*Be patient.*" DIVAnd.diva3d(
     (lonr,latr,depthr,TS),
-    (lon,lat,depth,time),
-    value,
+    (obslon,obslat,obsdepth,obstime),
+    obsvalue,
     (),
     epsilon2,
     filename2,varname,

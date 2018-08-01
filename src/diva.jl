@@ -378,8 +378,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             plotres(timeindex,sel,fit,erri)
 
-            fit[.!mask] = NaN
-            erri[.!mask] = NaN
+            fit[.!mask] .= NaN
+            erri[.!mask] .= NaN
             if n == 4
                 DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                   fit, erri, (:,:,:,timeindex))

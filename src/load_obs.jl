@@ -56,7 +56,7 @@ function loadobsid(ds,varname = "obsid")
 
     for i = 1:size(obsids,2)
         id = view(obsids,:,i)
-        index = findfirst(c -> c .== '\0',id)
+        index = findfirst(c -> c == '\0',id)
 
         hasnonull =
             @static if VERSION >= v"0.7.0-beta.0"
