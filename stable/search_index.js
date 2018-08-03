@@ -237,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.saveobs",
     "category": "function",
-    "text": "DIVAnd.saveobs(filename,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime).\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\nDIVAnd.saveobs(filename,varname,value,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave value and the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime). The values will be saved in the  variable called varname.\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\n"
+    "text": "DIVAnd.saveobs(filename,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime).\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\nDIVAnd.saveobs(filename,varname,value,xy,ids;\n               type_save = Float32,\n               timeorigin = DateTime(1900,1,1,0,0,0),\n               )\n\nSave value and the location and time of the observation in the NetCDF file filename and their identifier ids. xy is a tuple with the vectors longitude, latitude, depth and time (as a vector of DateTime). The values will be saved in the variable called varname.\n\nOptional arguments:\n\ntype_save: the type to save the data (default Float32). However, the time  is always saved as Float64.\ntimeorigin: time origin for the time units attribute (default is\n\n1900-01-01 00:00:00)\n\n\n\n"
 },
 
 {
@@ -665,70 +665,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#DIVAnd.sparse_interp",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.sparse_interp",
-    "category": "function",
-    "text": "H,out = sparse_interp(mask,I)\n\nCreate interpolation matrix from mask and fractional indexes I.\n\nInput:   mask: 0 invalid and 1 valid points (n-dimensional array)   I: fractional indexes (2-dim array n by mi, where mi is the number of points to interpolate) Ouput:   H: sparse matrix with interpolation coefficients   out: true if value outside of grid   outbbox: 1 if outise bouding box   onland: 1 if point touches land (where mask == 0)\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.sparse_interp_g",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.sparse_interp_g",
-    "category": "function",
-    "text": "sparse_interp(x,mask,xi) Interpolate from x onto xi\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.sparse_gradient",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.sparse_gradient",
-    "category": "function",
-    "text": "Sparse operator for a gradient. Dx1,Dx2,...,Dxn = sparse_gradient(mask,pmn) Form the gradient using finite differences in all n-dimensions Input:   mask: binary mask delimiting the domain. 1 is inside and 0 outside.         For oceanographic application, this is the land-sea mask.   pmn: scale factor of the grid. Output:   Dx1,Dx2,...,Dxn: operators represeting a gradient along     different dimensions\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.sparse_diff",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.sparse_diff",
-    "category": "function",
-    "text": "diffx = sparse_diff(sz1,m,cyclic)\n\nSparse operator for differentiation along dimension m for \"collapsed\" matrix of the size sz1. cyclic is true if domain is cyclic along dimension m. false is the default value\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.matfun_trim",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.matfun_trim",
-    "category": "function",
-    "text": "T = matfun_trim(sz1,m)\n\nCreate an operator which trim first and last row (or column) in The field is a \"collapsed\" matrix of the size sz1. m is the dimension  to trim.\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.matfun_stagger",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.matfun_stagger",
-    "category": "function",
-    "text": "S = matfun_stagger(sz1,m,cyclic)\n\nCreate an operator for staggering a field in dimension m. The field is a \"collapsed\" matrix of the size sz1.\n\nInput:   sz1: size of rhs   m: dimension to stagger   cyclic: true if domain is cyclic along dimension m. False is the   default value\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.matfun_diff",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.matfun_diff",
-    "category": "function",
-    "text": "Operator for differentiation.\n\ndiffx = matfun_diff(sz1,m,cyclic)\n\nOperator for differentiation along dimension m for \"collapsed\" matrix of the size sz1.\n\nInput:   sz1: size of rhs   m: dimension to differentiate   cyclic: true if domain is cyclic along dimension m. False is the   default value\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.matfun_shift",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.matfun_shift",
-    "category": "function",
-    "text": "Operator shifting a field in a given dimension.\n\nfunction S = matfun_shift(sz1,m,cyclic)\n\nOperator shifting a field in the dimension m. The field is a \"collapsed\" matrix of the size sz1.\n\nInput:   sz1: size of rhs   m: dimension to shift   cyclic: true if domain is cyclic along dimension m. False is the     default value\n\n\n\n"
-},
-
-{
     "location": "index.html#Operators-1",
     "page": "DIVAnd.jl documentation",
     "title": "Operators",
@@ -1149,7 +1085,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.localize_separable_grid",
     "category": "function",
-    "text": "Derive fractional indices on a separable grid.\n\nI = localize_separable_grid(xi,mask,x)\n\nxi and x are a tuples, e.g. x1,x2 = ndgrid(2 * collect(1:5),collect(1:6)) x = (x1,x2)\n\nDerive fractional indices where xi are the points to localize in the separable grid x (every dimension in independent on other dimension). The output I is an n-by-m array where n number of dimensions and m number of observations. The correspond element of I is negative if xi is outside of the grid defined by x.\n\n\n\n"
+    "text": "Derive fractional indices on a separable grid.\n\nI = localize_separable_grid(xi,mask,x)\n\nxi is a tuple of vectors and x and tuple of n-dimensional arrays, e.g.\n\nx1,x2 = ndgrid(2 * collect(1:5),collect(1:6)) x = (x1,x2)\n\nDerive fractional indices where xi are the points to localize in the separable grid x (every dimension in independent on other dimension). The output I is an n-by-m array where n number of dimensions and m number of observations. The correspond element of I is negative if xi is outside of the grid defined by x.\n\n\n\n"
 },
 
 {
@@ -1189,7 +1125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.ncfile",
     "category": "function",
-    "text": "DIVAnd_save(ds,filename,xyi,fi,varname;\n                  ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nds: the NetCDF dataset \nfilename: the name of the NetCDF file\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.\nxyi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\ntimeorigin: time origin for the time units attribute (default is 1900-01-01 00:00:00)\n\n\n\n"
+    "text": "DIVAnd_save(ds,filename,xyi,fi,varname;\n                  ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)\n\nSave the result of the analysis in a NetCDF file .\n\nInput arguments\n\nds: the NetCDF dataset\nfilename: the name of the NetCDF file\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.\nxyi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nfi: the analysed field\nvarname: the name of the NetCDF variable\n\nOptional arguments:\n\nncglobalattrib: a dictionary with the global attributes\nncvarattrib: a dictionary with the variable attributes\nrelerr: relative error\ntimeorigin: time origin for the time units attribute (default is 1900-01-01 00:00:00)\n\n\n\n"
 },
 
 {
@@ -1261,15 +1197,15 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Information for developers",
     "category": "section",
-    "text": ""
+    "text": "To update the documentation locally, install the package Documenter and run the script include(\"docs/make.jl\").Pkg.add(\"Documenter\")"
 },
 
 {
-    "location": "index.html#Update-the-documentation-1",
+    "location": "index.html#API-changes-1",
     "page": "DIVAnd.jl documentation",
-    "title": "Update the documentation",
+    "title": "API changes",
     "category": "section",
-    "text": "InstallPkg.add(\"Documenter\")"
+    "text": "We do are best to avoid changing the API, but sometimes it is unfortunately necessary.2018-07-02: The module divand has been renamed DIVAnd and likewise functions containing divand\n2018-06-18: The options nmean and distbin of fithorzlen and fitvertlen have been removed. The functions now choose appropriate values for these parameters automatically."
 },
 
 {
@@ -1289,6 +1225,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#C-runtime-library-when-calling-PyPlot-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "C runtime library when calling PyPlot",
+    "category": "section",
+    "text": "R6034 an application has made an attempt to load the C runtime library incorrectly on Windows 10 with julia 0.6.1, matplotlib 2.1.0, PyPlot 2.3.2:ENV[\"MPLBACKEND\"]=\"qt4agg\"You can put this line in a file .juliarc.jl placed in your home directory (the output of homedir() in Julia)."
+},
+
+{
     "location": "index.html#Julia-cannot-connect-to-GitHub-on-Windows-7-and-Windows-Server-2012-1",
     "page": "DIVAnd.jl documentation",
     "title": "Julia cannot connect to GitHub on Windows 7 and Windows Server 2012",
@@ -1301,7 +1245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "MbedTLS.jl does not install on Windows 7",
     "category": "section",
-    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS                                                                                                                                    \nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...                                                                                                  \nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"                                                           \nAt line:1 char:35                                                                                                                                         \n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =                                                                                              \n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException                                                                                  \n    + FullyQualifiedErrorId : PropertyAssignmentException                                                                                                 \n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133The solution is to install the Windows Management Framework 4.0."
+    "text": "The installion of MbedTLS.jl fails with the error message:INFO: Building MbedTLS\nInfo: Downloading https://github.com/quinnj/MbedTLSBuilder/releases/download/v0.6/MbedTLS.x86_64-w64-mingw32.tar.gz to C:\\Users\\Jeremy\\.julia\\v0.6\\MbedTLS\n\\deps\\usr\\downloads\\MbedTLS.x86_64-w64-mingw32.tar.gz...\nException setting \"SecurityProtocol\": \"Cannot convert null to type \"System.Net.SecurityProtocolType\" due to invalid enumeration values. Specify one of th\ne following enumeration values and try again. The possible enumeration values are \"Ssl3, Tls\".\"\nAt line:1 char:35\n+ [System.Net.ServicePointManager]:: <<<< SecurityProtocol =\n    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException\n    + FullyQualifiedErrorId : PropertyAssignmentException\n    [...]See also the issue https://github.com/JuliaWeb/MbedTLS.jl/issues/133.The solution is to install the Windows Management Framework 4.0."
 },
 
 {
@@ -1349,7 +1293,15 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Error in the factorisation",
     "category": "section",
-    "text": "The following messageBase.LinAlg.PosDefException(95650)followed by the stack-trace starting with:Stacktrace:  [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360  .................  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147might be due to a wrong choice in the analysis parameters, for example a too long  correlation length."
+    "text": "The error message Base.LinAlg.PosDefException(95650) followed by the stack-trace below might be due to a wrong choice in the analysis parameters, for example a too long correlation length.Stacktrace:\n [1] #cholfact!#8(::Float64, ::Function, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Base.SparseArrays.CHOLMOD.Sparse{Float64}) at ./sparse/cholmod.jl:1360\n .................\n [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147"
+},
+
+{
+    "location": "index.html#Installing-additional-packages-when-using-a-git-clone-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "Installing additional packages when using a git clone",
+    "category": "section",
+    "text": "If DIVAnd is installed without the package manager, it can be necessary to install additional packages. This will be explicitly shown, for example:LoadError: ArgumentError: Module Roots not found in current path.\nRun `Pkg.add(\"Roots\")` to install the Roots package."
 },
 
 ]}
