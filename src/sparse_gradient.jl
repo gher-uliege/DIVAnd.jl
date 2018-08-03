@@ -2,7 +2,7 @@ for OT in [:sparse,:MatFun]
     ot = Val{Symbol(OT)}
 """
 Sparse operator for a gradient.
-Dx1,Dx2,...,Dxn = sparse_gradient(operatortype,mask,pmn,iscyclic)
+Dx1,Dx2,...,Dxn = DIVAnd_gradient(operatortype,mask,pmn,iscyclic)
 Form the gradient using finite differences in all n-dimensions
 Input:
   mask: binary mask delimiting the domain. 1 is inside and 0 outside.
@@ -35,7 +35,6 @@ Output:
     end
 end
 
-@deprecate sparse_gradient DIVAnd_gradient
 
 
 # Copyright (C) 2009,2016 Alexander Barth <a.barth@ulg.ac.be>

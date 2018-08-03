@@ -468,5 +468,6 @@ export checkobs
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient
 export sparse_gradient
+# @deprecate sparse_gradient DIVAnd_gradient
 
 end
