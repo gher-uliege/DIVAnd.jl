@@ -210,7 +210,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 dbinfo[:fitvertlen] = Dict{Symbol,Any}(
                     :len => zeros(kmax,length(TS)),
                     :var0 => zeros(kmax,length(TS)),
-                    :fitinfos => Array{Dict{Symbol,Any},2}(kmax,length(TS))
+                    :fitinfos => Array{Dict{Symbol,Any},2}(undef,kmax,length(TS))
                 )
             end
         end

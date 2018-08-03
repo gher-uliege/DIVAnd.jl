@@ -181,7 +181,7 @@ errdata,header = readdlm(errname,'\t'; header = true)
 # check if editing of the mask was successful
 @test ismissing(Dataset(filename)["Salinity"][3,3,1,1])
 
-xmlstr = readstring(open(xmlfilename));
+xmlstr = read(xmlfilename,String);
 
 keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
 @test occursin(keyword_code,xmlstr)

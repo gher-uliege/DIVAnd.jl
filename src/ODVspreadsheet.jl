@@ -117,7 +117,7 @@ function readODVspreadsheet(datafile)
                     @assert startswith(line,"//")
 
                     # split at < or >
-                    parts = split(line[3:end],r"[<|>]",keep=false)
+                    parts = Compat.split(line[3:end],r"[<|>]",keepempty=false)
                     tmp = Dict(k => v for (k,v) in zip(parts[1:3:end],parts[2:3:end]))
 
                     subject = tmp["subject"]
