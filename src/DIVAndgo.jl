@@ -187,7 +187,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
 			    if errormethod==:cpme
 			        fw = 0
                     s = 0
-                    gc()
+                    GC.gc()
                     # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
                     errw = DIVAnd_cpme(
                         mask[windowpoints...],

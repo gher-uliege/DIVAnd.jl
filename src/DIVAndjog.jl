@@ -989,7 +989,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 	    if methodpccoarse==5
 			lmask1=0.0.*lmask;
-			lmask1[1:2]=1.0;
+			lmask1[1:2] .= 1.0;
 			Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 
 			fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...)
