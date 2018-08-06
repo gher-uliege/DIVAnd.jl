@@ -65,12 +65,15 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
     #erri = SharedArray(Float64,size(mask));
     fi = SharedArray{Float32}(size(mask));
 	fi[:] .= 0
-	if errormethod==:none
-        erri = [1.]
-    else
-	    erri = SharedArray{Float32}(size(mask));
-		erri .= 1.0
-    end
+
+    erri =
+	    if errormethod==:none
+            SharedArray{Float32}(1,1)
+        else
+            SharedArray{Float32}(size(mask));
+        end
+
+	erri .= 1.0
 
 	qcdata = ()
 	if doqc
@@ -285,7 +288,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
             # copy, deepcopy or just = ???
 
 		    if errormethod==:none
-                erri = [1.];
+                erri .= 1.
 			else
 			    erri[windowpointsstore...]=errw[windowpointssol...];
 		    end
