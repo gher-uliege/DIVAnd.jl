@@ -41,12 +41,9 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
         return finter,sinter
     end
 
-
     ##########################################################################################
     # Capture here the case sum(csteps)==n
     if sum(nsteps)==n
-
-
 
         if ( (pcmethod==0) & ((alphapc==[]) & (prod(lmask)>0)) )
             warn("divajog called with no coarsening and no alphapc defined")
@@ -54,8 +51,11 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
             #warn("to force use of direct solver put csteps to zero")
 		    tol = 2e-3
 			maxiter=100*Int(ceil(sqrt(prod(size(mask)))))
-			pcargs = [(:tol, tol),(:maxit,maxiter)]
-            fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg)
+
+            fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                            tol = tol,
+                            maxit = maxiter,
+                            inversion=:pcg)
             return fi,si
 
         else
@@ -63,10 +63,6 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			tol = 2e-3
 			maxiter=10*Int(ceil(sqrt(prod(size(mask)))))
-
-			pcargs = [(:tol, tol),(:maxit,maxiter)]
-
-
 			diagshift=0.0000001;
 
             # Case where the grid is not subsampled but different norms used for preconditionning
@@ -119,8 +115,11 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 end
 				# Then run with normal resolution and preconditionner
 
-				#fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,operatortype=Val{:MatFun},compPC = compPCa, fi0 =figuess)
-				fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPCa, fi0 =figuess,btrunc=2)
+				fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                                tol = tol,
+                                maxit = maxiter,
+                                inversion=:pcg,
+                                compPC = compPCa, fi0 =figuess,btrunc=2)
 
 			end
 
@@ -199,7 +198,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                     return fun!
 			    end
 
-			    fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4, fi0 =figuess,btrunc=2)
+			    fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                                tol = tol,
+                                maxit = maxiter,
+                                inversion=:pcg,compPC = compPC4, fi0 =figuess,btrunc=2)
 
 
 			end
@@ -293,11 +295,15 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 			    end
 			    if PC1==1
 			        fi,si=DIVAndrun(
-                        mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,
+                        mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                        tol = tol,
+                        maxit = maxiter,
                         inversion=:pcg,compPC = compPC4bisb, fi0 =figuess,btrunc=2)
 			    else
 			        fi,si=DIVAndrun(
-                        mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,
+                        mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                        tol = tol,
+                        maxit = maxiter,
                         inversion=:pcg,compPC = compPC4bis, fi0 =figuess,btrunc=2)
 			    end
 
@@ -333,13 +339,16 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
 				# Try to get iB by using iterative solved stopped at one
 				maxiterb=1
-     			pcargsb = [(:tol, tol),(:maxit,maxiterb)]
 
 				PC1=1
 				sc=0
 
 				if size(lmask)[2]>2
-					fc,sc=DIVAndrun(mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,pcargsb...,inversion=:pcg)
+					fc,sc=DIVAndrun(
+                        mask,pmn,xi,x,f,Labsccut,10000.; otherargs...,
+                        tol = tol,
+                        maxit = maxiterb,
+                        inversion=:pcg)
 				end
 				PC1=1
 				if !(sc==0)
@@ -384,7 +393,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                     return fun!
 			    end
 
-			    fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4ter, fi0 =figuess,btrunc=2)
+			    fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                                tol = tol,
+                                maxit = maxiter,
+                                inversion=:pcg,compPC = compPC4ter, fi0 =figuess,btrunc=2)
 
 
 			end
@@ -434,7 +446,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                     return fun!
 			    end
 
-			    fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC4quad, fi0 =figuess,btrunc=2)
+			    fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                                tol = tol,
+                                maxit = maxiter,
+                                inversion=:pcg,compPC = compPC4quad, fi0 =figuess,btrunc=2)
 
 
 			end
@@ -598,8 +613,6 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 		tol=1e-3
 		maxiter=20*Int(ceil(sqrt(size(HI)[1])))
 		maxiter=minimum([2000,maxiter])
-		#maxiter=0
-    	pcargs = [(:tol, tol),(:maxit,maxiter)]
         diagshift=0.000001
 
 		fi=0
@@ -702,7 +715,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				#@time gc()
                 return fun!
             end
-			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC, fi0 =figuess,btrunc=2)
+			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                            tol = tol,
+                            maxit = maxiter,
+                            inversion=:pcg,compPC = compPC, fi0 =figuess,btrunc=2)
 
 
 
@@ -758,7 +774,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 end
                 return fun!
             end
-			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC2cr, fi0 =figuess,btrunc=2)
+			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                            tol = tol,
+                            maxit = maxiter,
+                            inversion=:pcg,compPC = compPC2cr, fi0 =figuess,btrunc=2)
 
 
 		end
@@ -853,7 +872,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 return fun!
 			end
 
-			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC3, fi0 =figuess,btrunc=2)
+			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                            tol = tol,
+                            maxit = maxiter,
+                            inversion=:pcg,compPC = compPC3, fi0 =figuess,btrunc=2)
 		end
 
 
@@ -982,7 +1004,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
                 return fun!
 			end
 
-			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC =compPC4b,fi0 =figuess,btrunc=2)
+			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                            tol = tol,
+                            maxit = maxiter,
+                            inversion=:pcg,compPC =compPC4b,fi0 =figuess,btrunc=2)
 
 
 		end
@@ -1119,7 +1144,10 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 			end
 
-			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = compPC5, fi0 =figuess,btrunc=2)
+			fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,
+                            tol = tol,
+                            maxit = maxiter,
+                            inversion=:pcg,compPC = compPC5, fi0 =figuess,btrunc=2)
 
 
             # posteriori=fi.*figuess
