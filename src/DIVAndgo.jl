@@ -1,3 +1,8 @@
+meanepsilon2(epsilon2::Number) = epsilon2
+meanepsilon2(epsilon2::Vector) = mean(epsilon2)
+meanepsilon2(epsilon2::Matrix) = mean(diag(epsilon2))
+
+
 """
 
     fi, erri, residuals, qcvalues, scalefactore = DIVAndgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);
@@ -25,19 +30,20 @@ defined by the coordinates `xi` and the scales factors `pmn`.
 IMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use if DIVAndrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see `addprocs` for example)
 
 """
-function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme;
-                  moddim = zeros(N),
+function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme;
+                  moddim = zeros(n),
                   velocity = (),
                   MEMTOFIT = 16,
                   QCMETHOD = (),
                   RTIMESONESCALES = (),
                   otherargs...
-                  ) where N
-
-    n = ndims(mask)
-    # Needed to make sure results are saved.
-    fi = 0
-    s = 0
+                  ) where n
+# function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme) where n
+#     moddim = zeros(n)
+#     velocity = ()
+#     MEMTOFIT = 16
+#     QCMETHOD = ()
+#     RTIMESONESCALES = ()
 
 	dothinning = RTIMESONESCALES != ()
 	doqc = QCMETHOD != ()
@@ -66,20 +72,10 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
     fi = SharedArray{Float32}(size(mask));
 	fi .= 0
 
-    erri =
-	    if errormethod==:none
-            SharedArray{Float32}(1,1)
-        else
-            SharedArray{Float32}(size(mask));
-        end
+    erri = SharedArray{Float32}(size(mask))
 	erri .= 1.0
 
-	qcdata =
-	    if doqc
-	        SharedArray{Float32}(size(f,1))
-        else
-            SharedArray{Float32}(1,1)
-        end
+	qcdata = SharedArray{Float32}(size(f,1))
 	qcdata .= 0
 
     # Add now analysis at data points for further output
@@ -125,7 +121,6 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
 
 
         fw = 0
-        s = 0
 
         xiw = ([ x[windowpoints...] for x in xi ]...,)
         pmniw = ([ x[windowpoints...] for x in pmn ]...,)
@@ -167,9 +162,9 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
                     velocity = velocity,
-                    otherargs...)
+                    ) # otherargs...)
 
-                fi[windowpointsstore...]= fw[windowpointssol...];
+                fi[windowpointsstore...] = fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 
 			    finwindata = DIVAnd_residual(s,fw)
@@ -204,7 +199,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
                         velocity = velocity,
-                        otherargs...)
+                        ) # otherargs...)
                 end
                 # for errors here maybe add a parameter to DIVAndjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
             else
@@ -218,7 +213,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
                     velocity = velocity,
-                    otherargs...)
+                    ) # otherargs...)
 
 			    fi[windowpointsstore...]= fw[windowpointssol...];
 			    finwindata = DIVAnd_residualobs(s,fw)
@@ -245,7 +240,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
                         velocity = velocity,
-                        otherargs...)
+                        ) # otherargs...)
                 end
             end
 
@@ -299,8 +294,8 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
 
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
     # it also makes the shared array possible to save in netCDF??
-    fi = DIVAnd_filter3(fi,NaN,2)
-    erri = DIVAnd_filter3(erri,NaN,3)
+    fi_filtered = DIVAnd_filter3(fi,NaN,2)
+    erri_filtered = DIVAnd_filter3(erri,NaN,3)
 
     #@show size(fidata)
     # Add desroziers type of correction
@@ -312,16 +307,9 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
     d0dmd1d = dot(fidata[ongrid],f[ongrid])
     ll1 = d0d/(d0dmd1d)-1;
     eps1 = 1/ll1;
+    eps2 = meanepsilon2(epsilon2)
 
-	if ndims(epsilon2) == 0
-        eps2 = epsilon2;
-    elseif ndims(epsilon2) == 1
-        eps2 = mean(epsilon2);
-    else
-        eps2 = mean(diag(epsilon2));
-    end
-
-    return fi,erri,fidata,qcdata,eps1/eps2
+    return fi_filtered,erri_filtered,fidata,qcdata,eps1/eps2
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
