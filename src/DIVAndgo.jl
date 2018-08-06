@@ -64,7 +64,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
     #fi = SharedArray(Float64,size(mask));
     #erri = SharedArray(Float64,size(mask));
     fi = SharedArray{Float32}(size(mask));
-	fi[:] .= 0
+	fi .= 0
 
     erri =
 	    if errormethod==:none
@@ -72,18 +72,19 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
         else
             SharedArray{Float32}(size(mask));
         end
-
 	erri .= 1.0
 
-	qcdata = ()
-	if doqc
-	    qcdata = SharedArray{Float32}(size(f,1))
-	    qcdata .= 0
-	end
+	qcdata =
+	    if doqc
+	        SharedArray{Float32}(size(f,1))
+        else
+            SharedArray{Float32}(1,1)
+        end
+	qcdata .= 0
 
     # Add now analysis at data points for further output
     fidata = SharedArray{Float32}(size(f,1))
-	fidata[:] .= NaN
+	fidata .= NaN
 
     @sync @parallel for iwin = 1:size(windowlist,1)
 
@@ -126,7 +127,8 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
         fw = 0
         s = 0
 
-        xiw = deepcopy(([ x[windowpoints...] for x in xi ]...,))
+        xiw = ([ x[windowpoints...] for x in xi ]...,)
+        pmniw = ([ x[windowpoints...] for x in pmn ]...,)
 
         # NEED TO CATCH IF Labs is a tuple of grid values; if so need to extract part of interest...
 
@@ -157,7 +159,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
             if sum(csteps)>0
 		        fw,s = DIVAndjog(
                     mask[windowpoints...],
-                    ([ x[windowpoints...] for x in pmn ]...,),xiw,xinwin,
+                    pmniw,xiw,xinwin,
                     finwin,Labsw,epsinwin,csteps,lmask;
                     alphapc = alphanormpc,
                     moddim = moddim,
@@ -194,7 +196,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                     # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
                     errw = DIVAnd_cpme(
                         mask[windowpoints...],
-                        ([ x[windowpoints...] for x in pmn ]...,),
+                        pmniw,
                         xiw,xinwin,finwin,Labsw,epsinwin;
                         csteps = csteps,lmask = lmask,alphapc = alphanormpc,
                         moddim = moddim,
@@ -209,7 +211,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                 # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
                 fw,s = DIVAndrun(
                     mask[windowpoints...],
-                    ([ x[windowpoints...] for x in pmn ]...,),
+                    pmniw,
                     xiw,xinwin,finwin,Labsw,epsinwin;
                     moddim = moddim,
                     MEMTOFIT = MEMTOFIT,
@@ -236,7 +238,7 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                 if errormethod==:cpme
                     errw = DIVAnd_cpme(
                         mask[windowpoints...],
-                        ([ x[windowpoints...] for x in pmn ]...,),
+                        pmniw,
                         xiw,xinwin,finwin,Labsw,epsinwin;
                         moddim = moddim,
                         MEMTOFIT = MEMTOFIT,
@@ -284,8 +286,6 @@ function DIVAndgo(mask::AbstractArray{Bool,N},pmn,xi,x,f,Labs,epsilon2,errormeth
                 # at the end of the loop, unpack the sv error field into errw
                 # End error fields
             end
-
-            # copy, deepcopy or just = ???
 
 		    if errormethod==:none
                 erri .= 1.
