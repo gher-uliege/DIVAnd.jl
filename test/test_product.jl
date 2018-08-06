@@ -37,7 +37,7 @@ obsvalue,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.loadobs(Float64,obsname,
 obsids[1] = "100-123"
 obsids[2] = "100-124"
 obsids[3] = "999-missing"
-obsids[4:end] = "101-125"
+obsids[4:end] .= "101-125"
 
 
 dx = dy = 0.5
