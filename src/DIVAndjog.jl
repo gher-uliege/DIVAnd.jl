@@ -145,7 +145,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 				sc=0
 				fc=0
 				#gc()
-				lmask1=0.0.*lmask;
+				lmask1=0.0 .* lmask;
 				lmask1[3:end] .= 1.0./1.42;
 
 				Labsccut=([Labsc[i]*lmask1[i] for i=1:n]...,)
