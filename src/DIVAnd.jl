@@ -488,4 +488,10 @@ DIVAnd_cvestimator, DIVAnd_erroratdatapoints, DIVAnd_cv, DIVAnd_qc, DIVAnd_adapt
 
 export checkobs
 
+
+# old function name (to be depreciated)
+const sparse_gradient = DIVAnd_gradient
+export sparse_gradient
+# @deprecate sparse_gradient DIVAnd_gradient
+
 end

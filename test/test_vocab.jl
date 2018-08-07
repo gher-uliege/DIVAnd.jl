@@ -39,6 +39,19 @@ concept = collection["PSALPR01"]
 @test typeof(DIVAnd.Vocab.date(concept)) == DateTime
 
 
+# search by label
+
+name = "P02"
+search_keyword = "Chlorophyll pigment concentrations in water bodies"
+
+collection = Vocab.SDNCollection(name)
+concepts = Vocab.findbylabel(collection,[search_keyword])
+
+label = Vocab.prefLabel(concepts[1])
+URL = Vocab.URL(concepts[1])
+@test label == search_keyword
+
+
 edmo = DIVAnd.Vocab.EDMO()
 entry = edmo[1495]
 @test typeof(DIVAnd.Vocab.name(entry)) == String
@@ -70,3 +83,5 @@ edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.resolve("SDN:EDMO::575"))
 
 edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.urn"SDN:EDMO::575")
 @test edmoname == "National Oceanographic Data Committee"
+
+
