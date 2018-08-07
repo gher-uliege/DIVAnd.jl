@@ -1,6 +1,7 @@
 module Vocab
 
 using Base
+using Compat
 using EzXML
 import HTTP
 import Base.find
@@ -122,7 +123,9 @@ end
 function Concept(url::AbstractString)
     r = HTTP.get(url)
     xdoc = parsexml(String(r.body))
-    return Concept(root(xdoc))
+
+    node = findfirst(root(xdoc),"skos:Concept",namespaces)
+    return Concept(node)
 end
 
 #            s = Vocab.$($tag)(urn::AbstractString)
@@ -135,7 +138,7 @@ for (method,tag,docname) in [(:prefLabel,"prefLabel","preferred label"),
             s = Vocab.$($tag)(c::Vocab.Concept)
 
         Return the $($docname) of a concept `c`
-        """ $method(c::Concept) = nodecontent(findfirst(c.node,"//skos:" * $tag,namespaces))
+        """ $method(c::Concept) = nodecontent(findfirst(c.node,"skos:" * $tag,namespaces))
 
         @doc """
             s = Vocab.$($tag)(urn::AbstractString)
@@ -145,10 +148,10 @@ for (method,tag,docname) in [(:prefLabel,"prefLabel","preferred label"),
     end
 end
 
-URL(c::Concept) = findfirst(c.node,"//skos:Concept",namespaces)["rdf:about"]
+URL(c::Concept) = c.node["rdf:about"]
 
 date(c::Concept) = DateTime(
-   nodecontent(findfirst(c.node,"//dc:date",namespaces)),
+   nodecontent(findfirst(c.node,"dc:date",namespaces)),
    "yyyy-mm-dd HH:MM:SS.s")
 
 urn(c::Concept) = notation(c)
@@ -162,7 +165,7 @@ Return a list of related concepts in the collection `collection`.
 function Base.find(c::Concept,name,collection)
     concepts = Concept[]
 
-    for node in find(c.node,"//skos:" * name,namespaces)
+    for node in find(c.node,"skos:" * name,namespaces)
         url = node["rdf:resource"]
         coll,tag,key = splitURL(url)
         if coll == collection
@@ -204,6 +207,33 @@ concept = collection["PSALPR01"]
 ```
 """
 SDNCollection(name) = Collection("http://www.seadatanet.org/urnurl/collection/$(name)/current/")
+
+
+"""
+    foundconcepts = findbylabel(collection::Vocab.Collection,labels::Vector{T}) where T <: AbstractString
+
+
+Return a list of concepts (of type Vocab.Concept) with the corresponding label.
+
+"""
+function findbylabel(collection::Vocab.Collection,labels::Vector{T}) where T <: AbstractString
+    r = HTTP.get(collection.baseurl)
+    xdoc = EzXML.parsexml(String(r.body))
+    concepts = Vocab.Concept.(find(root(xdoc),"//skos:Concept",Vocab.namespaces))
+    alllabels = Vocab.prefLabel.(concepts)
+
+    foundconcepts = Vector{Vocab.Concept}(undef,length(labels))
+
+    for i = 1:length(labels)
+        index = findfirst(alllabels .== labels[i])
+        foundconcepts[i] = concepts[index]
+    end
+
+    return foundconcepts
+end
+
+
+
 
 mutable struct EDMO{T <: AbstractString}
     baseurl :: T
