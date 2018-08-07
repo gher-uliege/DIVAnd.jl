@@ -325,6 +325,20 @@ function labelandURL(s)
                 "URL" => DIVAnd.Vocab.URL(c))
 end
 
+function URLsfromlabels(pname,labels)
+    collection = DIVAnd.Vocab.SDNCollection(pname)
+    concepts = Vocab.findbylabel(collection,labels)
+
+    d = Dict{String,String}[]
+    for i = 1:length(labels)
+        c = concepts[i]
+        push!(d,Dict("label" => DIVAnd.Vocab.prefLabel(c),
+                "URL" => DIVAnd.Vocab.URL(c)))
+    end
+
+    return d
+end
+
 
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
                          errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
@@ -443,16 +457,37 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     #P35_keywords = rmprefix.(split(ds.attrib["parameter_keyword_urn"]))
     #C19_keywords = rmprefix.(split(ds.attrib["area_keywords_urn"]))
 
-    P02_keywords = labelandURL.(split(ds.attrib["search_keywords_urn"]))
-    P35_keywords = labelandURL.(split(ds.attrib["parameter_keyword_urn"]))
-    C19_keywords = labelandURL.(split(ds.attrib["area_keywords_urn"]))
+    P02_keywords =
+        if haskey(ds.attrib,"search_keywords_urn")
+            labelandURL.(split(ds.attrib["search_keywords_urn"]))
+        else
+            URLsfromlabels("P02",split(ds.attrib["search_keywords"],'|'))
+        end
 
-    area = DIVAnd.Vocab.resolve(split(ds.attrib["area_keywords_urn"])[1])
-    domain = DIVAnd.Vocab.prefLabel(area)
+    P35_keywords =
+        if haskey(ds.attrib,"parameter_keyword_urn")
+            labelandURL.(split(ds.attrib["parameter_keyword_urn"]))
+        else
+            URLsfromlabels("P35",split(ds.attrib["parameter_keywords"],'|'))
+        end
 
-    edmo_code = rmprefix.(ds.attrib["institution_urn"])
+    C19_keywords =
+        if haskey(ds.attrib,"area_keywords_urn")
+            labelandURL.(split(ds.attrib["area_keywords_urn"]))
+        else
+            URLsfromlabels("C19",split(ds.attrib["area_keywords"],'|'))
+        end
 
-    product_code = ds.attrib["product_code"]
+    domain = C19_keywords[1]["label"]
+
+    edmo_code =
+        if haskey(ds.attrib,"institution_urn")
+            rmprefix.(ds.attrib["institution_urn"])
+        else
+            ds.attrib["institution_edmo_code"]
+        end
+
+    product_code = get(ds.attrib,"product_code","")
 
     templateVars = Dict(
         "project" => project,
@@ -460,7 +495,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "product_code" => product_code,
         "product_version" => ds.attrib["product_version"],
         "update_date" => date,
-        "abstract" => ds.attrib["abstract"],
+        "abstract" => get(ds.attrib,"abstract",""),
         "edmo_code" => edmo_code,
         "domain" => domain,
         "varname" => varname,
@@ -604,20 +639,42 @@ end
 
 """
     DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename;
-                     ignore_errors = false)
+                     ignore_errors = false,
+                     additionalvars = Dict{String,Any}())
 
 Generate the XML metadata file `xmlfilename` from the NetCDF
-file `filepath` with the  NetCDF variable `varname`.
+file `filepath` (or list of files) with the  NetCDF variable `varname`.
 Project is either "SeaDataNet", "EMODNET-chemistry" or "SeaDataCloud".
 `cdilist` is the file from $(OriginatorEDMO_URL).
 
-The XML file contain a list of the data the originators. divadoxml
+The XML file contains a list of the data the originators. divadoxml
 will abort with an error if some combinations of EDMO code, local CDI ID are
-not present in the `cdilist`. Such errors can be ignore if `ignore_errors` is
+not present in the `cdilist`. Such errors can be ignored if `ignore_errors` is
 set to true.
+
+Information can be overriden with the dictionary `additionalvars`. The keys should
+corresponds to the template tags found the in `template` directory. Template
+tags are the strings inside {{ and }}.
+
+### Example
+
+```julia
+download("$(OriginatorEDMO_URL)","export.zip")
+files = [
+         "Winter (January-March) - 6-year running averages/Water_body_chlorophyll-a.4Danl.nc",
+         "Spring (April-June) - 6-year running averages/Water_body_chlorophyll-a.4Danl.nc",
+         "Summer (July-September) - 6-year running averages/Water_body_chlorophyll-a.4Danl.nc",
+         "Autumn (October-December) - 6-year running averages/Water_body_chlorophyll-a.4Danl.nc"
+         ];
+
+
+DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zip","test.xml";
+    ignore_errors = true, additionalvars = Dict("abstract" => "Here goes the abstract"))
+```
 """
 function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,xmlfilename;
-                   ignore_errors = false)
+                   ignore_errors = false,
+                   additionalvars = Dict{String,Any}())
 
     # template file we will use.
     templatefile = PROJECTS[project]["template"]
@@ -626,14 +683,13 @@ function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,x
         filepaths,varname,project,cdilist,
         ignore_errors = ignore_errors)
 
+    merge!(templateVars,additionalvars)
+
     rendertemplate(templatefile,templateVars,xmlfilename)
 end
 
-function divadoxml(filepath::AbstractString,varname,project,cdilist,xmlfilename;
-                   ignore_errors = false)
-
-    divadoxml([filepath],varname,project,cdilist,xmlfilename;
-              ignore_errors = ignore_errors)
+function divadoxml(filepath::AbstractString,varname,project,cdilist,xmlfilename; kwargs...)
+    divadoxml([filepath],varname,project,cdilist,xmlfilename; kwargs...)
 end
 
 
