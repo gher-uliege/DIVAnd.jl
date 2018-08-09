@@ -19,12 +19,7 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
             A
         end
 
-    RI =
-        @static if VERSION >= v"0.7.0-beta.0"
-            CartesianIndices(ntuple(i -> 1:size(A,i),nd))
-        else
-            CartesianRange(size(A))
-        end
+    RI = Compat.CartesianIndices(size(A))
 
     I1, Iend = first(RI), last(RI)
     stencil = one(CartesianIndex(I1))
@@ -42,7 +37,7 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
                         # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
                         # let block work-around
 
-                        let indI = indI, I1 = I1, I1 = I1, Iend = Iend, stencil = stencil
+                        let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
                             CartesianIndices(ntuple(
                                 i-> max(I1[i], indI[i]-stencil[i]):min(Iend[i], indI[i]+stencil[i]),nd))
                         end
