@@ -309,12 +309,15 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     end
 
     info("Query EDMO database")
-    originators = []
-    for ae in sort(collect(originators_edmo))
+    originators = Dict{String,String}[]
+    for ae in collect(originators_edmo)
         originator = getedmoinfo(ae,"originator")
         info("originator: $(originator["name"])")
         push!(originators,originator)
     end
+
+    # sort by name
+    sort!(originators, by = c -> c["name"])
 
     return originators,notfound
 end
@@ -556,7 +559,10 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     info("Loading EDMO information")
 
-    contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
+    # update 2018-08-09
+    # old originator -> new author
+    # old resource provider -> new originator
+    contacts = [getedmoinfo(parse(Int,edmo_code),"author")]
 
     db = loadoriginators(cdilist)
 
