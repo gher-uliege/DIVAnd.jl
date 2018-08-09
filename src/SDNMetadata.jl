@@ -373,8 +373,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     horizontal_resolution_units = "degree"
 
     date = ds.attrib["date"]
-    date = replace(date," ","T")
-
+    date = replace(date," " => "T")
+    datetime = DateTime(date)
 
     product_id = ds.attrib["product_id"]
 
@@ -494,7 +494,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "product_id" => product_id,
         "product_code" => product_code,
         "product_version" => ds.attrib["product_version"],
-        "update_date" => date,
+        "update_date" => Dates.format(datetime,"yyyy-mm-dd"),
         "abstract" => get(ds.attrib,"abstract",""),
         "edmo_code" => edmo_code,
         "domain" => domain,
@@ -511,22 +511,21 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "time_max" => Dates.format(maximum(obstime),isodateformat),
         "default_field_min" => default_field_min,
         "default_field_max" => default_field_max,
-        # fix me
-        "creation_time" => date,
+        "creation_time" => Dates.format(datetime,isodateformat),
         "ndims" => ndims(ds[varname]),
         "nvertlevels" => length(depth),
         "temp_resolution_unit" => temp_resolution_unit,
         "temp_resolution" => temp_resolution,
         "CRS" => "WGS 84 (EPSG 4326)",
         "title" => ds.attrib["title"],
-        "creation_date" => ds.attrib["date"],
-        "netcdf_variables" => [],
+        "creation_date" => Dates.format(datetime,"yyyy-mm-dd"),
+        "netcdf_variables" => [], # added later
         "P02_keywords" => P02_keywords,
         "P35_keywords" => P35_keywords,
         "C19_keywords" => C19_keywords,
-        "P02_date" => date,
-        "P35_date" => date,
-        "C19_date" => date,
+        "P02_date" => Dates.format(datetime,isodateformat),
+        "P35_date" => Dates.format(datetime,isodateformat),
+        "C19_date" => Dates.format(datetime,isodateformat),
     )
 
 
