@@ -18,7 +18,7 @@ obsids = ["1-A","2-B","1000-A","2-C"]
 originators,notfound = @test_warn r".*EDMO.*" DIVAnd.get_originators_from_obsid(
     db,obsids; ignore_errors = true)
 
-@test originators[1]["EDMO_CODE"] == "1"
+@test any(originator -> originator["EDMO_CODE"] == "1",originators)
 @test notfound[1]["edmo"] == 1000
 @test notfound[1]["local_cdi"] == "A"
 

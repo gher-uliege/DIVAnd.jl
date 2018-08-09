@@ -309,12 +309,15 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     end
 
     info("Query EDMO database")
-    originators = []
-    for ae in sort(collect(originators_edmo))
+    originators = Dict{String,String}[]
+    for ae in collect(originators_edmo)
         originator = getedmoinfo(ae,"originator")
         info("originator: $(originator["name"])")
         push!(originators,originator)
     end
+
+    # sort by name
+    sort!(originators, by = c -> c["name"])
 
     return originators,notfound
 end
@@ -374,7 +377,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     date = ds.attrib["date"]
     date = replace(date," " => "T")
-
+    datetime = DateTime(date)
 
     product_id = ds.attrib["product_id"]
 
@@ -494,7 +497,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "product_id" => product_id,
         "product_code" => product_code,
         "product_version" => ds.attrib["product_version"],
-        "update_date" => date,
+        "update_date" => Dates.format(datetime,"yyyy-mm-dd"),
         "abstract" => get(ds.attrib,"abstract",""),
         "edmo_code" => edmo_code,
         "domain" => domain,
@@ -511,22 +514,21 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "time_max" => Dates.format(maximum(obstime),isodateformat),
         "default_field_min" => default_field_min,
         "default_field_max" => default_field_max,
-        # fix me
-        "creation_time" => date,
+        "creation_time" => Dates.format(datetime,isodateformat),
         "ndims" => ndims(ds[varname]),
         "nvertlevels" => length(depth),
         "temp_resolution_unit" => temp_resolution_unit,
         "temp_resolution" => temp_resolution,
         "CRS" => "WGS 84 (EPSG 4326)",
         "title" => ds.attrib["title"],
-        "creation_date" => ds.attrib["date"],
-        "netcdf_variables" => [],
+        "creation_date" => Dates.format(datetime,"yyyy-mm-dd"),
+        "netcdf_variables" => [], # added later
         "P02_keywords" => P02_keywords,
         "P35_keywords" => P35_keywords,
         "C19_keywords" => C19_keywords,
-        "P02_date" => date,
-        "P35_date" => date,
-        "C19_date" => date,
+        "P02_date" => Dates.format(datetime,isodateformat),
+        "P35_date" => Dates.format(datetime,isodateformat),
+        "C19_date" => Dates.format(datetime,isodateformat),
     )
 
 
@@ -557,7 +559,10 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     info("Loading EDMO information")
 
-    contacts = [getedmoinfo(parse(Int,edmo_code),"originator")]
+    # update 2018-08-09
+    # old originator -> new author
+    # old resource provider -> new originator
+    contacts = [getedmoinfo(parse(Int,edmo_code),"author")]
 
     db = loadoriginators(cdilist)
 
