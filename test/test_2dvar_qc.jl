@@ -68,7 +68,13 @@ for method in [0, 1, 3, 4]
     @test sum(sp)==3
 end
 
-qcval_2 = @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
+qcval_2 =
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:warn,r".*not defined.*") match_mode=:any DIVAnd_qc(fi,s,2)
+    else
+        @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
+    end
+
 @test qcval_2 == 0
 
 

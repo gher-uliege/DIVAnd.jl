@@ -30,7 +30,7 @@ function DIVAnd_diagHK(s)
             diagLtCM(H',P,(copy(H') * (R \ I)))
         end
     #    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7)
-    #     warn("WTF")
+    #     @warn "WTF"
     #    end
 
 

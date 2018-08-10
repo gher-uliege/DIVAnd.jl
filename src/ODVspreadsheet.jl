@@ -2,6 +2,8 @@ module ODVspreadsheet
 
 if VERSION >= v"0.7.0-beta.0"
     using Dates
+else
+    using Compat: @info, @warn
 end
 using Compat
 
@@ -81,7 +83,7 @@ function readODVspreadsheet(datafile)
     SDN_parameter_mapping = Dict{String,Dict{String,String}}()
 
     # using the encoding Latin-1 degrates significantly the performance
-    info("Reading data from file $(datafile)")
+    @info "Reading data from file $(datafile)"
     open(datafile, "r") do f
         line = readline(f)
 
@@ -109,7 +111,7 @@ function readODVspreadsheet(datafile)
 
             if line == "//SDN_parameter_mapping"
                 line = readline(f);
-                # info("Length line SDN_parameter_mapping: $(length(line))")
+                # @info "Length line SDN_parameter_mapping: $(length(line))"
                 # The semantic descriptions are terminated by an empty comment
                 # record (i.e. a record containing the // characters and nothing else)
 
@@ -136,7 +138,7 @@ function readODVspreadsheet(datafile)
         columnLabels = split(chomp(columnline), '\t')
         debug("Column labels: $(columnLabels)");
         ncols = length(columnLabels);
-        # info("Total no. of columns (before selection): $ncols")
+        # @info "Total no. of columns (before selection): $ncols"
 
         # Discard columns that won't be used (should be extended)
         column2discard = ["QF", "Instrument Info",
@@ -161,7 +163,7 @@ function readODVspreadsheet(datafile)
             end
 
         ncols2 = length(index2keep);
-        # info("No. of columns after selection: $ncols2")
+        # @info "No. of columns after selection: $ncols2"
 
         # number of total lines
         pos = position(f)
@@ -184,12 +186,12 @@ function readODVspreadsheet(datafile)
             end
             totallines += 1
         end
-        # info("Total no. of lines: $totallines")
+        # @info "Total no. of lines: $totallines"
         seek(f,pos)
 
         # load all data
         alldata = Array{SubString{String},2}(undef,ncols2,totallines);
-        ##info("Size (in GB) of data matrix (OLD): " * string(sizeof(alldataold)))
+        ##@info "Size (in GB) of data matrix (OLD): " * string(sizeof(alldataold))
         i = 0
 
         for row in Compat.eachline(f; keep = false)
@@ -215,8 +217,8 @@ function readODVspreadsheet(datafile)
             alldata[:,i] = line
         end
 
-        # info("Size of data matrix: " * string(size(alldata)))
-        # info("Size (in GB) of data matrix: " * string(sizeof(alldata / 1024 / 1024)))
+        # @info "Size of data matrix: " * string(size(alldata))
+        # @info "Size (in GB) of data matrix: " * string(sizeof(alldata / 1024 / 1024))
         # trim unused lines (comments, ...)
         #alldata = alldata[:,1:i]
 
@@ -251,7 +253,7 @@ function readODVspreadsheet(datafile)
             profileList[i] = alldata[:,profile_start_index[i]:profile_start_index[i+1]-1]
         end
 
-        info("No. of profiles in the file: " * string(nprofiles))
+        @info "No. of profiles in the file: " * string(nprofiles)
         ODVdata = Spreadsheet(metadata, SDN_parameter_mapping, columnLabels[index2keep], profileList)
         return ODVdata
     end
@@ -645,19 +647,19 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                 if !(dataname in sheet_P01names)
                     # ignore this file
                     #@show sheet_P01names
-                    warn("no data in $(fname)")
+                    @warn "no data in $(fname)"
                     continue
                 end
             elseif nametype == :localname
                 if !(dataname in localnames(sheet))
                     # ignore this file
                     #@show localnames(sheet)
-                    warn("no data in $(fname)")
+                    @warn "no data in $(fname)"
                     continue
                 end
             end
 
-            # info("Starting loop on the $(nprofiles(sheet)) profiles")
+            # @info "Starting loop on the $(nprofiles(sheet)) profiles"
             for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                        obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
@@ -686,7 +688,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                     append!(times,obstime[good])
                     append!(ids,obsids[good])
             end
-            # info("Done reading the profiles")
+            # @info "Done reading the profiles"
         end
     end
 

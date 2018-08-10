@@ -155,7 +155,7 @@ for iround=1:2
 
         figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varb.png")));
         savefig(figname)
-        info("Saved figure as " * figname)
+        @info "Saved figure as " * figname
 
         figure("varr")
         title("Variance of diag(B) with old BC as a function of l*pm and L/l")
@@ -165,7 +165,7 @@ for iround=1:2
 
         figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varr.png")));
         savefig(figname)
-        info("Saved figure as " * figname)
+        @info "Saved figure as " * figname
 
         figure("alpha")
         title("Optimal value of alpha as a function of l*pm and L/l")
@@ -175,7 +175,7 @@ for iround=1:2
 
         figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_alpha.png")));
         savefig(figname)
-        info("Saved figure as " * figname)
+        @info "Saved figure as " * figname
 
         figure("bidon")
 
@@ -191,7 +191,7 @@ for iround=1:2
         clim(0,0.0025)
         figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varbc.png")));
         savefig(figname)
-        info("Saved figure as " * figname)
+        @info "Saved figure as " * figname
 
     end
 

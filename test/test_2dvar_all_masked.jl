@@ -6,7 +6,8 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
 end
-import DIVAnd
+using DIVAnd
+using Compat
 
 # grid of background field
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(0, stop = 1, length = 30))
@@ -30,8 +31,14 @@ leny = .15;
 
 epsilon2 = 0.05;
 
-va,s = @test_warn r".*No sea point.*" DIVAnd.DIVAndrun(
-    mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+va,s =
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:warn,r".*No sea point.*") match_mode=:any DIVAndrun(
+            mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+    else
+        @test_warn r".*No sea point.*" DIVAndrun(
+            mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+    end
 @test s.sv.size[1] == size(xi)
 
 

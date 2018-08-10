@@ -27,16 +27,26 @@ if VERSION >= v"0.7.0-beta.0"
     using UUIDs
     using Dates
     using DelimitedFiles
+    using Test
 
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
     import Base: *
     Base.:*(A::SparseArrays.SparseMatrixCSC,B::BitArray) = A*Int8.(B)
+
+    # surpress any logging info for testing
+    macro nologs(expr)
+        return :( @test_logs (:info,r".*") (:warn,r".*") match_mode=:any $expr )
+    end
 else
+    using Base.Test
     const uuid1 = Base.Random.uuid1
     const mul! = A_mul_B!
 
     using Compat: @info, @warn
+    macro nologs(expr)
+        return :( @test_warn r".*" $expr )
+    end
 end
 
 using Compat

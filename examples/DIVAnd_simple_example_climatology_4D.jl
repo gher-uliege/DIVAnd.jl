@@ -86,7 +86,7 @@ end
 
 outputfile = joinpath(outputdir,basename(replace(@__FILE__,r".jl$" => ".nc")));
 DIVAnd_save(outputfile,mask,"analysis",fi)
-info("Results written in $outputfile")
+@info "Results written in $outputfile"
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #

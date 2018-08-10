@@ -7,7 +7,7 @@ A list string identifiers is also returned.
 """
 function loadbigfile(fname)
 
-    info("Loading data from 'big file' $(fname)")
+    @info "Loading data from 'big file' $(fname)"
     data = readlines(open(fname,"r"))
     nobs = length(data)
 

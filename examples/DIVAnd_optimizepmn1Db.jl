@@ -43,7 +43,7 @@ title("Solution in infinite domain and finite domain, rms = $rmsdiff")
 plot(xiref[801:1201],firef[801:1201],"-",xirefl,firefl,".")
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_reference.png")))
 savefig(figname);
-info("Created figure " * figname)
+@info "Created figure " * figname
 # Now try to optimize BC
 aj=zeros(500)
 vj=zeros(500)
@@ -123,7 +123,7 @@ title("rms(reference-analysis)")
 plot(aj,rj,"-")
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_optimisation.png")))
 savefig(figname);
-info("Created figure " * figname)
+@info "Created figure " * figname
 
 # Finally solution with optimized parameter
 
@@ -149,7 +149,7 @@ title("B in infinite domain, finite domain and modified finite domain, Bversion"
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_optimal1.png")))
 savefig(figname);
-info("Created figure " * figname)
+@info "Created figure " * figname
 
 figure("Optimal solution 2")
 alen=aj[indmin(rj)]
@@ -172,7 +172,7 @@ title("B in infinite domain, finite domain and modified finite domain, rmsversio
 plot(xiref[801:1201],bref[801:1201],"-",xi,bi,".",xi,brefl,".")
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_optimal2.png")))
 savefig(figname)
-info("Created figure " * figname)
+@info "Created figure " * figname
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #

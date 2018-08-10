@@ -55,7 +55,7 @@ end
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")))
 savefig(figname)
-info("Created figure " * figname)
+@info "Created figure " * figname
 
 # Copyright (C) 2014, 2018 Alexander Barth    <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>

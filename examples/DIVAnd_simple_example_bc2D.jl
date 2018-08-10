@@ -94,7 +94,7 @@ plot(al,rms,"-")
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 
 alphaopt=al[indmin(varr)]
@@ -136,7 +136,7 @@ clim(-1,1)
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>

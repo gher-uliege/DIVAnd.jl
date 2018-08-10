@@ -89,7 +89,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT) where 
     if isdirect
         # Indiciate to the calling one that direct method can be used on windows
         csteps=0*csteps
-        #warn("Testing forced jog")
+        #@warn "Testing forced jog"
     end
 
 

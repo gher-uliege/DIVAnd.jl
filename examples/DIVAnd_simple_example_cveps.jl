@@ -59,7 +59,7 @@ end
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")))
 savefig(figname)
-info("Created figure " * figname)
+@info "Created figure " * figname
 
 # De Rosier type of approach
 
@@ -88,7 +88,7 @@ plot(log10.(eps2),cvbest2,".",log10.(epsbest1),cvbest1,"o",log10.(eps2[end]),cvb
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")))
 savefig(figname)
-info("Created figure " * figname)
+@info "Created figure " * figname
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #

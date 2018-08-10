@@ -83,7 +83,7 @@ colorbar()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 @time fiex,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
 
@@ -115,7 +115,7 @@ colorbar()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 figure("Pppp")
 
@@ -131,7 +131,7 @@ colorbar()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_3.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 figure()
 scatter(residue,residueGO)

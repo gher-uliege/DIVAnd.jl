@@ -32,7 +32,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = Matrix{T}(0,0)) where T
     nout = sum(out)
     if nout != 0
         noutbbox = sum(outbbox)
-        #warn("Observations out of bounding box: $(noutbbox) and touching land $(nout-noutbbox)")
+        #@warn "Observations out of bounding box: $(noutbbox) and touching land $(nout-noutbbox)"
     end
 
     # NaN points
@@ -42,7 +42,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = Matrix{T}(0,0)) where T
         out = out .| nanobs
         yo = deepcopy(yo)
         yo[nanobs] = 0.
-        warn("Observations equal to NaN: $(nnanobs)")
+        @warn "Observations equal to NaN: $(nnanobs)"
     end
 
     H = H * sparse_pack(mask)'

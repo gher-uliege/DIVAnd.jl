@@ -146,18 +146,35 @@ if isfile(filename)
    rm(filename) # delete the previous analysis
 end
 
-@test_warn r".netCDF.*" DIVAnd.diva3d((lonr,latr,depthr,TS),
-              (obslon,obslat,obsdepth,obstime),
-              obsvalue,
-              (lenx,leny,lenz),
-              epsilon2,
-              filename,varname,
-              bathname = bathname,
-              bathisglobal = bathisglobal,
-              ncvarattrib = ncvarattrib,
-              ncglobalattrib = ncglobalattrib,
-              mask = mask,
-       )
+@static if VERSION >= v"0.7.0"
+    @test_logs (:info,r".*netCDF*") (:warn,r".*") match_mode=:any DIVAnd.diva3d(
+        (lonr,latr,depthr,TS),
+        (obslon,obslat,obsdepth,obstime),
+        obsvalue,
+        (lenx,leny,lenz),
+        epsilon2,
+        filename,varname,
+        bathname = bathname,
+        bathisglobal = bathisglobal,
+        ncvarattrib = ncvarattrib,
+        ncglobalattrib = ncglobalattrib,
+        mask = mask,
+    )
+else
+    @test_warn r".netCDF.*" DIVAnd.diva3d(
+        (lonr,latr,depthr,TS),
+        (obslon,obslat,obsdepth,obstime),
+        obsvalue,
+        (lenx,leny,lenz),
+        epsilon2,
+        filename,varname,
+        bathname = bathname,
+        bathisglobal = bathisglobal,
+        ncvarattrib = ncvarattrib,
+        ncglobalattrib = ncglobalattrib,
+        mask = mask,
+    )
+end
 
 DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids)
 
@@ -166,9 +183,15 @@ project = "SeaDataCloud"
 xmlfilename = "test.xml"
 ignore_errors = true
 
-@test_warn r".*Not all.*" DIVAnd.divadoxml(
-    filename,varname,project,cdilist,xmlfilename,
-    ignore_errors = ignore_errors)
+@static if VERSION >= v"0.7.0"
+    @test_logs (:info,r".*Not all.*") (:warn,r".*") match_mode=:any DIVAnd.divadoxml(
+        filename,varname,project,cdilist,xmlfilename,
+        ignore_errors = ignore_errors)
+else
+    @test_warn r".*Not all.*" DIVAnd.divadoxml(
+        filename,varname,project,cdilist,xmlfilename,
+        ignore_errors = ignore_errors)
+end
 
 errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
 
@@ -193,29 +216,58 @@ if isfile(filename2)
    rm(filename2) # delete the previous analysis
 end
 
-dbinfo = @test_warn r".*Be patient.*" DIVAnd.diva3d(
-    (lonr,latr,depthr,TS),
-    (obslon,obslat,obsdepth,obstime),
-    obsvalue,
-    (),
-    epsilon2,
-    filename2,varname,
-    bathname = bathname,
-    bathisglobal = bathisglobal,
-    ncvarattrib = ncvarattrib,
-    ncglobalattrib = ncglobalattrib,
-    background = DIVAnd.backgroundfile(filename,varname),
-    fitcorrlen = true,
-    background_len = (lenx,leny,lenz),
-    fithorz_param = Dict(
-        :maxnsamp => 500,
-    ),
-    fitvert_param = Dict(
-        :maxnsamp => 100,
-    ),
-    mask = mask,
-    niter_e = 2,
-    QCMETHOD = 0,
-)
+
+dbinfo =
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:info,r".*Be patient.*") (:warn,r".*") match_mode=:any DIVAnd.diva3d(
+            (lonr,latr,depthr,TS),
+            (obslon,obslat,obsdepth,obstime),
+            obsvalue,
+            (),
+            epsilon2,
+            filename2,varname,
+            bathname = bathname,
+            bathisglobal = bathisglobal,
+            ncvarattrib = ncvarattrib,
+            ncglobalattrib = ncglobalattrib,
+            background = DIVAnd.backgroundfile(filename,varname),
+            fitcorrlen = true,
+            background_len = (lenx,leny,lenz),
+            fithorz_param = Dict(
+                :maxnsamp => 500,
+            ),
+            fitvert_param = Dict(
+                :maxnsamp => 100,
+            ),
+            mask = mask,
+            niter_e = 2,
+            QCMETHOD = 0,
+        )
+    else
+        @test_warn r".*Be patient.*" DIVAnd.diva3d(
+            (lonr,latr,depthr,TS),
+            (obslon,obslat,obsdepth,obstime),
+            obsvalue,
+            (),
+            epsilon2,
+            filename2,varname,
+            bathname = bathname,
+            bathisglobal = bathisglobal,
+            ncvarattrib = ncvarattrib,
+            ncglobalattrib = ncglobalattrib,
+            background = DIVAnd.backgroundfile(filename,varname),
+            fitcorrlen = true,
+            background_len = (lenx,leny,lenz),
+            fithorz_param = Dict(
+                :maxnsamp => 500,
+            ),
+            fitvert_param = Dict(
+                :maxnsamp => 100,
+            ),
+            mask = mask,
+            niter_e = 2,
+            QCMETHOD = 0,
+        )
+    end
 
 nothing

@@ -9,13 +9,13 @@ figdir = "./figures/"
 outputdir = "./netCDF/"
 
 if isdir(figdir)
-    info("Directory already exists")
+    @info "Directory already exists"
 else
     mkdir(figdir)
 end
 
 if isdir(outputdir)
-    info("Directory already exists")
+    @info "Directory already exists"
 else
     mkdir(outputdir)
 end

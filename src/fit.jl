@@ -310,7 +310,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     n = length(x)
 
     # compute the empirical covariance
-    # info("Making empirical covariance")
+    # @info "Making empirical covariance"
 
     distx,covar,corr,varx,count,stdcovar[:] =
         empiriccovarmean(x,v,distbin,mincount;
@@ -322,7 +322,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     if all(count .< mincount)
         error("Not enough pairs at all distances (count = $(count), mincount = $(mincount))")
     end
-    # info("Fitting empirical covariance")
+    # @info "Fitting empirical covariance"
 
     distx2 = copy(distx)
 
@@ -632,14 +632,14 @@ function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
         else
             debug("will generate random couples")
             if (nsamp > n)
-                warn("Strange to ask for more samples than available from data; will proceed")
+                @warn "Strange to ask for more samples than available from data; will proceed"
             end
 
             RandomCoupels(n,(nsamp*(nsamp-1)) ÷ 2)
         end
 
     if (n > 10000) && (nsamp != 0)
-        warn("Be patient big data set: ",n)
+        @warn "Be patient big data set: ",n
     end
 
     return fitlen(x::Tuple,d,weight,nsamp,iter; kwargs...)
@@ -850,7 +850,7 @@ end
 
     if (np < 10)
         #@show nbmax, n, nsamp, nstart, ncross
-        warn("Too few data. Will use guesses (np = $(np), RLz = $(RLz), )")
+        @warn "Too few data. Will use guesses (np = $(np), RLz = $(RLz), )"
         RL=RLz
         VAR=0.01*variance
         SN=VAR/(variance-VAR+1.E-10)
@@ -998,7 +998,7 @@ function fithorzlen(x,value::Vector{T},z;
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
 
-        info("Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])")
+        @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])"
     end
 
     lenoptf = copy(lenopt)
@@ -1056,7 +1056,7 @@ function fitvertlen(x,value::Vector{T},z;
         #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
         var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,ones(size(value)),nsamp,iter)
 
-        info("Vert. correlation length at z=$(z[k]): $(lenopt[k])")
+        @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
     end
 
     lenoptf = copy(lenopt)

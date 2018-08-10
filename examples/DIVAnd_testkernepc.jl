@@ -93,7 +93,7 @@ plot(lenf,rms2,"-",lenf,rmsb2,".")
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 figure("next")
 
@@ -106,7 +106,7 @@ plot(lenf,epsfac2,"-")
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 figure("nextb")
 
@@ -118,7 +118,7 @@ plot(lenf,ffac2,"-")
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_3.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #

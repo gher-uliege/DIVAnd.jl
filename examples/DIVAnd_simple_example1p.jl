@@ -87,7 +87,7 @@ colorbar()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 @show fi2[30,30]
 @show fi2[30,59]

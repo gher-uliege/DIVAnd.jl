@@ -67,7 +67,7 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT},fi0,f0; btrunc = []) where {T
                                                           )
 
             if !success
-                warn("Preconditioned conjugate gradients method did not converge")
+                @warn "Preconditioned conjugate gradients method did not converge"
             end
 
             #s.P = CovarLanczos(Q,T);
@@ -88,7 +88,7 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT},fi0,f0; btrunc = []) where {T
                                                 progress = s.progress
                                                 )
         if !success
-            warn("Preconditioned conjugate gradients method did not converge")
+            @warn "Preconditioned conjugate gradients method did not converge"
         end
 
         fpi = B * (H'*tmp);

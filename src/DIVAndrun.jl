@@ -39,7 +39,7 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
 
     # check inputs
     if !any(mask[:])
-        warn("No sea points in mask, will return NaN");
+        @warn "No sea points in mask, will return NaN";
         return fill(NaN,size(mask)),s
     end
 
@@ -54,46 +54,46 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
     s.compPC = compPC;
     s.progress = progress
 
-    #info("Creating observation error covariance matrix")
+    #@info "Creating observation error covariance matrix"
     R = DIVAnd_obscovar(epsilon2,length(f));
 
     # add observation constrain to cost function
-    #info("Adding observation constraint to cost function")
+    #@info "Adding observation constraint to cost function"
     obscon = DIVAnd_obs(s,xi,x,f,R,fracindex)
 
     s = DIVAnd_addc(s,obscon);
 
     # add advection constraint to cost function
     if !isempty(velocity)
-        #info("Adding advection constraint to cost function")
+        #@info "Adding advection constraint to cost function"
         velcon = DIVAnd_constr_advec(s,velocity)
         s = DIVAnd_addc(s,velcon);
 	end
 
 	if !isempty(topographyforfluxes)
-        #info("Adding integral constraints")
+        #@info "Adding integral constraints"
         fluxcon = DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 		s = DIVAnd_addc(s,fluxcon);
     end
 
     # add all additional constrains
     for i=1:length(constraints)
-        #info("Adding additional constrain - $(i)")
+        #@info "Adding additional constrain - $(i)"
         s = DIVAnd_addc(s,constraints[i]);
     end
 
     # factorize a posteriori error covariance matrix
     # or compute preconditioner
-    #info("Factorizing a posteriori error covariance matrix")
+    #@info "Factorizing a posteriori error covariance matrix"
     DIVAnd_factorize!(s);
 
-    # info("Solving...")
+    # @info "Solving..."
     fi0_pack = statevector_pack(s.sv,(fi0,))[:,1]
 
     #@code_warntype DIVAnd_solve!(s,fi0_pack,f0)
     fi = DIVAnd_solve!(s,fi0_pack,f0;btrunc=btrunc) :: Array{T,N}
 
-    # info("Done solving")
+    # @info "Done solving"
     return fi,s
 end
 

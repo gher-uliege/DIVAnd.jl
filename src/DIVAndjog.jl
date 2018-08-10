@@ -46,9 +46,9 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
     if sum(nsteps)==n
 
         if ( (pcmethod==0) & ((alphapc==[]) & (prod(lmask)>0)) )
-            warn("divajog called with no coarsening and no alphapc defined")
-            #warn("pcg without preconditionner will be used")
-            #warn("to force use of direct solver put csteps to zero")
+            @warn "divajog called with no coarsening and no alphapc defined"
+            #@warn "pcg without preconditionner will be used"
+            #@warn "to force use of direct solver put csteps to zero"
 		    tol = 2e-3
 			maxiter=100*Int(ceil(sqrt(prod(size(mask)))))
 

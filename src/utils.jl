@@ -38,8 +38,10 @@ function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     return ufill(c2,valex)
 end
 
-@static if isdefined(:DataArrays)
-    ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
+@static if VERSION < v"0.7.0"
+    @static if isdefined(:DataArrays)
+        ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
+    end
 end
 
 function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})

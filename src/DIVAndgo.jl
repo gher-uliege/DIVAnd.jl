@@ -95,7 +95,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 		windowpointssol = ([isol1[i]:isol2[i] for i in 1:n]...,)
 		windowpointsstore = ([istore1[i]:istore2[i] for i in 1:n]...,)
 
-        #warn("Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 ")
+        #@warn "Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 "
 
         windowpoints = ([iw1[i]:iw2[i] for i in 1:n]...,)
 
@@ -107,7 +107,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
         # Search for velocity argument:
         if velocity != ()
-            warn("There is an advection constraint; make sure the window sizes are large enough for the increased correlation length")
+            @warn "There is an advection constraint; make sure the window sizes are large enough for the increased correlation length"
             # modify the parameter
             velocity = ([ x[windowpoints...] for x in velocity ]...,)
         end
@@ -174,7 +174,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 			    fidata[winindex[winindexsol]]=finwinsol
 
 			    if doqc
-			        warn("QC not fully implemented in jogging, using rough estimate of Kii")
+			        @warn "QC not fully implemented in jogging, using rough estimate of Kii"
 			        finwinqc = DIVAnd_qc(fw,s,5)
 			        xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
                         ([ x[windowpointssol...] for x in xiw ]...,),

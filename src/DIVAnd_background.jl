@@ -46,7 +46,7 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
         coeff,K,len_scale = DIVAnd_kernel(neff,alpha)
     catch err
         if isa(err, DomainError)
-            warn("no scaling for alpha=$(alpha)")
+            @warn "no scaling for alpha=$(alpha)"
         else
             rethrow(err)
         end

@@ -129,14 +129,28 @@ metadata = OrderedDict(
     "doi" => "...")
 
 
-@test_warn r".*" DIVAnd.diva3d((lonr,latr,TS),
-              (lon[sel],obslat[sel],obstime[sel]),
-              obsvalue[sel],
-              (lenx,leny),
-              epsilon2,
-              filename,varname,
-              bathname = bathname,
-              bathisglobal = bathisglobal,
-              background_len = (lenx,leny),
+@static if VERSION >= v"0.7.0"
+    @test_logs (:info,r".*") match_mode=:any DIVAnd.diva3d(
+        (lonr,latr,TS),
+        (lon[sel],obslat[sel],obstime[sel]),
+        obsvalue[sel],
+        (lenx,leny),
+        epsilon2,
+        filename,varname,
+        bathname = bathname,
+        bathisglobal = bathisglobal,
+        background_len = (lenx,leny),
+    )
+else
+    @test_warn r".*" DIVAnd.diva3d(
+        (lonr,latr,TS),
+        (lon[sel],obslat[sel],obstime[sel]),
+        obsvalue[sel],
+        (lenx,leny),
+        epsilon2,
+        filename,varname,
+        bathname = bathname,
+        bathisglobal = bathisglobal,
+        background_len = (lenx,leny),
        )
-
+end

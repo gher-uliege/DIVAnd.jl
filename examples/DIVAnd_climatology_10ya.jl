@@ -83,7 +83,7 @@ monthlists = [
 TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 
 filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$" => ".nc")))
-info("Output file: " * filename)
+@info "Output file: " * filename
 
 varname = "Salinity"
 
@@ -117,7 +117,7 @@ function plotres(timeindex,sel,fit,erri)
 
     figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",timeindex))));
     savefig(figname)
-    info("Saved figure as " * figname)
+    @info "Saved figure as " * figname
 end
 
 # launch the analysis

@@ -136,7 +136,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     # change the depth of the observation
     if (zlevel == :floor) && (n == 4)
         depth = copy(depth)
-        info("analysis from the sea floor")
+        @info "analysis from the sea floor"
 
         bxi,byi,bi = DIVAnd.load_bath(bathname,bathisglobal,lonr,latr)
 
@@ -183,7 +183,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     # create the NetCDF file
     # make sure that the file is closed even if there is an error
-    info("Creating netCDF file")
+    @info "Creating netCDF file"
     Dataset(filename,"c") do ds
         ncvar, ncvar_relerr, ncvar_Lx =
             DIVAnd.ncfile(
@@ -217,9 +217,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         dbinfo[:factore] = zeros(niter_e,length(TS))
 
-        #info("Starting loop on time indices")
+        #@info "Starting loop on time indices"
         for timeindex = 1:length(TS)
-            info("Time step $(timeindex) / $(length(TS))")
+            @info "Time step $(timeindex) / $(length(TS))"
 
             # select observation to be used for the time instance timeindex
             sel = select(TS,timeindex,time)
@@ -253,7 +253,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             # obs. coordinate matching selection
             xsel = map(xc -> xc[sel],x[1:end-1])
 
-            # info("Computing background profile")
+            # @info "Computing background profile"
             fbackground,vaa =
                 if background == nothing
                     # spatial mean of observations
@@ -288,7 +288,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
 
             if fitcorrlen
-                # info("Applying fit of the correlation length")
+                # @info "Applying fit of the correlation length"
                 # fit correlation length
 
                 lenxy1,infoxy = DIVAnd.fithorzlen(
@@ -342,7 +342,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             kwargs_without_qcm = [(p,v) for (p,v) in kwargs if p !== :QCMETHOD]
 
             for i = 1:niter_e
-                #info("Estimating the optimal scale factor of epsilon2")
+                #@info "Estimating the optimal scale factor of epsilon2"
                 # error and QCMETHOD is only required at the last iterations
                 errortype,kwargs2 =
                     if i == niter_e

@@ -12,9 +12,9 @@ interpolation is performed.
 """
 function extract_bath(bath_name,isglobal,xi,yi)
 
-    #info("Extracting bathymetry from file: $(bath_name)")
+    #@info "Extracting bathymetry from file: $(bath_name)"
     # if isglobal == true
-        #info("Working with a global bathymetry");
+        #@info "Working with a global bathymetry";
     # end;
 
     dxi = xi[2] - xi[1]
@@ -118,7 +118,7 @@ interpolated.
 """
 function load_mask(bath_name,isglobal,xi,yi,level::Number)
 
-    #info("Creating land-sea mask on level: $(level)")
+    #@info "Creating land-sea mask on level: $(level)"
 
     bx,by,b = extract_bath(bath_name,isglobal,xi,yi)
 

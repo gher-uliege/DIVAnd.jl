@@ -12,6 +12,10 @@ if VERSION >= v"0.7.0-beta.0"
     using Dates
 end
 
+@static if VERSION < v"0.7.0"
+    find(node::EzXML.Node,xpath::AbstractString, ns=namespaces(node)) = findall(node,xpath,ns)
+end
+
 const namespaces = Dict(
     "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "skos" => "http://www.w3.org/2004/02/skos/core#",
@@ -61,7 +65,7 @@ function CFVocab(; url = CFStandardNameURL)
 end
 
 function Base.getindex(c::CFVocab,stdname::AbstractString)
-    return CFEntry([e for e in find(c.xdoc,"//entry") if e["id"] == stdname ][1])
+    return CFEntry([e for e in findall(c.xdoc,"//entry") if e["id"] == stdname ][1])
 end
 
 """
@@ -70,7 +74,7 @@ end
 Return true if `stdname` is part of the NetCDF CF Standard Name vocabulary
 `collection`.
 """
-Base.haskey(c::CFVocab,stdname) = length([e for e in find(c.xdoc,"//entry") if e["id"] == stdname ]) > 0
+Base.haskey(c::CFVocab,stdname) = length([e for e in findall(c.xdoc,"//entry") if e["id"] == stdname ]) > 0
 
 for (method,tag) in [(:description,"description"),
                      (:canonical_units,"canonical_units")]
@@ -169,7 +173,7 @@ Return a list of related concepts in the collection `collection`.
 function Base.find(c::Concept,name,collection)
     concepts = Concept[]
 
-    for node in find(c.node,"skos:" * name,namespaces)
+    for node in findall(c.node,"skos:" * name,namespaces)
         url = node["rdf:resource"]
         coll,tag,key = splitURL(url)
         if coll == collection

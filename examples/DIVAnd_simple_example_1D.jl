@@ -37,7 +37,7 @@ plot(xi,fi,"-",label="analysis")
 legend()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_results.png")))
 savefig(figname)
-info("Created figure " * figname)
+@info "Created figure " * figname
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

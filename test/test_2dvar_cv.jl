@@ -79,8 +79,14 @@ for imeth = 0:3
 end
 
 for imeth = 0:3
-    bestfactor,cvvalues = @test_warn r".*no parameter optimisation.*" DIVAnd_cv(
-        mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
+    bestfactor,cvvalues =
+        @static if VERSION >= v"0.7.0"
+            @test_logs (:warn,r".*no parameter optimisation.*") match_mode=:any DIVAnd_cv(
+                mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
+        else
+            @test_warn r".*no parameter optimisation.*" DIVAnd_cv(
+                mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
+        end
 
     #@show bestfactor
     if VERSION >= v"0.7.0-beta.0"

@@ -54,7 +54,7 @@ title("result of DIVAndrun")
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => ".png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>

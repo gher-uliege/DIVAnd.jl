@@ -143,7 +143,7 @@ function plotiter(i,fi)
 
     figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",i))));
     savefig(figname)
-    info("Saved figure as " * figname)
+    @info "Saved figure as " * figname
 
 end
 
@@ -161,7 +161,7 @@ legend()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
 savefig(figname)
-info("Saved figure as " * figname)
+@info "Saved figure as " * figname
 
 # Copyright (C) 2018 Jean-Marie Beckers <jm.beckers@ulg.ac.be>
 #               2018 Alexander Barth <a.barth@ulg.ac.be>

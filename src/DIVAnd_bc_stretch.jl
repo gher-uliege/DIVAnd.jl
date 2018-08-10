@@ -19,7 +19,7 @@ function DIVAnd_bc_stretch(mask,pmnin,xiin,Lin,moddim,alphabc=1)
     #
 
     if alphabc==0
-        #warn("DIVAnd_bc_stretch was just used to fill in Labs")
+        #@warn "DIVAnd_bc_stretch was just used to fill in Labs"
         return pmnin,xiin,Labs
     end
 

@@ -72,7 +72,7 @@ If the argument `io` is provided, the information is input/output stream `io`.
 checkobs(x,v,ids) = checkobs(STDOUT,x,v,ids)
 
 function checkobs(io::IO,x,v,ids)
-    info("Checking ranges for dimensions and observations")
+    @info "Checking ranges for dimensions and observations"
     function check(xc,ids,name)
         fmt = "%55s"
 

@@ -175,7 +175,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
                 #   onsea=find(x->x == 0,s.obsout);
                 onsea = findall(s.obsout.==0);
                 lonsea=length(onsea)
-                #   warn("So",lonsea)
+                #   @warn "So",lonsea
                 # if optimisation is to be used, make sure to use the same reference random points
                 if VERSION >= v"0.7.0-beta.0"
                     Random.seed!(nrealdata)
@@ -223,7 +223,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     # ll1= d0d/(d0d-d1d)-1
     #
     if (ne==0 && nl==0)
-        warn("There is no parameter optimisation done (nl=$nl, ne=$ne)")
+        @warn "There is no parameter optimisation done (nl=$nl, ne=$ne)"
         ll1= d0d/(d0dmd1d)-1;
         eps1=1/ll1;
         if ndims(epsilon2) == 0

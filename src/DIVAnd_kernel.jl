@@ -29,7 +29,7 @@ function DIVAnd_kernel(n,alpha)
     else
         if alpha_binomial[2:end] == alpha[2:end]
             # alpha are binomial coefficients except first one
-            #warn("Semi-norm used?, check scaling $alpha")
+            #@warn "Semi-norm used?, check scaling $alpha"
 
             #   correction for missing term CHECK IF NOT THE INVERSE
             #  Added fudge factor 2 to mimic same behaviour in test case
@@ -41,7 +41,7 @@ function DIVAnd_kernel(n,alpha)
         else
             # unsupported sequence of alpha
 
-            #warn("Unsupported norm used, check scaling $alpha")
+            #@warn "Unsupported norm used, check scaling $alpha"
             #   Scaling is correct if all alphas are binomials times a common factor
 
             jmscale=(1.0/2^(m))*sum(alpha[:])
@@ -63,7 +63,7 @@ function DIVAnd_kernel_binom(n,m)
     K(x) = DIVAnd_rbesselk(nu,x)
 
     if nu <= 0
-        warn("DIVAnd:nonorm ","No normalization possible. Extend parameter alpha.")
+        @warn "DIVAnd:nonorm ","No normalization possible. Extend parameter alpha."
         mu = 1.
     end
 

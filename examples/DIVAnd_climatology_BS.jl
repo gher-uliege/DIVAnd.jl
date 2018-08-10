@@ -102,8 +102,8 @@ fi=fi+fmb+vm
 outputfile1 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$" => "_salinity.nc")));
 outputfile2 = joinpath(outputdir,basename(replace(@__FILE__,r".jl$" => "_errorfield.nc")));
 
-info("Salinity field written in file :" * outputfile1)
-info("Error field written in file :" * outputfile2)
+@info "Salinity field written in file :" * outputfile1
+@info "Error field written in file :" * outputfile2
 
 DIVAnd_save(outputfile1,mask,"Salinity",fi)
 DIVAnd_save(outputfile2,mask,"Errorfield",erri)

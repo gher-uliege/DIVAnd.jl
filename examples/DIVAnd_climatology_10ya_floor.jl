@@ -80,13 +80,13 @@ monthlists = [
 TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
 
 filename = joinpath(outputdir, basename(replace(@__FILE__,r".jl$" => ".nc")))
-info("Output file: " * filename)
+@info "Output file: " * filename
 
 varname = "Salinity"
 
 timeorigin = DateTime(1900,1,1,0,0,0)
 
-info("Loading bathymetry")
+@info "Loading bathymetry"
 # bx,by,b = DIVAnd.extract_bath(bathname,false,lonr,latr);
 bxi,byi,bi = DIVAnd.load_bath(bathname,bathisglobal,lonr,latr)
 
@@ -124,7 +124,7 @@ function plotres(timeindex,sel,fit,erri)
     
     figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",timeindex))));
     savefig(figname)
-    info("Saved figure as " * figname)
+    @info "Saved figure as " * figname
 end
 
 #----------------
