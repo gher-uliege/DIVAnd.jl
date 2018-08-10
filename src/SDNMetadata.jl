@@ -233,7 +233,7 @@ end
 
 
 function writeerrors(notfound,errname)
-    info("Write error message in file: $(errname)")
+    @info "Write error message in file: $(errname)"
 
     open(errname,"w") do f
         #log(0,"error message file opened")
@@ -260,7 +260,7 @@ function getoriginators(db,filepaths::Vector{<:AbstractString},
         writeerrors(notfound,errname)
 
         if ignore_errors
-            warn("Not all CDI could be found. See the file $(errname)")
+            @warn "Not all CDI could be found. See the file $(errname)"
         else
             error("Not all CDI could be found. See the file $(errname) ")
         end
@@ -274,7 +274,7 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     inactive = Dict{String,Any}[]
     notfound = Dict{String,Any}[]
 
-    info("Lookup obsids")
+    @info "Lookup obsids"
 
     for obsid in obsids
         (author_edmo_str,local_cdi)  = split(obsid,'-'; limit=2)
@@ -308,11 +308,11 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
         end
     end
 
-    info("Query EDMO database")
+    @info "Query EDMO database"
     originators = Dict{String,String}[]
     for ae in collect(originators_edmo)
         originator = getedmoinfo(ae,"originator")
-        info("originator: $(originator["name"])")
+        @info "originator: $(originator["name"])"
         push!(originators,originator)
     end
 
@@ -368,7 +368,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         if abs(dlon - dlat) < 1e-4
             dlat
         else
-            warn("warning: non uniform horizontal resolution $(dlon) $(dlat)")
+            @warn "warning: non uniform horizontal resolution $(dlon) $(dlat)"
             sqrt(dlon * dlat)
         end
 
@@ -557,7 +557,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     baseurl_http = PROJECTS[project]["baseurl_http"]
     baseurl_opendap = PROJECTS[project]["baseurl_opendap"]
 
-    info("Loading EDMO information")
+    @info "Loading EDMO information"
 
     # update 2018-08-09
     # old originator -> new author
@@ -631,7 +631,7 @@ end
 
 
 function rendertemplate(templatefile,templateVars,xmlfilename)
-    info("Process template")
+    @info "Process template"
 
     template = read(templatefile,String)
 
