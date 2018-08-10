@@ -12,8 +12,14 @@ if VERSION >= v"0.7.0-beta.0"
     using Dates
 end
 
+# API changes in EzXML not available in Julia 0.6
+# https://github.com/bicycle1885/EzXML.jl/issues/51
 @static if VERSION < v"0.7.0"
-    find(node::EzXML.Node,xpath::AbstractString, ns=namespaces(node)) = findall(node,xpath,ns)
+    import Compat: findall, findfirst
+    findall(xpath::AbstractString, node::EzXML.Node, ns=EzXML.namespaces(node)) = EzXML.find(node,xpath,ns)
+    findfirst(xpath::AbstractString, node::EzXML.Node, ns=EzXML.namespaces(node)) = EzXML.findfirst(node,xpath,ns)
+
+    findall(xpath::AbstractString, doc::EzXML.Document) = EzXML.find(doc,xpath)
 end
 
 const namespaces = Dict(
@@ -65,7 +71,7 @@ function CFVocab(; url = CFStandardNameURL)
 end
 
 function Base.getindex(c::CFVocab,stdname::AbstractString)
-    return CFEntry([e for e in findall(c.xdoc,"//entry") if e["id"] == stdname ][1])
+    return CFEntry([e for e in findall("//entry",c.xdoc) if e["id"] == stdname ][1])
 end
 
 """
@@ -74,7 +80,7 @@ end
 Return true if `stdname` is part of the NetCDF CF Standard Name vocabulary
 `collection`.
 """
-Base.haskey(c::CFVocab,stdname) = length([e for e in findall(c.xdoc,"//entry") if e["id"] == stdname ]) > 0
+Base.haskey(c::CFVocab,stdname) = length([e for e in findall("//entry",c.xdoc) if e["id"] == stdname ]) > 0
 
 for (method,tag) in [(:description,"description"),
                      (:canonical_units,"canonical_units")]
@@ -85,7 +91,7 @@ for (method,tag) in [(:description,"description"),
 
     Return the description or the canonical units of the `entry`.
 """
-        $method(e::CFEntry) = nodecontent(findfirst(e.node,$tag))
+        $method(e::CFEntry) = nodecontent(findfirst($tag,e.node))
     end
 end
 
@@ -132,7 +138,7 @@ function Concept(url::AbstractString)
     r = HTTP.get(url)
     xdoc = parsexml(String(r.body))
 
-    node = findfirst(root(xdoc),"skos:Concept",namespaces)
+    node = findfirst("skos:Concept",root(xdoc),namespaces)
     return Concept(node)
 end
 
@@ -146,7 +152,7 @@ for (method,tag,docname) in [(:prefLabel,"prefLabel","preferred label"),
             s = Vocab.$($tag)(c::Vocab.Concept)
 
         Return the $($docname) of a concept `c`
-        """ $method(c::Concept) = nodecontent(findfirst(c.node,"skos:" * $tag,namespaces))
+        """ $method(c::Concept) = nodecontent(findfirst("skos:" * $tag,c.node,namespaces))
 
         @doc """
             s = Vocab.$($tag)(urn::AbstractString)
@@ -159,7 +165,7 @@ end
 URL(c::Concept) = c.node["rdf:about"]
 
 date(c::Concept) = DateTime(
-   nodecontent(findfirst(c.node,"dc:date",namespaces)),
+   nodecontent(findfirst("dc:date",c.node,namespaces)),
    "yyyy-mm-dd HH:MM:SS.s")
 
 urn(c::Concept) = notation(c)
@@ -170,10 +176,10 @@ urn(c::Concept) = notation(c)
 Return a list of related concepts in the collection `collection`.
 `name` can be the string "related", "narrower", "broader".
 """
-function Base.find(c::Concept,name,collection)
+function Base.find(c::Concept,name::AbstractString,collection)
     concepts = Concept[]
 
-    for node in findall(c.node,"skos:" * name,namespaces)
+    for node in findall("skos:" * name,c.node,namespaces)
         url = node["rdf:resource"]
         coll,tag,key = splitURL(url)
         if coll == collection
@@ -227,7 +233,7 @@ Return a list of concepts (of type Vocab.Concept) with the corresponding label.
 function findbylabel(collection::Vocab.Collection,labels::Vector{T}) where T <: AbstractString
     r = HTTP.get(collection.baseurl)
     xdoc = EzXML.parsexml(String(r.body))
-    concepts = Vocab.Concept.(find(root(xdoc),"//skos:Concept",Vocab.namespaces))
+    concepts = Vocab.Concept.(findall("//skos:Concept",root(xdoc),Vocab.namespaces))
     alllabels = Vocab.prefLabel.(concepts)
 
     foundconcepts = Vector{Vocab.Concept}(undef,length(labels))
@@ -263,7 +269,7 @@ function EDMOEntry(url::AbstractString)
 end
 
 
-get(ee::EDMOEntry,tag) = nodecontent(findfirst(ee.node,"//" * tag))
+get(ee::EDMOEntry,tag) = nodecontent(findfirst("//" * tag,ee.node))
 
 code(ee::EDMOEntry) = get(ee,"n_code")
 name(ee::EDMOEntry) = get(ee,"name")

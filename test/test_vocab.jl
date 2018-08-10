@@ -4,7 +4,7 @@ else
     using Base.Test
 end
 import DIVAnd
-
+using Compat
 
 # Test CF names
 
@@ -44,11 +44,11 @@ concept = collection["PSALPR01"]
 name = "P02"
 search_keyword = "Chlorophyll pigment concentrations in water bodies"
 
-collection = Vocab.SDNCollection(name)
-concepts = Vocab.findbylabel(collection,[search_keyword])
+collection = DIVAnd.Vocab.SDNCollection(name)
+concepts = DIVAnd.Vocab.findbylabel(collection,[search_keyword])
 
-label = Vocab.prefLabel(concepts[1])
-URL = Vocab.URL(concepts[1])
+label = DIVAnd.Vocab.prefLabel(concepts[1])
+URL = DIVAnd.Vocab.URL(concepts[1])
 @test label == search_keyword
 
 
@@ -83,5 +83,4 @@ edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.resolve("SDN:EDMO::575"))
 
 edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.urn"SDN:EDMO::575")
 @test edmoname == "National Oceanographic Data Committee"
-
 
