@@ -44,8 +44,9 @@ else
     const mul! = A_mul_B!
 
     using Compat: @info, @warn
-    macro nologs(expr)
-        return :( @test_warn r".*" $expr )
+
+    macro distributed(expr)
+        return :( @parallel $(expr) )
     end
 end
 
