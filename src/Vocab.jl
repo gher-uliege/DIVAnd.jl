@@ -15,11 +15,11 @@ end
 # API changes in EzXML not available in Julia 0.6
 # https://github.com/bicycle1885/EzXML.jl/issues/51
 @static if VERSION < v"0.7.0"
-    import Compat: findall, findfirst
+    import Compat: findall
+    import Base: findfirst
+    findall(xpath::AbstractString, doc::EzXML.Document) = EzXML.find(doc,xpath)
     findall(xpath::AbstractString, node::EzXML.Node, ns=EzXML.namespaces(node)) = EzXML.find(node,xpath,ns)
     findfirst(xpath::AbstractString, node::EzXML.Node, ns=EzXML.namespaces(node)) = EzXML.findfirst(node,xpath,ns)
-
-    findall(xpath::AbstractString, doc::EzXML.Document) = EzXML.find(doc,xpath)
 end
 
 const namespaces = Dict(

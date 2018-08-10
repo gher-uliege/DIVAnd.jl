@@ -513,24 +513,39 @@ mutable struct AllCoupels
     n:: Int
 end
 
-function Base.start(iter::AllCoupels)
-    return (1,1)
-end
+if VERSION >= v"0.7.0"
+    function Base.iterate(iter::AllCoupels, state = (1,1))
+        i,j = state
+        if (i == iter.n-1) && (j == iter.n)
+            return nothing
+        end
 
-function Base.next(iter::AllCoupels,state)
-    i,j = state
-    if j < iter.n
-        nextstate = (i,j+1)
-    else
-        nextstate = (i+1,i+2)
+        if j < iter.n
+            nextstate = (i,j+1)
+        else
+            nextstate = (i+1,i+2)
+        end
+
+        return (nextstate,nextstate)
+    end
+else
+    Base.start(iter::AllCoupels) = (1,1)
+
+    function Base.next(iter::AllCoupels,state)
+        i,j = state
+        if j < iter.n
+            nextstate = (i,j+1)
+        else
+            nextstate = (i+1,i+2)
+        end
+
+        return (nextstate,nextstate)
     end
 
-    return (nextstate,nextstate)
-end
-
-function Base.done(iter::AllCoupels,state)
-    i,j = state
-    return (i == iter.n-1) && (j == iter.n)
+    function Base.done(iter::AllCoupels,state)
+        i,j = state
+        return (i == iter.n-1) && (j == iter.n)
+    end
 end
 
 mutable struct RandomCoupels
@@ -538,20 +553,35 @@ mutable struct RandomCoupels
     count::Int
 end
 
-Base.start(iter::RandomCoupels) = 0
+if VERSION >= v"0.7.0"
+    function Base.iterate(iter::RandomCoupels, state = 0)
+        if state == iter.count
+            return nothing
+        end
 
-function Base.next(iter::RandomCoupels,state)
-    # pick two random points
-    j = rand(1:iter.n)
-    i = j
-    while (i == j)
-        i = rand(1:iter.n)
+        # pick two random points
+        j = rand(1:iter.n)
+        i = j
+        while (i == j)
+            i = rand(1:iter.n)
+        end
+
+        return ((i,j),state+1)
     end
+else
+    Base.start(iter::RandomCoupels) = 0
 
-    return ((i,j),state+1)
+    function Base.next(iter::RandomCoupels,state)
+        # pick two random points
+        j = rand(1:iter.n)
+        i = j
+        while (i == j)
+            i = rand(1:iter.n)
+        end
+        return ((i,j),state+1)
+    end
+    Base.done(iter::RandomCoupels,state) = state == iter.count
 end
-Base.done(iter::RandomCoupels,state) = state == iter.count
-
 
 
 mutable struct VertRandomCoupels
@@ -563,9 +593,8 @@ mutable struct VertRandomCoupels
     count::Int
 end
 
-Base.start(iter::VertRandomCoupels) = 0
 
-function Base.next(iter::VertRandomCoupels,state)
+function _next(iter::VertRandomCoupels,state)
     # pick two random points
     j = -1
     jindex = -1
@@ -605,8 +634,14 @@ function Base.next(iter::VertRandomCoupels,state)
         return ((j,jindex),state+1)
 end
 
-Base.done(iter::VertRandomCoupels,state) = state == iter.count
-
+if VERSION >= v"0.7.0"
+    Base.iterate(iter::VertRandomCoupels, state = 0) = (
+        state == iter.count ? nothing : _next(iter,state))
+else
+    Base.start(iter::VertRandomCoupels) = 0
+    Base.next(iter::VertRandomCoupels,state) = _next(iter,state)
+    Base.done(iter::VertRandomCoupels,state) = state == iter.count
+end
 
 
 
@@ -639,7 +674,7 @@ function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
         end
 
     if (n > 10000) && (nsamp != 0)
-        @warn "Be patient big data set: ",n
+        @warn "Be patient big data set: $n"
     end
 
     return fitlen(x::Tuple,d,weight,nsamp,iter; kwargs...)
@@ -686,10 +721,11 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     x1 = zeros(ndims)
 
     if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(n)
-else
-   srand(n)
-end
+        Random.seed!(n)
+    else
+        srand(n)
+    end
+
     for (i,j) in iter
         # compute the distance
         for l = 1:ndims
