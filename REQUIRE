@@ -4,7 +4,7 @@ NCDatasets
 SpecialFunctions
 DataStructures
 HTTP
-EzXML
+EzXML 0.7.3
 Mustache 0.3.2
 ZipFile
 Missings
