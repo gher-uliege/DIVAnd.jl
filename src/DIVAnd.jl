@@ -46,7 +46,7 @@ else
     using Compat: @info, @warn
 
     macro distributed(expr)
-        return :( @parallel $(expr) )
+        return :( @parallel $(esc(expr)) )
     end
 end
 
