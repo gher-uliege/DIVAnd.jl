@@ -200,7 +200,7 @@ function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {
     return out
 end
 
-if VERSION < v"0.7.0"
+if VERSION < v"1.0.0"
     import Base: ind2sub, sub2ind
     #Base.ind2sub(sv::statevector,index::Integer) = ind2sub(sv,index)
     #Base.sub2ind(sv::statevector,subscripts::Tuple) = sub2ind(sv,subscripts)
