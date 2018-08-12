@@ -4,7 +4,9 @@ using Base
 using Compat
 using EzXML
 import HTTP
-import Base.find
+if VERSION < v"0.7.0"
+    import Base.find
+end
 import Base.findfirst
 import Base.repr
 
@@ -176,7 +178,7 @@ urn(c::Concept) = notation(c)
 Return a list of related concepts in the collection `collection`.
 `name` can be the string "related", "narrower", "broader".
 """
-function Base.find(c::Concept,name::AbstractString,collection)
+function find(c::Concept,name::AbstractString,collection)
     concepts = Concept[]
 
     for node in findall("skos:" * name,c.node,namespaces)

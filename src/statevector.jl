@@ -200,14 +200,20 @@ function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {
     return out
 end
 
+if VERSION < v"0.7.0"
+    import Base: ind2sub, sub2ind
+    #Base.ind2sub(sv::statevector,index::Integer) = ind2sub(sv,index)
+    #Base.sub2ind(sv::statevector,subscripts::Tuple) = sub2ind(sv,subscripts)
+end
+
 
 """
-subscripts = ind2ind(sv,index)
+    subscripts = ind2sub(sv,index)
 
 Compute from linear index in the packed state vector a tuple of subscripts.
 The first element of the subscript indicates the variable index and the remaining the spatial subscripts.
 """
-function Base.ind2sub(sv::statevector,index::Integer)
+function ind2sub(sv::statevector,index::Integer)
 
     # variable index
     ivar = sum(sv.ind .< index)
@@ -229,12 +235,12 @@ end
 
 
 """
-ind = statevector_sub2ind(sv,subscripts)
+    ind = statevector_sub2ind(sv,subscripts)
 
 Compute from a tuple of subscripts the linear index in the packed state vector.
 The first element of the subscript indicates the variable index and the remaining the spatial subscripts.
 """
-function Base.sub2ind(sv::statevector,subscripts::Tuple)
+function sub2ind(sv::statevector,subscripts::Tuple)
 
     # index of variable
     ivar = subscripts[1]
@@ -257,6 +263,8 @@ statevector_pack(sv::statevector,vars::Tuple) = pack(sv,vars)
 statevector_unpack(sv::statevector,x,fillvalue = 0) = unpack(sv,x,fillvalue)
 statevector_sub2ind(sv::statevector,subscripts::Tuple) = sub2ind(sv,subscripts)
 statevector_ind2sub(sv::statevector,index::Integer) = ind2sub(sv,index)
+
+
 
 # Copyright (C) 2009,2017 Alexander Barth <a.barth@ulg.ac.be>
 #

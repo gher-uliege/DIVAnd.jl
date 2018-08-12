@@ -545,7 +545,7 @@ function checkduplicates(x1::Tuple,value1,
         if length(index) > 0
             # check for values
             vv = value1[index]
-            duplicates[i] = sort(index[abs.(vv - value2[i]) .< deltavalue])
+            duplicates[i] = sort(index[abs.(vv .- value2[i]) .< deltavalue])
         else
             duplicates[i] = Int[]
         end

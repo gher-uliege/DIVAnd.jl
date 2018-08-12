@@ -147,7 +147,7 @@ if isfile(filename)
 end
 
 @static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*netCDF*") (:warn,r".*") match_mode=:any DIVAnd.diva3d(
+    @test_logs (:info,r".*netCDF*") match_mode=:any DIVAnd.diva3d(
         (lonr,latr,depthr,TS),
         (obslon,obslat,obsdepth,obstime),
         obsvalue,

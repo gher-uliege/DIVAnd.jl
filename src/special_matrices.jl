@@ -68,13 +68,15 @@ Base.:*(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 Base.:*(C::CovarIS, M::Adjoint{Float64,SparseMatrixCSC{Float64,Int64}}) = A_mul_B(C,copy(M))
 end
 
-# The following two definitions are necessary; otherwise the full C matrix will be formed when
-# calculating C * M' or C * M.'
+@static if VERSION < v"0.7.0"
+    # The following two definitions are necessary; otherwise the full C matrix will be formed when
+    # calculating C * M' or C * M.'
 
-# call to C * M' (conjugate transpose: C Mᴴ)
-Base.A_mul_Bc(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
-# call to C * M.' (transpose: C Mᵀ)
-Base.A_mul_Bt(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
+    # call to C * M' (conjugate transpose: C Mᴴ)
+    Base.A_mul_Bc(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
+    # call to C * M.' (transpose: C Mᵀ)
+    Base.A_mul_Bt(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
+end
 
 
 function Base.getindex(C::CovarIS, i::Int,j::Int)
@@ -172,7 +174,9 @@ end
 
 Base.:*(MF1::MatFun, MF2::MatFun) = A_mul_B(MF1,MF2)
 Base.:*(MF::MatFun, S::AbstractSparseMatrix) = MF * MatFun(S)
-Base.:A_mul_Bc(S::AbstractSparseMatrix, MF::MatFun) = MatFun(S) * MF
+if VERSION < v"0.7.0"
+    Base.:A_mul_Bc(S::AbstractSparseMatrix, MF::MatFun) = MatFun(S) * MF
+end
 Base.:*(S::AbstractSparseMatrix,MF::MatFun) = MatFun(S) * MF
 
 for op in [:/, :*]; @eval begin
@@ -196,9 +200,11 @@ if VERSION >= v"0.7.0-beta.0"
     Base.:adjoint(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
 end
 
-Base.Ac_mul_B(MF:: MatFun, x::AbstractVector) = MF.funt(x)
-Base.Ac_mul_B(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1',MF2)
-Base.A_mul_Bc(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1,MF2')
+if VERSION < v"0.7.0"
+    Base.Ac_mul_B(MF:: MatFun, x::AbstractVector) = MF.funt(x)
+    Base.Ac_mul_B(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1',MF2)
+    Base.A_mul_Bc(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1,MF2')
+end
 
 MatFun(S::AbstractSparseMatrix) = MatFun(size(S), x -> S*x, x -> S'*x)
 
@@ -231,11 +237,12 @@ Base.:*(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 # The following two definitions are necessary; otherwise the full C matrix will be formed when
 # calculating C * M' or C * transpose(M)
 
-# call to C * M' (conjugate transpose: C Mᴴ)
-Base.A_mul_Bc(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
-# call to C * transpose(M) (transpose: C Mᵀ)
-Base.A_mul_Bt(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
-
+if VERSION < v"0.7.0"
+    # call to C * M' (conjugate transpose: C Mᴴ)
+    Base.A_mul_Bc(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
+    # call to C * transpose(M) (transpose: C Mᵀ)
+    Base.A_mul_Bt(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
+end
 
 
 function Base.getindex(C::CovarHPHt, i::Int,j::Int)

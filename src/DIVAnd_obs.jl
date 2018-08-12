@@ -18,7 +18,7 @@ Output:
 
 Note make sure not to mix Float32 and Float64 for DIVAnd_constrain.
 """
-function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = Matrix{T}(0,0)) where T
+function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
     mask = s.mask
     iscyclic = s.iscyclic
     moddim = s.moddim
