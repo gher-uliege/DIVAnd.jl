@@ -531,20 +531,23 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "C19_date" => Dates.format(datetime,isodateformat),
     )
 
+    close(ds)
 
+    for filepath in filepaths
+        Dataset(filepath,"r") do ds
+            for (name,var) in ds
+                if ("lon" in dimnames(var))  &&  ("lat" in dimnames(var))
+                    if haskey(var.attrib,"long_name")
+                        description = var.attrib["long_name"]
+                    else
+                        description = name
+                    end
 
-    for (name,var) in ds
-        if ("lon" in dimnames(var))  &&  ("lat" in dimnames(var))
-            if haskey(var.attrib,"long_name")
-                description = var.attrib["long_name"]
-            else
-                description = name
+                    push!(templateVars["netcdf_variables"],(name,description,filepath))
+                end
             end
-
-            push!(templateVars["netcdf_variables"],(name,description))
         end
     end
-    close(ds)
 
     DOI_URL =
         if doi != ""
@@ -618,10 +621,10 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "contacts" => contacts,
     ))
 
-    for (name, description) in templateVars["netcdf_variables"]
+    for (name, description, filepath) in templateVars["netcdf_variables"]
         push!(templateVars["WMS_layers"],Dict(
             "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-            "name" => domain * "/" * filename * layersep * name,
+            "name" => domain * "/" * filepath * layersep * name,
             "description" => "WMS layer for " * description)
               )
     end
