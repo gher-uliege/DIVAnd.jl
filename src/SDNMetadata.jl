@@ -497,7 +497,6 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "product_id" => product_id,
         "product_code" => product_code,
         "product_version" => ds.attrib["product_version"],
-        "update_date" => Dates.format(datetime,"yyyy-mm-dd"),
         "abstract" => get(ds.attrib,"abstract",""),
         "edmo_code" => edmo_code,
         "domain" => domain,
@@ -514,14 +513,15 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "time_max" => Dates.format(maximum(obstime),isodateformat),
         "default_field_min" => default_field_min,
         "default_field_max" => default_field_max,
-        "creation_time" => Dates.format(datetime,isodateformat),
         "ndims" => ndims(ds[varname]),
         "nvertlevels" => length(depth),
         "temp_resolution_unit" => temp_resolution_unit,
         "temp_resolution" => temp_resolution,
         "CRS" => "WGS 84 (EPSG 4326)",
         "title" => ds.attrib["title"],
-        "creation_date" => Dates.format(datetime,"yyyy-mm-dd"),
+        "xml_creation_time" => Dates.format(now(),isodateformat),  # for XML Metadata
+        "creation_date" => Dates.format(datetime,"yyyy-mm-dd"), # for the NetCDF file
+        "update_date" => Dates.format(datetime,"yyyy-mm-dd"), # for the NetCDF file
         "netcdf_variables" => [], # added later
         "P02_keywords" => P02_keywords,
         "P35_keywords" => P35_keywords,
