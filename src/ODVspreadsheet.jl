@@ -182,7 +182,6 @@ function readODVspreadsheet(datafile)
         i = 0
 
         for row in eachline(f; chomp = true)
-            i = i+1
 
             if startswith(row,"//")
                 # ignore lines starting with e.g.
@@ -201,6 +200,7 @@ function readODVspreadsheet(datafile)
                 error("Expecting $(ncols2) columns but $(length(line)) found in line $(line) (line number $i).")
             end
 
+            i = i+1
             alldata[:,i] = line
         end
 
