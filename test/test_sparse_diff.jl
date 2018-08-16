@@ -144,7 +144,7 @@ for operatortype in [Val{:sparse}, Val{:MatFun}]
     mask = trues(size(x1))
     pm = ones(size(x1))/2
     pn = ones(size(x1))/3
-    Dx,Dy = sparse_gradient(operatortype,mask,(pm,pn))
+    Dx,Dy = DIVAnd_gradient(operatortype,mask,(pm,pn))
     f = 2*x1 + x2
     Df1 = 2 * ones(3,3)
     Df2 = Dx * f[:]

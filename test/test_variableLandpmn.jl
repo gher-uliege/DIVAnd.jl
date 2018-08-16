@@ -5,8 +5,8 @@ using DIVAnd
 using Base.Test
 
 # observations
-x = [2  3  4];
-y = [2  3  4];
+x = [2, 3, 4];
+y = [2, 3, 4];
 f=ones(3)
 
 # final grid

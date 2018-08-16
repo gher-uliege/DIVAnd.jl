@@ -24,9 +24,7 @@ function lin2sub!(sz,ind::Number,sub)
     end
 end
 
-
-
-sparse_diag(d)::SparseMatrixCSC{Float64,Int} = sparse(Diagonal(d))
+sparse_diag(d) = sparse(1:length(d),1:length(d),d)
 
 function sparse_pack(mask)
 

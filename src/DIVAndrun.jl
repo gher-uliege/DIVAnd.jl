@@ -114,7 +114,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 # References
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
-function DIVAndrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
+function DIVAndrun(mask::BitArray,pmnin,xiin,x,f::Vector{T},lin,epsilon2;
                    velocity = (),
                    primal::Bool = true,
                    factorize = true,
@@ -124,7 +124,7 @@ function DIVAndrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
                    constraints = (),
                    inversion = :chol,
                    moddim = [],
-                   fracindex = [],
+                   fracindex = Matrix{T}(0,0),
                    alpha = [],
                    keepLanczosVectors = 0,
                    compPC = DIVAnd_pc_none,
@@ -141,7 +141,7 @@ function DIVAndrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 				   epsfluxes = 0,
 				   RTIMESONESCALES=(),
 				   QCMETHOD=()
-                   )
+                   ) where T
 
     pmn,xi,len = DIVAnd_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
@@ -175,7 +175,9 @@ function DIVAndrun(mask::BitArray,pmnin,xiin,x,f,lin,epsilon2;
 
     # add observation constrain to cost function
     #info("Adding observation constraint to cost function")
-    s = DIVAnd_addc(s,DIVAnd_obs(s,xi,x,f,R,I = fracindex));
+    obscon = DIVAnd_obs(s,xi,x,f,R,fracindex)
+
+    s = DIVAnd_addc(s,obscon);
 
     # add advection constraint to cost function
     if !isempty(velocity)
