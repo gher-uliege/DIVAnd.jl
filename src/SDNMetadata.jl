@@ -1,5 +1,3 @@
-#TODO: check keywords and mustach inverted sections
-
 
 const pathname = joinpath(dirname(@__FILE__),"..")
 
@@ -345,6 +343,7 @@ end
 
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
                          errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
+                         WMSlayername = String[],
                          ignore_errors = false)
 
     # assume that grid and time coverage is the same as the
@@ -533,7 +532,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     close(ds)
 
-    for filepath in filepaths
+    for i = 1:length(filepaths)
+        filepath = filepaths[i]
         Dataset(filepath,"r") do ds
             for (name,var) in ds
                 if ("lon" in dimnames(var))  &&  ("lat" in dimnames(var))
@@ -541,6 +541,14 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                         description = var.attrib["long_name"]
                     else
                         description = name
+                    end
+
+                    # add WMS layer name suffix if provided
+                    # this is useful if multiple NetCDF files are provided
+                    if length(WMSlayername) >= i
+                        if WMSlayername[i] != ""
+                            description *= " ($(WMSlayername[i]))";
+                        end
                     end
 
                     push!(templateVars["netcdf_variables"],(name,description,filepath))
@@ -648,6 +656,7 @@ end
 """
     DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename;
                      ignore_errors = false,
+                     WMSlayername = [],
                      additionalvars = Dict{String,Any}())
 
 Generate the XML metadata file `xmlfilename` from the NetCDF
@@ -664,6 +673,10 @@ Information can be overriden with the dictionary `additionalvars`. The keys shou
 corresponds to the template tags found the in `template` directory. Template
 tags are the strings inside {{ and }}.
 
+If `filepath` is a vector of file names, the argument `WMSlayername` can be provided to give
+additional information to distinguish between the NetCDF files. The elements of the vector of string
+will be appended to the description of the WMS layer.
+
 ### Example
 
 ```julia
@@ -677,18 +690,22 @@ files = [
 
 
 DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zip","test.xml";
-    ignore_errors = true, additionalvars = Dict("abstract" => "Here goes the abstract"))
+    ignore_errors = true,
+    additionalvars = Dict("abstract" => "Here goes the abstract"),
+    WMSlayername = ["winter","spring","summer","autumn"]
+)
 ```
 """
 function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,xmlfilename;
                    ignore_errors = false,
-                   additionalvars = Dict{String,Any}())
+                   additionalvars = Dict{String,Any}(), WMSlayername = String[])
 
     # template file we will use.
     templatefile = PROJECTS[project]["template"]
 
     templateVars = gettemplatevars(
         filepaths,varname,project,cdilist,
+        WMSlayername = WMSlayername,
         ignore_errors = ignore_errors)
 
     merge!(templateVars,additionalvars)
@@ -696,8 +713,8 @@ function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,x
     rendertemplate(templatefile,templateVars,xmlfilename)
 end
 
-function divadoxml(filepath::AbstractString,varname,project,cdilist,xmlfilename; kwargs...)
-    divadoxml([filepath],varname,project,cdilist,xmlfilename; kwargs...)
+function divadoxml(filepath::AbstractString,varname,project,cdilist,xmlfilename; WMSlayername = "", kwargs...)
+    divadoxml([filepath],varname,project,cdilist,xmlfilename; WMSlayername = [WMSlayername], kwargs...)
 end
 
 
