@@ -14,7 +14,6 @@ Output:
 """
     @eval function DIVAnd_gradient(::Type{$ot},mask::AbstractArray{Bool,N},pmn::NTuple{N,AbstractArray{T,N}},iscyclic = falses(ndims(mask))) where {N,T}
 
-    iscyclic = falses(N)
     H = oper_pack($ot,mask)
     sz = size(mask)
 
