@@ -168,11 +168,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     # scaling comes later
     len_scaled = deepcopy(len0)
 
-    # epsilon
-    epsilon2 =
-        if ndims(epsilon2) == 0
-            fill(epsilon2,size(value))
-        end
+    # epsilon: change to vector if scalar provided (same value for all the points)
+    if ndims(epsilon2) == 0
+        epsilon2 = fill(epsilon2,size(value))
+    end
 
     # fit fitting
     dbinfo = Dict{Symbol,Any}()
