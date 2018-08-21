@@ -8,6 +8,7 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 
+include("./prep_dirs.jl")
 
 x=[0.]
 y=[0.]

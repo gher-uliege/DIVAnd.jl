@@ -13,6 +13,9 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+
+include("./prep_dirs.jl")
+
 varb1=0
 lpmsize=37
 dsoverlsize=33

@@ -10,7 +10,7 @@ latr = 42.3:dy:44.6
 
 bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 
-bx,by,b = DIVAnd.extract_bath(bathname,true,lonr,latr)
+bx,by,h = DIVAnd.extract_bath(bathname,true,lonr,latr)
 
 mask = h .< 0
 h[h .< 0] = 0;
