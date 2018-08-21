@@ -35,7 +35,7 @@ jsizet=12
 # jsize=40
 # jsizez=40
 # jsizet=40
-mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_rectdom(linspace(-1,1,jsize),linspace(-1,1,jsize),linspace(-1,1,jsizez),linspace(-1,1,jsizet))
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_rectdom(range(-1,stop=1,length=jsize),range(-1,stop=1,length=jsize),range(-1,stop=1,length=jsizez),range(-1,stop=1,length=jsizet))
 
 # correlation length
 #len = (0.4,0.4,0.2,0.2)

@@ -94,8 +94,8 @@ end
 # The last grid is the final grid
 
 xi = (
-    (collect(linspace(0,4*pi,400)),),  # coarse grid
-    (collect(linspace(0,4*pi,400)),)   # fine grid
+    (collect(range(0,stop=4*pi,length=400)),),  # coarse grid
+    (collect(range(0,stop=4*pi,length=400)),)   # fine grid
 )
 
 

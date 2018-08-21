@@ -23,7 +23,7 @@ z=randn(nobs)
 f=x+y.*z
 
 jsize=50
-mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(linspace(-1,1,jsize),linspace(-1,1,jsize),linspace(-1,1,jsize))
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(range(-1,stop=1,length=jsize),range(-1,stop=1,length=jsize),range(-1,stop=1,length=jsize))
 
 # correlation length
 len = (0.4,0.4,0.4)

@@ -13,8 +13,8 @@ y = [0.,-.7,0.7,0.7];
 f = [1.,-1.,1.,-1.];
 
 # final grid
-xi,yi = ndgrid(linspace(-1,1,81),linspace(-1,1,81));
-xifin,yifin = ndgrid(linspace(-10,10,801),linspace(-10,10,801));
+xi,yi = ndgrid(range(-1,stop=1,length=81),range(-1,stop=1,length=81));
+xifin,yifin = ndgrid(range(-10,stop=10,length=801),range(-10,stop=10,length=801));
 
 varb1=0
 Bi=0

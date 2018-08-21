@@ -20,7 +20,7 @@ f = sin.(x*6) .* cos.(y*6);
 f = f+randn(nobs);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,100));
+xi,yi = ndgrid(range(0,stop=1,length=100),range(0,stop=1,length=100));
 
 # all points are valid points
 mask = trues(xi);

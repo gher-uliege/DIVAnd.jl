@@ -13,7 +13,7 @@ x = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1]
 f = sin.(x*6);
 
 # final grid
-xi=collect(linspace(0,1,30));
+xi=collect(range(0,stop=1,length=30));
 
 # reference field
 fref = sin.(xi*6) ;

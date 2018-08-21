@@ -21,7 +21,7 @@ jmsize=120
 f = sin.(x*6) .* cos.(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,jmsize),linspace(0,1,jmsize));
+xi,yi = ndgrid(range(0,stop=1,length=jmsize),range(0,stop=1,length=jmsize));
 
 # reference field
 fref = sin.(xi*6) .* cos.(yi*6);

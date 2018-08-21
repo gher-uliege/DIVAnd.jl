@@ -16,7 +16,7 @@ y=randn(200)
 z=randn(200)
 f=x+y
 
-mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(linspace(-1,1,40),linspace(-1,1,40),linspace(-1,1,40))
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(range(-1,stop=1,length=40),range(-1,stop=1,length=40),range(-1,stop=1,length=40))
 
 # correlation length
 len = (0.2,0.2,0.2)

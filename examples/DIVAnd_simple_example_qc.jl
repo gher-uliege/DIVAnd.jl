@@ -38,7 +38,7 @@ y[2]=0.25
 
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,30),linspace(0,1,30));
+xi,yi = ndgrid(range(0,stop=1,length=30),range(0,stop=1,length=30));
 
 
 # all points are valid points

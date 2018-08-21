@@ -22,7 +22,7 @@ y = [150.];
 f = [1.];
 
 # final grid
-xi,yi = ndgrid(linspace(1,299,299),linspace(1,299,299));
+xi,yi = ndgrid(range(1,stop=299,length=299),range(1,stop=299,length=299));
 
 # all points are valid points
 mask = trues(xi);
@@ -52,7 +52,7 @@ y = [30.];
 f = [1.];
 
 # final grid
-xi,yi = ndgrid(linspace(1,59,59),linspace(1,59,59));
+xi,yi = ndgrid(range(1,stop=59,length=59),range(1,stop=59,length=59));
 
 # all points are valid points
 mask = trues(xi);
@@ -98,7 +98,7 @@ y = [58.95];
 f = [1.];
 
 # final grid
-xi,yi = ndgrid(linspace(1,59,59),linspace(1,59,59));
+xi,yi = ndgrid(range(1,stop=59,length=59),range(1,stop=59,length=59));
 
 
 

@@ -13,7 +13,7 @@ y = [2  3  4];
 f=ones(3)
 
 # final grid
-xi,yi = ndgrid(linspace(0,6,50),linspace(0,5,30));
+xi,yi = ndgrid(range(0,stop=6,length=50),range(0,stop=5,length=30));
 
 
 # all points are valid points

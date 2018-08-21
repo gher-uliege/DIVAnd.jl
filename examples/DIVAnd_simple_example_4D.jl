@@ -26,10 +26,10 @@ testsizet=4
 # mask: all points are valid points
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension,...
-mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_rectdom(linspace(0,1,testsizexy),
-                                                  linspace(0,1,testsizexy),
-                                                  linspace(0,1,testsizez),
-                                                  linspace(0,1,testsizet))
+mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_rectdom(range(0,stop=1,length=testsizexy),
+                                                  range(0,stop=1,length=testsizexy),
+                                                  range(0,stop=1,length=testsizez),
+                                                  range(0,stop=1,length=testsizet))
 
 # reference field
 fref = fun.(xi,yi,zi,ti)

@@ -13,7 +13,7 @@ y = rand(75);
 f = sin.(x*6) .* cos.(y*6);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,401),linspace(0,1,401));
+xi,yi = ndgrid(range(0,stop=1,length=401),range(0,stop=1,length=401));
 
 # reference field
 fref = sin.(xi*6) .* cos.(yi*6);

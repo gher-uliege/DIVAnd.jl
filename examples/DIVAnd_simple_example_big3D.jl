@@ -17,7 +17,7 @@ f = sin.(x*6) .* cos.(y*6)+sin.(z*6) .* cos.(x*6) ;
 #
 testsize=300
 testsizez=3
-xi,yi,zi = ndgrid(linspace(0,1,testsize),linspace(0,1,testsize),linspace(0,1,testsizez));
+xi,yi,zi = ndgrid(range(0,stop=1,length=testsize),range(0,stop=1,length=testsize),range(0,stop=1,length=testsizez));
 
 # reference field
 fref = sin.(xi*6) .* cos.(yi*6)+sin.(zi*6) .* cos.(xi*6);

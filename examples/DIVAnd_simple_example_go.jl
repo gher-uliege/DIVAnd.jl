@@ -28,7 +28,7 @@ f = sin.(x*6) .* cos.(y*6);
 # f=[1,1]
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,950),linspace(0,1,830));
+xi,yi = ndgrid(range(0,stop=1,length=950),range(0,stop=1,length=830));
 
 # reference field
 fref = sin.(xi*6) .* cos.(yi*6);

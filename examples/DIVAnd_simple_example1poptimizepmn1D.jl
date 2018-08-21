@@ -20,9 +20,9 @@ alpha=zeros(lpmsize,dsoverlsize)
 varb=zeros(lpmsize,dsoverlsize)
 varr=zeros(lpmsize,dsoverlsize)
 
-lpm=collect(linspace(4,40,lpmsize))
+lpm=collect(range(4,stop=40,length=lpmsize))
 lpmc=zeros(lpmsize)
-dsoverl=collect(linspace(4,20,dsoverlsize))
+dsoverl=collect(range(4,stop=20,length=dsoverlsize))
 
 
 
@@ -71,7 +71,7 @@ for iround=1:2
                 x = [0.5];
                 f = [1.];
 
-                xi = collect(linspace(0,1,isize));
+                xi = collect(range(0,stop=1,length=isize));
 
 
 

@@ -18,7 +18,7 @@ y = rand(75);
 f = fun.(x,y)
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,100),linspace(0,1,110));
+xi,yi = ndgrid(range(0,stop=1,length=100),range(0,stop=1,length=110));
 
 # reference field
 fref = fun.(xi,yi)

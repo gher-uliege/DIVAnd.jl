@@ -30,7 +30,7 @@ jsizey=70*2
 jsizet=20
 
 ffull=false
-mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(linspace(-1,1,jsizex),linspace(-1,1,jsizey),linspace(-1,1,jsizet))
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(range(-1,stop=1,length=jsizex),range(-1,stop=1,length=jsizey),range(-1,stop=1,length=jsizet))
 
 # correlation length
 len = (0.2,0.2,0.1)

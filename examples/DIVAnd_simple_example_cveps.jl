@@ -20,7 +20,7 @@ f = sin.(x*6) .* cos.(y*6);
 f = f + randn(nobs);
 
 # final grid
-xi,yi = ndgrid(linspace(0,1,70),linspace(0,1,70));
+xi,yi = ndgrid(range(0,stop=1,length=70),range(0,stop=1,length=70));
 
 # reference field
 fref = sin.(6xi) .* cos.(6yi);

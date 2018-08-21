@@ -16,7 +16,7 @@ f=[1.]
 
 
 
-mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(linspace(-1,1,40),linspace(-2,2,45),linspace(-1.5,1.5,50))
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_rectdom(range(-1,stop=1,length=40),range(-2,stop=2,length=45),range(-1.5,stop=1.5,length=50))
 
 # correlation length
 len = (0.1,0.2,0.15)

@@ -27,7 +27,7 @@ for j=1:1000
 
     idim=59
     # final grid
-    xi,yi = ndgrid(linspace(0,30,idim),linspace(0,30,idim));
+    xi,yi = ndgrid(range(0,stop=30,length=idim),range(0,stop=30,length=idim));
 
 
 

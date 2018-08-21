@@ -25,7 +25,7 @@ t = rand(nobs)*testsizet;
 f = sin.(x*pi/180) .* cos.(y*pi/180.)+sin.(z*6/50) .* cos.(x*6*pi/180) .* sin.(t*2*pi/12);
 
 
-xi,yi,zi,ti = ndgrid(linspace(1,testsizex,testsizex),linspace(1,testsizey,testsizey),linspace(1,testsizez,testsizez),linspace(1,testsizet,testsizet));
+xi,yi,zi,ti = ndgrid(range(1,stop=testsizex,length=testsizex),range(1,stop=testsizey,length=testsizey),range(1,stop=testsizez,length=testsizez),range(1,stop=testsizet,length=testsizet));
 
 # reference field
 fref = sin.(xi*pi/180) .* cos.(yi*pi/180.)+sin.(zi*6/50) .* cos.(xi*6*pi/180) .* sin.(ti*2*pi/12);

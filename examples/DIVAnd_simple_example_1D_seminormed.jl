@@ -8,12 +8,12 @@ using PyPlot
 include("./prep_dirs.jl")
 
 # observations with points outside
-x = collect(linspace(0,1,7))
+x = collect(range(0,stop=1,length=7))
 f = sin.(3*pi*x) ;
 
 # final grid
 
-xi=collect(linspace(-0.1,1.1,220));
+xi=collect(range(-0.1,stop=1.1,length=220));
 
 # reference field
 fref = sin.(xi*6*pi) ;
