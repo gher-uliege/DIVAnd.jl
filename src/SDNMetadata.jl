@@ -506,8 +506,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_max" => maximum(lon),
         "latitude_min" => minimum(lat),
         "latitude_max" => maximum(lat),
-        "elevation_min" => minimum(depth),
-        "elevation_max" => maximum(depth),
+        "elevation_min" => minimum(-depth),
+        "elevation_max" => maximum(-depth),
         "time_min" => Dates.format(minimum(obstime),isodateformat),
         "time_max" => Dates.format(maximum(obstime),isodateformat),
         "default_field_min" => default_field_min,
@@ -676,6 +676,11 @@ tags are the strings inside {{ and }}.
 If `filepath` is a vector of file names, the argument `WMSlayername` can be provided to give
 additional information to distinguish between the NetCDF files. The elements of the vector of string
 will be appended to the description of the WMS layer.
+
+The resulting XML file includes the file names (provided by `filepath`).
+Do not change the file names after running this function, otherwise the
+XML will still contain a reference to the old file names. If you must change the
+file names please do so before running this script.
 
 ### Example
 
