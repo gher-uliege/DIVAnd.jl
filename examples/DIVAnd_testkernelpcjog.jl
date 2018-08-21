@@ -33,7 +33,7 @@ scalel=1.25715/0.69315
 
 #@time fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1);
 
-@time fipca,spc = DIVAndjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2,2,2,2],[scalel,scalel,scalel,0];alphabc=1);
+@time fipca,spc = DIVAndjog(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[2,2,2,2],[scalel,scalel,scalel,0];alphabc=1.);
 
 tol = 2e-3
 
@@ -49,7 +49,7 @@ diagshift=0.00004;
 
 
 
-@time fiiter,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg);
+@time fiiter,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=1.,pcargs...,inversion=:pcg);
 
 var(fipca-fiiter)/var(fipca)
 

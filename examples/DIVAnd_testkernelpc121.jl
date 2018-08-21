@@ -36,7 +36,7 @@ PCA=spc.P
 xguessa = fipca
 
 
-@time fipcb,spc = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,len*scalel,len*scalel,len*scalel),epsilon2;alphabc=1,alpha=[1,2,1]);
+@time fipcb,spc = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.,len*scalel,len*scalel,len*scalel),epsilon2;alphabc=1,alpha=[1,2,1]);
 PCB=spc.P
 #mpca=mean(diag(PCA))
 #@show mpca

@@ -39,7 +39,7 @@ epsilon2b=(1+epsilon2)^0.2-1
 alpha1D=[]
 
 #epsilon2b=epsilon2
-@time fi1,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.4*1,0,0),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi1,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.4*1,0.,0.),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC1=s.P
 H1=s.H
@@ -48,7 +48,7 @@ xg1=statevector_pack(s.sv,(fi1,))
 
 
 
-@time fi2,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0, 0.4*1,0),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi2,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0., 0.4*1,0.),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC2=s.P
 H2=s.H
@@ -56,7 +56,7 @@ H2=s.H
 xg2=statevector_pack(s.sv,(fi2,))
 
 
-@time fi3,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,0.4*1),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi3,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.,0.,0.4*1),epsilon2b;alphabc=1,alpha=alpha1D);
 
 @show extrema(s.H-H1)
 @show extrema(s.H-H2)

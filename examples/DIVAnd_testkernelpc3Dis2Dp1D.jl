@@ -52,7 +52,7 @@ epsilon2b=1000.
 alpha1D=[]
 
 #epsilon2b=epsilon2
-@time fi1,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0,0,len[3]/1.414),epsilon2b;alphabc=1,alpha=alpha1D);
+@time fi1,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(0.,0.,len[3]/1.414),epsilon2b;alphabc=1,alpha=alpha1D);
 
 PC1=s.P
 H1=s.H
@@ -60,7 +60,7 @@ xg1=statevector_pack(s.sv,(fi1,))
 
 
 
-@time fi3,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(len[1],len[2],0),epsilon2;alphabc=1,alpha=alpha1D);
+@time fi3,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,(len[1],len[2],0.),epsilon2;alphabc=1,alpha=alpha1D);
 
 
 

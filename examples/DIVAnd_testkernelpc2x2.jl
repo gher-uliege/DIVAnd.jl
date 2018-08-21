@@ -30,14 +30,14 @@ epsilon2 = 1.;
 
 @time fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2;alphabc=2);
 
-@time fipca,spc = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.4,0.4,0,0),epsilon2;alphabc=2);
+@time fipca,spc = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.4,0.4,0.,0.),epsilon2;alphabc=2);
 PCA=spc.P
 #mpca=mean(diag(PCA))
 #@show mpca
 xguessa=statevector_pack(spc.sv,(fipca,))
 mga=mean(xguessa)
 @show mga
-@time fipcb,spcb = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,0.4,0.4),epsilon2;alphabc=2);
+@time fipcb,spcb = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.,0.,0.4,0.4),epsilon2;alphabc=2);
 PCB=spcb.P
 #mpcb=mean(diag(PCB))
 #@show mpcb

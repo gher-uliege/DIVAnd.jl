@@ -48,7 +48,7 @@ epsilon2 = 0.3;
 
 
 epsilon2b=1000.
-@time fi1,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0,0,len[3]/1.42,len[4]/1.42),epsilon2b;alphabc=1);
+@time fi1,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(0.,0.,len[3]/1.42,len[4]/1.42),epsilon2b;alphabc=1);
 
 sv = s.sv
 PC1=s.P
@@ -57,7 +57,7 @@ s=0
 gc()
 @show size(PC1)
 
-@time fi2,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(len[1],len[1],0,0),epsilon2;alphabc=1);
+@time fi2,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(len[1],len[1],0.,0.),epsilon2;alphabc=1);
 
 
 PC2=s.P
