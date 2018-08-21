@@ -4,6 +4,7 @@ else
     using Base.Test
 end
 using DIVAnd
+using Compat: @info, range
 using PyPlot
 
 varname = "Salinity"

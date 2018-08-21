@@ -2,6 +2,7 @@
 # with observations from an analytical function.
 
 using DIVAnd
+using Compat: @info, range
 using PyPlot
 
 # function to interpolate

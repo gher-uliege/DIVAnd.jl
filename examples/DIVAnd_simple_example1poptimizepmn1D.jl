@@ -11,6 +11,7 @@
 # Then the same but with data at the border
 
 using DIVAnd
+using Compat: @info, range
 using PyPlot
 varb1=0
 lpmsize=37

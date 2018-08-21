@@ -7,6 +7,7 @@ using different grid resolution, correlation length etc.
 =#
 
 using DIVAnd
+using Compat: @info, range
 using PyPlot
 using NetCDF
 

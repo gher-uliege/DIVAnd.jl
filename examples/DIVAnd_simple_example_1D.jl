@@ -3,6 +3,7 @@
 
 using DIVAnd
 using Compat: @info, range
+using Compat: @info, range
 using PyPlot
 
 include("./prep_dirs.jl")

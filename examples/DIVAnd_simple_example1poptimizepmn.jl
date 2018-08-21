@@ -11,6 +11,7 @@
 # Then the same but with data at the border
 
 using DIVAnd
+using Compat: @info, range
 using PyPlot
 len = 4;
 aj=zeros(1000)
