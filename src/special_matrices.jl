@@ -65,7 +65,7 @@ Base.:*(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 @static if VERSION >= v"0.7.0-beta.0"
 # another workaround for julia 0.7.0
 # https://github.com/JuliaLang/julia/issues/28363
-Base.:*(C::CovarIS, M::Adjoint{Float64,SparseMatrixCSC{Float64,Int64}}) = A_mul_B(C,copy(M))
+Base.:*(C::CovarIS, M::Adjoint{Float64,SparseMatrixCSC{Float64,Int}}) = A_mul_B(C,copy(M))
 end
 
 @static if VERSION < v"0.7.0"
