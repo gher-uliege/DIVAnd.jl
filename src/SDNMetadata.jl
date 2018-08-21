@@ -677,6 +677,11 @@ If `filepath` is a vector of file names, the argument `WMSlayername` can be prov
 additional information to distinguish between the NetCDF files. The elements of the vector of string
 will be appended to the description of the WMS layer.
 
+The resulting XML file includes the file names (provided by `filepath`).
+Do not change the file names after running this function, otherwise the
+XML will still contain a reference to the old file names. If you must change the
+file names please do so before running this script.
+
 ### Example
 
 ```julia
