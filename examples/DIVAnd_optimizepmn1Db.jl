@@ -72,7 +72,7 @@ for j=1:500
     # pm is the inverse of the resolution along the 1st dimension
     # pn is the inverse of the resolution along the 2nd dimension
 
-    pm = ones(xi) / (xi[2]-xi[1]);
+    pm = ones(size(xi)) / (xi[2]-xi[1]);
     # obs. error variance normalized by the background error variance
 
 

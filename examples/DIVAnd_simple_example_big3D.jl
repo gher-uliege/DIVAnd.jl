@@ -29,9 +29,9 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1,1]-xi[1,1,1]);
-pn = ones(xi) / (yi[1,2,1]-yi[1,1,1]);
-po = ones(xi) / (zi[1,1,2]-zi[1,1,1]);
+pm = ones(size(xi)) / (xi[2,1,1]-xi[1,1,1]);
+pn = ones(size(xi)) / (yi[1,2,1]-yi[1,1,1]);
+po = ones(size(xi)) / (zi[1,1,2]-zi[1,1,1]);
 
 # correlation length
 len = 0.5;

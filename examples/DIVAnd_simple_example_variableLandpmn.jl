@@ -23,8 +23,8 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 1;
@@ -41,7 +41,7 @@ fis,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(len*0.5,len*1.5),epsilon2);
 
 @show  sampler1=DIVAnd_sampler((pm,pn),(len*0.5,len*1.5))
 
-pm=ones(xi)./((1+xi/5).*(xi[2,1]-xi[1,1]));
+pm=ones(size(xi))./((1+xi/5).*(xi[2,1]-xi[1,1]));
 pn=ones(yi)./((1+yi/5).*(yi[1,2]-yi[1,1]));
 
 lx=0.5+xi/5

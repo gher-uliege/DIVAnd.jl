@@ -31,8 +31,8 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 
 # correlation length
 len = 10;
@@ -61,8 +61,8 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 #Test to push boundary to wider distance:
 
 alen=1.5*len
@@ -109,8 +109,8 @@ mask = trues(xi);
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(xi) / (xi[2,1]-xi[1,1]);
-pn = ones(xi) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
+pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
 alen=1.5*len
 pn[:,59]=pn[:,59]/alen;
 pn[:,1]=pm[:,1]/alen;

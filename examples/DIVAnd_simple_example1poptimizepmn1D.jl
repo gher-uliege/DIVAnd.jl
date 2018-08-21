@@ -82,7 +82,7 @@ for iround=1:2
                 # pm is the inverse of the resolution along the 1st dimension
                 # pn is the inverse of the resolution along the 2nd dimension
 
-                pm = ones(xi) / (xi[2]-xi[1]);
+                pm = ones(size(xi)) / (xi[2]-xi[1]);
                 # obs. error variance normalized by the background error variance
                 epsilon2 = 10000.;
 
@@ -118,7 +118,7 @@ for iround=1:2
             varb[ii,jj]=vj[indmin(vj)]
 
             # now reference var
-            pm = ones(xi) / (xi[2]-xi[1]);
+            pm = ones(size(xi)) / (xi[2]-xi[1]);
             # obs. error variance normalized by the background error variance
             epsilon2 = 10000.;
 
