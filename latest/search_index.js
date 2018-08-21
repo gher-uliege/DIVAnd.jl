@@ -109,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.random",
     "category": "function",
-    "text": "field = DIVAnd.random(mask,pmn,len,Nens)\n\nCreate Nens random fields with the correlation length len in  a domain with the mask mask and the metric pmn.\n\nSee DIVAnd.DIVAndrun for more information about these parameters.\n\n\n\n"
+    "text": "field = DIVAnd.random(mask,pmn,len,Nens)\n\nCreate Nens random fields with the correlation length len in a domain with the mask mask and the metric pmn.\n\nSee DIVAnd.DIVAndrun for more information about these parameters.\n\n\n\n"
 },
 
 {
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.distance",
     "category": "function",
-    "text": "d = distance(lat1,lon1,lat2,lon2)\n\nCompute the great-circle distance between the points (lat1,lon1) and (lat2,lon2). The units of all input and output parameters are degrees.\n\n\n\nd = distance([lon1,lat1],[lon2,lat2])\n\nThe same as distance(lat1,lon1,lat2,lon2) but there the arguments are vectors  and the order is longitude then latitude.\n\nThe units of all input and output parameters are degrees.\n\n\n\n"
+    "text": "d = distance(lat1,lon1,lat2,lon2)\n\nCompute the great-circle distance between the points (lat1,lon1) and (lat2,lon2). The units of all input and output parameters are degrees.\n\n\n\nd = distance([lon1,lat1],[lon2,lat2])\n\nThe same as distance(lat1,lon1,lat2,lon2) but there the arguments are vectors and the order is longitude then latitude.\n\nThe units of all input and output parameters are degrees.\n\n\n\n"
 },
 
 {
@@ -133,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.backgroundfile",
     "category": "function",
-    "text": "fun = backgroundfile(fname,varname)\n\nReturn a function fun which is used in DIVAnd to make  anomalies out of observations based relative to the field defined in the NetCDF variable varname in the NetCDF file  fname. It is assumed that the NetCDF variables has the variable lon, lat and depth. And that the NetCDF variable is defined on the  same grid as the analysis.\n\n\n\n"
+    "text": "fun = backgroundfile(fname,varname)\n\nReturn a function fun which is used in DIVAnd to make anomalies out of observations based relative to the field defined in the NetCDF variable varname in the NetCDF file fname. It is assumed that the NetCDF variables has the variable lon, lat and depth. And that the NetCDF variable is defined on the same grid as the analysis.\n\n\n\n"
 },
 
 {
@@ -197,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.DIVAnd_rectdom",
     "category": "function",
-    "text": "mask,pmn,xyi = DIVAnd_rectdom(coord1,coord2,...)\n\nCreate a \"rectangular\" domain in n dimensions with the coordinates coord1 coord2... assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nFor example:\n\njulia> mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(linspace(0,1,50),linspace(0,1,50))\n\n\n\n"
+    "text": "mask,pmn,xyi = DIVAnd_rectdom(coord1,coord2,...)\n\nCreate a \"rectangular\" domain in n dimensions with the coordinates coord1 coord2... assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nFor example:\n\njulia> mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(range(0,stop=1,length=50),linspace(0,stop=1,length=50))\n\n\n\n"
 },
 
 {
@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.DIVAnd_squaredom",
     "category": "function",
-    "text": "mask,pmn,xyi = DIVAnd_squaredom(n,coord)\n\nCreate a \"square\" domain in n dimensions with the coordinates coord assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nExample\n\nmask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,linspace(0,1,50))\n\n\n\n"
+    "text": "mask,pmn,xyi = DIVAnd_squaredom(n,coord)\n\nCreate a \"square\" domain in n dimensions with the coordinates coord assuming a Catersian metric. This functions returns the mask mask, the coordinates (xi,yi,...) and the metric (pm,pn...).\n\nExample\n\nmask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0,stop=1,length=50))\n\n\n\n"
 },
 
 {
@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.NCSDN.load",
     "category": "function",
-    "text": "data,lon,lat,z,time,ids = load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE]) where TS <: AbstractString\n\n\n\ndata,lon,lat,z,time,ids = SDN.load(T,fnames,param; qualityflags = ...)\n\nLoad all data in the vector of file names fnames corresponding to the parameter  param as the data type T. Only the data with the quality flags  SDN.good_data and SDN.probably_good_data are loaded per default. The output parameters correspondata to the data, longitude, latitude, depth, time (as DateTime) and an identifier (as String).\n\n\n\n"
+    "text": "data,lon,lat,z,time,ids = load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE]) where TS <: AbstractString\n\n\n\ndata,lon,lat,z,time,ids = SDN.load(T,fnames,param; qualityflags = ...)\n\nLoad all data in the vector of file names fnames corresponding to the parameter param as the data type T. Only the data with the quality flags SDN.good_data and SDN.probably_good_data are loaded per default. The output parameters correspondata to the data, longitude, latitude, depth, time (as DateTime) and an identifier (as String).\n\n\n\n"
 },
 
 {
@@ -261,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.NCSDN.loadvar",
     "category": "function",
-    "text": "data = loadvar(ds,param;\n               fillvalue::T = NaN,\n               qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],\n               qfname = param * QC_SUFFIX,\n               )\n\nLoad the NetCDF variable param from the NCDataset ds.  Data points not having the provide quality flags will be masked by fillvalue. qfname is the NetCDF variable name for the quality flags.\n\n\n\n"
+    "text": "data = loadvar(ds,param;\n               fillvalue::T = NaN,\n               qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],\n               qfname = param * QC_SUFFIX,\n               )\n\nLoad the NetCDF variable param from the NCDataset ds. Data points not having the provide quality flags will be masked by fillvalue. qfname is the NetCDF variable name for the quality flags.\n\n\n\n"
 },
 
 {
@@ -317,7 +317,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.DIVAnd_cv",
     "category": "function",
-    "text": "bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method;...);\n\nInput\n\nSame as for DIVAndrun with three more parameters nl,ne and method\n\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nxi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations minus the background estimate (m-by-1 array).   (see note)\nlen: correlation length\nepsilon2: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\nnl: number of testing points around the current value of L. 1 means one additional point on both sides of the current L. 0 is allowed and means the parameter is not optimised.\nne: number of testing points around the current value of epsilon2. 0 is allowed as for nl\nmethod: cross validation estimator method 1: full CV  2: sampled CV 3: GCV 0: automatic choice between the three possible ones, default value\nOptional input arguments specified via keyword arguments are the same as for DIVAnd\n\nOutput:\n\nbestfactorl: best estimate of the multiplication factor to apply to len\nbestfactore: best estimate of the multiplication factor to apply to epsilon2\ncvvales : the cross validation values calculated\nfactors : the tested multiplication factors\ncvinter : interpolated cv values for final optimisation\nX2Data, Y2Data : coordinates of sampled cross validation in L,epsilon2 space . Normally only used for debugging or plotting\nXi2D, Yi2D : coordinates of interpolated estimator . Normally only used for debugging or plotting\n\nThe output bestfactorl and bestfactore represent multiplication factors which should be applied to L and epsilon2.\n\nThe len and epsilon2 provided should be close the real one as the tests will be performed around.\n\n\n\n"
+    "text": "bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method;...);\n\nInput\n\nSame as for DIVAndrun with three more parameters nl,ne and method\n\nmask: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.\npmn: scale factor of the grid. pmn is a tuple with n elements. Every      element represents the scale factor of the corresponding dimension. Its      inverse is the local resolution of the grid in a particular dimension.\nxi: tuple with n elements. Every element represents a coordinate of the final grid on which the observations are interpolated\nx: tuple with n elements. Every element represents a coordinate of the observations\nf: value of the observations minus the background estimate (m-by-1 array).   (see note)\nlen: correlation length\nepsilon2: error variance of the observations (normalized by the error variance of the background field). epsilon2 can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If epsilon2 is a scalar, it is thus the inverse of the signal-to-noise ratio.\nnl: number of testing points around the current value of L. 1 means one additional point on both sides of the current L. 0 is allowed and means the parameter is not optimised.\nne: number of testing points around the current value of epsilon2. 0 is allowed as for nl\nmethod: cross validation estimator method 1: full CV 2: sampled CV 3: GCV 0: automatic choice between the three possible ones, default value\nOptional input arguments specified via keyword arguments are the same as for DIVAnd\n\nOutput:\n\nbestfactorl: best estimate of the multiplication factor to apply to len\nbestfactore: best estimate of the multiplication factor to apply to epsilon2\ncvvales : the cross validation values calculated\nfactors : the tested multiplication factors\ncvinter : interpolated cv values for final optimisation\nX2Data, Y2Data : coordinates of sampled cross validation in L,epsilon2 space . Normally only used for debugging or plotting\nXi2D, Yi2D : coordinates of interpolated estimator . Normally only used for debugging or plotting\n\nThe output bestfactorl and bestfactore represent multiplication factors which should be applied to L and epsilon2.\n\nThe len and epsilon2 provided should be close the real one as the tests will be performed around.\n\n\n\n"
 },
 
 {
@@ -349,7 +349,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.lengraddepth",
     "category": "function",
-    "text": "RL = lengraddepth(pmn,h, L;\n                  h2 = h,\n                  hmin = 0.001\n                  )\n\nCreate the relative correlation length-scale field RL based on the bathymetry  h and the metric pmn (tuple of arrays). Effectively the correlation-length  scale is close to zero if the relative bathymetry gradients (|∇h|/h) are smaller  than the length-scale L (in consistent units as pmn).\n\nR_L = 1 / (1 + L |∇h| / max(h2,hmin))\n\nPer default h2 is equal to h. The depth h must be positive. hmin must  have the same units as h (usually meters).\n\n\n\n"
+    "text": "RL = lengraddepth(pmn,h, L;\n                  h2 = h,\n                  hmin = 0.001\n                  )\n\nCreate the relative correlation length-scale field RL based on the bathymetry h and the metric pmn (tuple of arrays). Effectively the correlation-length scale is close to zero if the relative bathymetry gradients (|∇h|/h) are smaller  than the length-scale L (in consistent units as pmn).\n\nR_L = 1 / (1 + L |∇h| / max(h2,hmin))\n\nPer default h2 is equal to h. The depth h must be positive. hmin must have the same units as h (usually meters).\n\n\n\n"
 },
 
 {
@@ -365,7 +365,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.weight_RtimesOne",
     "category": "function",
-    "text": " weights = weight_RtimesOne(x,len)\n\nCompute the weight of the observations at location x to reduce the influence  of locally clustered data.  x is a tuple with n elements. Every element  represents a coordinate of the observations. len is a tuple of arrays representing the correlation length. len[i] is the correlation length in the  i-th dimension.\n\n\n\n"
+    "text": " weights = weight_RtimesOne(x,len)\n\nCompute the weight of the observations at location x to reduce the influence of locally clustered data.  x is a tuple with n elements. Every element represents a coordinate of the observations. len is a tuple of arrays representing the correlation length. len[i] is the correlation length in the i-th dimension.\n\n\n\n"
 },
 
 {
@@ -373,7 +373,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.Rtimesx!",
     "category": "function",
-    "text": "Rtimesx!(coord,LS,x,Rx)\n\nGaussian type R matix in ndim dimensions applied to vector x of length  ndata. The Gaussian scale differs in each direction k : LS[k] Coordinates of point i are coord[i,1],coord[i,2],...,coord[i,ndim] To avoid an ndata² complexity a grid is set up first so as to allow only to calculate covarances when distances are smaller than 3*LS\n\nAdapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90\n\n\n\n"
+    "text": "Rtimesx!(coord,LS,x,Rx)\n\nGaussian type R matix in ndim dimensions applied to vector x of length ndata. The Gaussian scale differs in each direction k : LS[k] Coordinates of point i are coord[i,1],coord[i,2],...,coord[i,ndim] To avoid an ndata² complexity a grid is set up first so as to allow only to calculate covarances when distances are smaller than 3*LS\n\nAdapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90\n\n\n\n"
 },
 
 {
@@ -382,110 +382,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Parameter optimization",
     "category": "section",
     "text": "DIVAnd.fit_isotropic\nDIVAnd.fit\nDIVAnd.DIVAnd_cv\nDIVAnd.empiriccovar\nDIVAnd.fithorzlen\nDIVAnd.fitvertlen\nDIVAnd.lengraddepth\nDIVAnd.DIVAnd_cvestimator\nDIVAnd.weight_RtimesOne\nDIVAnd.Rtimesx!"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.@urn_str",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.@urn_str",
-    "category": "macro",
-    "text": "urn\"SDN:x:y:z\'\n\nResolve a SeaDataNet URN (Uniform Resource Name) using https://www.seadatanet.org/urnurl/\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.CFVocab",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.CFVocab",
-    "category": "type",
-    "text": "collection = Vocab.CFVocab()\ncollection = Vocab.CFVocab(url = url)\n\nCreate a Dict-like object represeting the NetCDF CF Standard Name vocabulary. If the url is not provided then current CF Standard Name list http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml is used. Individual standard names are retirved by indexing which return an object of the type CFEntry:\n\ncollection = Vocab.CFVocab()\nentry = collection[\"sea_water_temperature\"]\n\n\n\n"
-},
-
-{
-    "location": "index.html#Base.haskey-Tuple{DIVAnd.Vocab.CFVocab,Any}",
-    "page": "DIVAnd.jl documentation",
-    "title": "Base.haskey",
-    "category": "method",
-    "text": "bool = haskey(collection::CFVocab,stdname)\n\nReturn true if stdname is part of the NetCDF CF Standard Name vocabulary collection.\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.SDNCollection",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.SDNCollection",
-    "category": "function",
-    "text": "collection = SDNCollection(name)\n\nOpen the SeaDataNet collection with the name name at the URL http://www.seadatanet.org/urnurl/collection/ The collection can be indexed with brackets using the identifier.\n\nusing DIVAnd\ncollection = Vocab.SDNCollection(\"P01\")\nconcept = collection[\"PSALPR01\"]\n@show Vocab.prefLabel(concept)\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.prefLabel",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.prefLabel",
-    "category": "function",
-    "text": "s = Vocab.prefLabel(c::Vocab.Concept)\n\nReturn the preferred label of a concept c\n\n\n\ns = Vocab.prefLabel(urn::AbstractString)\n\nReturn the preferred label of a concept usings it URN (Uniform Resource Name)\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.altLabel",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.altLabel",
-    "category": "function",
-    "text": "s = Vocab.altLabel(c::Vocab.Concept)\n\nReturn the alternative label of a concept c\n\n\n\ns = Vocab.altLabel(urn::AbstractString)\n\nReturn the alternative label of a concept usings it URN (Uniform Resource Name)\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.notation",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.notation",
-    "category": "function",
-    "text": "s = Vocab.notation(c::Vocab.Concept)\n\nReturn the identifier of a concept c\n\n\n\ns = Vocab.notation(urn::AbstractString)\n\nReturn the identifier of a concept usings it URN (Uniform Resource Name)\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.definition",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.definition",
-    "category": "function",
-    "text": "s = Vocab.definition(c::Vocab.Concept)\n\nReturn the definition of a concept c\n\n\n\ns = Vocab.definition(urn::AbstractString)\n\nReturn the definition of a concept usings it URN (Uniform Resource Name)\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.resolve",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.resolve",
-    "category": "function",
-    "text": "entry = Vocab.resolve(urn)\n\nResolve a SeaDataNet URN (Uniform Resource Name) and returns the corresponding EDMO entry or Vocabulary concept. For example:\n\nconcept = Vocab.resolve(\"SDN:P021:current:TEMP\")\n\n\n\n"
-},
-
-{
-    "location": "index.html#Base.find-Tuple{DIVAnd.Vocab.Concept,Any,Any}",
-    "page": "DIVAnd.jl documentation",
-    "title": "Base.find",
-    "category": "method",
-    "text": "find(c::Concept,name,collection)\n\nReturn a list of related concepts in the collection collection. name can be the string \"related\", \"narrower\", \"broader\".\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.description",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.description",
-    "category": "function",
-    "text": "str = description(entry::CFEntry)\nstr = canonical_units(entry::CFEntry)\n\nReturn the description or the canonical units of the `entry`.\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.canonical_units",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.canonical_units",
-    "category": "function",
-    "text": "str = description(entry::CFEntry)\nstr = canonical_units(entry::CFEntry)\n\nReturn the description or the canonical units of the `entry`.\n\n\n\n"
-},
-
-{
-    "location": "index.html#DIVAnd.Vocab.splitURL",
-    "page": "DIVAnd.jl documentation",
-    "title": "DIVAnd.Vocab.splitURL",
-    "category": "function",
-    "text": "collection,tag,key = Vocab.splitURL(url)\n\nSplit a concept URL into collection, tag and key. url must finishe with a slash.\n\n\n\n"
 },
 
 {
@@ -541,7 +437,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Base.ind2sub",
     "category": "function",
-    "text": "subscripts = ind2ind(sv,index)\n\nCompute from linear index in the packed state vector a tuple of subscripts. The first element of the subscript indicates the variable index and the remaining the spatial subscripts.\n\n\n\n"
+    "text": "subscripts = ind2sub(sv,index)\n\nCompute from linear index in the packed state vector a tuple of subscripts. The first element of the subscript indicates the variable index and the remaining the spatial subscripts.\n\n\n\n"
 },
 
 {
@@ -749,7 +645,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.conjugategradient",
     "category": "function",
-    "text": "x,success,niter = conjugategradient(fun!,b)\n\nSolve a linear system with the preconditioned conjugated-gradient method: A x = b where A is a symmetric positive defined matrix and b is a vector.  Equivalently the solution x minimizes the cost function  J(x) = ½ xᵀ A x - bᵀ x.\n\nThe function fun!(x,fx) computes fx which is equal to  A*x. For example:\n\nfunction fun!(x,fx)\n    fx[:] = A*x\nend\n\nNote that the following code will NOT work, because a new array fx would be created and it would not be passed back to the caller.\n\nfunction fun!(x,fx)\n    fx = A*x # bug!\nend\n\nThe function fun! works in-place to reduce the amount of memory allocations.\n\nOptional input arguments\n\nx0: starting vector for the interations\ntol: tolerance on  |Ax-b| / |b|\nmaxit: maximum of interations\npc!: the preconditioner. The functions pc(x,fx) computes fx = M⁻¹ x (the inverse of M times x) where M is a symmetric positive defined matrix. Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M. Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix. The function pc! should be implemented in a similar way than fun! (see above).\n\nOutput\n\nx: the solution\nsuccess: true if the interation converged (otherwise false)\nniter: the number of iterations\n\n\n\n"
+    "text": "x,cgsuccess,niter = conjugategradient(fun!,b)\n\nSolve a linear system with the preconditioned conjugated-gradient method: A x = b where A is a symmetric positive defined matrix and b is a vector.  Equivalently the solution x minimizes the cost function  J(x) = ½ xᵀ A x - bᵀ x.\n\nThe function fun!(x,fx) computes fx which is equal to  A*x. For example:\n\nfunction fun!(x,fx)\n    fx[:] = A*x\nend\n\nNote that the following code will NOT work, because a new array fx would be created and it would not be passed back to the caller.\n\nfunction fun!(x,fx)\n    fx = A*x # bug!\nend\n\nThe function fun! works in-place to reduce the amount of memory allocations.\n\nOptional input arguments\n\nx0: starting vector for the interations\ntol: tolerance on  |Ax-b| / |b|\nmaxit: maximum of interations\npc!: the preconditioner. The functions pc(x,fx) computes fx = M⁻¹ x (the inverse of M times x) where M is a symmetric positive defined matrix. Effectively, the system E⁻¹ A (E⁻¹)ᵀ (E x) = E⁻¹ b is solved for (E x) where E Eᵀ = M. Ideally, M should this be similar to A, so that E⁻¹ A (E⁻¹)ᵀ is close to the identity matrix. The function pc! should be implemented in a similar way than fun! (see above).\n\nOutput\n\nx: the solution\ncgsuccess: true if the interation converged (otherwise false)\nniter: the number of iterations\n\n\n\n"
 },
 
 {
@@ -1101,7 +997,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.varanalysis",
     "category": "function",
-    "text": "Variational analysis similar to 3D-var\n\nInput:\n\nx0: start vector for iteration, at output it is the last state of the     iteration. Note that x0 is related to the analysis xa by       xa = SB^½ * W^½ * xa\n\n| x + W^½ * SB^½ * H\' * (R \\ (H * SB^½ * W^½ * x ))   -   W^½ SB^{½} * H\' * (R \\ yo) |       <     tol * s.sv.n / length(yo)  * | W^½ SB^{½} * H\' * (R \\ yo) |\n\nKernel is the solution of the n-dimensional diffusion equation\n\n∂c/∂t =  ∇ ⋅ (D ∇ c)\n\nn-dimensional Green’s function\n\nG(x,x\',t) = (4πDt)^(-n/2)  exp( - |x -x\'|² / (4Dt))\n\nG(x,x\',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x\')ᵀ D⁻¹ (x -x\')ᵀ / (4t))\n\nhttp://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf\n\n\n\n"
+    "text": "Variational analysis similar to 3D-var\n\nInput:\n\nx0: start vector for iteration, at output it is the last state of the    iteration. Note that x0 is related to the analysis xa by       xa = SB^½ * W^½ * xa\n\n| x + W^½ * SB^½ * H\' * (R \\ (H * SB^½ * W^½ * x ))   -   W^½ SB^{½} * H\' * (R \\ yo) |      <   tol * s.sv.n / length(yo)  * | W^½ SB^{½} * H\' * (R \\ yo) |\n\nKernel is the solution of the n-dimensional diffusion equation\n\n∂c/∂t =  ∇ ⋅ (D ∇ c)\n\nn-dimensional Green’s function\n\nG(x,x\',t) = (4πDt)^(-n/2)  exp( - |x -x\'|² / (4Dt))\n\nG(x,x\',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x\')ᵀ D⁻¹ (x -x\')ᵀ / (4t))\n\nhttp://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf\n\n\n\n"
 },
 
 {
