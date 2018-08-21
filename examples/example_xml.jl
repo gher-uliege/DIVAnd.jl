@@ -5,7 +5,7 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
 end
-import DIVAnd
+using DIVAnd
 
 
 basedir = joinpath(dirname(@__FILE__),"..","..",

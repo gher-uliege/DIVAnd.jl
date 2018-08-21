@@ -3,7 +3,7 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
 end
-import DIVAnd
+using DIVAnd
 using PyPlot
 
 varname = "Salinity"

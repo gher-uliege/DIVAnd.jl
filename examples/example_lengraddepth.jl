@@ -1,5 +1,5 @@
 using PyPlot
-import DIVAnd
+using DIVAnd
 
 include("./prep_dirs.jl")
 

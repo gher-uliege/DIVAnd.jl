@@ -1,6 +1,6 @@
 using NCDatasets
 using Missings
-import DIVAnd
+using DIVAnd
 
 NCSDN = DIVAnd.NCSDN
 
