@@ -533,8 +533,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     close(ds)
 
     for i = 1:length(filepaths)
-        filepath = filepaths[i]
-        Dataset(filepath,"r") do ds
+        filepath_ = filepaths[i]
+        Dataset(filepath_,"r") do ds
             for (name,var) in ds
                 if ("lon" in dimnames(var))  &&  ("lat" in dimnames(var))
                     if haskey(var.attrib,"long_name")
@@ -551,7 +551,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                         end
                     end
 
-                    push!(templateVars["netcdf_variables"],(name,description,filepath))
+                    push!(templateVars["netcdf_variables"],(name,description,filepath_))
                 end
             end
         end
@@ -601,7 +601,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                      "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
                      "decorated" => "true",
                      "format" => "image/png",
-                     "layers" => domain * "/" * filename * layersep * varname,
+                     "layers" => domain * "/" * filepath * layersep * varname,
                      "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
                                                      "vmax" => default_field_max)),
                      #"elevation" => "-0.0",
@@ -620,19 +620,19 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "DOI_URL" => DOI_URL,
         # URL for the global data set
         "WMS_dataset_getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-        "WMS_dataset_layer" => domain * "/" * filename * layersep * varname,
+        "WMS_dataset_layer" => domain * "/" * filepath * layersep * varname,
         "WMS_layers"  => [],
-        "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filename,
+        "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
         "NetCDF_URL_description" => "Link to download the following file: " * filename,
-        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filename * ".html",
+        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
         "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
         "contacts" => contacts,
     ))
 
-    for (name, description, filepath) in templateVars["netcdf_variables"]
+    for (name, description, filepath_) in templateVars["netcdf_variables"]
         push!(templateVars["WMS_layers"],Dict(
             "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-            "name" => domain * "/" * filepath * layersep * name,
+            "name" => domain * "/" * filepath_ * layersep * name,
             "description" => "WMS layer for " * description)
               )
     end
@@ -681,6 +681,11 @@ The resulting XML file includes the file names (provided by `filepath`).
 Do not change the file names after running this function, otherwise the
 XML will still contain a reference to the old file names. If you must change the
 file names please do so before running this script.
+
+If the data is present in a subfolder (e.g. "Winter") later on the OceanBrowser
+webserver, the `filepath` should also contain this subfolder (e.g.
+"Winter/somefile.nc"). The local directories should mirror the directory
+structure on OceanBrowser.
 
 ### Example
 
