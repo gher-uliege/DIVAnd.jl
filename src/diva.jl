@@ -224,7 +224,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             sel = select(TS,timeindex,time)
 
             if sum(sel) == 0
-                warn("no data at $(timeindex)")
+                @warn "no data at $(timeindex)"
 
                 fit = zeros(sz)
                 erri = ones(sz)
