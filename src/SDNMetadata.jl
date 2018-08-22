@@ -430,9 +430,17 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     obstime = ds["obstime"][:]
 
+    # prefer layer L1 for plotting if available
+    varnameL1 =
+        if haskey(ds,varname * "_L1")
+            varname * "_L1"
+        else
+            varname
+        end
+
     # load default layer (first time instance and surface)
     # (time depth) lat lon
-    var = ds[varname]
+    var = ds[varnameL1]
     if ("time" in dimnames(var)) && ("depth" in dimnames(var))
         if size(var,3) == 1
             # only one depth level
@@ -601,7 +609,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                      "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
                      "decorated" => "true",
                      "format" => "image/png",
-                     "layers" => domain * "/" * filepath * layersep * varname,
+                     "layers" => domain * "/" * filepath * layersep * varnameL1,
                      "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
                                                      "vmax" => default_field_max)),
                      #"elevation" => "-0.0",
