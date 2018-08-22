@@ -3,17 +3,12 @@ module ODVspreadsheet
 if VERSION >= v"0.7.0-beta.0"
     using Dates
 else
-    using Compat: @info, @warn
+    using Compat: @info, @warn, @debug
 end
 using Compat
 
-#using Logging
 #using StringEncodings
 
-# Set logging level(DEBUG, INFO, WARNING, ERROR or CRITICAL)
-#loglevel = WARNING
-#Logging.configure(level=loglevel);
-debug(msg) = nothing
 
 # SeaDataNet Quality Flags
 # http://vocab.nerc.ac.uk/collection/L20/current/
@@ -103,8 +98,7 @@ function readODVspreadsheet(datafile)
             m = match(r"<(\w+)>(.+)</(\w+)>", line)
 
             if m != nothing
-                debug("Match found")
-                debug(m[1] * ": " * m[2])
+                @debug "Match found $(m[1]) $(m[2])"
                 # Add key - value in the dictionnary
                 metadata[String(m[1])] = String(m[2])
             end
@@ -136,7 +130,7 @@ function readODVspreadsheet(datafile)
         #ODV doc: must provide columns for all mandatory meta-variables
         columnline = line
         columnLabels = split(chomp(columnline), '\t')
-        debug("Column labels: $(columnLabels)");
+        @debug "Column labels: $(columnLabels)"
         ncols = length(columnLabels);
         # @info "Total no. of columns (before selection): $ncols"
 

@@ -43,7 +43,7 @@ else
     const uuid1 = Base.Random.uuid1
     const mul! = A_mul_B!
 
-    using Compat: @info, @warn
+    using Compat: @info, @warn, @debug
 
     macro distributed(expr)
         return :( @parallel $(esc(expr)) )

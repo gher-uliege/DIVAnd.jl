@@ -493,10 +493,6 @@ end
 end
 
 
-debug(x...) = nothing
-#debug = info
-
-
 function distfun_euclid(x0,x1)
     dist = zero(x0[1])
     for i = 1:length(x0)
@@ -665,7 +661,7 @@ function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
         if (nsamp == 0)
             AllCoupels(n)
         else
-            debug("will generate random couples")
+            @debug "will generate random couples"
             if (nsamp > n)
                 @warn "Strange to ask for more samples than available from data; will proceed"
             end
@@ -711,11 +707,11 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
 
     datamean=datamean/rn
     variance=datavar/rn - datamean^2
-    debug("Number of data points: ", n)
-    debug("data mean: ", datamean)
-    debug("data variance: ",variance)
+    @debug "Number of data points: $n"
+    @debug "data mean: $datamean"
+    @debug "data variance: $variance"
 
-    debug("Now calculating distance distribution")
+    @debug "Now calculating distance distribution"
 
     x0 = zeros(ndims)
     x1 = zeros(ndims)
@@ -746,12 +742,12 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         rjjj = nsamp*(nsamp-1) / 2
     end
 
-    debug("Number of data couples considered: ",rjjj)
+    @debug "Number of data couples considered: $rjjj"
     meandist=meandist/rjjj
 
-    debug("maximum distance between points: ",maxdist)
+    @debug "maximum distance between points: $maxdist"
 
-    debug("Mean distance between points: ",meandist)
+    @debug "Mean distance between points: $meandist"
 
     rnbins =
         if (nsamp == 0)
@@ -760,17 +756,17 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
             min(80.,nsamp^2 / maxdist * meandist / 20.)
         end
 
-    debug("Number of probable active bins: ",rnbins)
+    @debug "Number of probable active bins: $rnbins"
 
     ddist = meandist/rnbins
     nbmax = floor(Int,maxdist / ddist + 1)
-    debug("distance for binning: ",ddist)
-    debug("maximum number of bins: ",nbmax)
+    @debug "distance for binning: $ddist"
+    @debug "maximum number of bins: $nbmax"
 
     if (nsamp == 0)
-        debug("Average number of pairs in each bin: ", rn*rn/nbmax/2)
+        @debug "Average number of pairs in each bin: $(rn*rn/nbmax/2)"
     else
-        debug("Average number of pairs in each bin: ", nsamp*nsamp/nbmax/2)
+        @debug "Average number of pairs in each bin: $(nsamp*nsamp/nbmax/2)"
     end
 
     # d_i' are anomalies (d_i - datamean)
@@ -848,7 +844,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     for nn=1:nbmax
         # if not working force simple use of variance
         if (iw[nn] != 0) && (covar[nn] < 0) && (nn > 4)
-            debug("First zero crossing: ",nn," ",ddist," ",nn*ddist)
+            @debug "First zero crossing: $nn $ddist $(nn*ddist)"
 
             RLz = ddist*nn
             ncross = nn
@@ -860,12 +856,12 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     if RLz == -1.
         ncross = findmin(covar)[2]
         RLz = ddist*ncross
-        debug("No zero crossing, use minimum value at a distance of ",RLz)
+        @debug "No zero crossing, use minimum value at a distance of $RLz"
     end
 
     # Now try to fit Bessel function using only the data from ddist to zero-crossing.
     # extrapolate to zero to get S/N ratio
-    debug("Now trying to fit Bessel covariance function")
+    @debug "Now trying to fit Bessel covariance function"
     errmin = 1.E35
     VAR = variance
     RL = RLz
@@ -908,7 +904,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
             end
         end
 
-        debug("Best fit: ",RL," ",VAR)
+        @debug "Best fit: $RL $VAR"
         if (VAR > 0.9999*variance)
             VAR = variance
             SN = 10000.
@@ -916,8 +912,8 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
         else
             SN=VAR/(variance-VAR+1.E-10)
         end
-        debug("S/N: ",SN)
-        debug("Relative misfit of fit: ",sqrt(errmin)/VAR)
+        @debug "S/N: $SN"
+        @debug "Relative misfit of fit: $(sqrt(errmin)/VAR)"
         rqual=1-sqrt(errmin)/VAR
         varbak=VAR
     end
