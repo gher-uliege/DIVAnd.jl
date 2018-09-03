@@ -25,7 +25,7 @@ f = [1.];
 xi,yi = ndgrid(range(1,stop=299,length=299),range(1,stop=299,length=299));
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
@@ -55,7 +55,7 @@ f = [1.];
 xi,yi = ndgrid(range(1,stop=59,length=59),range(1,stop=59,length=59));
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
@@ -103,7 +103,7 @@ xi,yi = ndgrid(range(1,stop=59,length=59),range(1,stop=59,length=59));
 
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

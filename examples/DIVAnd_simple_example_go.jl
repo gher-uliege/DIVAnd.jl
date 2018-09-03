@@ -34,7 +34,7 @@ xi,yi = ndgrid(range(0,stop=1,length=950),range(0,stop=1,length=830));
 fref = sin.(xi*6) .* cos.(yi*6);
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 mask[300:600,400:600]=false
 

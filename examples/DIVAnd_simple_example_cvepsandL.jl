@@ -23,7 +23,7 @@ f = f+randn(nobs);
 xi,yi = ndgrid(range(0,stop=1,length=100),range(0,stop=1,length=100));
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

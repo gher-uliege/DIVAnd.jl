@@ -25,7 +25,7 @@ xi,yi,zi = ndgrid(range(0,stop=1,length=testsize),range(0,stop=1,length=testsize
 fref = sin.(xi*6) .* cos.(yi*6)+sin.(zi*6) .* cos.(xi*6);
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

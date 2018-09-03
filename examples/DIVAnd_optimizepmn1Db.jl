@@ -18,7 +18,7 @@ len=2.
 x = [-3.0, 8.];
 f = [1.,  1.];
 pmref = ones(xiref) / (xiref[2]-xiref[1]);
-maskref = trues(xiref);
+maskref = trues(size(xiref));
 epsilon2=1.
 firef,sref = DIVAndrun(maskref,(pmref,),(xiref,),(x,),f,len,epsilon2,alphabc=0);
 
@@ -31,7 +31,7 @@ len=2
 x = [-3.0, 8.];
 f = [1.,  1.];
 pmrefl = ones(xirefl) / (xirefl[2]-xirefl[1]);
-maskrefl = trues(xirefl);
+maskrefl = trues(size(xirefl));
 epsilon2=1.
 firefl,srefl = DIVAndrun(maskrefl,(pmrefl,),(xirefl,),(x,),f,len,epsilon2,alphabc=0);
 
@@ -66,7 +66,7 @@ for j=1:500
 
 
     # all points are valid points
-    mask = trues(xi);
+    mask = trues(size(xi));
 
     # this problem has a simple cartesian metric
     # pm is the inverse of the resolution along the 1st dimension

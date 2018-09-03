@@ -31,7 +31,7 @@ len = 1/4.1*8/9.75;
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
 
-maskfin = trues(xifin);
+maskfin = trues(size(xifin));
 # fi is the interpolated field
 fifin,sfin = DIVAndrun(maskfin,(pmfin,pnfin),(xifin,yifin),(x,y),f,len,epsilon2;alphabc=0);
 
@@ -39,7 +39,7 @@ firef=fifin[401-40:401+40,401-40:401+40];
 
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

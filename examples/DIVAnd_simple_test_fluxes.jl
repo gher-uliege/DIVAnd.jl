@@ -21,7 +21,7 @@ xi,yi = ndgrid(range(0,stop=100,length=100),range(0,stop=110,length=110));
 fref = fun.(xi,yi)
 
 # all points are valid points
-mask = trues(xi);
+mask = trues(size(xi));
 
 mask[1,:]=false;
 mask[end,:]=false;
