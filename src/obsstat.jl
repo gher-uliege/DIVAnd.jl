@@ -69,7 +69,7 @@ maximum value.
 
 If the argument `io` is provided, the information is input/output stream `io`.
 """
-checkobs(x,v,ids) = checkobs(STDOUT,x,v,ids)
+checkobs(x,v,ids) = checkobs(stdout,x,v,ids)
 
 function checkobs(io::IO,x,v,ids)
     @info "Checking ranges for dimensions and observations"

@@ -1,5 +1,5 @@
 """
-    residuals = diva3d(xi,x,value,len,epsilon2,filename,varname)
+    dbinfo = diva3d(xi,x,value,len,epsilon2,filename,varname)
 
 Create a 3D analysis (or a series of 3D analyses) with DIVAnd using the
 observations `value` (vector) at the locations `x` (tuple of vectors) onto
@@ -61,6 +61,14 @@ to load the background from a call-back function
 
 Any additional keywoard arguments understood by `DIVAndgo` can also be used here
 (e.g. velocity constrain)
+
+
+The output is a dictionary with the followings keys:
+
+* `:residual`: the difference between the analysis and the observations. The
+residual is NaN is the observations are not with in the domain as defined by
+the mask and the coordinates `x`.
+* `:qcvalues`: quality control scores (if activated)
 
 """
 function diva3d(xi,x,value,len,epsilon2,filename,varname;

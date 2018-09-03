@@ -11,7 +11,6 @@ using DIVAnd
 
 
 # observations
-nobs=1
 x = [0.5];
 y = [0.5];
 f = [1.];

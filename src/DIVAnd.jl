@@ -44,6 +44,7 @@ else
     const mul! = A_mul_B!
 
     using Compat: @info, @warn, @debug
+    using Compat: stdout
 
     macro distributed(expr)
         return :( @parallel $(esc(expr)) )
