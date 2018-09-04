@@ -57,7 +57,7 @@ for ii=1:itest
 
     lenf[ii]=lenfac
 
-    lena=([x[1]*lenfac for x in len]...)
+    lena=([x[1]*lenfac for x in len]...,)
     @time fipc,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1,2,1]);
 
     @time fipc2,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2;alphabc=2,alpha=[1,1]);

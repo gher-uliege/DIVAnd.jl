@@ -7,6 +7,7 @@ using PyPlot
 if VERSION >= v"0.7"
     using Random
     using Statistics
+    using LinearAlgebra
 end
 
 
@@ -129,7 +130,6 @@ end
 
 sv = s.sv
 s = 0
-gc()
 
 @time fiiter,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC, fi0 = unpack(sv,xgs)[1],btrunc=1);
 

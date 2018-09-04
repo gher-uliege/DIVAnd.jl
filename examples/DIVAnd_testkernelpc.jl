@@ -55,7 +55,7 @@ epsfacc=0.00005+(ii-1)/itest*0.02
 
 
 
-lena=([x[1]*lenfac for x in len]...)
+lena = ([x[1]*lenfac for x in len]...,)
 
 @time fipc2,spc2 = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,lena,epsilon2*epsfacc;alphabc=2,alpha=[1,1]);
 

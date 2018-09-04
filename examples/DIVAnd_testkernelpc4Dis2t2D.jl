@@ -58,7 +58,7 @@ sv = s.sv
 PC1=s.P
 xg1=statevector_pack(s.sv,(fi1,))
 s=0
-gc()
+
 @show size(PC1)
 
 @time fi2,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,(len[1],len[1],0.,0.),epsilon2;alphabc=1);
@@ -67,7 +67,6 @@ gc()
 PC2=s.P
 xg2=statevector_pack(s.sv,(fi2,))
 s=0
-gc()
 
 xguess=PC1*(PC1*xg2);
 xr=randn(jsize^2*jsizez*jsizet,1)

@@ -42,3 +42,5 @@ else
    srand(1234)
 end
 @time lenz,infoz = DIVAnd.fitvertlen(x,v,z; maxnsamp = 50)
+
+nothing

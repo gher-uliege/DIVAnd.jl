@@ -141,7 +141,6 @@ end
 
 sv = s.sv;
 s=0
-gc()
 
 @time fiiter,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC,
                            fi0 = unpack(sv,xguess)[1],btrunc=2);

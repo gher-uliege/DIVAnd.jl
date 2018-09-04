@@ -26,12 +26,12 @@ fref = fun.(xi,yi)
 # all points are valid points
 mask = trues(size(xi));
 
-mask[1,:]=false;
-mask[end,:]=false;
-mask[:,1]=false;
-mask[:,end]=false;
+mask[1,:] .= false;
+mask[end,:] .= false;
+mask[:,1] .= false;
+mask[:,end] .= false;
 
-mask[30:80,30:80]=false;
+mask[30:80,30:80] .= false;
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

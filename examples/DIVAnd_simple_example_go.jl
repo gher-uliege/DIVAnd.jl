@@ -22,10 +22,10 @@ else
 end
 # observations
 nobs=100
-x = 0.01+0.98*rand(nobs);
-y = 0.01+0.98*rand(nobs);
-x = -0.1+1.2*rand(nobs);
-y = -0.1+1.2*rand(nobs);
+x = 0.01 .+ 0.98*rand(nobs);
+y = 0.01 .+ 0.98*rand(nobs);
+x = -0.1 .+ 1.2*rand(nobs);
+y = -0.1 .+ 1.2*rand(nobs);
 f = sin.(x*6) .* cos.(y*6);
 #f=-1+2*x
 # x=[0.5,0.75]
