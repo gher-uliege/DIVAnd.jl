@@ -12,6 +12,7 @@ using NCDatasets
 using Interpolations
 if VERSION >= v"0.7"
     using Dates
+    using Printf
 end
 
 include("../src/override_ssmult.jl")
@@ -140,7 +141,7 @@ bxi,byi,bi = DIVAnd.load_bath(bathname,bathisglobal,lonr,latr)
 
 figure()
 title("Original bathymetry")
-pcolor(lonr,latr,transpose(bi))
+pcolor(lonr,latr,bi')
 colorbar()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_bi0.png")));
 savefig(figname)
@@ -150,7 +151,7 @@ bi = max.(bi,0)
 
 figure()
 title("Bathymetry")
-pcolor(lonr,latr,transpose(bi))
+pcolor(lonr,latr,bi')
 colorbar()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_bi1.png")));
 savefig(figname)
@@ -162,7 +163,7 @@ RL = DIVAnd.lengraddepth(DIVAnd.DIVAnd_metric(lonr,latr),bi, L;
 
 figure()
 title("relative correlation length")
-pcolor(lonr,latr,transpose(RL))
+pcolor(lonr,latr,RL')
 colorbar()
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_RL.png")));
 savefig(figname)

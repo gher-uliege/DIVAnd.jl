@@ -46,7 +46,7 @@ len = 10;
 # obs. error variance normalized by the background error variance
 epsilon2 = 10000000.;
 
-h=xi.*(100.-xi)+20
+h=xi .* (100 .- xi) .+ 20
 
 # fi is the interpolated field
 

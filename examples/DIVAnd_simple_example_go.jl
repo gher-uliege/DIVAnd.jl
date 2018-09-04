@@ -9,6 +9,7 @@ using Compat: @info, range
 using PyPlot
 
 if VERSION >= v"0.7"
+    using LinearAlgebra
     using Random
     using Statistics
 end
@@ -41,7 +42,7 @@ fref = sin.(xi*6) .* cos.(yi*6);
 # all points are valid points
 mask = trues(size(xi));
 
-mask[300:600,400:600]=false
+mask[300:600,400:600] .= false
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension

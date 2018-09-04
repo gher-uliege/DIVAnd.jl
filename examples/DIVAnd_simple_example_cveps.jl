@@ -76,6 +76,7 @@ cvbest2=zeros(20);
 eps2=zeros(20)
 
 for i=1:20
+    global epsilon2
     cvval,factor=DIVAnd_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,3);
     eps2[i]=epsilon2;
     cvbest2[i]=cvval;

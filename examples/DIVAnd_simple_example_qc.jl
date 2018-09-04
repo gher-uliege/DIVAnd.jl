@@ -69,7 +69,7 @@ qcval=DIVAnd_qc(fi,s,1)
 
 # Find suspect points
 
-sp=find(x-> x.>10,qcval)
+sp = findall(x-> x.>10,qcval)
 
 @show suspectindexes=sortperm(qcval,rev=true)
 

@@ -98,8 +98,8 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
 end
 
 
-function DIVAndrun(mask::Array{Bool,N},args...) where N
-    return DIVAndrun(convert(BitArray{N},mask),args...)
+function DIVAndrun(mask::Array{Bool,N},args...; kwargs...) where N
+    return DIVAndrun(convert(BitArray{N},mask),args...; kwargs...)
 end
 
 

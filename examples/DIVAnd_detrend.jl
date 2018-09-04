@@ -5,7 +5,9 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 using Interpolations
-using Printf
+if VERSION >= v"0.7"
+    using Printf
+end
 
 include("./prep_dirs.jl")
 

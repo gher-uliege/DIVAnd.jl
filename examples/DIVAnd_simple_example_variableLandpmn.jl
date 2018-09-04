@@ -44,8 +44,8 @@ fis,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(len*0.5,len*1.5),epsilon2);
 pm = ones(size(xi)) ./ ((1 .+ xi/5).*(xi[2,1]-xi[1,1]));
 pn = ones(size(yi)) ./ ((1 .+ yi/5).*(yi[1,2]-yi[1,1]));
 
-lx=0.5+xi/5
-ly=0.5+yi/5
+lx = 0.5 .+ xi/5
+ly = 0.5 .+ yi/5
 
 finu,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(ly,lx),epsilon2);
 @show  sampler1=DIVAnd_sampler((pm,pn),(lx,ly))

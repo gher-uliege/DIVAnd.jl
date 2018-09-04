@@ -139,6 +139,7 @@ s = 0
 #var(fi-fiiter)/var(fi)
 
 
+nothing
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #

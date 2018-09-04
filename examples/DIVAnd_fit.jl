@@ -21,7 +21,7 @@ value,lon,lat,depth,timed,ids = DIVAnd.loadbigfile(fname)
 # surface values for the month January
 sel = (depth .> 10) .& Dates.month.(timed) .== 1;
 x = (lon[sel],lat[sel]);
-v = value[sel] - mean(value[sel]);
+v = value[sel] .- mean(value[sel]);
 distbin = collect(0:0.5:10)
 
 @benchmark var0,len,distx,covar,fitcovar = DIVAnd.fit_isotropic(x,v,distbin,mincount)
