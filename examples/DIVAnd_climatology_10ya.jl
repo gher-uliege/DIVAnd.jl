@@ -10,6 +10,10 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 using NCDatasets
+if VERSION >= v"0.7"
+    using Dates
+    using Statistics
+end
 
 include("../src/override_ssmult.jl")
 include("./prep_dirs.jl")
@@ -20,9 +24,7 @@ fname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","BlackSea","
 bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","Global","Bathymetry","gebco_30sec_16.nc")
 bathisglobal = true
 
-if !isdefined(:value)
-    value,lon,lat,depth,time,ids = DIVAnd.loadbigfile(fname)
-end
+value,lon,lat,depth,time,ids = DIVAnd.loadbigfile(fname)
 
 @show size(value)
 

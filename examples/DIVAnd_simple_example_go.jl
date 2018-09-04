@@ -8,9 +8,14 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 
+if VERSION >= v"0.7"
+    using Random
+    using Statistics
+end
+
 include("./prep_dirs.jl")
 
-if VERSION >= v"0.7.0-beta.0"
+if VERSION >= v"0.7"
    Random.seed!(1234)
 else
    srand(1234)

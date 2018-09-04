@@ -13,7 +13,7 @@ bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","Global",
 bx,by,h = DIVAnd.extract_bath(bathname,true,lonr,latr)
 
 mask = h .< 0
-h[h .< 0] = 0;
+h[h .< 0] .= 0;
 
 x,y = DIVAnd.ndgrid(bx,by);
 pm,pn = DIVAnd.DIVAnd_metric(x,y)

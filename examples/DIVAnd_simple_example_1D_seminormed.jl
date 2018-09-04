@@ -46,16 +46,16 @@ firef,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;);
 fi4,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 alpha = [binomial(m,k) for k = 0:m];
-alpha=2.*alpha
+alpha = 2 * alpha
 # fi is the interpolated field
 fi1,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 alpha = [binomial(m,k) for k = 0:m];
-alpha[1]=0;
+alpha[1] = 0;
 fi2,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 alpha = [binomial(m,k) for k = 0:m];
-alpha[2]=0;
+alpha[2] = 0;
 fi3,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
 
 

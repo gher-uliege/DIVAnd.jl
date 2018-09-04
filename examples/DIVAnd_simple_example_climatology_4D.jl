@@ -54,8 +54,6 @@ epsilon2 = 1.;
 PP=s.P
 s=0
 
-gc()
-
 len = (8, 8, 1, 1);
 
 # obs. error variance normalized by the background error variance

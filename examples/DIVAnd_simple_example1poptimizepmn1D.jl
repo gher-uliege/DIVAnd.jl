@@ -11,8 +11,12 @@
 # Then the same but with data at the border
 
 using DIVAnd
-using Compat: @info, range
+using Compat: @info, range, argmin
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+    using Statistics
+end
 
 include("./prep_dirs.jl")
 
@@ -104,8 +108,6 @@ for iround=1:2
 
                 # correlation length
 
-
-
                 # fi is the interpolated field
                 fi2,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alphabc=alen);
 
@@ -117,8 +119,8 @@ for iround=1:2
                 vj[j]=var(diag(s.P))
 
             end
-            alpha[ii,jj]=aj[indmin(vj)]
-            varb[ii,jj]=vj[indmin(vj)]
+            alpha[ii,jj]=aj[argmin(vj)]
+            varb[ii,jj]=vj[argmin(vj)]
 
             # now reference var
             pm = ones(size(xi)) / (xi[2]-xi[1]);

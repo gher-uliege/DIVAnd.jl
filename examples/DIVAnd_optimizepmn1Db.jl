@@ -1,7 +1,11 @@
 #
 using DIVAnd
-using Compat: @info, range
+using Compat: @info, range, argmin
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+    using Statistics
+end
 
 include("./prep_dirs.jl")
 
@@ -17,7 +21,7 @@ xiref = collect(range(-100.0,stop=100.0,length=2001));
 len=2.
 x = [-3.0, 8.];
 f = [1.,  1.];
-pmref = ones(xiref) / (xiref[2]-xiref[1]);
+pmref = ones(size(xiref)) / (xiref[2]-xiref[1]);
 maskref = trues(size(xiref));
 epsilon2=1.
 firef,sref = DIVAndrun(maskref,(pmref,),(xiref,),(x,),f,len,epsilon2,alphabc=0);
@@ -30,7 +34,7 @@ xirefl = collect(range(-10.0,stop=10.0,length=201));
 len=2
 x = [-3.0, 8.];
 f = [1.,  1.];
-pmrefl = ones(xirefl) / (xirefl[2]-xirefl[1]);
+pmrefl = ones(size(xirefl)) / (xirefl[2]-xirefl[1]);
 maskrefl = trues(size(xirefl));
 epsilon2=1.
 firefl,srefl = DIVAndrun(maskrefl,(pmrefl,),(xirefl,),(x,),f,len,epsilon2,alphabc=0);
@@ -108,11 +112,11 @@ for j=1:500
 end
 
 
-@show indmin(vj)
-@show indmin(rj)
+@show argmin(vj)
+@show argmin(rj)
 
-alpha=aj[indmin(vj)]
-varb=vj[indmin(vj)]
+alpha=aj[argmin(vj)]
+varb=vj[argmin(vj)]
 
 figure("Optimization")
 
@@ -129,7 +133,7 @@ savefig(figname);
 # Finally solution with optimized parameter
 
 figure("Optimal solution 1")
-alen=aj[indmin(vj)]
+alen=aj[argmin(vj)]
 @show alen
 
 
@@ -153,7 +157,7 @@ savefig(figname);
 @info "Created figure " * figname
 
 figure("Optimal solution 2")
-alen=aj[indmin(rj)]
+alen=aj[argmin(rj)]
 @show alen
 
 

@@ -5,6 +5,7 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 using Interpolations
+using Printf
 
 include("./prep_dirs.jl")
 
@@ -48,7 +49,7 @@ function detrend(mask,pm,xi,x,f,len,epsilon2;
 
     nlevels = length(mask)
 
-    fi = [zeros(xi[i][1]) for i = 1:nlevels]
+    fi = [zeros(size(xi[i][1])) for i = 1:nlevels]
 
 
 

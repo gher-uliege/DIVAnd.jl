@@ -4,6 +4,10 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using Random
+    using Statistics
+end
 
 
 x=[0]
@@ -11,7 +15,7 @@ y=[0]
 z=[0]
 f=[1]
 
-if VERSION >= v"0.7.0-beta.0"
+if VERSION >= v"0.7"
    Random.seed!(1)
 else
    srand(1)

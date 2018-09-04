@@ -56,7 +56,7 @@ end
 
 @time fiiter,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=1,pcargs...,inversion=:pcg,compPC = compPC, fi0 =xguess);
 
-
+nothing
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #

@@ -4,6 +4,10 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+    using Statistics
+end
 
 
 x=[0.]
@@ -78,7 +82,7 @@ end
 
 #var(fi-fiiter)/var(fi)
 
-
+nothing
 
 # Copyright (C) 2014, 2018 Alexander Barth <a.barth@ulg.ac.be>
 #

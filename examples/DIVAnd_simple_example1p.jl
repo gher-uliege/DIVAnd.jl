@@ -13,6 +13,9 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+end
 
 include("./prep_dirs.jl")
 
@@ -83,7 +86,7 @@ epsilon2 = 1.;
 fi2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
 
 
-pcolor(reshape(diag(s.P),59,59)')
+pcolor(copy(reshape(diag(s.P),59,59)'))
 colorbar()
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));

@@ -2,6 +2,9 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using Random
+end
 
 include("./prep_dirs.jl")
 

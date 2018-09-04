@@ -14,7 +14,7 @@ fun(x,y,z,t) = sin.(6x) .* cos.(6y)+sin.(6z) .* cos.(6x) .* sin.(2*pi*t) ;
 nobs = 200;
 x = rand(nobs);
 y = rand(nobs);
-z = 0.5+0.01*rand(nobs);
+z = 0.5 .+ 0.01*rand(nobs);
 t = rand(nobs);
 f = fun.(x,y,z,t)
 

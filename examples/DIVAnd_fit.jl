@@ -1,5 +1,8 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using Random
+    using Statistics
+    using Dates
 else
     using Base.Test
 end

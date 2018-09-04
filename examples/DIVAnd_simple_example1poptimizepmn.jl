@@ -13,6 +13,12 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+    using Statistics
+end
+
+
 len = 4;
 aj=zeros(1000)
 vj=zeros(1000)
@@ -42,12 +48,10 @@ for j=1:1000
     pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
     #Test to push boundary to wider distance:
 
-    @show pm[1,1]*len
-
-    pn[:,idim]=1./(alen*len);
-    pn[:,1]=1./(alen*len);
-    pm[idim,:]=1./(alen*len);
-    pm[1,:]=1./(alen*len);
+    pn[:,idim] .= 1. / (alen*len);
+    pn[:,1] .= 1. / (alen*len);
+    pm[idim,:] .= 1. / (alen*len);
+    pm[1,:] .= 1. / (alen*len);
 
 
     # correlation length

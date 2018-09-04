@@ -14,16 +14,16 @@ function loadbigfile(fname)
     lon = zeros(nobs)
     lat = zeros(nobs)
     depth = zeros(nobs)
-    timeval = Array{DateTime}(nobs)
+    timeval = Array{DateTime}(undef,nobs)
     value = zeros(nobs)
-    id = Array{String}(nobs)
+    id = Array{String}(undef,nobs)
 
-		mydate(x) = try
-            DateTime(x)
-           catch
-		    @show x
-            DateTime(Date(1900))
-        end
+    mydate(x) = try
+        DateTime(x)
+    catch
+	@show x
+        DateTime(Date(1900))
+    end
 
     for i in 1:nobs
         rec = split(data[i])

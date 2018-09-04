@@ -7,6 +7,10 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+    using Statistics
+end
 
 include("./prep_dirs.jl")
 

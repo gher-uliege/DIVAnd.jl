@@ -2,8 +2,13 @@
 # with observations from an analytical function.
 
 using DIVAnd
-using Compat: @info, range
+using Compat: @info, range, argmin
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+    using Statistics
+end
+
 
 include("./prep_dirs.jl")
 
@@ -20,8 +25,8 @@ varb1=0
 Bi=0
 Bold=0
 
-pmfin = ones(xifin) / (xifin[2,1]-xifin[1,1]);
-pnfin = ones(xifin) / (yifin[1,2]-yifin[1,1]);
+pmfin = ones(size(xifin)) / (xifin[2,1]-xifin[1,1]);
+pnfin = ones(size(xifin)) / (yifin[1,2]-yifin[1,1]);
 
 # correlation length
 len = 1/4.1*8/9.75;
@@ -91,14 +96,14 @@ subplot(1,2,1)
 plot(al,varr,"-")
 subplot(1,2,2)
 plot(al,rms,"-")
-@show al[indmin(varr)]
+@show al[argmin(varr)]
 
 figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
 savefig(figname)
 @info "Saved figure as " * figname
 
 
-alphaopt=al[indmin(varr)]
+alphaopt=al[argmin(varr)]
 fi,swhat = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=alphaopt);
 #fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
 fidir,swhat = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2.06);

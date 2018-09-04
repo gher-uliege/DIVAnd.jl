@@ -4,6 +4,9 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
+if VERSION >= v"0.7"
+    using LinearAlgebra
+end
 
 include("./prep_dirs.jl")
 

@@ -5,6 +5,9 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 
+if VERSION >= v"0.7"
+    using Statistics
+end
 
 x=[0.]
 y=[0.]
