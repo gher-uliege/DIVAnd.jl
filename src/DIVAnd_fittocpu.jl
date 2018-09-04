@@ -155,8 +155,9 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     if epsilon<=0
 	if nwd>0
         @warn "Problem size probably too big for the memory defined " *
-            "(epsilon = $epsilon, problemsize = $problemsize, nwd = $nwd" *
-            "overlapping = $overlapping). Will try to continue anyway."
+            "(epsilon_fittocpu = $epsilon, problemsize = $problemsize, nwd = $nwd" *
+            "overlapping = $overlapping). Will try to continue anyway. " *
+            "Consider to increase MEMTOFIT."
 	end
         epsilon=1E-6
     end
