@@ -54,9 +54,17 @@ aj=zeros(500)
 vj=zeros(500)
 rj=zeros(500)
 
-xi=0.
-pm=0.
-mask=0.
+xi = collect(range(-10.0,stop=10.0,length=201));
+
+# all points are valid points
+mask = trues(size(xi));
+
+# this problem has a simple cartesian metric
+# pm is the inverse of the resolution along the 1st dimension
+# pn is the inverse of the resolution along the 2nd dimension
+
+pm = ones(size(xi)) / (xi[2]-xi[1]);
+# obs. error variance normalized by the background error variance
 
 
 
@@ -64,35 +72,10 @@ for j=1:500
 
     alen=0.25+j/100
 
-
-    xi = collect(range(-10.0,stop=10.0,length=201));
-
-
-
-    # all points are valid points
-    mask = trues(size(xi));
-
-    # this problem has a simple cartesian metric
-    # pm is the inverse of the resolution along the 1st dimension
-    # pn is the inverse of the resolution along the 2nd dimension
-
-    pm = ones(size(xi)) / (xi[2]-xi[1]);
-    # obs. error variance normalized by the background error variance
-
-
     #Test to push boundary to wider distance:
-
-
-
-
-
 
     # pm[201]=1./(alen*len);
     # pm[1]  =1./(alen*len);
-
-
-    # correlation length
-
 
 
     # fi is the interpolated field

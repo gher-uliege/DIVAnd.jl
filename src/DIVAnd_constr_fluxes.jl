@@ -66,7 +66,7 @@ function DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
 	   for j=1:jmjmax[i]
 # JMB: Add here integrals by using pack of an array with dx at a given latitude
 # Take same shape as topo array
-        forintegral=zeros(d)
+        forintegral=zeros(size(d))
 # Use metrics
         if i==1
            forintegral[:,j]=1.0./pmnin[1][:,j]

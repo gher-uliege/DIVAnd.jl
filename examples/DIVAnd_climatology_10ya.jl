@@ -99,7 +99,7 @@ bx,by,b = DIVAnd.extract_bath(bathname,false,lonr,latr);
 
 function plotres(timeindex,sel,fit,erri)
     tmp = copy(fit)
-    tmp[erri .> .5] = NaN;
+    tmp[erri .> .5] .= NaN;
     figure()
     subplot(2,1,1)
     title("$(timeindex) - surface")

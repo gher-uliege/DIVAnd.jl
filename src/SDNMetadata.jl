@@ -380,7 +380,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     product_id = ds.attrib["product_id"]
 
-    # if multiple netCDF files are provided make sure that all netCDF 
+    # if multiple netCDF files are provided make sure that all netCDF
     # have the same product_id (global netCDF attribute)
     # as the first netCDF file
     for i = 2:length(filepaths)
