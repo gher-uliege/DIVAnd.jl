@@ -5,7 +5,7 @@
                  xmlns:xlink="http://www.w3.org/1999/xlink"
                  xmlns:gmx="http://www.isotc211.org/2005/gmx">
    <gmd:fileIdentifier>
-      <gco:CharacterString>897bcebb-39b5-48f8-9c71-88b73a1de72b</gco:CharacterString>
+      <gco:CharacterString>{{ product_id }}</gco:CharacterString>
    </gmd:fileIdentifier>
    <gmd:language>
       <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng"/>
@@ -22,21 +22,21 @@
     <!-- MANDATORY : define the project which has the governance over the current metadata (e.g. SEADATANET, EMODNET, ...) -->
     <gmd:CI_ResponsibleParty>
          <gmd:organisationName>
-            <gco:CharacterString>EMODNET CHEMISTRY</gco:CharacterString>
+            <gco:CharacterString>{{ name }}</gco:CharacterString>
          </gmd:organisationName>
          <gmd:contactInfo>
             <gmd:CI_Contact>
                <gmd:address>
                   <gmd:CI_Address>
                      <gmd:electronicMailAddress>
-                        <gco:CharacterString>sextant@ifremer.fr</gco:CharacterString>
+                        <gco:CharacterString>{{ mail }}</gco:CharacterString>
                      </gmd:electronicMailAddress>
                   </gmd:CI_Address>
                </gmd:address>
                <gmd:onlineResource>
                   <gmd:CI_OnlineResource>
                      <gmd:linkage>
-                        <gmd:URL>http://www.emodnet.eu/chemistry</gmd:URL>
+                        <gmd:URL>{{ website }}</gmd:URL>
                      </gmd:linkage>
                   </gmd:CI_OnlineResource>
                </gmd:onlineResource>
@@ -49,7 +49,7 @@
       </gmd:CI_ResponsibleParty>
   </gmd:contact>
    <gmd:dateStamp>
-      <gco:DateTime>2011-10-11T00:00:00+02:00</gco:DateTime>
+      <gco:DateTime>{{ creation_time }}</gco:DateTime>
    </gmd:dateStamp>
    <gmd:metadataStandardName>
       <gco:CharacterString>ISO 19115:2003/19139 - EMODNET - SDN</gco:CharacterString>
@@ -62,7 +62,7 @@
          <gmd:referenceSystemIdentifier>
             <gmd:RS_Identifier>
                <gmd:code>
-                  <gco:CharacterString>WGS 84 (EPSG 4326)</gco:CharacterString>
+                  <gco:CharacterString>{{ CRS }}</gco:CharacterString>
                </gmd:code>
                <gmd:codeSpace>
                   <gco:CharacterString>EPSG</gco:CharacterString>
@@ -76,15 +76,15 @@
          <gmd:citation>
             <gmd:CI_Citation>
                <gmd:title>
-                  <gco:CharacterString>Template for EMODnet chemistry product description</gco:CharacterString>
+                  <gco:CharacterString>{{ title }}</gco:CharacterString>
                </gmd:title>
                <gmd:alternateTitle>
-                  <gco:CharacterString>EMODNET_PRODUCT_NAME</gco:CharacterString>
+                  <gco:CharacterString>{{ product_code }}</gco:CharacterString>
                </gmd:alternateTitle>
                <gmd:date>
                   <gmd:CI_Date>
                      <gmd:date>
-                        <gco:Date/>
+                        <gco:Date>{{ creation_date }}</gco:Date>
                      </gmd:date>
                      <gmd:dateType>
                         <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
@@ -93,22 +93,22 @@
                   </gmd:CI_Date>
                </gmd:date>
                <gmd:edition>
-                  <gco:CharacterString>1.0</gco:CharacterString>
+                  <gco:CharacterString>{{ product_version }}</gco:CharacterString>
                </gmd:edition>
                <gmd:editionDate>
-                  <gco:Date/>
+                  <gco:Date>{{ update_date }}</gco:Date>
                </gmd:editionDate>
                <gmd:identifier>
                   <gmd:MD_Identifier>
                      <gmd:code>
-                        <gco:CharacterString>ff518971-490c-4f55-9960-cfcb98d7bfa6</gco:CharacterString>
+                        <gco:CharacterString>{{ product_id }}</gco:CharacterString>
                      </gmd:code>
                   </gmd:MD_Identifier>
                </gmd:identifier>
             </gmd:CI_Citation>
          </gmd:citation>
          <gmd:abstract>
-            <gco:CharacterString>Template elaborated based on emodnet chemistry product description requirements</gco:CharacterString>
+            <gco:CharacterString>{{ abstract }}</gco:CharacterString>
          </gmd:abstract>
          <gmd:credit>
             <gco:CharacterString>EMODnet Chemistry</gco:CharacterString>
@@ -125,7 +125,7 @@
                <gmd:thesaurusName>
                   <gmd:CI_Citation>
                      <gmd:title>
-                        <gco:CharacterString>Thèmes Sextant</gco:CharacterString>
+                        <gco:CharacterString>Thï¿½mes Sextant</gco:CharacterString>
                      </gmd:title>
                      <gmd:date>
                         <gmd:CI_Date>
@@ -202,7 +202,7 @@
                      <gmd:date>
                         <gmd:CI_Date>
                            <gmd:date>
-                              <gco:Date>2017-11-17</gco:Date>
+                              <gco:Date>{{ P02_date }}</gco:Date>
                            </gmd:date>
                            <gmd:dateType>
                               <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
@@ -238,7 +238,7 @@
                      <gmd:date>
                         <gmd:CI_Date>
                            <gmd:date>
-                              <gco:Date>2016-09-20</gco:Date>
+                              <gco:Date>{{ P35_date }}</gco:Date>
                            </gmd:date>
                            <gmd:dateType>
                               <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
@@ -274,7 +274,7 @@
                      <gmd:date>
                         <gmd:CI_Date>
                            <gmd:date>
-                              <gco:Date>2016-09-20</gco:Date>
+                              <gco:Date>{{ C19_date }}</gco:Date>
                            </gmd:date>
                            <gmd:dateType>
                               <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
@@ -335,16 +335,16 @@
                <gmd:geographicElement>
                   <gmd:EX_GeographicBoundingBox>
                      <gmd:westBoundLongitude>
-                        <gco:Decimal>-9.25</gco:Decimal>
+                        <gco:Decimal>{{ longitude_min }}</gco:Decimal>
                      </gmd:westBoundLongitude>
                      <gmd:eastBoundLongitude>
-                        <gco:Decimal>36.625</gco:Decimal>
+                        <gco:Decimal>{{ longitude_max }}</gco:Decimal>
                      </gmd:eastBoundLongitude>
                      <gmd:southBoundLatitude>
-                        <gco:Decimal>30</gco:Decimal>
+                        <gco:Decimal>{{ latitude_min }}</gco:Decimal>
                      </gmd:southBoundLatitude>
                      <gmd:northBoundLatitude>
-                        <gco:Decimal>46.125</gco:Decimal>
+                        <gco:Decimal>{{ latitude_max }}</gco:Decimal>
                      </gmd:northBoundLatitude>
                   </gmd:EX_GeographicBoundingBox>
                </gmd:geographicElement>
@@ -352,8 +352,8 @@
                   <gmd:EX_TemporalExtent>
                      <gmd:extent>
                         <gml:TimePeriod gml:id="extent">
-                           <gml:beginPosition>2010-10-05</gml:beginPosition>
-                           <gml:endPosition indeterminatePosition="unknown"/>
+                           <gml:beginPosition>{{ time_min }}</gml:beginPosition>
+                           <gml:endPosition>{{ time_max }}</gml:endPosition>
                         </gml:TimePeriod>
                      </gmd:extent>
                   </gmd:EX_TemporalExtent>
@@ -361,10 +361,10 @@
                <gmd:verticalElement>
                   <gmd:EX_VerticalExtent>
                      <gmd:minimumValue>
-                        <gco:Real>-5500.0</gco:Real>
+                        <gco:Real>{{ elevation_min }}</gco:Real>
                      </gmd:minimumValue>
                      <gmd:maximumValue>
-                        <gco:Real>0.0</gco:Real>
+                        <gco:Real>{{ elevation_max }}</gco:Real>
                      </gmd:maximumValue>
                      <gmd:verticalCRS uuidref="http://spatialreference.org/ref/epsg/5714/"/>
                   </gmd:EX_VerticalExtent>
