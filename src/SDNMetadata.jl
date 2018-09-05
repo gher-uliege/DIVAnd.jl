@@ -380,6 +380,15 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     product_id = ds.attrib["product_id"]
 
+    # if multiple netCDF files are provided make sure that all netCDF 
+    # have the same product_id (global netCDF attribute)
+    # as the first netCDF file
+    for i = 2:length(filepaths)
+        Dataset(filepaths[i],"a") do ds2
+            ds2.attrib["product_id"] = product_id
+        end
+    end
+
     depth =
         if haskey(ds,"depth")
             ds["depth"][:]
