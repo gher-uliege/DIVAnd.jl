@@ -1,3 +1,4 @@
+using NCDatasets
 if VERSION >= v"0.7"
     using Random
     using Dates
@@ -14,7 +15,7 @@ obstime = rand(DateTime(1892,09,25):Dates.Day(1):DateTime(2017,10,02),nobs)
 
 Salinity = Float32.(30 .+ obsdepth / 3000 + 2 .* obslon/10 + 2 .* obslat/20)
 
-obsid = repeat(Vector{Char}("486-1451364"),1,nobs)
+obsid = repeat(Vector{Char}("486-1451364"),inner = (1,nobs))
 
 filename = joinpath(dirname(@__FILE__),"..","data","sample-file.nc")
 
