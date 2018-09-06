@@ -31,7 +31,9 @@ if !isfile(obsname)
     obsname = download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download")
 end
 
-obsvalue,lon,obslat,obsdepth,obstime,obsids = DIVAnd.loadobs(Float64,obsname,"Salinity")
+obsname = joinpath(dirname(@__FILE__),"..","data","sample-file.nc")
+
+obsvalue,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.loadobs(Float64,obsname,"Salinity")
 
 sel = obsdepth .< 10
 
@@ -132,7 +134,7 @@ metadata = OrderedDict(
 @static if VERSION >= v"0.7.0"
     @test_logs (:info,r".*") match_mode=:any DIVAnd.diva3d(
         (lonr,latr,TS),
-        (lon[sel],obslat[sel],obstime[sel]),
+        (obslon[sel],obslat[sel],obstime[sel]),
         obsvalue[sel],
         (lenx,leny),
         epsilon2,
@@ -144,7 +146,7 @@ metadata = OrderedDict(
 else
     @test_warn r".*" DIVAnd.diva3d(
         (lonr,latr,TS),
-        (lon[sel],obslat[sel],obstime[sel]),
+        (obslon[sel],obslat[sel],obstime[sel]),
         obsvalue[sel],
         (lenx,leny),
         epsilon2,

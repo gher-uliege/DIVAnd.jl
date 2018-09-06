@@ -236,8 +236,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
                 fit = zeros(sz)
                 erri = ones(sz)
-                fit[.!mask] = NaN
-                erri[.!mask] = NaN
+                fit[.!mask] .= NaN
+                erri[.!mask] .= NaN
 
                 if n == 4
                     DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
