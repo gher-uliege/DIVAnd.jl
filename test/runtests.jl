@@ -15,6 +15,8 @@ end
 using Compat
 using SpecialFunctions
 
+include("gen_example_file.jl");
+
 @testset "DIVAnd" begin
     include("test_quadtrees.jl");
 
