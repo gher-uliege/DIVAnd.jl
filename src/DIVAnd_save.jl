@@ -357,6 +357,7 @@ end
     DIVAnd.saveobs(filename,xy,ids;
                    type_save = Float32,
                    timeorigin = DateTime(1900,1,1,0,0,0),
+                   used = trues(size(ids)),
                    )
 Save the location and time of the observation in the NetCDF file `filename` and
 their identifier `ids`. `xy` is a tuple with the vectors longitude, latitude,
@@ -367,13 +368,22 @@ depth and time (as a vector of `DateTime`).
      is always saved as `Float64`.
   * `timeorigin`: time origin for the time units attribute (default is
 1900-01-01 00:00:00)
+  * `used`: allows to subset the data to save only used variables in the netCDF
+     file
 
 """
 function saveobs(filename,xy,ids;
                  type_save = Float32,
                  timeorigin = DateTime(1900,1,1,0,0,0),
+                 used = trues(size(ids))
                  )
     x,y,z,t = xy
+    # keep only used observations
+    x = x[used]
+    y = y[used]
+    z = z[used]
+    t = t[used]
+    ids = ids[used]
 
     idlen = maximum(length.(ids))
     obsids = fill('\0',(idlen,length(ids)))
@@ -444,16 +454,20 @@ variable called `varname`.
      is always saved as `Float64`.
   * `timeorigin`: time origin for the time units attribute (default is
 1900-01-01 00:00:00)
+  * `used`: allows to subset the data to save only used variables in the netCDF
+     file
 
 """
 function saveobs(filename,varname,value,xy,ids;
                  type_save = Float32,
                  timeorigin = DateTime(1900,1,1,0,0,0),
+                 used = trues(size(ids))
                  )
 
     saveobs(filename,xy,ids;
             type_save = type_save,
-            timeorigin = timeorigin
+            timeorigin = timeorigin,
+            used = used
             )
 
 

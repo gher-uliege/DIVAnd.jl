@@ -147,7 +147,7 @@ if isfile(filename)
    rm(filename) # delete the previous analysis
 end
 
-@static if VERSION >= v"0.7.0"
+dbinfo = if VERSION >= v"0.7.0"
     @test_logs (:info,r".*netCDF*") match_mode=:any DIVAnd.diva3d(
         (lonr,latr,depthr,TS),
         (obslon,obslat,obsdepth,obstime),
@@ -177,7 +177,8 @@ else
     )
 end
 
-DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids)
+obsused = dbinfo["used"]
+DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
 
 
 project = "SeaDataCloud"
