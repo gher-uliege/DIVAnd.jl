@@ -156,9 +156,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         end
     end
 
-    # allocate residuals
+    # allocate residuals and qcvalues
     residuals = similar(value)
     qcvalues = similar(value)
+    residuals .= NaN
+    qcvalues .= NaN
 
     # correlation length
 
@@ -224,7 +226,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         dbinfo[:factore] = zeros(niter_e,length(TS))
 
-        #@info "Starting loop on time indices"
         for timeindex = 1:length(TS)
             @info "Time step $(timeindex) / $(length(TS))"
 
@@ -292,7 +293,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             xsel = map(xc -> xc[selbackground],xsel)
             # unselect the data points out of the domain
             view(sel,sel)[.!selbackground] .= false
-
 
             if fitcorrlen
                 # @info "Applying fit of the correlation length"
@@ -403,6 +403,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     end # implictly closing the NetCDF file
 
     dbinfo[:residuals] = residuals
+    dbinfo[:used] = .!isnan.(residuals)
     if haskey(Dict(kwargs), :QCMETHOD)
        dbinfo[:qcvalues] = qcvalues
     end

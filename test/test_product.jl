@@ -1,6 +1,7 @@
 import DIVAnd
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using DelimitedFiles
 else
     using Base.Test
 end

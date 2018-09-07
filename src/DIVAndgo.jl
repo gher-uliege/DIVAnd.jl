@@ -63,6 +63,8 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
     windowlist,csteps,lmask,alphanormpc = DIVAnd_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT)
 
+    @debug "csteps $csteps"
+
     # For parallel version declare SharedArray(Float,size(mask)) instead of zeros() ? ? and add a @sync @parallel in front of the for loop ?
     # Seems to work with an addprocs(2); @everywhere using DIVAnd to start the main program. To save space use Float32 ?
     #fi = zeros(size(mask));
@@ -82,6 +84,9 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     fidata = SharedArray{Float32}(size(f,1))
 	fidata .= NaN
 
+    @debug "error method: $(errormethod)"
+    @debug "number of windows: $(length(windowlist))"
+
     @sync @distributed for iwin = 1:size(windowlist,1)
 
         iw1 = windowlist[iwin][1]
@@ -91,6 +96,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
         istore1 = windowlist[iwin][5]
         istore2 = windowlist[iwin][6]
 
+        @debug "window: $iwin, indices: $(windowlist[iwin])"
 
 		windowpointssol = ([isol1[i]:isol2[i] for i in 1:n]...,)
 		windowpointsstore = ([istore1[i]:istore2[i] for i in 1:n]...,)
@@ -162,7 +168,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
                     velocity = velocity,
-                    ) # otherargs...)
+                    otherargs...)
 
                 fi[windowpointsstore...] = fw[windowpointssol...];
 			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
@@ -199,7 +205,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
                         velocity = velocity,
-                        ) # otherargs...)
+                        otherargs...)
                 end
                 # for errors here maybe add a parameter to DIVAndjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
             else
@@ -213,9 +219,9 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
                     velocity = velocity,
-                    ) # otherargs...)
+                    otherargs...)
 
-			    fi[windowpointsstore...]= fw[windowpointssol...];
+			    fi[windowpointsstore...] = fw[windowpointssol...];
 			    finwindata = DIVAnd_residualobs(s,fw)
 			    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
                     ([ x[windowpointssol...] for x in xiw ]...,),
@@ -240,7 +246,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
                         velocity = velocity,
-                        ) # otherargs...)
+                        otherargs...)
                 end
             end
 
