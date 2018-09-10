@@ -4,6 +4,7 @@ if VERSION >= v"0.7.0-beta.0"
     using DelimitedFiles
 else
     using Base.Test
+    using Compat
 end
 using DataStructures
 using Missings
@@ -147,7 +148,7 @@ if isfile(filename)
    rm(filename) # delete the previous analysis
 end
 
-dbinfo = if VERSION >= v"0.7.0"
+dbinfo = @static if VERSION >= v"0.7.0"
     @test_logs (:info,r".*netCDF*") match_mode=:any DIVAnd.diva3d(
         (lonr,latr,depthr,TS),
         (obslon,obslat,obsdepth,obstime),
@@ -190,7 +191,7 @@ ignore_errors = true
         filename,varname,project,cdilist,xmlfilename,
         ignore_errors = ignore_errors)
 else
-    @test_warn r".*Not all.*" DIVAnd.divadoxml(
+    @test_warn r".*" DIVAnd.divadoxml(
         filename,varname,project,cdilist,xmlfilename,
         ignore_errors = ignore_errors)
 end
