@@ -179,7 +179,9 @@ else
 end
 
 obsused = dbinfo[:used]
-DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
+#DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
+
+DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids)
 
 
 project = "SeaDataCloud"
