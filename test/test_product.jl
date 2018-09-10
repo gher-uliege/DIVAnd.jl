@@ -177,7 +177,7 @@ else
     )
 end
 
-obsused = dbinfo["used"]
+obsused = dbinfo[:used]
 DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
 
 
@@ -186,7 +186,7 @@ xmlfilename = "test.xml"
 ignore_errors = true
 
 @static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*") (:warn,r".*Not all.*") match_mode=:any DIVAnd.divadoxml(
+    @test_logs (:info,r".*") match_mode=:any DIVAnd.divadoxml(
         filename,varname,project,cdilist,xmlfilename,
         ignore_errors = ignore_errors)
 else

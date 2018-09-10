@@ -379,10 +379,7 @@ function saveobs(filename,xy,ids;
                  )
     x,y,z,t = xy
     # keep only used observations
-    x = x[used]
-    y = y[used]
-    z = z[used]
-    t = t[used]
+    xy = [xy_element[used] for xy_element in xy]
     ids = ids[used]
 
     idlen = maximum(length.(ids))
