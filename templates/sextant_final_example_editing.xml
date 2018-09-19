@@ -172,14 +172,14 @@
             <gco:CharacterString>John</gco:CharacterString>
           </gmd:individualName>
           <gmd:organisationName>
-            <gco:CharacterString>test</gco:CharacterString>
+            <gco:CharacterString>{{ name }}</gco:CharacterString>
           </gmd:organisationName>
           <gmd:contactInfo>
             <gmd:CI_Contact>
               <gmd:address>
                 <gmd:CI_Address>
                   <gmd:electronicMailAddress>
-                    <gco:CharacterString>test@test.com</gco:CharacterString>
+                    <gco:CharacterString>{{ mail }}</gco:CharacterString>
                   </gmd:electronicMailAddress>
                 </gmd:CI_Address>
               </gmd:address>
@@ -284,7 +284,7 @@
               <gmd:date>
                 <gmd:CI_Date>
                   <gmd:date>
-                    <gco:Date>2017-11-17</gco:Date>
+                    <gco:Date>{{ P02_date }}</gco:Date>
                   </gmd:date>
                   <gmd:dateType>
                     <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
@@ -318,7 +318,7 @@
               <gmd:date>
                 <gmd:CI_Date>
                   <gmd:date>
-                    <gco:Date>2016-09-20</gco:Date>
+                    <gco:Date>{{ P35_date }}</gco:Date>
                   </gmd:date>
                   <gmd:dateType>
                     <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
@@ -352,7 +352,7 @@
               <gmd:date>
                 <gmd:CI_Date>
                   <gmd:date>
-                    <gco:Date>2016-09-20</gco:Date>
+                    <gco:Date>{{ C19_date }}</gco:Date>
                   </gmd:date>
                   <gmd:dateType>
                     <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
@@ -410,16 +410,16 @@
           <gmd:geographicElement>
             <gmd:EX_GeographicBoundingBox>
               <gmd:westBoundLongitude>
-                <gco:Decimal>-9.25</gco:Decimal>
+                <gco:Decimal>{{ longitude_min }}</gco:Decimal>
               </gmd:westBoundLongitude>
               <gmd:eastBoundLongitude>
-                <gco:Decimal>36.625</gco:Decimal>
+                <gco:Decimal>{{ longitude_max }}</gco:Decimal>
               </gmd:eastBoundLongitude>
               <gmd:southBoundLatitude>
-                <gco:Decimal>30</gco:Decimal>
+                <gco:Decimal>{{ latitude_min }}</gco:Decimal>
               </gmd:southBoundLatitude>
               <gmd:northBoundLatitude>
-                <gco:Decimal>46.125</gco:Decimal>
+                <gco:Decimal>{{ latitude_max }}</gco:Decimal>
               </gmd:northBoundLatitude>
             </gmd:EX_GeographicBoundingBox>
           </gmd:geographicElement>
@@ -427,8 +427,8 @@
             <gmd:EX_TemporalExtent>
               <gmd:extent>
                 <gml:TimePeriod gml:id="d54601373e463a1051934">
-                  <gml:beginPosition>2010-10-05</gml:beginPosition>
-                  <gml:endPosition>2012-12-11</gml:endPosition>
+                  <gml:beginPosition>{{ time_min }}</gml:beginPosition>
+                  <gml:endPosition>{{ time_max }}</gml:endPosition>
                 </gml:TimePeriod>
               </gmd:extent>
             </gmd:EX_TemporalExtent>
@@ -436,10 +436,10 @@
           <gmd:verticalElement>
             <gmd:EX_VerticalExtent>
               <gmd:minimumValue>
-                <gco:Real>-5500.0</gco:Real>
+                <gco:Real>{{ elevation_min }}</gco:Real>
               </gmd:minimumValue>
               <gmd:maximumValue>
-                <gco:Real>0.0</gco:Real>
+                <gco:Real>{{ elevation_max }}</gco:Real>
               </gmd:maximumValue>
               <gmd:verticalCRS uuidref="http://spatialreference.org/ref/epsg/5714/" />
             </gmd:EX_VerticalExtent>
