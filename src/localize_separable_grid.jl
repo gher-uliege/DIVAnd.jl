@@ -44,7 +44,7 @@ function localize_separable_grid(
         # loop over all point
         for j = 1:mi
             ind = NTuple{n,T}(getindex.(xi,j))
-            I[i,j] = itp[ind...]
+            I[i,j] = itp(ind...)
         end
     end
 
