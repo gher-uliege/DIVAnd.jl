@@ -678,6 +678,11 @@ end
 
 
 function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
+    if length(d)
+        @warn "no data is provided to fitlen"
+        return NaN,NaN,Dict{Symbol,Any}()
+    end
+
     # number of dimensions
     ndims = length(x)
 
@@ -1033,6 +1038,11 @@ function fithorzlen(x,value::Vector{T},z;
         @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])"
     end
 
+    # handle layers with no data
+    DIVAnd_fill!(var0opt,NaN)
+    DIVAnd_fill!(lenopt,NaN)
+
+    # filter vertically
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
         DIVAnd.smoothfilter!(z,lenoptf,smoothz)
@@ -1091,6 +1101,11 @@ function fitvertlen(x,value::Vector{T},z;
         @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
     end
 
+    # handle layers with no data
+    DIVAnd_fill!(var0opt,NaN)
+    DIVAnd_fill!(lenopt,NaN)
+
+    # filter vertically
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
         DIVAnd.smoothfilter!(z,lenoptf,smoothz)

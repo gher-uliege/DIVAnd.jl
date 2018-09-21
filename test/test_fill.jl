@@ -22,6 +22,5 @@ cf = ufill(c,valex);
 
 
 A = [1.,NaN,2.]
-B = similar(A)
-DIVAnd_fill!(A,B,NaN)
-@test B ≈ [1.,1.5,2]
+DIVAnd_fill!(A,NaN)
+@test A ≈ [1.,1.5,2]

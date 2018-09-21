@@ -62,3 +62,14 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
 
     return B
 end
+
+"""
+    DIVAnd_fill!(A::AbstractArray,fillvalue)
+
+Replace values in A equal to fillvalue (possibly NaN) with average of 
+surrounding grid points
+"""
+function DIVAnd_fill!(A::AbstractArray,fillvalue)
+    tmp = copy(A)
+    DIVAnd_fill!(tmp,A,fillvalue)
+end
