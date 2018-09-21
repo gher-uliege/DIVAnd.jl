@@ -21,8 +21,7 @@ cf = ufill(c,valex);
 @test sum(cf == valex) == 0
 
 
-#SSH = Dataset("/home/abarth/Utils/sossheig.nc")["sossheig"][:];
-#c = copy(SSH.data); c[SSH.na] = valex;
-#@time cf = ufill(c,valex);
-#@show extrema(cf)
-
+A = [1.,NaN,2.]
+B = similar(A)
+DIVAnd_fill!(A,B,NaN)
+@test B ≈ [1.,1.5,2]

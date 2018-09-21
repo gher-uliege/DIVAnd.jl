@@ -24,7 +24,7 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
             s = zero(eltype(A))
 
             B[indI] = A[indI]
-            if !isequal(A[indI],fillvalue)
+            if isequal(A[indI],fillvalue)
 
                 RJ =
                     @static if VERSION >= v"0.7.0-beta.0"
