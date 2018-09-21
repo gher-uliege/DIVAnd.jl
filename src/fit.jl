@@ -678,7 +678,7 @@ end
 
 
 function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
-    if length(d)
+    if length(d) == 0
         @warn "no data is provided to fitlen"
         return NaN,NaN,Dict{Symbol,Any}()
     end
@@ -1088,17 +1088,21 @@ function fitvertlen(x,value::Vector{T},z;
         zlevel2 = Float64(z[k])
         zindex = findall(abs.(zlevel2 .- x[3]) .< searchz)
 
+        @show length(zindex)
         if length(zindex) == 0
-            error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
+            @warn "No data near z = $zlevel2"
+            var0opt[k] = NaN
+            lenopt[k] = NaN
+            fitinfos[k] = Dict{Symbol,Any}()
+        else
+            iter = VertRandomCoupels(z[k],zindex,x,searchxy,maxntries,count)
+            #state = start(iter)
+            #@code_warntype next(iter,state)
+            #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
+            var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,ones(size(value)),nsamp,iter)
+
+            @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
         end
-
-        iter = VertRandomCoupels(z[k],zindex,x,searchxy,maxntries,count)
-        #state = start(iter)
-        #@code_warntype next(iter,state)
-        #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-        var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-
-        @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
     end
 
     # handle layers with no data

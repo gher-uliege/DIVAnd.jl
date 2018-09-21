@@ -66,10 +66,24 @@ end
 """
     DIVAnd_fill!(A::AbstractArray,fillvalue)
 
-Replace values in A equal to fillvalue (possibly NaN) with average of 
+Replace values in A equal to fillvalue (possibly NaN) with average of
 surrounding grid points
 """
 function DIVAnd_fill!(A::AbstractArray,fillvalue)
     tmp = copy(A)
-    DIVAnd_fill!(tmp,A,fillvalue)
+
+    while true
+        DIVAnd_fill!(tmp,A,fillvalue)
+
+        nb = sum(isequal.(A,fillvalue))
+
+        if nb == 0
+            break
+        end
+        if nb == length(A)
+            error("All elements in A are equal to the fill-value.  No filling is possible")
+        end
+
+        tmp .= A
+    end
 end
