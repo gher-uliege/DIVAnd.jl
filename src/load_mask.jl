@@ -97,7 +97,7 @@ function load_bath(bath_name,isglobal,xi,yi)
     Xi,Yi = ndgrid(xi,yi);
 
     itp = interpolate((bx,by), b, Gridded(Linear()))
-    bi = itp[xi,yi];
+    bi = itp(xi,yi);
 
     return  xi,yi,bi
 end
@@ -146,7 +146,7 @@ function load_mask(bath_name,isglobal,xi,yi,level::Number)
     Xi,Yi = ndgrid(xi,yi);
 
     itp = interpolate((bx,by), Int.(mask),Gridded(Linear()))
-    mif = itp[xi,yi];
+    mif = itp(xi,yi);
 
     mi = mif .> 1/2;
 

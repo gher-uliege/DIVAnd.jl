@@ -456,7 +456,13 @@ function interp!(xi::NTuple{N,Vector{T}},
                  fi::Array{T,N},
                  x::NTuple{N,Array{T,Nf}},
                  f::Array{T,Nf}) where {T,N,Nf}
-    itp = interpolate(xi,fi,Gridded(Linear()))
+    itp =
+        @static if VERSION >= v"0.7"
+            # https://github.com/JuliaMath/Interpolations.jl/issues/237
+            extrapolate(interpolate(xi,fi,Gridded(Linear())), Line())
+        else
+            interpolate(xi,fi,Gridded(Linear()))
+        end
 
     xpos = zeros(N)
     for i in eachindex(f)
@@ -464,7 +470,7 @@ function interp!(xi::NTuple{N,Vector{T}},
         for j = 1:N
             xpos[j] = x[j][i]
         end
-        f[i] = itp[xpos...]
+        f[i] = itp(xpos...)
     end
 end
 
