@@ -54,7 +54,10 @@ to load the background from a call-back function
 (default `nothing`).
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.).
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
-    remaining available for inversion. It is not total memory (default 3).
+    remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
+    usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
+* `minfield`: if the analysed field is below `minfield`, its value is replace by `minfield` (default -Inf, i.e. no substitution is done).
+* `maxfield`: if the analysed field is above `maxfield`, its value is replace by `maxfield` (default +Inf, i.e. no substitution is done).
 * `niter_e`: Number of iterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
@@ -92,6 +95,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 fitvert_param = Dict(),
                 memtofit = 3,
                 niter_e::Int = 1,
+                minfield::Float64 = -Inf,
+                maxfield::Float64 = Inf,
                 kwargs...
                 )
 
@@ -228,7 +233,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         for timeindex = 1:length(TS)
             @info "Time step $(timeindex) / $(length(TS))"
-
             # select observation to be used for the time instance timeindex
             sel = select(TS,timeindex,time)
 
@@ -257,6 +261,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             # apply the transformation
             value_trans = trans.(value[sel])
+            # some transformation (e.g. log) can produce -Inf, set these to NaN
+            value_trans[.!isfinite.(value_trans)] = NaN
 
             # obs. coordinate matching selection
             xsel = map(xc -> xc[sel],x[1:end-1])
@@ -265,7 +271,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             fbackground,vaa =
                 if background == nothing
                     # spatial mean of observations
-                    vm = mean(value_trans)
+                    vm = mean(value_trans[isfinite.(value_trans)])
                     va = value_trans .- vm
 
                     # background profile
@@ -382,6 +388,15 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             # inverse anamorphosis transformation
             fit .= invtrans.(fit)
+
+            # apply range check
+            if minfield != -Inf
+                fit[fit .< minfield] = minfield
+            end
+            if maxfield != Inf
+                fit[fit .> maxfield] = maxfield
+            end
+
 
             plotres(timeindex,sel,fit,erri)
 
