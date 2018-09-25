@@ -1088,7 +1088,6 @@ function fitvertlen(x,value::Vector{T},z;
         zlevel2 = Float64(z[k])
         zindex = findall(abs.(zlevel2 .- x[3]) .< searchz)
 
-        @show length(zindex)
         if length(zindex) == 0
             @warn "No data near z = $zlevel2"
             var0opt[k] = NaN

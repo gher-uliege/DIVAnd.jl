@@ -11,7 +11,8 @@ function DIVAnd_save(filename,mask::AbstractArray{Bool,N},varname,fi) where N
     ds.dim["lat"] = sz[2]
     ds.dim["lon"] = sz[1]
 
-    ncvar = defVar(ds, varname, Float32, ("lon", "lat", "depth", "time"))
+    ncvar = defVar(ds, varname, Float32, ("lon", "lat", "depth", "time"),
+                   checksum = checksum)
     ncvar[:,:,:,:] = fi
     close(ds)
 
@@ -48,11 +49,13 @@ function ncfile(ds,filename,xyi,varname;
                 chunksizes = [100,100,1,1][1:length(xyi)],
                 type_save = Float32,
                 timeorigin = DateTime(1900,1,1,0,0,0),
+                checksum = :fletcher32,
                 kwargs...)
 
     function defnD(ds,varname,dims,ncvarattrib)
         local ncvar = defVar(ds,varname, type_save, dims;
                              deflatelevel = deflatelevel,
+                             checksum = checksum,
                              chunksizes = chunksizes[1:length(dims)])
 
         for (k,v) in ncvarattrib
@@ -121,20 +124,20 @@ function ncfile(ds,filename,xyi,varname;
 
     # Declare variables
 
-    nclon = defVar(ds,"lon", Float64, ("lon",))
+    nclon = defVar(ds,"lon", Float64, ("lon",), checksum = checksum)
     nclon.attrib["units"] = "degrees_east"
     nclon.attrib["standard_name"] = "longitude"
     nclon.attrib["long_name"] = "longitude"
 
 
-    nclat = defVar(ds,"lat", Float64, ("lat",))
+    nclat = defVar(ds,"lat", Float64, ("lat",), checksum = checksum)
     nclat.attrib["units"] = "degrees_north"
     nclat.attrib["standard_name"] = "latitude"
     nclat.attrib["long_name"] = "latitude"
 
 
     if idepth != -1
-        ncdepth = defVar(ds,"depth", Float64, ("depth",))
+        ncdepth = defVar(ds,"depth", Float64, ("depth",), checksum = checksum)
         ncdepth.attrib["units"] = "meters"
         ncdepth.attrib["positive"] = "down"
         ncdepth.attrib["standard_name"] = "depth"
@@ -142,7 +145,7 @@ function ncfile(ds,filename,xyi,varname;
     end
 
     if itime != -1
-        nctime = defVar(ds,"time", Float64, ("time",))
+        nctime = defVar(ds,"time", Float64, ("time",), checksum = checksum)
         nctime.attrib["units"] = "days since " *
             Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
         nctime.attrib["standard_name"] = "time"
@@ -151,7 +154,8 @@ function ncfile(ds,filename,xyi,varname;
 
         if haskey(kw,:climatology_bounds)
             nctime.attrib["climatology"] = "climatology_bounds"
-            ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64, ("nv", "time"))
+            ncclimatology_bounds = defVar(ds,"climatology_bounds", Float64,
+                                          ("nv", "time"), checksum = checksum)
             ncclimatology_bounds.attrib["units"] = "days since " *
                 Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
         end
@@ -208,7 +212,9 @@ function ncfile(ds,filename,xyi,varname;
 
         ncvar_relerr = defVar(ds,"$(varname)_relerr", type_save, dimnames;
                               deflatelevel = deflatelevel,
-                              chunksizes = chunksizes)
+                              chunksizes = chunksizes,
+                              checksum = checksum,
+                              )
 
         # section 3.1 'The conforming unit for quantities that represent fractions, or parts of a whole, is "1".'
         # https://web.archive.org/web/20171121154031/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html
@@ -375,7 +381,8 @@ depth and time (as a vector of `DateTime`).
 function saveobs(filename,xy,ids;
                  type_save = Float32,
                  timeorigin = DateTime(1900,1,1,0,0,0),
-                 used = trues(size(ids))
+                 used = trues(size(ids)),
+                 checksum = :fletcher32,
                  )
     x,y,z,t = xy
     # keep only used observations
@@ -396,30 +403,35 @@ function saveobs(filename,xy,ids;
     ds.dim["observations"] = length(ids)
     ds.dim["idlen"] = idlen
 
-    ncobslon = defVar(ds,"obslon", type_save, ("observations",))
+    ncobslon = defVar(ds,"obslon", type_save, ("observations",),
+                      checksum = checksum)
     ncobslon.attrib["units"] = "degrees_east"
     ncobslon.attrib["standard_name"] = "longitude"
     ncobslon.attrib["long_name"] = "longitude"
 
-    ncobslat = defVar(ds,"obslat", type_save, ("observations",))
+    ncobslat = defVar(ds,"obslat", type_save, ("observations",),
+                      checksum = checksum)
     ncobslat.attrib["units"] = "degrees_north"
     ncobslat.attrib["standard_name"] = "latitude"
     ncobslat.attrib["long_name"] = "latitude"
 
-    ncobstime = defVar(ds,"obstime", Float64, ("observations",))
+    ncobstime = defVar(ds,"obstime", Float64, ("observations",),
+                       checksum = checksum)
     ncobstime.attrib["units"] = "days since " *
         Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
 
     ncobstime.attrib["standard_name"] = "time"
     ncobstime.attrib["long_name"] = "time"
 
-    ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",))
+    ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",),
+                        checksum = checksum)
     ncobsdepth.attrib["units"] = "meters"
     ncobsdepth.attrib["positive"] = "down"
     ncobsdepth.attrib["standard_name"] = "depth"
     ncobsdepth.attrib["long_name"] = "depth below sea level"
 
-    ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"))
+    ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"),
+                     checksum = checksum)
     ncobsid.attrib["long_name"] = "observation identifier"
     ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
 
@@ -458,7 +470,8 @@ variable called `varname`.
 function saveobs(filename,varname,value,xy,ids;
                  type_save = Float32,
                  timeorigin = DateTime(1900,1,1,0,0,0),
-                 used = trues(size(ids))
+                 used = trues(size(ids)),
+                 checksum = :fletcher32,
                  )
 
     saveobs(filename,xy,ids;
@@ -469,7 +482,8 @@ function saveobs(filename,varname,value,xy,ids;
 
 
     ds = Dataset(filename,"a")
-    ncobs = defVar(ds,varname, type_save, ("observations",))
+    ncobs = defVar(ds,varname, type_save, ("observations",),
+                   checksum = checksum)
     ncobs[:] = value
     close(ds)
 
