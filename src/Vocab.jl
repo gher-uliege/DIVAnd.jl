@@ -222,8 +222,8 @@ concept = collection["PSALPR01"]
 @show Vocab.prefLabel(concept)
 ```
 """
-SDNCollection(name) = Collection("http://www.seadatanet.org/urnurl/collection/$(name)/current/")
-
+SDNCollection(name) = Collection("http://vocab.ndg.nerc.ac.uk/collection/$(name)/current/")
+#SDNCollection(name) = Collection("http://www.seadatanet.org/urnurl/collection/$(name)/current/")
 
 """
     foundconcepts = findbylabel(collection::Vocab.Collection,labels::Vector{T}) where T <: AbstractString
