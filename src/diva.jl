@@ -262,7 +262,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             # apply the transformation
             value_trans = trans.(value[sel])
             # some transformation (e.g. log) can produce -Inf, set these to NaN
-            value_trans[.!isfinite.(value_trans)] = NaN
+            value_trans[.!isfinite.(value_trans)] .= NaN
 
             # obs. coordinate matching selection
             xsel = map(xc -> xc[sel],x[1:end-1])
@@ -391,10 +391,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             # apply range check
             if minfield != -Inf
-                fit[fit .< minfield] = minfield
+                fit[fit .< minfield] .= minfield
             end
             if maxfield != Inf
-                fit[fit .> maxfield] = maxfield
+                fit[fit .> maxfield] .= maxfield
+
             end
 
 
