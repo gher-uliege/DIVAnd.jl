@@ -34,6 +34,9 @@ const namespaces = Dict(
 
 const CFStandardNameURL = "http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml"
 const CFAreaTypesURL = "http://cfconventions.org/Data/area-type-table/current/src/area-type-table.xml"
+const VocabURL = "http://vocab.ndg.nerc.ac.uk/collection"
+const EDMOURL = "http://www.seadatanet.org/urnurl"
+
 
 mutable struct CFVocab
     xdoc :: EzXML.Document
@@ -123,9 +126,14 @@ function resolve(urn)
     parts = split(urn,':')
     if parts[1] == "SDN"
         if parts[2] == "EDMO"
-            return EDMOEntry("http://www.seadatanet.org/urnurl/$(urn)")
+            return EDMOEntry("$(EDMOURL)/$(urn)")
         else
-            return Concept("http://www.seadatanet.org/urnurl/$(urn)")
+            tag = (parts[3] == "" ? "current" : parts[3])
+            url = "$(VocabURL)/$(parts[2])/$tag/$(parts[4])"
+            return Concept(url)
+            # this is the same, but slower and a possibly
+            # bit less reliable
+            #return Concept("http://www.seadatanet.org/urnurl/$(urn)")
         end
     else
        return nothing
@@ -222,8 +230,7 @@ concept = collection["PSALPR01"]
 @show Vocab.prefLabel(concept)
 ```
 """
-SDNCollection(name) = Collection("http://vocab.ndg.nerc.ac.uk/collection/$(name)/current/")
-#SDNCollection(name) = Collection("http://www.seadatanet.org/urnurl/collection/$(name)/current/")
+SDNCollection(name) = Collection("$(VocabURL)/$(name)/current/")
 
 """
     foundconcepts = findbylabel(collection::Vocab.Collection,labels::Vector{T}) where T <: AbstractString
@@ -255,7 +262,7 @@ mutable struct EDMO{T <: AbstractString}
     baseurl :: T
 end
 
-EDMO() = EDMO("http://www.seadatanet.org/urnurl/SDN:EDMO::")
+EDMO() = EDMO("$(EDMOURL)/SDN:EDMO::")
 
 Base.getindex(e::EDMO,identifier) = EDMOEntry("$(e.baseurl)$(identifier)")
 

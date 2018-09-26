@@ -72,10 +72,10 @@ units = lowercase(DIVAnd.Vocab.prefLabel(DIVAnd.Vocab.findfirst(concept,"related
 
 @test units == "degrees celsius"
 
-label = DIVAnd.Vocab.prefLabel(DIVAnd.Vocab.resolve("SDN:P021:current:TEMP"))
+label = DIVAnd.Vocab.prefLabel(DIVAnd.Vocab.resolve("SDN:P02:current:TEMP"))
 @test label == "Temperature of the water column"
 
-label = DIVAnd.Vocab.prefLabel(DIVAnd.Vocab.resolve("SDN:P021::TEMP"))
+label = DIVAnd.Vocab.prefLabel(DIVAnd.Vocab.resolve("SDN:P02::TEMP"))
 @test label == "Temperature of the water column"
 
 edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.resolve("SDN:EDMO::575"))
