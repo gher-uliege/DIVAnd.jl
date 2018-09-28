@@ -88,7 +88,6 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     @debug "number of windows: $(length(windowlist))"
 
     @sync @distributed for iwin = 1:size(windowlist,1)
-
         iw1 = windowlist[iwin][1]
         iw2 = windowlist[iwin][2]
         isol1 = windowlist[iwin][3]

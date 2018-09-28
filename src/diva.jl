@@ -365,7 +365,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     end
 
                 # analysis
-                fi2, erri, residuals[sel], qcdata, scalefactore =
+                fi2, erri, residual, qcdata, scalefactore =
                     DIVAnd.DIVAndgo(mask,pmn,xyi,
                                     xsel,
                                     vaa,
@@ -374,6 +374,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                                     errortype;
                                     moddim = moddim, MEMTOFIT = memtofit, kwargs2...)
 
+                residuals[sel] = residual
                 factore = scalefactore * factore
 
                 dbinfo[:factore][i,timeindex] = factore
@@ -381,6 +382,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 if qcdata != ()
                     qcvalues[sel] = qcdata
                 end
+
+                # unselect the data points not retained by DIVAndgo
+                view(sel,sel)[isnan.(residual)] .= false
             end
 
             # sum analysis and backgrounds
@@ -423,6 +427,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     if haskey(Dict(kwargs), :QCMETHOD)
        dbinfo[:qcvalues] = qcvalues
     end
+    dbinfo[:mask] = mask
 
     return dbinfo
 end
