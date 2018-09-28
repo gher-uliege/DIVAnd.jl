@@ -382,9 +382,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 if qcdata != ()
                     qcvalues[sel] = qcdata
                 end
-
-                # unselect the data points not retained by DIVAndgo
-                view(sel,sel)[isnan.(residual)] .= false
             end
 
             # sum analysis and backgrounds
@@ -403,7 +400,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             end
 
 
-            plotres(timeindex,sel,fit,erri)
+            plotres(timeindex,isfinite.(residuals) .& sel,fit,erri)
 
             fit[.!mask] .= NaN
             erri[.!mask] .= NaN
