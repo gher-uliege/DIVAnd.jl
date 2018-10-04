@@ -394,6 +394,9 @@ include("DIVAnd_constr_advec.jl");
 include("DIVAnd_constr_fluxes.jl");
 export DIVAnd_constr_fluxes
 
+include("DIVAnd_constr_fractions.jl");
+export DIVAnd_constr_fractions
+
 include("DIVAnd_constr_constcoast.jl");
 export DIVAnd_constr_constcoast
 
