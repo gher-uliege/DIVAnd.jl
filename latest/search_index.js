@@ -1200,4 +1200,12 @@ var documenterSearchIndex = {"docs": [
     "text": "If DIVAnd is installed without the package manager, it can be necessary to install additional packages. This will be explicitly shown, for example:LoadError: ArgumentError: Module Roots not found in current path.\nRun `Pkg.add(\"Roots\")` to install the Roots package."
 },
 
+{
+    "location": "index.html#Kernel-not-working-with-IJulia/Jupyter-under-julia0.7-Windows-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "Kernel not working with IJulia/Jupyter under julia0.7 Windows",
+    "category": "section",
+    "text": "Try these commandsPkg.add(\"ZMQ\")\nPkg.add(\"IJulia\")\nPkg.update()"
+},
+
 ]}
