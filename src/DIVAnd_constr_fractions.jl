@@ -1,7 +1,7 @@
 """
     c = DIVAnd_constr_fractions(s,epsfractions)
 
-Creates integral constraints so that fractions sum up to "1". It is assumed that the different fractions to be analyzed are in the last dimension of the geometry
+Creates integral constraints so that fractions sum up to zero. It is assumed that the different fractions to be analyzed are in the last dimension of the geometry and are anomalies. To impose a total value different of zero (for example 100 if the observations are percentages), this needs to be incorporated in the reference field which must ensure that the total value is respected (in the example of the percentages for example a reference value of 20 for each of five variables, or 10 30 20 20 20)
 
 Input:
   s: structure
@@ -38,13 +38,14 @@ function DIVAnd_constr_fractions(s,epsfractions)
 
      A = spzeros(nwithoutfractions,s.sv.n)
 	 l = size(A,1);
-	 yo = ones(l)
+	 #yo = ones(Float64,l)
+	 yo = zeros(Float64,l)
 	 R = Diagonal(epsfractions.*ones(l))
 
 
      for i=1:nwithoutfractions
 	   for j=1:sz[end]
-	   A[i,i+(j-1)*nwithoutfractions]=1
+	   A[i,i+(j-1)*nwithoutfractions]=1.0
 	   end
 	 end
 	   
