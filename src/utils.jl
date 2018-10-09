@@ -205,6 +205,56 @@ end
 end
 
 
+"""
+    m = floodfill(mask,I)
+
+Fill the binary mask starting at index `I` (`CartesianIndex`). All element directly connected to the starting location
+`I` will be `true` without crossing any element equal to `false` in `mask`.
+"""
+function floodfill(mask,I)
+    m = falses(size(mask))
+
+    m[I] = true
+
+    anyflip = true
+    directions = [
+                  CartesianIndex(1,0),
+                  CartesianIndex(-1,0),
+                  CartesianIndex(0,1),
+                  CartesianIndex(0,-1)]
+
+    CI =
+        @static if VERSION >= v"0.7"
+            CartesianIndices(size(m))
+        else
+            CartesianRange(size(m))
+        end
+
+    while anyflip
+        anyflip = false
+
+        for I in CI
+            if m[I]
+                for dir = directions
+
+                    i1 = I+dir
+                    if checkbounds(Bool, m, i1)
+                        if mask[i1] && !m[i1]
+                            m[i1] = true
+                            anyflip = true
+                        end
+                    end
+                end
+            end
+        end
+
+        if !anyflip
+            break
+        end
+    end
+    return m
+end
+
 
 
 """

@@ -123,3 +123,14 @@ weight = DIVAnd.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
 
 @test DIVAnd.dayssince(DateTime(1900,1,1); t0 = DateTime(1900,1,1)) == 0
 @test DIVAnd.dayssince(DateTime(1900,1,2); t0 = DateTime(1900,1,1)) == 1
+
+
+
+# flood-fill
+
+mask = trues(5,5)
+mask[3,:] .= false
+
+m = floodfill(mask,CartesianIndex(1,1))
+@test all(m[1:2,:])
+@test all(.!m[3:end,:])
