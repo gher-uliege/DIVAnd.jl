@@ -131,6 +131,6 @@ weight = DIVAnd.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
 mask = trues(5,5)
 mask[3,:] .= false
 
-m = floodfill(mask,CartesianIndex(1,1))
+m = DIVAnd.floodfill(mask,CartesianIndex(1,1))
 @test all(m[1:2,:])
 @test all(.!m[3:end,:])
