@@ -33,6 +33,7 @@ windowlist,csteps,lmask,alphapc = DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOF
 
 """
 function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT) where n
+    @debug "cutter",Lpmnrange,gridsize,moddim,MEMTOFIT
     #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange, 
     #         "gridsize", gridsize,"moddim",moddim,"MEMTOFIT",MEMTOFIT)
 
