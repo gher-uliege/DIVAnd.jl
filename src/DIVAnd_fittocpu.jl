@@ -116,7 +116,6 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     problemsize=problemsize/sqrt(prod(latercsteps[1:2]))    
     epsilon = 1E-6
 
-    # Can you comment here
     # tries to get the maximum multiplication factor with respect to the overlapping which can be applied 
     # to get the actual useful window size excluding the overlapping.
     if nwd>0
@@ -148,7 +147,7 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
         end
     end
 
-    # Do you agree 
+    # Limit window size to gridsize
     winsize = min.(2*overlapping+stepsize,gridsize)
     @debug "winsize: $winsize"
 
@@ -159,7 +158,7 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 
     ####################################
     #Force direct solver if you want by uncommenting next line
-    # isdirect=(0<1)
+    # isdirect = true
 
     return stepsize,overlapping,isdirect
 end
