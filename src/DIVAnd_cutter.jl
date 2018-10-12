@@ -32,8 +32,8 @@ windowlist,csteps,lmask,alphapc = DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOF
 * `alphapc` : Norm defining coefficients for preconditionner
 
 """
-function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT) where n
-    @debug "cutter",Lpmnrange,gridsize,moddim,MEMTOFIT
+function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT; solver = :auto) where n
+    @debug "cutter",Lpmnrange,gridsize,moddim,MEMTOFIT,solver
     #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange, 
     #         "gridsize", gridsize,"moddim",moddim,"MEMTOFIT",MEMTOFIT)
 
@@ -88,7 +88,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT) where 
     stepsize,overlapping,isdirect=DIVAnd_fittocpu(Lpmnrange,gridsize,csteps,moddim,MEMTOFIT)
     #@show stepsize,overlapping,isdirect
 
-    if isdirect
+    if isdirect || (solver == :direct)
         # Indiciate to the calling one that direct method can be used on windows
         csteps=0*csteps
         #@warn "Testing forced jog"
