@@ -10,7 +10,7 @@ stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,m
 
 * `Lpmnrange`: For every dimension the minimum and maximum correlation length scaled by the local resolution (i.e. the product between L and pm (pn,...))
 * `gridsize`: number of points in each direction (size(mask))
-* `latercsteps`:  ?
+* `latercsteps`:  coarsening steps used later if a lower resolution model is used for preconditioning. 
 * `moddim`: modulo for cyclic dimension (vector with n elements). Zero is used for non-cyclic dimensions.
 
 # Output:
@@ -86,9 +86,10 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 
 
     # problemsize is the number additional grid point appended to
-    # a subdomain to make the domains overlap???
+    # a subdomain to make the domains overlap
     problemsize=1
 
+    # nwd calculates the number of dimensions on which tiling/windowing is done
     nwd=0
     for i=1:min(n,2)
         # if length scale is small compared to domain size
@@ -115,7 +116,9 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     problemsize=problemsize/sqrt(prod(latercsteps[1:2]))    
     epsilon = 1E-6
 
-    # Can you comment here???
+    # Can you comment here
+    # tries to get the maximum multiplication factor with respect to the overlapping which can be applied 
+    # to get the actual useful window size excluding the overlapping.
     if nwd>0
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
     end
@@ -135,13 +138,17 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
         if Lpmnrange[i][2]<   lfactor*gridsize[i]
             if moddim[i]==0
                 stepsize[i]=Int(ceil( epsilon*factoroverlap*Lpmnrange[i][2]))
-                # Do you agree ?
+                # Limit stepsize, if limited force zero overlap
                 stepsize[i] = min(stepsize[i],gridsize[i])
+		if gridsize[i]==stepsize[i]
+			overlapping[i]=0
+		end
+			
             end
         end
     end
 
-    # Do you agree ?
+    # Do you agree 
     winsize = min.(2*overlapping+stepsize,gridsize)
     @debug "winsize: $winsize"
 
