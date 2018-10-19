@@ -82,5 +82,5 @@ profiles,lons,lats,depths,times,ids =
 
 fname = joinpath(dirname(@__FILE__),"..","data","time_series_small.txt")
 profiles,lons,lats,depths,times,ids = DIVAnd.ODVspreadsheet.load(Float64,[fname],["Water body dissolved oxygen concentration"], nametype = :localname)
-@test times[2] == Dates(2009,10,23,16,56,00)
+@test times[2] == DateTime(2009,10,23,16,56,00)
 @test times[2] != times[1]
