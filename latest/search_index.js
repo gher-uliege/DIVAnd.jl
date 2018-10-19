@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.DIVAndgo",
     "category": "function",
-    "text": "fi, erri, residuals, qcvalues, scalefactore = DIVAndgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);\n\nInput:\n\nSame arguments as DIVAndrun with in addition\nerrormethod :   you have the choice between :cpme (clever poorman\'s method, default method if parameter not provided), :none or :exact (only available if windowed analysis are done with DIVAndrun)\nMEMTOFIT=: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)\nRTIMESONESCALES= : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See weight_RtimesOne for details\nQCMETHOD= : if you provide a qc method parameter, quality flags are calculated. See DIVAnd_cv for details\n\nOutput:\n\nfi: the analysed field\nerri: relative error field on the same grid as fi. () if errormethod is fixed to :none\nresiduals: array of residuals at data points. For points not on the grid or on land: NaN\nqcvalues: if QCMETHOD= is provided, the output array contains the quality flags otherwise qcvalues is (). For points on land or not on the grid: 0\nscalefactore: Desroziers et al. 2005 (doi: 10.1256/qj.05.108) scale factor for epsilon2\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array fi represent the interpolated field at the grid defined by the coordinates xi and the scales factors pmn.\n\nIMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use if DIVAndrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see addprocs for example)\n\n\n\n"
+    "text": "fi, erri, residuals, qcvalues, scalefactore = DIVAndgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);\n\nInput:\n\nSame arguments as DIVAndrun with in addition\nerrormethod :   you have the choice between :cpme (clever poorman\'s method, default method if parameter not provided), :none or :exact (only available if windowed analysis are done with DIVAndrun)\nMEMTOFIT=: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)\nRTIMESONESCALES= : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See weight_RtimesOne for details\nQCMETHOD= : if you provide a qc method parameter, quality flags are calculated. See DIVAnd_cv for details\nsolver (default :auto:). :direct for the direct solver or :auto for automatic choice between the direct solver or the iterative solver.\n\nOutput:\n\nfi: the analysed field\nerri: relative error field on the same grid as fi. () if errormethod is fixed to :none\nresiduals: array of residuals at data points. For points not on the grid or on land: NaN\nqcvalues: if QCMETHOD= is provided, the output array contains the quality flags otherwise qcvalues is (). For points on land or not on the grid: 0\nscalefactore: Desroziers et al. 2005 (doi: 10.1256/qj.05.108) scale factor for epsilon2\n\nPerform an n-dimensional variational analysis of the observations f located at the coordinates x. The array fi represent the interpolated field at the grid defined by the coordinates xi and the scales factors pmn.\n\nIMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use if DIVAndrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see addprocs for example)\n\n\n\n"
 },
 
 {
@@ -741,7 +741,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.DIVAnd_fittocpu",
     "category": "function",
-    "text": "stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);\n\nCreates a list of windows for subsequent domain decomposition\n\nAlso calculates already the subsampling steps csteps for the preconditionners\n\nInput:\n\nLpmnrange:\ngridsize: number of points in each direction (size(mask))\nmoddim:\n\nOutput:\n\n\n\n"
+    "text": "stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);\n\nCreates a list of windows for subsequent domain decomposition\n\nAlso calculates already the subsampling steps csteps for the preconditionners\n\nInput:\n\nLpmnrange: For every dimension the minimum and maximum correlation length scaled by the local resolution (i.e. the product between L and pm (pn,...))\ngridsize: number of points in each direction (size(mask))\nlatercsteps:  coarsening steps used later if a lower resolution model is used for preconditioning. \nmoddim: modulo for cyclic dimension (vector with n elements). Zero is used for non-cyclic dimensions.\n\nOutput:\n\nstepsize: spatial (and temporal) shift in grid points between subdomains for every dimension (?)\noverlapping: number of overlapping grid points for every dimension\nisdirect: true is the direct solver is activated\n\n\n\n"
 },
 
 {
@@ -1086,6 +1086,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Multiple CPU system",
     "category": "section",
     "text": "Per default julia tries to use all CPUs on your system when doing matrix operations. The number of CPUs is controlled by the call to BLAS.set_num_threads. Using multiple CPUs can result in overhead and it can be beneficial to reduce the number of CPUs:BLAS.set_num_threads(2)"
+},
+
+{
+    "location": "index.html#Debugging-message-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "Debugging message",
+    "category": "section",
+    "text": "In Julia 1.0 debugging message can be activated using the following Julia command:ENV[\"JULIA_DEBUG\"] = \"DIVAnd\"See also https://docs.julialang.org/en/v1/stdlib/Logging/index.html#Environment-variables-1 ."
 },
 
 {
