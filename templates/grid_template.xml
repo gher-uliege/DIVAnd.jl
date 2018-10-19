@@ -468,29 +468,161 @@
             <gmd:featureCatalogueCitation/>
         </gmd:MD_FeatureCatalogueDescription>
    </gmd:contentInfo>
+   <gmd:distributionInfo xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:date="http://exslt.org/dates-and-times" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <gmd:MD_Distribution>
+            <gmd:distributor>
+            <!--MANDATORY: DOI part -->
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact/>
+                    <gmd:distributorFormat/>
+                    <gmd:MD_Format>
+                       <gmd:name>
+                          <gco:CharacterString>Climate and Forecast NetCDF</gco:CharacterString>
+                       </gmd:name>
+                       <gmd:version>
+                          <gco:CharacterString>1.0</gco:CharacterString>
+                       </gmd:version>
+                    </gmd:MD_Format>
+                    <gmd:distributorTransferOptions>
+                        <gmd:MD_DigitalTransferOptions>
+                            <gmd:onLine>
+                                <gmd:CI_OnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>{{ DOI_URL }}</gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:protocol>
+                                        <gco:CharacterString>WWW:LINK</gco:CharacterString>
+                                    </gmd:protocol>
+                                    <gmd:description>
+                                        <gco:CharacterString>Point of truth URL of this metadata record</gco:CharacterString>
+                                    </gmd:description>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+                                    </gmd:function>
+                                </gmd:CI_OnlineResource>
+                            </gmd:onLine>
+                        </gmd:MD_DigitalTransferOptions>
+                    </gmd:distributorTransferOptions>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            <!-- Online resources part (dépos GHER) -->
+            <gmd:distributor>
+            <!-- WMS link. The first gmd:online bloc is for the definition of the dataset. Then, one gmd:online per selected layer -->
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact/>
+                    <gmd:distributorFormat/>
+                    <gmd:distributorTransferOptions>
+                        <gmd:MD_DigitalTransferOptions>
+                            <gmd:onLine>
+                            <!-- bloc for dataset description -->
+                                <gmd:CI_OnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>{{ WMS_dataset_getcap }}</gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:protocol>
+                                        <gco:CharacterString>OGC:WMS:getCapabilities</gco:CharacterString>
+                                    </gmd:protocol>
+                                    <gmd:name>
+                                        <gco:CharacterString>{{ WMS_dataset_layer }}</gco:CharacterString>
+                                    </gmd:name>
+                                    <gmd:description gco:nilReason="missing">
+                                        <gco:CharacterString/>
+                                    </gmd:description>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+                                    </gmd:function>
+                                </gmd:CI_OnlineResource>
+                            </gmd:onLine>
+                            <!-- bloc for the layer selected -->
+                            <!-- n gmd:onLine may be used. Depends on the number of layers -->
 
-   <gmd:distributionInfo>
-      <gmd:MD_Distribution>
-         <gmd:distributionFormat>
-            <gmd:MD_Format>
-               <gmd:name>
-                  <gco:CharacterString>Climate and Forecast NetCDF</gco:CharacterString>
-               </gmd:name>
-               <gmd:version>
-                  <gco:CharacterString>1.0</gco:CharacterString>
-               </gmd:version>
-            </gmd:MD_Format>
-         </gmd:distributionFormat>
-         <gmd:distributor>
-            <gmd:MD_Distributor>
-               <gmd:distributorFormat/>
-               <gmd:distributorTransferOptions>
-                  <gmd:MD_DigitalTransferOptions/>
-               </gmd:distributorTransferOptions>
-            </gmd:MD_Distributor>
-         </gmd:distributor>
-      </gmd:MD_Distribution>
-  </gmd:distributionInfo>
+                            {{#WMS_layer}}
+                            <gmd:onLine>
+                                <gmd:CI_OnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>{{ getcap }}</gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:protocol>
+                                        <gco:CharacterString>OGC:WMS</gco:CharacterString>
+                                    </gmd:protocol>
+                                    <gmd:name>
+                                        <gco:CharacterString>{{ name }}</gco:CharacterString>
+                                    </gmd:name>
+                                    <gmd:description>
+                                        <gco:CharacterString>{{ description }}</gco:CharacterString>
+                                    </gmd:description>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+                                    </gmd:function>
+                                </gmd:CI_OnlineResource>
+                            </gmd:onLine>
+                            {{/WMS_layer}}
+                        </gmd:MD_DigitalTransferOptions>
+                    </gmd:distributorTransferOptions>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            <gmd:distributor>
+            <!-- NetCDF file part -->
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact/>
+                    <gmd:distributorFormat/>
+                    <gmd:distributorTransferOptions>
+                        <gmd:MD_DigitalTransferOptions>
+                            <gmd:onLine>
+                                <gmd:CI_OnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>{{ NetCDF_URL }} </gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:protocol>
+                                        <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+                                    </gmd:protocol>
+                                    <gmd:name>
+                                        <gco:CharacterString>NetCDF file</gco:CharacterString>
+                                    </gmd:name>
+                                    <gmd:description>
+                                        <gco:CharacterString>{{ NetCDF_URL_description }}</gco:CharacterString>
+                                    </gmd:description>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+                                    </gmd:function>
+                                </gmd:CI_OnlineResource>
+                            </gmd:onLine>
+                        </gmd:MD_DigitalTransferOptions>
+                    </gmd:distributorTransferOptions>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            <gmd:distributor>
+            <!-- OpeNDAP part -->
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact/>
+                    <gmd:distributorFormat/>
+                    <gmd:distributorTransferOptions>
+                        <gmd:MD_DigitalTransferOptions>
+                            <gmd:onLine>
+                                <gmd:CI_OnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>{{ OPENDAP_URL }}</gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:protocol>
+                                        <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+                                    </gmd:protocol>
+                                    <gmd:name>
+                                        <gco:CharacterString>OpeNDAP</gco:CharacterString>
+                                    </gmd:name>
+                                    <gmd:description>
+                                        <gco:CharacterString>{{ OPENDAP_description }}</gco:CharacterString>
+                                    </gmd:description>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+                                    </gmd:function>
+                                </gmd:CI_OnlineResource>
+                            </gmd:onLine>
+                        </gmd:MD_DigitalTransferOptions>
+                    </gmd:distributorTransferOptions>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+        </gmd:MD_Distribution>
+    </gmd:distributionInfo>
    <gmd:dataQualityInfo>
       <gmd:DQ_DataQuality>
          <gmd:scope>
