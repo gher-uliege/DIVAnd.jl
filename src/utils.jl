@@ -610,7 +610,7 @@ function backgroundfile(fname,varname)
     v = ds[varname]
     x = (lon,lat,depth)
 
-    return function (xi,n,value,trans)
+    return function (xi,n,value,trans; selection = [])
 
         vn = zeros(size(v[:,:,:,n]))
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
