@@ -485,3 +485,13 @@ for example:
 LoadError: ArgumentError: Module Roots not found in current path.
 Run `Pkg.add("Roots")` to install the Roots package.
 ```
+
+## Kernel not working with IJulia/Jupyter under julia0.7 Windows
+
+Try these commands
+```julia
+Pkg.add("ZMQ")
+Pkg.add("IJulia")
+Pkg.update()
+```
+

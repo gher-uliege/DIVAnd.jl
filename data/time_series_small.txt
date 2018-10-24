@@ -1,0 +1,102 @@
+//<Encoding>UTF-8</Encoding>
+//<Version>ODV Spreadsheet V4.6.4</Version>
+//<Creator>ctroupin@GHER-ULg-Laptop</Creator>
+//<CreateTime>2018-10-18T11:37:27</CreateTime>
+//<Software>Ocean Data View 4.7.10 - 64 bit (Linux)</Software>
+//<Source>/home/ctroupin/Projects/Diva-Workshops/notebooks/data/data_from_Eutrophication_Atlantic_all_from_time_series.odv</Source>
+//<SourceLastModified>2018-10-18T11:34:56</SourceLastModified>
+//<DataField>GeneralField</DataField>
+//<DataType>TimeSeries</DataType>
+//<MissingValueIndicators>-999.9</MissingValueIndicators>
+//
+//<MetaVariable>label="Cruise" var_type="METACRUISE" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Station" var_type="METASTATION" value_type="TEXT:21" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Type" var_type="METATYPE" value_type="TEXT:2" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Longitude [degrees_east]" var_type="METALONGITUDE" value_type="FLOAT" qf_schema="ODV" significant_digits="3" comment=""</MetaVariable>
+//<MetaVariable>label="Latitude [degrees_north]" var_type="METALATITUDE" value_type="FLOAT" qf_schema="ODV" significant_digits="3" comment=""</MetaVariable>
+//<MetaVariable>label="LOCAL_CDI_ID" var_type="METALOCALCDIID" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="EDMO_code" var_type="METAEDMOCODE" value_type="INTEGER" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Bot. Depth [m]" var_type="METABOTDEPTH" value_type="FLOAT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Instrument Info" var_type="METASDNINSTRUMENTINFO" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="P01 Codes" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="References" var_type="METAREFERENCE" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data set name" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Discipline" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Category" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Variables measured" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data format" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data format version" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data size" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data set creation date" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Datum" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Measuring area type" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Water depth [m]" var_type="METABASIC" value_type="FLOAT" qf_schema="ODV" significant_digits="2" comment=""</MetaVariable>
+//<MetaVariable>label="Depth reference" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Minimum instrument depth [m]" var_type="METABASIC" value_type="FLOAT" qf_schema="ODV" significant_digits="2" comment=""</MetaVariable>
+//<MetaVariable>label="Maximum instrument depth [m]" var_type="METABASIC" value_type="FLOAT" qf_schema="ODV" significant_digits="2" comment=""</MetaVariable>
+//<MetaVariable>label="Start date" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Start time" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="End date" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="End time" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Vertical resolution" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Vertical resolution unit" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Instrument / gear type" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Track resolution" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Track resolution unit" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Frequency" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Frequency unit" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Platform type" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Cruise name" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Alternative cruise name" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Cruise start date" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Station name" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Alternative station name" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Station start date" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Originator" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data Holding centre" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Project name" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="EDMED references" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="CSR references" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Publication references" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Data Distributor" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Database reference" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Access/ordering of data" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="Access restriction" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="CDI-record id" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="CDI-record creation date" var_type="METABASIC" value_type="TEXT:9" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//<MetaVariable>label="CDI-partner" var_type="METABASIC" value_type="INDEXED_TEXT" qf_schema="ODV" significant_digits="0" comment=""</MetaVariable>
+//
+//<DataVariable>label="time_ISO8601" value_type="DOUBLE" qf_schema="SEADATANET" significant_digits="4" is_primary_variable="T" comment=""</DataVariable>
+//<DataVariable>label="Water body dissolved oxygen concentration [umol/l]" value_type="FLOAT" qf_schema="SEADATANET" significant_digits="2" is_primary_variable="F" comment="Codes: SDN:P35::EPC00002 SDN:P06::UPOX"</DataVariable>
+//<DataVariable>label="Depth [m]" value_type="FLOAT" qf_schema="SEADATANET" significant_digits="2" is_primary_variable="F" comment="Codes: SDN:P01::ADEPZZ01 SDN:P06::ULAA"</DataVariable>
+//
+Cruise	Station	Type	yyyy-mm-ddThh:mm:ss.sss	Longitude [degrees_east]	Latitude [degrees_north]	LOCAL_CDI_ID	EDMO_code	Bot. Depth [m]	Instrument Info	P01 Codes	References	Data set name	Discipline	Category	Variables measured	Data format	Data format version	Data size	Data set creation date	Datum	Measuring area type	Water depth [m]	Depth reference	Minimum instrument depth [m]	Maximum instrument depth [m]	Start date	Start time	End date	End time	Vertical resolution	Vertical resolution unit	Instrument / gear type	Track resolution	Track resolution unit	Frequency	Frequency unit	Platform type	Cruise name	Alternative cruise name	Cruise start date	Station name	Alternative station name	Station start date	Originator	Data Holding centre	Project name	EDMED references	CSR references	Publication references	Data Distributor	Database reference	Access/ordering of data	Access restriction	CDI-record id	CDI-record creation date	CDI-partner	time_ISO8601	QV:SEADATANET	Water body dissolved oxygen concentration [umol/l]	QV:SEADATANET	Depth [m]	QV:SEADATANET	QV:SEADATANET:SAMPLE
+BOBGEO1-MOUILLAGE-GUILVINEC	00002	C	2009-10-23T15:56:00.000	-5.36368	46.93183	FI35200903006_00002_D01	486	891	SDN:P01::LCDAZZ01 SDN:L22::TOOL0026 | SDN:P01::LCSAZZ01 SDN:L22::TOOL0026 | SDN:P01::LCEWZZ01 SDN:L22::TOOL0026 | SDN:P01::LCNSZZ01 SDN:L22::TOOL0026	SDN:P01::DTUT8601 | SDN:P01::ADEPZZ01 | SDN:P01::LCDAZZ01 | SDN:P01::LCSAZZ01 | SDN:P01::TEMPPR01 | SDN:P01::PRESPR01 | SDN:P01::DOXYZZXX | SDN:P01::DOXYZZXX | SDN:P01::LCEWZZ01 | SDN:P01::LCNSZZ01	http://vocab.nerc.ac.uk/collection/C17/current/ZZ99 | http://seadata.bsh.de/cgi-csr/XML/xmlDownload_V2.pl?edmo=486&identifier=9030062 | http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200903006_00002_D01	FI35200903006_00002_D01(00002)	Administration and dimensions;Chemical oceanography;Physical oceanography	Administration and dimensions;Currents;Dissolved gases;Water column temperature and salinity	Date and time;Dissolved oxygen parameters in the water column;Horizontal velocity of the water column (currents);Temperature of the water column;Vertical spatial coordinates	ODV	0.4	0.554	20170317		point	891.00	sea level	856.00	856.00	20091023	15:56:00	20100724	12:51:00			current meters			3600	Seconds	subsurface mooring	BOBGEO1-MOUILLAGE-GUILVINEC	9030062	20091023	FI3520090300600002	2	20091023	IFREMER / EEP / LEP-DEEP ENVIRONMENT LABORATORY (484)	IFREMER / IDM / SISMER - Scientific Information Systems for the SEA (486)		CURRENT METER TIME SERIES (4560)	BOBGEO - Pourquoi pas? (35PK) (20096021)		IFREMER / IDM / SISMER - Scientific Information Systems for the SEA (486)	SISMER-STCM01	web data access with registration	SeaDataNet licence	2458377	20170317	IFREMER / IDM / SISMER - Scientific Information Systems for the SEA (486)	2009-10-23T15:56:00	1	193.39062	1	856.00000	1	0
+																																																									2009-10-23T16:56:00	1	195.23384	1	856.00000	1	0
+																																																									2009-10-23T17:56:00	1	194.76054	1	856.00000	1	0
+																																																									2009-10-23T18:56:00	1	202.68002	1	856.00000	1	0
+																																																									2009-10-23T19:56:00	1	208.05966	1	856.00000	1	0
+																																																									2009-10-23T20:56:00	1	209.00627	1	856.00000	1	0
+																																																									2009-10-23T21:56:00	1	212.49271	1	856.00000	1	0
+																																																																																																							2009-10-31T04:57:00	1	217.39905	1	856.00000	1	0
+																																																									2009-10-31T05:57:00	1	224.62192	1	856.00000	1	0
+																																																									2009-10-31T06:57:00	1	204.09993	1	856.00000	1	0
+																																																									2009-10-31T07:57:00	1	197.35037	1	856.00000	1	0
+																																																									2009-10-31T08:57:00	1	196.40376	1	856.00000	1	0
+																																																									2009-10-31T09:57:00	1	195.70715	1	856.00000	1	0
+																																																									2009-10-31T10:57:00	1	195.70715	1	856.00000	1	0
+//<History>2018-07-05T16:49:33	leroyd@NTSISM84	IMPORT (ADD)	source: D:/Datas/2018-05-15_SeriesTemporelles/Eutrophication_Atlantic_all_from_time_series.txt (last modified: 2018-05-10T01:56:33 | byte size: 20860266 | MD5: 25940279998b62a34c25be899691ff47)</History>
+//<History>2018-07-05T16:50:55	leroyd@NTSISM84	EXPORT	source: D:/Datas/2018-05-15_SeriesTemporelles/Eutrophication_Atlantic_all_from_time_series.odv metadata (last modified: 2018-07-05T16:49:38 | byte size: 237544 | MD5: e5fb233b10808f6aa39e32b07c6126a8) data (last modified: 2018-07-05T16:49:38 | byte size: 4320446 | MD5: d39f985ce4b09252a9d2cce44a48b708)</History>
+//<History>2018-10-18T11:34:50	ctroupin@GHER-ULg-Laptop	IMPORT (ADD)	source: /home/ctroupin/Projects/Diva-Workshops/notebooks/data/data_from_Eutrophication_Atlantic_all_from_time_series.txt (last modified: 2018-08-17T13:00:02 | byte size: 7212646 | MD5: aacb86d82ab88c4188997100485b1deb)</History>
+//<History>2018-10-18T11:37:27	ctroupin@GHER-ULg-Laptop	EXPORT	source: /home/ctroupin/Projects/Diva-Workshops/notebooks/data/data_from_Eutrophication_Atlantic_all_from_time_series.odv metadata (last modified: 2018-10-18T11:34:56 | byte size: 114874 | MD5: ae09e0d9d763a2fd2e5f4160abbcdd6a) data (last modified: 2018-10-18T11:34:51 | byte size: 1602196 | MD5: 71aa9fbea9b83060bc917206fcd2030f)</History>
+BOBGEO2-MOUILLAGE-GUILVINEC	00001	C	2010-07-25T07:00:00.000	-5.36084	46.93867	FI35201002002_00001_D01	486	753	SDN:P01::LCDAZZ01 SDN:L22::TOOL0026 | SDN:P01::LCSAZZ01 SDN:L22::TOOL0026 | SDN:P01::LCEWZZ01 SDN:L22::TOOL0026 | SDN:P01::LCNSZZ01 SDN:L22::TOOL0026	SDN:P01::DTUT8601 | SDN:P01::ADEPZZ01 | SDN:P01::LCDAZZ01 | SDN:P01::LCSAZZ01 | SDN:P01::TEMPPR01 | SDN:P01::PRESPR01 | SDN:P01::DOXYZZXX | SDN:P01::DOXYZZXX | SDN:P01::LCEWZZ01 | SDN:P01::LCNSZZ01	http://vocab.nerc.ac.uk/collection/C17/current/ZZ99 | http://seadata.bsh.de/cgi-csr/XML/xmlDownload_V2.pl?edmo=486&identifier=10020021 | http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35201002002_00001_D01	FI35201002002_00001_D01(00001)	Administration and dimensions;Chemical oceanography;Physical oceanography	Administration and dimensions;Currents;Dissolved gases;Water column temperature and salinity	Date and time;Dissolved oxygen parameters in the water column;Horizontal velocity of the water column (currents);Temperature of the water column;Vertical spatial coordinates	ODV	0.4	0.841	20170317		point	753.00	sea level	718.00	718.00	20100725	07:00:00	20110913	10:00:00			current meters			3600	Seconds	subsurface mooring	BOBGEO2-MOUILLAGE-GUILVINEC	10020021	20100725	FI3520100200200001	1	20100725	IFREMER / EEP / LEP-DEEP ENVIRONMENT LABORATORY (484)	IFREMER / IDM / SISMER - Scientific Information Systems for the SEA (486)		CURRENT METER TIME SERIES (4560)	BOBGEO2 - Le Suroit (35LU) (20106221)		IFREMER / IDM / SISMER - Scientific Information Systems for the SEA (486)	SISMER-STCM01	web data access with registration	SeaDataNet licence	2458386	20170317	IFREMER / IDM / SISMER - Scientific Information Systems for the SEA (486)	2010-07-25T07:00:00	1	242.60406	1	718.00000	1	0
+																																																									2010-07-25T08:00:00	1	239.34094	1	718.00000	1	0
+																																																									2010-07-25T09:00:00	1	243.30067	1	718.00000	1	0
+																																																									2010-07-25T10:00:00	1	242.60406	1	718.00000	1	0
+																																																									2010-07-25T11:00:00	1	220.66217	1	718.00000	1	0
+																																																									2010-07-25T12:00:00	1	212.49271	1	718.00000	1	0
+																																																									2010-07-25T13:00:00	1	211.79608	1	718.00000	1	0
+//<History>2018-07-05T16:49:33	leroyd@NTSISM84	IMPORT (ADD)	source: D:/Datas/2018-05-15_SeriesTemporelles/Eutrophication_Atlantic_all_from_time_series.txt (last modified: 2018-05-10T01:56:33 | byte size: 20860266 | MD5: 25940279998b62a34c25be899691ff47)</History>
+//<History>2018-07-05T16:50:55	leroyd@NTSISM84	EXPORT	source: D:/Datas/2018-05-15_SeriesTemporelles/Eutrophication_Atlantic_all_from_time_series.odv metadata (last modified: 2018-07-05T16:49:38 | byte size: 237544 | MD5: e5fb233b10808f6aa39e32b07c6126a8) data (last modified: 2018-07-05T16:49:38 | byte size: 4320446 | MD5: d39f985ce4b09252a9d2cce44a48b708)</History>
+//<History>2018-10-18T11:34:50	ctroupin@GHER-ULg-Laptop	IMPORT (ADD)	source: /home/ctroupin/Projects/Diva-Workshops/notebooks/data/data_from_Eutrophication_Atlantic_all_from_time_series.txt (last modified: 2018-08-17T13:00:02 | byte size: 7212646 | MD5: aacb86d82ab88c4188997100485b1deb)</History>
+//<History>2018-10-18T11:37:27	ctroupin@GHER-ULg-Laptop	EXPORT	source: /home/ctroupin/Projects/Diva-Workshops/notebooks/data/data_from_Eutrophication_Atlantic_all_from_time_series.odv metadata (last modified: 2018-10-18T11:34:56 | byte size: 114874 | MD5: ae09e0d9d763a2fd2e5f4160abbcdd6a) data (last modified: 2018-10-18T11:34:51 | byte size: 1602196 | MD5: 71aa9fbea9b83060bc917206fcd2030f)</History>
