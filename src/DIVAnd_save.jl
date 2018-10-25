@@ -250,7 +250,7 @@ function ncfile(ds,filename,xyi,varname;
     ds.attrib["Conventions"] = "CF-1.6"
     ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
     ds.attrib["file_name"] = filename
-    ds.attrib["product_id"] =  repr(uuid1())
+    ds.attrib["product_id"] =  string(uuid1())
     ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
 
     for (k,v) in ncglobalattrib
