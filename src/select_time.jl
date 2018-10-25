@@ -136,7 +136,15 @@ function select(TS::TimeSelectorYearListMonthList,index,obstime)
     return s
 end
 
+"""
+    TS = TimeSelectorRunningAverage(times,window)
 
+The structure `TS` handles the time aggregation based on vector of 
+central `times` and the time window given in days.
+Observations at the i-th time instance will be selected
+if the dates is between `times[i]-w/2` and `time[i]+w/2` where
+`w` is the time window expressed as days.
+"""
 struct TimeSelectorRunningAverage{T1 <: AbstractVector, T2 <: Number}
     times::T1 # central times
     window::T2 # in days
@@ -158,7 +166,7 @@ function select(TS::TimeSelectorRunningAverage,index,obstime)
 
     # loop over all observation time instance
     for i = 1:length(obstime)
-        s[i] =  Dates.Millisecond(obstime[i] - TS.times[index]).value <= 1000*24*60*60*TS.window
+        s[i] =  abs(Dates.Millisecond(obstime[i] - TS.times[index]).value) <= 1000*24*60*60*TS.window
     end
 
     return s

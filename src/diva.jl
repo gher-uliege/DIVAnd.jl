@@ -50,8 +50,10 @@ NetCDF file `filename` under the variable `varname`.
 * `mask`: if different from `nothing`, then this mask overrides land-sea mask based on the bathymetry
 (default `nothing`).
 * `background`: if different from `nothing`, then this parameter allows one
-to load the background from a call-back function
-(default `nothing`).
+to load the background from a call-back function (default `nothing`). The call-back functions has the parameters
+`(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
+(possibly transformed) and `trans` the transformation function. The output of this function is the 
+gridded background field and the observations minus the background field.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.).
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
@@ -288,7 +290,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 else
                     # anamorphosis transform must already be included to the
                     # background
-                    background(xsel,timeindex,value_trans,trans)
+                    background(xsel,timeindex,value_trans,trans; selection = sel)
                 end
 
             # the background is not computed for points outside of the domain
