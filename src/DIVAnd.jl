@@ -13,7 +13,6 @@ import Mustache
 import ZipFile
 using Missings
 using StatsBase
-#using JLD
 
 if VERSION >= v"0.7.0-beta.0"
     using Printf
@@ -50,6 +49,14 @@ else
         return :( @parallel $(esc(expr)) )
     end
 end
+
+if (v"1.0" <= VERSION) && (VERSION < v"1.1")
+    # performance regression in julia 1.0, but fixed in 1.1.0-DEV.308
+    import Base:*
+    (*)(A::SparseMatrixCSC, D::Diagonal) = A*sparse(D)
+    (*)(D::Diagonal, A::SparseMatrixCSC) = sparse(D)*A
+end
+
 
 using Compat
 

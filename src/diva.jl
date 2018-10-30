@@ -50,15 +50,19 @@ NetCDF file `filename` under the variable `varname`.
 * `mask`: if different from `nothing`, then this mask overrides land-sea mask based on the bathymetry
 (default `nothing`).
 * `background`: if different from `nothing`, then this parameter allows one
-to load the background from a call-back function
-(default `nothing`).
+to load the background from a call-back function (default `nothing`). The call-back functions has the parameters
+`(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
+(possibly transformed) and `trans` the transformation function. The output of this function is the 
+gridded background field and the observations minus the background field.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.).
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
-    remaining available for inversion. It is not total memory (default 3).
+    remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
+    usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
+* `minfield`: if the analysed field is below `minfield`, its value is replace by `minfield` (default -Inf, i.e. no substitution is done).
+* `maxfield`: if the analysed field is above `maxfield`, its value is replace by `maxfield` (default +Inf, i.e. no substitution is done).
 * `niter_e`: Number of iterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
-
 Any additional keywoard arguments understood by `DIVAndgo` can also be used here
 (e.g. velocity constrain)
 
@@ -92,6 +96,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 fitvert_param = Dict(),
                 memtofit = 3,
                 niter_e::Int = 1,
+                minfield::Float64 = -Inf,
+                maxfield::Float64 = Inf,
                 kwargs...
                 )
 
@@ -228,7 +234,6 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         for timeindex = 1:length(TS)
             @info "Time step $(timeindex) / $(length(TS))"
-
             # select observation to be used for the time instance timeindex
             sel = select(TS,timeindex,time)
 
@@ -257,6 +262,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             # apply the transformation
             value_trans = trans.(value[sel])
+            # some transformation (e.g. log) can produce -Inf, set these to NaN
+            value_trans[.!isfinite.(value_trans)] .= NaN
 
             # obs. coordinate matching selection
             xsel = map(xc -> xc[sel],x[1:end-1])
@@ -265,7 +272,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             fbackground,vaa =
                 if background == nothing
                     # spatial mean of observations
-                    vm = mean(value_trans)
+                    vm = mean(value_trans[isfinite.(value_trans)])
                     va = value_trans .- vm
 
                     # background profile
@@ -283,7 +290,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 else
                     # anamorphosis transform must already be included to the
                     # background
-                    background(xsel,timeindex,value_trans,trans)
+                    background(xsel,timeindex,value_trans,trans; selection = sel)
                 end
 
             # the background is not computed for points outside of the domain
@@ -359,7 +366,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     end
 
                 # analysis
-                fi2, erri, residuals[sel], qcdata, scalefactore =
+                fi2, erri, residual, qcdata, scalefactore =
                     DIVAnd.DIVAndgo(mask,pmn,xyi,
                                     xsel,
                                     vaa,
@@ -368,6 +375,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                                     errortype;
                                     moddim = moddim, MEMTOFIT = memtofit, kwargs2...)
 
+                residuals[sel] = residual
                 factore = scalefactore * factore
 
                 dbinfo[:factore][i,timeindex] = factore
@@ -383,7 +391,17 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             # inverse anamorphosis transformation
             fit .= invtrans.(fit)
 
-            plotres(timeindex,sel,fit,erri)
+            # apply range check
+            if minfield != -Inf
+                fit[fit .< minfield] .= minfield
+            end
+            if maxfield != Inf
+                fit[fit .> maxfield] .= maxfield
+
+            end
+
+
+            plotres(timeindex,isfinite.(residuals) .& sel,fit,erri)
 
             fit[.!mask] .= NaN
             erri[.!mask] .= NaN
@@ -407,6 +425,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     if haskey(Dict(kwargs), :QCMETHOD)
        dbinfo[:qcvalues] = qcvalues
     end
+    dbinfo[:mask] = mask
 
     return dbinfo
 end

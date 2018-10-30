@@ -21,8 +21,11 @@ cf = ufill(c,valex);
 @test sum(cf == valex) == 0
 
 
-#SSH = Dataset("/home/abarth/Utils/sossheig.nc")["sossheig"][:];
-#c = copy(SSH.data); c[SSH.na] = valex;
-#@time cf = ufill(c,valex);
-#@show extrema(cf)
+A = [1.,NaN,2.]
+DIVAnd_fill!(A,NaN)
+@test A ≈ [1.,1.5,2]
 
+
+A = [1.,NaN,NaN,NaN,NaN]
+DIVAnd_fill!(A,NaN)
+@test A ≈ ones(size(A))

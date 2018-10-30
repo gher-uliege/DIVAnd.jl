@@ -26,7 +26,7 @@ Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` 
 apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
 ```
 
-You need [Julia](http://julialang.org) (version 0.6) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 0.6 or 1.0) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia

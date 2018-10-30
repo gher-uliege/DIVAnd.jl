@@ -1,10 +1,11 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 
-if VERSION >= v"0.7.0-beta.0"
+if VERSION >= v"0.7"
     using Test
 else
     using Base.Test
+    using Compat: range
 end
 
 using DIVAnd
@@ -17,8 +18,8 @@ f = [1.];
 
 # final grid
 mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-    Compat.range(0,stop=1,length=23),
-    Compat.range(0,stop=1,length=22))
+    range(0,stop=1,length=23),
+    range(0,stop=1,length=22))
 
 # correlation length
 len = 0.005;

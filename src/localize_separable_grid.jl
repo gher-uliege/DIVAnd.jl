@@ -39,12 +39,18 @@ function localize_separable_grid(
     IJ = ndgrid(vi...) :: NTuple{n,Array{Int,n}}
 
     for i=1:n
-        itp = interpolate(X,IJ[i],Gridded(Linear()))
+        itp =
+            @static if VERSION >= v"0.7"
+                # https://github.com/JuliaMath/Interpolations.jl/issues/237
+                extrapolate(interpolate(X,IJ[i],Gridded(Linear())), Line())
+            else
+                interpolate(X,IJ[i],Gridded(Linear()))
+            end
 
         # loop over all point
         for j = 1:mi
             ind = NTuple{n,T}(getindex.(xi,j))
-            I[i,j] = itp[ind...]
+            I[i,j] = itp(ind...)
         end
     end
 

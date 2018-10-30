@@ -15,6 +15,7 @@ meanepsilon2(epsilon2::Matrix) = mean(diag(epsilon2))
 *  `MEMTOFIT=`: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)
 *  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details
 *  `QCMETHOD=` : if you provide a qc method parameter, quality flags are calculated. See `DIVAnd_cv` for details
+*  `solver` (default `:auto`:). :direct for the direct solver or :auto for automatic choice between the direct solver or the iterative solver.
 
 # Output:
 *  `fi`: the analysed field
@@ -36,6 +37,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                   MEMTOFIT = 16,
                   QCMETHOD = (),
                   RTIMESONESCALES = (),
+                  solver = :auto,
                   otherargs...
                   ) where n
 # function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme) where n
@@ -45,8 +47,8 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 #     QCMETHOD = ()
 #     RTIMESONESCALES = ()
 
-	dothinning = RTIMESONESCALES != ()
-	doqc = QCMETHOD != ()
+    dothinning = RTIMESONESCALES != ()
+    doqc = QCMETHOD != ()
 
     # DOES NOT YET WORK WITH PERIODIC DOMAINS OTHER THAN TO MAKE SURE THE DOMAIN IS NOT CUT
     # IN THIS DIRECTION. If adapation is done make sure the new moddim is passed to DIVAndrun
@@ -61,7 +63,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     Lpmnrange = DIVAnd_Lpmnrange(pmn,Labs)
 
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
-    windowlist,csteps,lmask,alphanormpc = DIVAnd_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT)
+    windowlist,csteps,lmask,alphanormpc = DIVAnd_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT; solver = solver)
 
     @debug "csteps $csteps"
 
@@ -72,23 +74,22 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     #fi = SharedArray(Float64,size(mask));
     #erri = SharedArray(Float64,size(mask));
     fi = SharedArray{Float32}(size(mask));
-	fi .= 0
+    fi .= 0
 
     erri = SharedArray{Float32}(size(mask))
-	erri .= 1.0
+    erri .= 1.0
 
-	qcdata = SharedArray{Float32}(size(f,1))
-	qcdata .= 0
+    qcdata = SharedArray{Float32}(size(f,1))
+    qcdata .= 0
 
     # Add now analysis at data points for further output
     fidata = SharedArray{Float32}(size(f,1))
-	fidata .= NaN
+    fidata .= NaN
 
     @debug "error method: $(errormethod)"
-    @debug "number of windows: $(length(windowlist))"
+    @info "number of windows: $(length(windowlist))"
 
     @sync @distributed for iwin = 1:size(windowlist,1)
-
         iw1 = windowlist[iwin][1]
         iw2 = windowlist[iwin][2]
         isol1 = windowlist[iwin][3]
@@ -98,8 +99,8 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
         @debug "window: $iwin, indices: $(windowlist[iwin])"
 
-		windowpointssol = ([isol1[i]:isol2[i] for i in 1:n]...,)
-		windowpointsstore = ([istore1[i]:istore2[i] for i in 1:n]...,)
+        windowpointssol = ([isol1[i]:isol2[i] for i in 1:n]...,)
+        windowpointsstore = ([istore1[i]:istore2[i] for i in 1:n]...,)
 
         #@warn "Test window $iw1 $iw2 $isol1 $isol2 $istore1 $istore2 "
 
@@ -142,23 +143,23 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
         # code seeting alphabc to 1 was disabled (and now removed)
 
-		# Work only on data which fall into bounding box
+        # Work only on data which fall into bounding box
 
-		xinwin,finwin,winindex,epsinwin = DIVAnd_datainboundingbox(xiw,x,f;Rmatrix = epsilon2)
+        xinwin,finwin,winindex,epsinwin = DIVAnd_datainboundingbox(xiw,x,f;Rmatrix = epsilon2)
 
-		if dothinning
-		    epsinwin = epsinwin ./ weight_RtimesOne(xinwin,RTIMESONESCALES)
-		end
+        if dothinning
+            epsinwin = epsinwin ./ weight_RtimesOne(xinwin,RTIMESONESCALES)
+        end
 
-		# The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
-		if size(winindex,1) > 0
-		    # work only when data are there
+        # The problem now is that to go back into the full matrix needs special treatment Unless a backward pointer is also provided which is winindex
+        if size(winindex,1) > 0
+            # work only when data are there
 
 
             # If you want to change another alphabc, make sure to replace it in the arguments, not adding them since it already might have a value
             # Verify if a direct solver was requested from the demain decomposer
             if sum(csteps)>0
-		        fw,s = DIVAndjog(
+                fw,s = DIVAndjog(
                     mask[windowpoints...],
                     pmniw,xiw,xinwin,
                     finwin,Labsw,epsinwin,csteps,lmask;
@@ -171,27 +172,27 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                     otherargs...)
 
                 fi[windowpointsstore...] = fw[windowpointssol...];
-			    # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
+                # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 
-			    finwindata = DIVAnd_residual(s,fw)
-			    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
+                finwindata = DIVAnd_residual(s,fw)
+                xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
                     ([ x[windowpointssol...] for x in xiw ]...,),xinwin,
                     finwindata)
-			    fidata[winindex[winindexsol]]=finwinsol
+                fidata[winindex[winindexsol]]=finwinsol
 
-			    if doqc
-			        @warn "QC not fully implemented in jogging, using rough estimate of Kii"
-			        finwinqc = DIVAnd_qc(fw,s,5)
-			        xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
+                if doqc
+                    @warn "QC not fully implemented in jogging, using rough estimate of Kii"
+                    finwinqc = DIVAnd_qc(fw,s,5)
+                    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
                         ([ x[windowpointssol...] for x in xiw ]...,),
                         xinwin,finwinqc)
-			        qcdata[winindex[winindexsol]]=finwinsol
-			    end
+                    qcdata[winindex[winindexsol]]=finwinsol
+                end
 
 
 
-			    if errormethod==:cpme
-			        fw = 0
+                if errormethod==:cpme
+                    fw = 0
                     s = 0
                     GC.gc()
                     # Possible optimization here: use normal cpme (without steps argument but with preconditionner from previous case)
@@ -221,20 +222,20 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                     velocity = velocity,
                     otherargs...)
 
-			    fi[windowpointsstore...] = fw[windowpointssol...];
-			    finwindata = DIVAnd_residualobs(s,fw)
-			    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
+                fi[windowpointsstore...] = fw[windowpointssol...];
+                finwindata = DIVAnd_residualobs(s,fw)
+                xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
                     ([ x[windowpointssol...] for x in xiw ]...,),
                     xinwin,finwindata)
-			    fidata[winindex[winindexsol]]=finwinsol
+                fidata[winindex[winindexsol]]=finwinsol
 
-			    if doqc
-			        finwinqc = DIVAnd_qc(fw,s,QCMETHOD)
-			        xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
+                if doqc
+                    finwinqc = DIVAnd_qc(fw,s,QCMETHOD)
+                    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
                         ([ x[windowpointssol...] for x in xiw ]...,),
                         xinwin,finwinqc)
-			        qcdata[winindex[winindexsol]]=finwinsol
-			    end
+                    qcdata[winindex[winindexsol]]=finwinsol
+                end
 
                 if errormethod==:cpme
                     errw = DIVAnd_cpme(
@@ -288,13 +289,13 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                 # End error fields
             end
 
-		    if errormethod==:none
+            if errormethod==:none
                 erri .= 1.
-			else
-			    erri[windowpointsstore...]=errw[windowpointssol...];
-		    end
+            else
+                erri[windowpointsstore...]=errw[windowpointssol...];
+            end
 
-	    end
+        end
 
     end
 
@@ -308,7 +309,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     ongrid = findall(x -> !isnan(x), fidata)
 
     #d0d = dot((1-s.obsout).*(s.yo),(s.yo));
-	d0d = dot(f[ongrid],f[ongrid])
+    d0d = dot(f[ongrid],f[ongrid])
     #d0dmd1d = dot((1-s.obsout).*residual,(s.yo));
     d0dmd1d = dot(fidata[ongrid],f[ongrid])
     ll1 = d0d/(d0dmd1d)-1;

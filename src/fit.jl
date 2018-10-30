@@ -678,6 +678,11 @@ end
 
 
 function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
+    if length(d) == 0
+        @warn "no data is provided to fitlen"
+        return NaN,NaN,Dict{Symbol,Any}()
+    end
+
     # number of dimensions
     ndims = length(x)
 
@@ -984,8 +989,11 @@ Optional arguments:
  * `smoothz` (default 100): spatial filter for the correlation scale
  * `searchz` (default 50): vertical search distance
  * `maxnsamp` (default 5000): maximum number of samples
- * `limitlen` (default false): limit correlation length by mean distance between observations
-
+ * `limitlen` (default false): limit correlation length by mean distance between
+    observations
+ * `epsilon2` (default is a vector of the same size as `value` with all elements
+    equal to 1): the relative error variance of the observations. Less reliable
+    observation would have a larger corresponding value.
 """
 function fithorzlen(x,value::Vector{T},z;
                     tolrel::T = 1e-4,
@@ -995,6 +1003,7 @@ function fithorzlen(x,value::Vector{T},z;
                     distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                     maxnsamp = 5000,
                     limitlen = false,
+                    epsilon2 = ones(size(value)),
                     ) where T
 
     kmax = length(z)
@@ -1009,6 +1018,8 @@ function fithorzlen(x,value::Vector{T},z;
             0 # all samples
         end
 
+    weight = 1 ./ epsilon2
+
     for k = 1:length(z)
 
         sel =
@@ -1022,7 +1033,7 @@ function fithorzlen(x,value::Vector{T},z;
         v = value[sel] .- mean(value[sel]);
 
         var0opt[k],lenopt[k],fitinfos[k] = DIVAnd.fitlen(
-            xsel,v,nsamp;
+            xsel,v,weight[sel],nsamp;
             distfun = distfun
         )
 
@@ -1033,6 +1044,11 @@ function fithorzlen(x,value::Vector{T},z;
         @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])"
     end
 
+    # handle layers with no data
+    DIVAnd_fill!(var0opt,NaN)
+    DIVAnd_fill!(lenopt,NaN)
+
+    # filter vertically
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
         DIVAnd.smoothfilter!(z,lenoptf,smoothz)
@@ -1048,7 +1064,7 @@ end
 
 
 """
-    lenz,dbinfo = DIVAnd.fitvertlen(x,value,z)
+    lenz,dbinfo = DIVAnd.fitvertlen(x,value,z,...)
 
 See also DIVAnd.fithorzlen
 """
@@ -1060,7 +1076,8 @@ function fitvertlen(x,value::Vector{T},z;
                      maxnsamp = 50,
                      progress = (iter,var,len,fitness) -> nothing,
                      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
-                     ) where T
+                     epsilon2 = ones(size(value)),
+                    ) where T
 
     zlevel2 = zero(T)
     zindex = Vector{Int}(undef,length(value))
@@ -1074,23 +1091,33 @@ function fitvertlen(x,value::Vector{T},z;
     nsamp = min(maxnsamp,length(value))
     count = (nsamp*(nsamp-1)) ÷ 2
 
+    weight = 1 ./ epsilon2
+
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
         zindex = findall(abs.(zlevel2 .- x[3]) .< searchz)
 
         if length(zindex) == 0
-            error("No data at $(zlevel2). Consider to increase the parameter searchz of fitvertlen")
+            @warn "No data near z = $zlevel2"
+            var0opt[k] = NaN
+            lenopt[k] = NaN
+            fitinfos[k] = Dict{Symbol,Any}()
+        else
+            iter = VertRandomCoupels(z[k],zindex,x,searchxy,maxntries,count)
+            #state = start(iter)
+            #@code_warntype next(iter,state)
+            #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
+            var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,weight,nsamp,iter)
+
+            @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
         end
-
-        iter = VertRandomCoupels(z[k],zindex,x,searchxy,maxntries,count)
-        #state = start(iter)
-        #@code_warntype next(iter,state)
-        #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-        var0opt[k],lenopt[k],fitinfos[k] = fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-
-        @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
     end
 
+    # handle layers with no data
+    DIVAnd_fill!(var0opt,NaN)
+    DIVAnd_fill!(lenopt,NaN)
+
+    # filter vertically
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
         DIVAnd.smoothfilter!(z,lenoptf,smoothz)

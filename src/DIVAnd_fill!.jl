@@ -24,7 +24,7 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
             s = zero(eltype(A))
 
             B[indI] = A[indI]
-            if !isequal(A[indI],fillvalue)
+            if isequal(A[indI],fillvalue)
 
                 RJ =
                     @static if VERSION >= v"0.7.0-beta.0"
@@ -61,4 +61,29 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
     end
 
     return B
+end
+
+"""
+    DIVAnd_fill!(A::AbstractArray,fillvalue)
+
+Replace values in A equal to fillvalue (possibly NaN) with average of
+surrounding grid points
+"""
+function DIVAnd_fill!(A::AbstractArray,fillvalue)
+    tmp = copy(A)
+
+    while true
+        DIVAnd_fill!(tmp,A,fillvalue)
+
+        nb = sum(isequal.(A,fillvalue))
+
+        if nb == 0
+            break
+        end
+        if nb == length(A)
+            error("All elements in A are equal to the fill-value.  No filling is possible")
+        end
+
+        tmp .= A
+    end
 end
