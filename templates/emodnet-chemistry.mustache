@@ -522,6 +522,8 @@
           </gmd:version>
         </gmd:MD_Format>
       </gmd:distributionFormat>
+
+      <!-- WMS part -->
       <gmd:transferOptions>
         <gmd:MD_DigitalTransferOptions>
           <gmd:onLine>
@@ -537,9 +539,12 @@
               </gmd:name>
             </gmd:CI_OnlineResource>
           </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
 
-
-          <!-- OpeNDAP part -->
+      <!-- OpeNDAP part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
@@ -556,8 +561,12 @@
               </gmd:description>
             </gmd:CI_OnlineResource>
           </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
 
-          <!-- NetCDF file part -->
+      <!-- NetCDF file part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
