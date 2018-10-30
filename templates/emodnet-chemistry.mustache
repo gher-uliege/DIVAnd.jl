@@ -147,10 +147,10 @@
       <gmd:credit>
         <gco:CharacterString>EMODnet Chemistry</gco:CharacterString>
       </gmd:credit>
-      <gmd:pointOfContact>
 
-        <!-- EMODNET CONTACT -->
-        {{#contacts}}
+      <!-- EMODNET CONTACT -->
+      {{#contacts}}
+      <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty uuid="{{ EDMO_URL }}">
           <gmd:organisationName>
             <gco:CharacterString>{{ name }}</gco:CharacterString>
