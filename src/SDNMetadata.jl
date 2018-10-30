@@ -310,8 +310,13 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     originators = Dict{String,String}[]
     for ae in collect(originators_edmo)
         originator = getedmoinfo(ae,"originator")
-        @info "originator: $(originator["name"])"
-        push!(originators,originator)
+
+        if originator["name"] == "UNKOWN"
+            @info "ignoring originator: $(originator["name"])"
+        else
+            @info "originator: $(originator["name"])"
+            push!(originators,originator)
+        end
     end
 
     # sort by name
