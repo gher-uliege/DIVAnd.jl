@@ -15,6 +15,7 @@ meanepsilon2(epsilon2::Matrix) = mean(diag(epsilon2))
 *  `MEMTOFIT=`: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)
 *  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details
 *  `QCMETHOD=` : if you provide a qc method parameter, quality flags are calculated. See `DIVAnd_cv` for details
+*  `solver` (default `:auto`:). :direct for the direct solver or :auto for automatic choice between the direct solver or the iterative solver.
 
 # Output:
 *  `fi`: the analysed field
@@ -36,6 +37,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                   MEMTOFIT = 16,
                   QCMETHOD = (),
                   RTIMESONESCALES = (),
+                  solver = :auto,
                   otherargs...
                   ) where n
 # function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme) where n
@@ -61,7 +63,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     Lpmnrange = DIVAnd_Lpmnrange(pmn,Labs)
 
     # Create list of windows, steps for the coarsening during preconditioning and mask for lengthscales to decoupled directions during preconditioning
-    windowlist,csteps,lmask,alphanormpc = DIVAnd_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT)
+    windowlist,csteps,lmask,alphanormpc = DIVAnd_cutter(Lpmnrange,size(mask),moddim,MEMTOFIT; solver = solver)
 
     @debug "csteps $csteps"
 
@@ -85,7 +87,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     fidata .= NaN
 
     @debug "error method: $(errormethod)"
-    @debug "number of windows: $(length(windowlist))"
+    @info "number of windows: $(length(windowlist))"
 
     @sync @distributed for iwin = 1:size(windowlist,1)
         iw1 = windowlist[iwin][1]

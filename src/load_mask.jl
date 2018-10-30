@@ -17,6 +17,7 @@ function extract_bath(bath_name,isglobal,xi,yi)
         #@info "Working with a global bathymetry";
     # end;
 
+    # TODO: make it work for 2-element vector with the bounding box
     dxi = xi[2] - xi[1]
     dyi = yi[2] - yi[1]
 

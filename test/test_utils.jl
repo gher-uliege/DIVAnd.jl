@@ -1,5 +1,9 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using Compat
+    using Random
+    using Statistics
+    using Dates
 else
     using Base.Test
 end
@@ -123,3 +127,18 @@ weight = DIVAnd.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
 
 @test DIVAnd.dayssince(DateTime(1900,1,1); t0 = DateTime(1900,1,1)) == 0
 @test DIVAnd.dayssince(DateTime(1900,1,2); t0 = DateTime(1900,1,1)) == 1
+
+
+
+# flood-fill
+
+mask = trues(8,8)
+mask[3,:] .= false
+
+m = DIVAnd.floodfill(mask,CartesianIndex(1,1))
+@test all(m[1:2,:])
+@test all(.!m[3:end,:])
+
+index = DIVAnd.floodfillcat(mask)
+@test index[1,1] == 2
+@test index[end,1] == 1

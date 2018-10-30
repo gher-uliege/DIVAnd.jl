@@ -204,8 +204,93 @@ for k = 1:kmax
 end
 end
 
+"""
+    directions = vonNeumannNeighborhood(mask)
 
+Return a vector will all search directions corresponding to the Von Neumann
+neighborhood in N dimensions where N is the dimension of the boolean array
+`mask`.
+"""
+function vonNeumannNeighborhood(mask::AbstractArray{Bool,N}) where N
+    return [CartesianIndex(ntuple(i -> (i == j ? s : 0),Val(N))) for j = 1:N for s in [-1,1]]
+end
 
+"""
+    m = floodfill(mask,I,directions)
+
+Fill the binary mask starting at index `I` (`CartesianIndex`). All element
+directly connected to the starting location `I` will be `true` without crossing
+any element equal to `false` in `mask`. Per default the value of `I` is the
+first true element in `mask` and `directions ` correspond to the Von Neumann
+neighborhood.
+"""
+function floodfill(mask,I = findfirst(mask),directions = vonNeumannNeighborhood(mask))
+    m = falses(size(mask))
+
+    m[I] = true
+
+    anyflip = true
+
+    CI =
+        @static if VERSION >= v"0.7"
+            CartesianIndices(size(m))
+        else
+            CartesianRange(size(m))
+        end
+
+    while anyflip
+        anyflip = false
+
+        for I in CI
+            if m[I]
+                for dir = directions
+
+                    i1 = I+dir
+                    if checkbounds(Bool, m, i1)
+                        if mask[i1] && !m[i1]
+                            m[i1] = true
+                            anyflip = true
+                        end
+                    end
+                end
+            end
+        end
+
+        if !anyflip
+            break
+        end
+    end
+    return m
+end
+
+"""
+    index = floodfillcat(mask)
+
+"""
+function floodfillcat(mask,directions = vonNeumannNeighborhood(mask))
+    m = copy(mask)
+    index = zeros(Int,size(mask))
+    area = Int[]
+
+    l = 0
+    while any(m)
+        l = l+1
+        ml = floodfill(m, findfirst(m), directions)
+        index[ml] .= l
+        m[ml] .= false
+        push!(area,sum(ml))
+    end
+
+    sortp = sortperm(area; rev = true)
+    for I in eachindex(index)
+        tmp = index[I]
+        if tmp != 0
+            index[I] = sortp[tmp]
+        end
+    end
+
+    return index
+end
 
 """
     hx,hy = cgradient(pmn,h)
@@ -525,7 +610,7 @@ function backgroundfile(fname,varname)
     v = ds[varname]
     x = (lon,lat,depth)
 
-    return function (xi,n,value,trans)
+    return function (xi,n,value,trans; selection = [])
 
         vn = zeros(size(v[:,:,:,n]))
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);

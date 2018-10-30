@@ -76,3 +76,11 @@ profiles,lons,lats,depths,times,ids =
 # https://web.archive.org/web/20180212213256/http://www.julian-date.com/
 
 @test DIVAnd.ODVspreadsheet.parsejd(2455512.375) == DateTime(2010,11,11,9,0,0)
+
+
+# time series
+
+fname = joinpath(dirname(@__FILE__),"..","data","time_series_small.txt")
+profiles,lons,lats,depths,times,ids = DIVAnd.ODVspreadsheet.load(Float64,[fname],["Water body dissolved oxygen concentration"], nametype = :localname)
+@test times[2] == DateTime(2009,10,23,16,56,00)
+@test times[2] != times[1]
