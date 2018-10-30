@@ -47,7 +47,7 @@
     </gmd:CI_ResponsibleParty>
   </gmd:contact>
   <gmd:dateStamp>
-    <gco:DateTime>{{ creation_time }}</gco:DateTime>
+    <gco:DateTime>{{ xml_creation_time }}</gco:DateTime>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
     <gco:CharacterString>ISO 19115:2003/19139 - EMODNET - SDN</gco:CharacterString>
@@ -497,6 +497,21 @@
       </gmd:extent>
     </gmd:MD_DataIdentification>
   </gmd:identificationInfo>
+  <gmd:contentInfo>
+    <gmd:MD_FeatureCatalogueDescription xmlns:srv="http://www.isotc211.org/2005/srv">
+      <gmd:includedWithDataset>
+        <gco:Boolean>false</gco:Boolean>
+      </gmd:includedWithDataset>
+      <gmd:featureTypes>
+        <!-- MANDATORY: type of the feature in the dataset                              -->
+        <!-- http://vocab.nerc.ac.uk/collection/L02/current/                    -->
+        <!-- (Grid series always except if only one time step in dataset, then Grid     -->
+        <!-- Issued from controlled vocabulary -->
+        <gco:LocalName codeSpace="{{ L02_URL }}">{{ L02_label }}</gco:LocalName>
+      </gmd:featureTypes>
+      <gmd:featureCatalogueCitation/>
+    </gmd:MD_FeatureCatalogueDescription>
+  </gmd:contentInfo>
   <gmd:distributionInfo xmlns:che="http://www.geocat.ch/2008/che">
     <gmd:MD_Distribution>
       <gmd:distributionFormat>
