@@ -311,7 +311,7 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     for ae in collect(originators_edmo)
         originator = getedmoinfo(ae,"originator")
 
-        if originator["name"] == "UNKOWN"
+        if originator["name"] == "UNKNOWN"
             @info "ignoring originator: $(originator["name"])"
         else
             @info "originator: $(originator["name"])"
