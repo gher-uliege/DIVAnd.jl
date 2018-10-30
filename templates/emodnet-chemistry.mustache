@@ -108,7 +108,10 @@
         <gco:CharacterString>EMODnet Chemistry</gco:CharacterString>
       </gmd:credit>
       <gmd:pointOfContact>
-        <gmd:CI_ResponsibleParty uuid="http://seadatanet.maris2.nl/v_edmo/print.asp?n_code=120">
+
+        <!-- EMODNET CONTACT -->
+        {{#contacts}}
+        <gmd:CI_ResponsibleParty uuid="{{ EDMO_URL }}">
           <gmd:organisationName>
             <gco:CharacterString>{{ name }}</gco:CharacterString>
           </gmd:organisationName>
@@ -162,41 +165,18 @@
             </gmd:CI_Contact>
           </gmd:contactInfo>
           <gmd:role xmlns:xslt="http://xml.apache.org/xslt">
-            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="originator" />
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="{{ role }}" />
           </gmd:role>
         </gmd:CI_ResponsibleParty>
       </gmd:pointOfContact>
-      <gmd:pointOfContact xmlns:gn="http://www.fao.org/geonetwork" xmlns:srv="http://www.isotc211.org/2005/srv">
-        <gmd:CI_ResponsibleParty>
-          <gmd:individualName>
-            <gco:CharacterString>John</gco:CharacterString>
-          </gmd:individualName>
-          <gmd:organisationName>
-            <gco:CharacterString>test</gco:CharacterString>
-          </gmd:organisationName>
-          <gmd:contactInfo>
-            <gmd:CI_Contact>
-              <gmd:address>
-                <gmd:CI_Address>
-                  <gmd:electronicMailAddress>
-                    <gco:CharacterString>test@test.com</gco:CharacterString>
-                  </gmd:electronicMailAddress>
-                </gmd:CI_Address>
-              </gmd:address>
-            </gmd:CI_Contact>
-          </gmd:contactInfo>
-          <gmd:role>
-            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author" />
-          </gmd:role>
-        </gmd:CI_ResponsibleParty>
-      </gmd:pointOfContact>
+      {{/contacts}}
       <gmd:graphicOverview>
         <gmd:MD_BrowseGraphic>
           <gmd:fileName>
-            <gco:CharacterString>https://sextant.ifremer.fr/geonetwork/srv/eng/resources.get?uuid=9f1ef81a-46e2-11e6-b6c5-40a8f051e8d0&amp;fname=AMON_0m_0103_20002009_L2_cot2.png</gco:CharacterString>
+            <gco:CharacterString>{{ preview }}</gco:CharacterString>
           </gmd:fileName>
           <gmd:fileDescription>
-            <gco:CharacterString>Name</gco:CharacterString>
+            <gco:CharacterString>large_thumbnail</gco:CharacterString>
           </gmd:fileDescription>
         </gmd:MD_BrowseGraphic>
       </gmd:graphicOverview>
