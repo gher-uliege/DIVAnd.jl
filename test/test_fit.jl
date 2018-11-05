@@ -1,5 +1,6 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using DelimitedFiles
 else
     using Base.Test
 end
@@ -140,3 +141,35 @@ nsamp = 0
 @test 25.4311714           ≈ varbak                   rtol=1e-6
 @test 0.81123489141464233  ≈ dbinfo[:rqual]  rtol=1e-6
 =#
+
+
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.DIVAnd_squaredom(
+    3,range(0,stop=1,length=30))
+
+lenx = leny = lenz = 0.2
+Nens = 1
+field = DIVAnd.random(mask,(pm,pn,po),(lenx,leny,lenz),Nens)
+
+s = 1:7:length(field)
+x = (xi[s],yi[s],zi[s])
+v = field[s]
+
+epsilon2 = ones(length(x[3])) + x[3][:].^2
+
+fitlenxy,dbinfo =
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fithorzlen(x,v,zi[1,1,:]; epsilon2 = epsilon2);
+    else
+        @test_warn r".at.*" DIVAnd.fithorzlen(x,v,zi[1,1,:]; epsilon2 = epsilon2);
+    end
+
+@test median(fitlenxy)  ≈ lenx             rtol=0.2
+
+
+fitlenz,dbinfo = 
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fitvertlen(x,v,zi[1,1,:]; epsilon2 = epsilon2);
+    else
+        @test_warn r".at.*" DIVAnd.fitvertlen(x,v,zi[1,1,:]; epsilon2 = epsilon2);
+    end
+@test median(fitlenz)  ≈ lenz             rtol=0.2

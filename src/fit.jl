@@ -1006,6 +1006,10 @@ function fithorzlen(x,value::Vector{T},z;
                     epsilon2 = ones(size(value)),
                     ) where T
 
+    if any(ϵ2 -> ϵ2 < 0,epsilon2)
+        error("some values in epsilon2 are negatives (minimum value is $(minimum(epsilon2)))")
+    end
+
     kmax = length(z)
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
@@ -1078,6 +1082,10 @@ function fitvertlen(x,value::Vector{T},z;
                      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                      epsilon2 = ones(size(value)),
                     ) where T
+
+    if any(ϵ2 -> ϵ2 < 0,epsilon2)
+        error("some values in epsilon2 are negatives (minimum value is $(minimum(epsilon2)))")
+    end
 
     zlevel2 = zero(T)
     zindex = Vector{Int}(undef,length(value))
