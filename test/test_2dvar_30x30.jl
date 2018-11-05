@@ -9,12 +9,12 @@ end
 
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(0,stop=1,length=30))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0,stop=1,length=30))
 
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(Compat.range(epsilon,stop = 1-epsilon, length = 20),
+x,y = ndgrid(range(epsilon,stop = 1-epsilon, length = 20),
              Comapt.range(epsilon,stop = 1-epsilon, length = 20))
 x = x[:]
 y = y[:]

@@ -10,12 +10,12 @@ using DIVAnd
 
 
 # observations with points outside
-x = collect(Compat.range(0,stop=1,length=7))
+x = collect(range(0,stop=1,length=7))
 f = sin.(3*pi*x) ;
 
 # final grid
 
-xi = collect(Compat.range(-0.1,stop=1.1,length=100))
+xi = collect(range(-0.1,stop=1.1,length=100))
 
 # reference field
 fref = sin.(xi*6*pi) ;

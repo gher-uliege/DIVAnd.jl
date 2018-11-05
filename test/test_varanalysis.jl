@@ -25,7 +25,7 @@ f = [1.]
 # pm is the inverse of the resolution along the 1st dimension,...
 
 
-mask,pmn,xyi = DIVAnd.DIVAnd_rectdom([Compat.range(0,stop=1,length=s) for s in gridsize]...)
+mask,pmn,xyi = DIVAnd.DIVAnd_rectdom([range(0,stop=1,length=s) for s in gridsize]...)
 
 
 sv = DIVAnd.statevector((mask,))

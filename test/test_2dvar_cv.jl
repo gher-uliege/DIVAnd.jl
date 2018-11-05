@@ -29,7 +29,7 @@ f = f+sqrt(epsilon2_true) * randn(nobs);
 
 # final grid
 mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-    Compat.range(0,stop=1,length=14),Compat.range(0,stop=1,length=13))
+    range(0,stop=1,length=14),range(0,stop=1,length=13))
 
 # correlation length (first guess)
 len = 0.1;

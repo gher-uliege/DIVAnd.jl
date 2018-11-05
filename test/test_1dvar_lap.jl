@@ -1,7 +1,7 @@
 # Testing DIVAnd in 1 dimension.
 
 # grid of background field
-xi = collect(Compat.range(0,stop=1,length=11))
+xi = collect(range(0,stop=1,length=11))
 
 x = [.4; .6];
 f = [.4; .6];
@@ -42,7 +42,7 @@ display(Matrix(Dsym2))
 
 # variable resolution
 
-pm = [Float64(i)+1 for i in Compat.range(0,stop=1,length=11)]
+pm = [Float64(i)+1 for i in range(0,stop=1,length=11)]
 pmn = (pm,)
 xe = [0; cumsum(1./pm)]
 xi = (xe[1:end-1] +xe[2:end])/2
