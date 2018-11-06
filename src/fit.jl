@@ -813,7 +813,9 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     covarweightmean = 0.
     for nn=1:nbmax
         covarweight[nn] = 0.
-        if (iw[nn] > 0)
+        # dirty fix JMB 05/11
+        # https://github.com/gher-ulg/DIVA/commit/f193cd2f5a9c350634686c730e3aa8dc606c9f59#diff-78a6698fc2fa991d95a271faa2c25d19
+        if (iw[nn] > 1)
             covar[nn]=covar[nn]/iw[nn]
             w2[nn]=w2[nn]/iw[nn]-covar[nn]^2
             if (w2[nn] > 1E-8*covar[nn]^2)
