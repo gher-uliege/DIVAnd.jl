@@ -19,7 +19,7 @@ t = randn(100)
 f = z
 
 mask,(pm,pn,po,pq),(xi,yi,zi,ti) = DIVAnd_squaredom(4,
-    Compat.range(-1,stop=1,length=5))
+    range(-1,stop=1,length=5))
 
 # correlation length
 len = 1

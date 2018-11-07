@@ -1,10 +1,11 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using DelimitedFiles
 else
     using Base.Test
+    using Compat: range
 end
 import DIVAnd
-#include("../src/fit.jl")
 
 # test data for basic statistics
 x = [1.,2.,3.,4.]
@@ -29,8 +30,8 @@ meanx,meany,stdx,stdy,covar,corr = DIVAnd.stats(sumx,sumx2,sumy,sumy2,sumxy,leng
 
 mincount = 50
 
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,Compat.range(0,stop=1,length=100))
+mask,(pm,pn),(xi,yi) = DIVAnd.DIVAnd_squaredom(
+    2,range(0,stop=1,length=100))
 
 lenx = .05;
 leny = .05;
@@ -56,7 +57,7 @@ minlen = 0.001
 maxlen = 0.1
 
 var0opt = covar[1]
-L = Compat.range(minlen,stop = maxlen,length = 100);
+L = range(minlen,stop = maxlen,length = 100);
 
 mu,K,len_scale = DIVAnd.DIVAnd_kernel(2,[1,2,1])
 
@@ -140,3 +141,40 @@ nsamp = 0
 @test 25.4311714           ≈ varbak                   rtol=1e-6
 @test 0.81123489141464233  ≈ dbinfo[:rqual]  rtol=1e-6
 =#
+
+
+mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.DIVAnd_squaredom(
+    3,range(0,stop=1,length=30))
+
+lenx = leny = lenz = 0.2
+Nens = 1
+field = DIVAnd.random(mask,(pm,pn,po),(lenx,leny,lenz),Nens)
+
+
+z = [0.3,0.5,0.7]
+s = 1:7:length(field)
+x = (xi[s],yi[s],zi[s])
+v = field[s]
+epsilon2 = ones(length(x[3])) + x[3][:].^2
+
+fitlenxy,dbinfo =
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fithorzlen(x,v,z; epsilon2 = epsilon2);
+    else
+        @test_warn r".at.*" DIVAnd.fithorzlen(x,v,z; epsilon2 = epsilon2);
+    end
+
+@test median(fitlenxy)  ≈ lenx             rtol=0.3
+
+s = 1:2:length(field)
+x = (xi[s],yi[s],zi[s])
+v = field[s]
+epsilon2 = ones(length(x[3])) + x[3][:].^2
+
+fitlenz,dbinfo = 
+    @static if VERSION >= v"0.7.0"
+        @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fitvertlen(x,v,z; epsilon2 = epsilon2);
+    else
+        @test_warn r".at.*" DIVAnd.fitvertlen(x,v,z; epsilon2 = epsilon2);
+    end
+@test median(fitlenz)  ≈ lenz             rtol=0.5

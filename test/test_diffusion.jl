@@ -25,7 +25,7 @@ f = [1]
 
 
 mask,pmn,xyi = DIVAnd_rectdom(
-    [Compat.range(0, stop = 1,length = s) for s in gridsize]...)
+    [range(0, stop = 1,length = s) for s in gridsize]...)
 
 
 sv = statevector((mask,))
