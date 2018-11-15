@@ -451,6 +451,7 @@ end
     DIVAnd.saveobs(filename,varname,value,xy,ids;
                    type_save = Float32,
                    timeorigin = DateTime(1900,1,1,0,0,0),
+                   used = trues(size(ids)),
                    )
 
 Save `value` and the location and time of the observation in the NetCDF file `filename` and
@@ -484,7 +485,7 @@ function saveobs(filename,varname,value,xy,ids;
     ds = Dataset(filename,"a")
     ncobs = defVar(ds,varname, type_save, ("observations",),
                    checksum = checksum)
-    ncobs[:] = value
+    ncobs[:] = value[used]
     close(ds)
 
 end
