@@ -153,6 +153,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Selection-of-variables-1",
+    "page": "DIVAnd.jl documentation",
+    "title": "Selection of variables",
+    "category": "section",
+    "text": "A indivual data point is used if all following conditions are met:longitude/latitude is inside the domain and not adjacent to a land point\nthe depth is within the depth range of the domain\nthe time is within the temporal range\nif an anamorphosis transform is used, it should correspond to a finite transformed value\nduring the loading, the corresponding quality flag is among the accepted quality flagsNote that for points 1.-3. the finite precision of floating point numbers can affect the results."
+},
+
+{
     "location": "index.html#DIVAnd.load_bath",
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.load_bath",
