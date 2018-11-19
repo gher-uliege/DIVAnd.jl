@@ -26,6 +26,18 @@ DIVAnd.backgroundfile
 DIVAnd.Quadtrees.checkduplicates
 ```
 
+## Selection of variables
+
+A indivual data point is used if all following conditions are met:
+1. longitude/latitude is inside the domain and not adjacent to a land point
+2. the depth is within the depth range of the domain
+3. the time is within the temporal range
+4. if an anamorphosis transform is used, it should correspond to a finite transformed value
+5. during the loading, the corresponding quality flag is among the accepted quality flags
+
+Note that for points 1.-3. the finite precision of floating point numbers can affect the results.
+
+
 # Bathymetry and spatial-temporal domain
 
 ```@docs
