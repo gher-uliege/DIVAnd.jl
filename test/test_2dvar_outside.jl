@@ -4,7 +4,7 @@
 
 # grid of background field
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,Compat.range(0, stop = 1, length = 100))
+    2,range(0, stop = 1, length = 100))
 
 epsilon = 1e-10;
 

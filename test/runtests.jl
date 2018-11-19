@@ -11,6 +11,7 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
     import Base.LinAlg.BLAS
+    using Compat: range
 end
 using Compat
 using SpecialFunctions

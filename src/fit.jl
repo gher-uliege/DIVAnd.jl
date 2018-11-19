@@ -330,7 +330,7 @@ function fit_isotropic(x,v::Vector{T},distbin::Vector{T},mincount::Int;
     mu,K,len_scale = DIVAnd.DIVAnd_kernel(n,alpha)
 
     var0opt = covar[1]
-    L = Compat.range(minlen,stop=maxlen,length=10000)
+    L = range(minlen,stop=maxlen,length=10000)
     J(L) = sum(((covar - var0opt * K.(distx * len_scale/L)) ./ stdcovar).^2)
     Jmin,imin = findmin(J.(L))
     lenopt = L[imin]
@@ -813,7 +813,9 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     covarweightmean = 0.
     for nn=1:nbmax
         covarweight[nn] = 0.
-        if (iw[nn] > 0)
+        # dirty fix JMB 05/11
+        # https://github.com/gher-ulg/DIVA/commit/f193cd2f5a9c350634686c730e3aa8dc606c9f59#diff-78a6698fc2fa991d95a271faa2c25d19
+        if (iw[nn] > 1)
             covar[nn]=covar[nn]/iw[nn]
             w2[nn]=w2[nn]/iw[nn]-covar[nn]^2
             if (w2[nn] > 1E-8*covar[nn]^2)
@@ -1006,6 +1008,10 @@ function fithorzlen(x,value::Vector{T},z;
                     epsilon2 = ones(size(value)),
                     ) where T
 
+    if any(ϵ2 -> ϵ2 < 0,epsilon2)
+        error("some values in epsilon2 are negatives (minimum value is $(minimum(epsilon2)))")
+    end
+
     kmax = length(z)
     lenopt = zeros(kmax)
     var0opt = zeros(kmax)
@@ -1078,6 +1084,10 @@ function fitvertlen(x,value::Vector{T},z;
                      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
                      epsilon2 = ones(size(value)),
                     ) where T
+
+    if any(ϵ2 -> ϵ2 < 0,epsilon2)
+        error("some values in epsilon2 are negatives (minimum value is $(minimum(epsilon2)))")
+    end
 
     zlevel2 = zero(T)
     zindex = Vector{Int}(undef,length(value))

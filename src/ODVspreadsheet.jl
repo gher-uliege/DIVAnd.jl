@@ -530,6 +530,9 @@ function loadprofile(T,sheet,iprofile,dataname;
         timedata,time_qv = loaddataqv(sheet,profile,locname_time,filldate_jd;
                                       qvlocalname = qvlocalname)
         time = parsejd.(timedata)
+    elseif "time_ISO8601" in locnames
+        time,time_qv = loaddataqv(sheet,profile,"time_ISO8601",filldate;
+                                  qvlocalname = qvlocalname)
     elseif "SDN:P01::DTUT8601" in P01names
         # ISO8601 format, e.g. yyyy-mm-ddThh:mm:ss.sss
 
@@ -634,6 +637,8 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
         sheet = readODVspreadsheet(fname);
         sheet_P01names = listSDNparams(sheet)
+
+        @debug "sheet_P01names: $sheet_P01names"
 
         # loop over all parameters
         for dataname in datanames

@@ -8,7 +8,7 @@ else
 end
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,Compat.range(-1, stop = 1, length = 10))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(-1, stop = 1, length = 10))
 
 # make sure that observations are strictly inside the domain
 # defined by xi and yi
@@ -16,8 +16,8 @@ epsilon = 1e-10;
 
 # grid of observations
 x,y = ndgrid(
-    Compat.range(epsilon,stop = 1-epsilon,length = 10),
-    Compat.range(epsilon,stop = 1-epsilon,length = 10))
+    range(epsilon,stop = 1-epsilon,length = 10),
+    range(epsilon,stop = 1-epsilon,length = 10))
 
 x = x[:]
 y = y[:]

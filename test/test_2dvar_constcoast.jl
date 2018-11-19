@@ -8,7 +8,7 @@ end
 
 # grid of background field
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,Compat.range(-1, stop = 1, length = 30))
+    2,range(-1, stop = 1, length = 30))
 
 # island at these location
 mi0 = 12
@@ -54,7 +54,7 @@ else
    srand(1234)
 end
 mask0,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,Compat.range(0, stop = 1, length = 100))
+    2,range(0, stop = 1, length = 100))
 mask = DIVAnd.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
 x = rand(Float64,100)
 y = rand(Float64,size(x))

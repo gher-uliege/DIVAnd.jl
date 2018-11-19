@@ -238,6 +238,18 @@ Per default julia tries to use all CPUs on your system when doing matrix operati
 BLAS.set_num_threads(2)
 ```
 
+# Debugging message
+
+In Julia 1.0 debugging message can be activated using the following Julia command:
+
+```julia
+ENV["JULIA_DEBUG"] = "DIVAnd"
+```
+
+
+See also https://docs.julialang.org/en/v1/stdlib/Logging/index.html#Environment-variables-1 .
+
+
 # Information for developers
 
 To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.

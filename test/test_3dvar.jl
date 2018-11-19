@@ -11,15 +11,15 @@ fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)
 
 # grid of background field
 mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_squaredom(3,
-    Compat.range(0,stop=1,length=15))
+    range(0,stop=1,length=15))
 
 fi_ref = fun.(xi,yi,zi)
 
 ϵ = eps()
 # grid of observations
-x,y,z = ndgrid(Compat.range(ϵ, stop=1-ϵ, length=10),
-               Compat.range(ϵ, stop=1-ϵ, length=10),
-               Compat.range(ϵ, stop=1-ϵ, length=10));
+x,y,z = ndgrid(range(ϵ, stop=1-ϵ, length=10),
+               range(ϵ, stop=1-ϵ, length=10),
+               range(ϵ, stop=1-ϵ, length=10));
 x = x[:];
 y = y[:];
 z = z[:];

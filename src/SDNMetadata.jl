@@ -310,8 +310,13 @@ function get_originators_from_obsid(db,obsids; ignore_errors = false)
     originators = Dict{String,String}[]
     for ae in collect(originators_edmo)
         originator = getedmoinfo(ae,"originator")
-        @info "originator: $(originator["name"])"
-        push!(originators,originator)
+
+        if originator["name"] == "UNKNOWN"
+            @info "ignoring originator: $(originator["name"])"
+        else
+            @info "originator: $(originator["name"])"
+            push!(originators,originator)
+        end
     end
 
     # sort by name
@@ -637,7 +642,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "DOI_URL" => DOI_URL,
         # URL for the global data set
         "WMS_dataset_getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-        "WMS_dataset_layer" => domain * "/" * filepath * layersep * varname,
+        "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
         "WMS_layers"  => [],
         "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
         "NetCDF_URL_description" => "Link to download the following file: " * filename,

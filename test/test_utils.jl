@@ -1,5 +1,9 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using Compat
+    using Random
+    using Statistics
+    using Dates
 else
     using Base.Test
 end
@@ -52,7 +56,7 @@ cf = DIVAnd.ufill(c,valex);
 # lengraddepth
 
 mask,(pm,pn),(xi,yi) = DIVAnd.DIVAnd_squaredom(
-    2,Compat.range(-10, stop = 10, length = 100))
+    2,range(-10, stop = 10, length = 100))
 h = 1000 * (tanh.(xi) .+ 1);
 L = 2.
 RL = DIVAnd.lengraddepth((pm,pn),h,L)
@@ -65,7 +69,7 @@ RL = DIVAnd.lengraddepth((pm,pn),h,L)
 # Greens functions for 1D diffusion
 # 1/sqrt(4 π k t) * exp(-x^2 / (4kt))
 
-z = Compat.range(-50,stop = 50,length = 201);
+z = range(-50,stop = 50,length = 201);
 f = zeros(size(z))
 f[(end+1)÷2] = 1
 
@@ -82,8 +86,8 @@ fref = (z[2]-z[1]) * exp.(-z.^2/(2*filterscale^2)) / sqrt(2* π * filterscale^2)
 
 # random field
 mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-    Compat.range(0, stop = 1, length = 100),
-    Compat.range(0, stop = 1, length = 110))
+    range(0, stop = 1, length = 100),
+    range(0, stop = 1, length = 110))
 
 lenx = .05;
 leny = .05;
@@ -123,3 +127,18 @@ weight = DIVAnd.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
 
 @test DIVAnd.dayssince(DateTime(1900,1,1); t0 = DateTime(1900,1,1)) == 0
 @test DIVAnd.dayssince(DateTime(1900,1,2); t0 = DateTime(1900,1,1)) == 1
+
+
+
+# flood-fill
+
+mask = trues(8,8)
+mask[3,:] .= false
+
+m = DIVAnd.floodfill(mask,CartesianIndex(1,1))
+@test all(m[1:2,:])
+@test all(.!m[3:end,:])
+
+index = DIVAnd.floodfillcat(mask)
+@test index[1,1] == 2
+@test index[end,1] == 1
