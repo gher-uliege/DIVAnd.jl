@@ -691,7 +691,7 @@ will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignored if `ignore_errors` is
 set to true.
 
-Information can be overriden with the dictionary `additionalvars`. The keys should
+Information can be overridden with the dictionary `additionalvars`. The keys should
 corresponds to the template tags found the in `template` directory. Template
 tags are the strings inside {{ and }}.
 
