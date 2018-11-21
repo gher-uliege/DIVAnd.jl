@@ -11,6 +11,7 @@ db = Dict{Tuple{Int64,String},Tuple{Bool,Vector{Int64}}}(
     (2,"A") => (true,[10,20]),
     (2,"B") => (true,[100]),
     (2,"C") => (false,[100]),
+    (2,"C") => (false,[1051]),
 )
 
 obsids = ["1-A","2-B","1000-A","2-C"]
@@ -28,7 +29,6 @@ originators,notfound =
 @test any(originator -> originator["EDMO_CODE"] == "1",originators)
 @test notfound[1]["edmo"] == 1000
 @test notfound[1]["local_cdi"] == "A"
-
 
 contact = DIVAnd.getedmoinfo(1579,"role")
 @test contact["country"] == "Belgium"
