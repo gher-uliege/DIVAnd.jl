@@ -542,7 +542,29 @@
         </gmd:MD_DigitalTransferOptions>
       </gmd:transferOptions>
 
-      <!-- OpeNDAP part -->
+      <!-- DOI part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ DOI_URL }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>DOI</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>Data Access and Citation</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+
+      <!-- OPeNDAP part -->
       <gmd:transferOptions>
         <gmd:MD_DigitalTransferOptions>
           <gmd:onLine>
@@ -579,23 +601,7 @@
                 <gco:CharacterString>Direct Download (NetCDF)</gco:CharacterString>
               </gmd:name>
               <gmd:description>
-                <gco:CharacterString>{{ NetCDF_URL_description }}</gco:CharacterString>
-              </gmd:description>
-            </gmd:CI_OnlineResource>
-          </gmd:onLine>
-          <gmd:onLine>
-            <gmd:CI_OnlineResource>
-              <gmd:linkage>
-                <gmd:URL>{{ DOI_URL }}</gmd:URL>
-              </gmd:linkage>
-              <gmd:protocol>
-                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
-              </gmd:protocol>
-              <gmd:name>
-                <gco:CharacterString>DOI</gco:CharacterString>
-              </gmd:name>
-              <gmd:description>
-                <gco:CharacterString>Data Access and Citation</gco:CharacterString>
+                <gco:CharacterString>Direct Download (NetCDF)</gco:CharacterString>
               </gmd:description>
             </gmd:CI_OnlineResource>
           </gmd:onLine>
