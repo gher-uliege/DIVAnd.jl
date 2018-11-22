@@ -50,7 +50,8 @@ end
 
 
 function loadobsid(ds,varname = "obsid")
-    obsids = nomissing(ds[varname][:]) :: Matrix{Char}
+    #obsids = nomissing(ds[varname][:]) :: Matrix{Char}
+    obsids = ds[varname].var[:,:] :: Matrix{Char}
 
     obsid = Vector{String}(undef,size(obsids,2))
 
