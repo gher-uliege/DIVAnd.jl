@@ -8,43 +8,10 @@ else
 end
 
 NCSDN = DIVAnd.NCSDN
-#=
-basedir = joinpath(@__DIR__,"..","data")
-
-fname = joinpath(basedir,"netCDF_vertical_profiles_ctd.nc")
-
-param = "TEMPPR01"
-
-T = Float64
-fnames = [fname]
-
-value,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
-     qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
-
-fnames = [
-    joinpath(basedir,"netCDF_timeseries_tidegauge.nc"),
-    joinpath(basedir,"netCDF_timeseries_tidegauge_with_instrument.nc"),
-    joinpath(basedir,"netCDF_trajectory_meteorological_data.nc"),
-    joinpath(basedir,"netCDF_trajectory_tsg_with_instrument.nc"),
-    joinpath(basedir,"netCDF_vertical_profiles_ctd.nc"),
-    joinpath(basedir,"netCDF_vertical_profiles_ctd_with_instruments.nc"),
-    joinpath(basedir,"netCDF_vertical_profiles_xbt_with_fall_rate_and_instruments.nc")]
-
-value,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
-     qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
-
-
-param = "TEMPET01"
-
-value,lon,lat,z,time,ids = NCSDN.load(T,fnames,param;
-    qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE])
-
-=#
 
 
 
-
-fnames = ["/home/ulg/gher/abarth/Downloads/data_from_SDN_2017-11_TS_profiles_non-restricted_med.nc"]
+fnames = [expanduser("~/Downloads/data_from_SDN_2017-11_TS_profiles_non-restricted_med.nc")]
 fname = fnames[1]
 accepted_status_flags = "good_value","probably_good_value";
 
@@ -62,13 +29,6 @@ function varbyattrib_first(ds; kwargs...)
     end
     return vs[1]
 end
-
-# LOCAL_CDI_ID = varbyattrib_first(ds,long_name = "LOCAL_CDI_ID");
-# EDMO_CODE = varbyattrib_first(ds,long_name = "EDMO_CODE");
-
-# obslat = varbyattrib_first(ds,standard_name = "latitude")[:]
-# obslon = varbyattrib_first(ds,standard_name = "longitude")[:]
-# obstime = varbyattrib_first(ds,standard_name = "time")[:]
 
 
 # @show extrema(skipmissing(obstime))
@@ -95,7 +55,7 @@ ncvar_z = varbyattrib_first(ds,long_name = "Depth");
 @inline function load!(ncvar::NCDatasets.Variable{T,2}, data, i::Colon,j::UnitRange) where T
     n_samples = size(ncvar,1)
     # reversed and 0-based
-    NCDatasets.nc_get_vara(ncvar.ncid,ncvar.varid,[first(j)-1,0],[length(j),n_samples],data)
+    NCDatasets.nc_get_vara!(ncvar.ncid,ncvar.varid,[first(j)-1,0],[length(j),n_samples],data)
 #    @show datac[1:10],size(datac)
 end
 
@@ -105,7 +65,7 @@ end
     start = [first(ind[2])-1,first(ind[1])-1]
     count = [length(ind[2]),length(ind[1])]
     stride = [step(ind[2]),step(ind[1])]
-    NCDatasets.nc_get_vars(ncvar.ncid,ncvar.varid,start,count,stride,data)
+    NCDatasets.nc_get_vars!(ncvar.ncid,ncvar.varid,start,count,stride,data)
 end
 
 function loadmis(ncvar::NCDatasets.Variable{T,2},fillval) where T
@@ -113,10 +73,10 @@ function loadmis(ncvar::NCDatasets.Variable{T,2},fillval) where T
     n_stations = 100000
     data = Vector{Vector{T}}(undef,n_stations);
     tmp = Array{T,2}(undef,(n_samples,1))
-    
+
     @inbounds for i = 1:n_stations
         # reversed and 0-based
-        NCDatasets.nc_get_vars(ncvar.ncid,ncvar.varid,[i-1,0],[1,n_samples],[1,1],tmp)
+        NCDatasets.nc_get_vars!(ncvar.ncid,ncvar.varid,[i-1,0],[1,n_samples],[1,1],tmp)
         #data[i] = tmp[tmp .!= fillval]
         data[i] = filter(x -> x != fillval,tmp)
     end
@@ -231,7 +191,7 @@ end
 accepted_status_flag_values = zeros(eltype(flag_values),length(accepted_status_flags))
 for i = 1:length(accepted_status_flags)
     tmp = findfirst(accepted_status_flags[i] .== flag_meanings)
-    
+
     if tmp == nothing
         error("cannot recognise flag $(accepted_status_flags[i])")
     end
@@ -248,9 +208,58 @@ fillval_z = get(ncvar.attrib,"_FillValue",nothing)
 #data = @time loadmis2(ncvar.var,fillval)
 
 
+#=
 data,data_z = @time loadmis3(ncvar.var,fillval,ncvar_z.var,fillval_z,ncv_ancillary,accepted_status_flag_values)
 
-ll = 8529 
+ll = 8529
 
 @show extrema(length.(data))
 @test data[ll][1:3] == [24.2607f0, 24.2608f0, 24.2525f0]
+
+
+=#
+
+T = Float64
+LOCAL_CDI_ID = varbyattrib_first(ds,long_name = "LOCAL_CDI_ID")[:];
+EDMO_CODE = varbyattrib_first(ds,long_name = "EDMO_CODE")[:];
+
+obsproflat = varbyattrib_first(ds,standard_name = "latitude")[:]
+obsproflon = varbyattrib_first(ds,standard_name = "longitude")[:]
+obsproftime = varbyattrib_first(ds,standard_name = "time")[:]
+
+
+function flatten_data(T,obsproflon,obsproflat,obsproftime,data,data_z)
+    len = sum(length.(data))
+    flat_lon = zeros(T,len)
+    flat_lat = zeros(T,len)
+    flat_time = Vector{DateTime}(undef,len)
+    flat_ids = fill("",(len,))
+    sel = trues(len)
+
+    flat_data = vcat(data...);
+    flat_z = vcat(data_z...);
+
+    j = 0;
+
+#    for i = 1:length(data)
+    for i = 1:100
+        jend = j+length(data[i]);
+        obsid = "$(EDMO_CODE[i])-$(LOCAL_CDI_ID[i])"
+        @show obsid
+        if (ismissing(obsproftime[i]) || ismissing(obsproflon[i])
+            || ismissing(obsproflat[i]))
+            sel[j+1:jend] .= false
+        else
+            flat_lon[j+1:jend] .= obsproflon[i]
+            flat_lat[j+1:jend] .= obsproflon[i]
+            flat_time[j+1:jend] .= obsproftime[i]
+            flat_ids[j+1:jend] .= obsid[i]
+        end
+        j = jend
+    end
+
+    return flat_lon[sel],flat_lat[sel],flat_z[sel],flat_data[sel],flat_ids[sel]
+end
+
+T = Float64
+obslon,obslat,obsdepth,obstime,obsvalue,obsids = flatten_data(T,obsproflon,obsproflat,obsproftime,data,data_z)
