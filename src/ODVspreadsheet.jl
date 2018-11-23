@@ -572,7 +572,7 @@ end
 
 
 """
-     profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;
+     obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,fnames,datanames;
         qv_flags = [DIVAnd.ODVspreadsheet.GOOD_VALUE,
                     DIVAnd.ODVspreadsheet.PROBABLY_GOOD_VALUE],
         nametype = :P01,

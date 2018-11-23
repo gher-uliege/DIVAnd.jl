@@ -143,7 +143,8 @@ function loadvar_byprof(ds::Dataset,param::String;
 end
 
 """
-    data,lon,lat,z,time,ids = load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE]) where TS <: AbstractString
+    obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,
+      fname,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE])
 
 
 """
