@@ -99,7 +99,12 @@ function loadmis2(ncvar::NCDatasets.Variable{T,2},fillval) where T
 end
 
 
-function loadmis3(ncvar::NCDatasets.Variable{T,2},fillval,ncz::NCDatasets.Variable{Tz,2},fillval_z,flag::NCDatasets.Variable{Tflag,2},accepted_status_flag_values) where {T,Tz,Tflag}
+function loadmis3(ncvar::NCDatasets.Variable{T,2},
+                  flag::NCDatasets.Variable{Tflag,2},
+                  fillval,accepted_status_flag_values,
+                  ncz::NCDatasets.Variable{Tz,2},
+                  flag_z::NCDatasets.Variable{Tflagz,2},
+                  fillval_z,accepted_status_flag_values_z) where {T,Tz,Tflag,Tflagz}
     nchunk = 10
     n_samples = size(ncvar,1)
     n_stations = size(ncvar,2)
@@ -112,6 +117,7 @@ function loadmis3(ncvar::NCDatasets.Variable{T,2},fillval,ncz::NCDatasets.Variab
     data_chunk = Array{T,2}(undef,(n_samples,nchunk))
     z_chunk = Array{Tz,2}(undef,(n_samples,nchunk))
     flag_chunk = Array{Tflag,2}(undef,(n_samples,nchunk))
+    flag_z_chunk = Array{Tflag,2}(undef,(n_samples,nchunk))
 
     profile = Vector{T}(undef,n_samples)
     profile_z = Vector{T}(undef,n_samples)
@@ -126,6 +132,7 @@ function loadmis3(ncvar::NCDatasets.Variable{T,2},fillval,ncz::NCDatasets.Variab
         load!(ncvar,data_chunk,:,nc)
         load!(ncz,  z_chunk,   :,nc)
         load!(flag, flag_chunk,:,nc)
+        load!(flag_z, flag_z_chunk,:,nc)
 
         for k = 1:clen
             iprofile = 0
@@ -133,6 +140,7 @@ function loadmis3(ncvar::NCDatasets.Variable{T,2},fillval,ncz::NCDatasets.Variab
                 if ((data_chunk[l,k] != fillval)
                     && (z_chunk[l,k] != fillval_z)
                     && (flag_chunk[l,k] ∈ accepted_status_flag_values)
+                    && (flag_z_chunk[l,k] ∈ accepted_status_flag_values_z)
                     )
 
                     iprofile = iprofile+1
@@ -251,11 +259,13 @@ function load(T,fname,long_name;
     ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z,"status_flag").var
 
     accepted_status_flag_values = flagvalues(ncv_ancillary.attrib,accepted_status_flags)
+    accepted_status_flag_values_z = flagvalues(ncv_ancillary_z.attrib,accepted_status_flags)
     @show accepted_status_flag_values
 
     fillval = ncvar.attrib["_FillValue"]
     fillval_z = get(ncvar.attrib,"_FillValue",nothing)
-    data,data_z = @time loadmis3(ncvar.var,fillval,ncvar_z.var,fillval_z,ncv_ancillary,accepted_status_flag_values)
+    data,data_z = @time loadmis3(ncvar.var,ncv_ancillary,fillval,accepted_status_flag_values,
+                                 ncvar_z.var,ncv_ancillary_z,fillval_z,accepted_status_flag_values_z)
 
     close(ds)
 
@@ -372,13 +382,13 @@ ds.attrib["DataType"] = "Profiles"
 
 nclongitude[:] = [1,2,3]
 nclatitude[:] = [1,2,3]
-ncmetavar4[:] = ['a' 'b' 'b'; 'c' 'c' 'c']
+ncmetavar4[:] = ['a' 'b' 'c'; 'x' 'y' 'z']
 ncmetavar5[:] = [111,222,333]
 ncdate_time[:] = [DateTime(2000,1,1),DateTime(2000,1,2),DateTime(2000,1,3)]
 ncvar1[:] = [0. 0. 0.; 1. 1. 1.]
 ncvar1_qc[:] = [49 49 49; 49 49 48]
-ncvar2[:] =  [10. 10. 10.; 11. 11. 11.]
-ncvar2_qc[:] = [49 49 49; 48 49 49]
+ncvar2[:] =  [10. 11. 12.; 20. 21. 22.]
+ncvar2_qc[:] = [49 48 49; 49 49 49]
 close(ds)
 
 T = Float64
@@ -386,3 +396,10 @@ qv_flags = ["good_value","probably_good_value"];
 long_name = "ITS-90 water temperature"
 
 obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,fname,long_name; qv_flags = qv_flags)
+
+@test obsvalue == [10.0, 20.0, 21.0, 12.0]
+@test obslon == [1.0, 1.0, 2.0, 3.0]
+@test obslat == [1.0, 1.0, 2.0, 3.0]
+@test obstime == [DateTime(2000,1,1),DateTime(2000,1,1),DateTime(2000,1,2),DateTime(2000,1,3)]
+@test obsdepth == [0.0, 1.0, 1.0, 0.0]
+@test obsids == ["111-ax", "111-ax", "222-by", "333-cz"]
