@@ -49,10 +49,7 @@ function loadobsid(filename::AbstractString,varname = "obsid")
 end
 
 
-function loadobsid(ds,varname = "obsid")
-    #obsids = nomissing(ds[varname][:]) :: Matrix{Char}
-    obsids = ds[varname].var[:,:] :: Matrix{Char}
-
+function chararray2strings(obsids::Matrix{Char})
     obsid = Vector{String}(undef,size(obsids,2))
 
     for i = 1:size(obsids,2)
@@ -75,6 +72,10 @@ function loadobsid(ds,varname = "obsid")
     end
 
     return obsid
+end
+
+function loadobsid(ds,varname = "obsid")
+    return chararray2strings(ds[varname].var[:,:])
 end
 
 
