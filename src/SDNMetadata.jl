@@ -676,7 +676,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     end
 
     for (name, description, filepath_) in templateVars["netcdf_variables"]
-        if (name == "obsid") || (endswith(name,"_L2") && !endswith(name,"deepest_L2"))
+        if (name == "obsid") || (endswith(name,"_L1") && !endswith(name,"deepest_L1"))
             push!(templateVars["WMS_layers"],Dict(
                 "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
                 "name" => domain * "/" * filepath_ * layersep * name,
