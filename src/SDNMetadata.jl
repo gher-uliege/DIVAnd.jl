@@ -3,6 +3,8 @@ const pathname = joinpath(dirname(@__FILE__),"..")
 
 const PROJECTS = Dict(
     "EMODNET-chemistry" =>  Dict(
+        "name" => "EMODnet Chemistry",
+        "URL" => "http://www.emodnet.eu/chemistry",
         "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
         "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
         "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
@@ -10,6 +12,8 @@ const PROJECTS = Dict(
         "template" => joinpath(pathname,"templates","emodnet-chemistry.mustache"),
     ),
     "SeaDataNet" => Dict(
+        "name" => "SeaDataNet",
+        "URL" => "http://www.seadatanet.org/",
         "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
         "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
         "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
@@ -17,6 +21,8 @@ const PROJECTS = Dict(
         "template" => joinpath(pathname,"templates","seadatanet.mustache"),
     ),
     "SeaDataCloud" => Dict(
+        "name" => "SeaDataCloud",
+        "URL" => "http://www.seadatanet.org/",
         "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
         "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
         "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataCloud-domains",
@@ -558,8 +564,10 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         filepath_ = filepaths[i]
         Dataset(filepath_,"r") do ds
             for (name,var) in ds
-                if ("lon" in dimnames(var))  &&  ("lat" in dimnames(var))
-                    if haskey(var.attrib,"long_name")
+                if (("lon" in dimnames(var))  &&  ("lat" in dimnames(var))) || (name == "obsid")
+                    if name == "obsid"
+                        description = "Observations"
+                    elseif haskey(var.attrib,"long_name")
                         description = var.attrib["long_name"]
                     else
                         description = name
@@ -636,6 +644,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     # Specify any input variables to the template as a dictionary.
     merge!(templateVars, Dict(
+        "project_name" => PROJECTS[project]["name"],
+        "project_url" => PROJECTS[project]["URL"],
         "preview" => preview_url,
         "L02_URL" => " http://vocab.nerc.ac.uk/collection/L02/current/006/",
         "L02_label" => "surface",
@@ -645,20 +655,38 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
         "WMS_layers"  => [],
         "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
-        "NetCDF_URL_description" => "Link to download the following file: " * filename,
-        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
-        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
+        "NetCDF_description" => "Link to download the following file: " * filename,
+#        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
+#        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
+        "OPENDAP_URLs" => [],
         "contacts" => contacts,
     ))
 
-    for (name, description, filepath_) in templateVars["netcdf_variables"]
-        push!(templateVars["WMS_layers"],Dict(
-            "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-            "name" => domain * "/" * filepath_ * layersep * name,
-            "description" => "WMS layer for " * description)
-              )
+    for i in 1:length(filepaths)
+        # opendap
+        description = "OPENDAP web page about the dataset " * filename
+        if length(WMSlayername) >= i
+            if WMSlayername[i] != ""
+                description *= " ($(WMSlayername[i]))";
+            end
+        end
+        push!(templateVars["OPENDAP_URLs"],Dict(
+            "URL" => baseurl_opendap * "/" * domain * "/" * filepaths[i] * ".html",
+            "description" => description))
     end
 
+    for (name, description, filepath_) in templateVars["netcdf_variables"]
+        if (name == "obsid") || (endswith(name,"_L2") && !endswith(name,"deepest_L2"))
+            push!(templateVars["WMS_layers"],Dict(
+                "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+                "name" => domain * "/" * filepath_ * layersep * name,
+                "description" => "WMS layer for " * description)
+                  )
+        end
+    end
+
+#    @debug println("templateVars",templateVars)
+#    @debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
     return templateVars
 end
 
@@ -742,6 +770,9 @@ function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,x
 
     merge!(templateVars,additionalvars)
 
+    #@debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
+    #@debug println("templateVars NetCDF_description",templateVars["NetCDF_description"])
+
     rendertemplate(templatefile,templateVars,xmlfilename)
 end
 
@@ -771,4 +802,18 @@ function SDNObsMetadata(id)
         Open in a new window <a target="blank" href="$(url)" >$(id)</a>
         <iframe width="900" height="700" src="$(url)"</iframe>
 """)
+end
+
+
+
+function updateNCfile(file; update_area_keywords = true)
+    ds = Dataset(file,"a")
+    if update_area_keywords
+        area_keywords = ds.attrib["area_keywords"]
+        # replace comma by the pipe symbol and strips white-space
+        area_keywords = join(strip.(split(area_keywords,",")),"|")
+        @show area_keywords
+        ds.attrib["area_keywords"] =  area_keywords
+    end
+    close(ds)
 end
