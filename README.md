@@ -155,4 +155,4 @@ Some examples in `DIVAnd.jl` use a quite large data set which cannot be efficien
 
 # Fun
 
-An [educational web application](http://data-assimilation.net/Tools/DIVAnd_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
+An [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
