@@ -621,7 +621,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_max","latitude_max"]],',')
 
 
-    preview_url = PROJECTS[project]["baseurl_wms"] * string(
+    preview_url_query_string = string(
         HTTP.URI(;query=
                  OrderedDict(
                      "service" => "WMS",
@@ -640,6 +640,10 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                      "height" => "500",
                      "width" => "800")))
 
+    # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
+    preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
+
+    preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
 
 
     # Specify any input variables to the template as a dictionary.
