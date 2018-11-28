@@ -21,7 +21,7 @@
         <gco:CharacterString />
       </gmd:individualName>
       <gmd:organisationName>
-        <gco:CharacterString>EMODnet Chemistry</gco:CharacterString>
+        <gco:CharacterString>{{ project_name }}</gco:CharacterString>
       </gmd:organisationName>
       <gmd:contactInfo>
         <gmd:CI_Contact>
@@ -35,7 +35,7 @@
           <gmd:onlineResource>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>http://www.emodnet.eu/chemistry</gmd:URL>
+                <gmd:URL>{{ project_url }}</gmd:URL>
               </gmd:linkage>
             </gmd:CI_OnlineResource>
           </gmd:onlineResource>
@@ -145,7 +145,7 @@
         <gco:CharacterString>{{ abstract }}</gco:CharacterString>
       </gmd:abstract>
       <gmd:credit>
-        <gco:CharacterString>EMODnet Chemistry</gco:CharacterString>
+        <gco:CharacterString>{{ project_name }}</gco:CharacterString>
       </gmd:credit>
 
       <!-- EMODNET CONTACT -->
@@ -526,63 +526,38 @@
       <!-- WMS part -->
       <gmd:transferOptions>
         <gmd:MD_DigitalTransferOptions>
+          <!-- bloc for the layer selected -->
+          <!-- n gmd:onLine may be used. Depends on the number of layers -->
+
+          {{#WMS_layers}}
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>{{ WMS_dataset_getcap }}</gmd:URL>
+                <gmd:URL>{{ getcap }}</gmd:URL>
               </gmd:linkage>
               <gmd:protocol>
                 <gco:CharacterString>OGC:WMS</gco:CharacterString>
               </gmd:protocol>
               <gmd:name>
-                <gco:CharacterString>{{ WMS_dataset_layer }}</gco:CharacterString>
+                <gco:CharacterString>{{ name }}</gco:CharacterString>
               </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>{{ description }}</gco:CharacterString>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+              </gmd:function>
             </gmd:CI_OnlineResource>
           </gmd:onLine>
+          {{/WMS_layers}}
+
         </gmd:MD_DigitalTransferOptions>
       </gmd:transferOptions>
 
-      <!-- OpeNDAP part -->
-      <gmd:transferOptions>
-        <gmd:MD_DigitalTransferOptions>
-          <gmd:onLine>
-            <gmd:CI_OnlineResource>
-              <gmd:linkage>
-                <gmd:URL>{{ OPENDAP_URL }}</gmd:URL>
-              </gmd:linkage>
-              <gmd:protocol>
-                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
-              </gmd:protocol>
-              <gmd:name>
-                <gco:CharacterString>OPeNDAP</gco:CharacterString>
-              </gmd:name>
-              <gmd:description>
-                <gco:CharacterString>{{ OPENDAP_description }}</gco:CharacterString>
-              </gmd:description>
-            </gmd:CI_OnlineResource>
-          </gmd:onLine>
-        </gmd:MD_DigitalTransferOptions>
-      </gmd:transferOptions>
 
-      <!-- NetCDF file part -->
+      <!-- DOI part -->
       <gmd:transferOptions>
         <gmd:MD_DigitalTransferOptions>
-          <gmd:onLine>
-            <gmd:CI_OnlineResource>
-              <gmd:linkage>
-                <gmd:URL>{{ NetCDF_URL }}</gmd:URL>
-              </gmd:linkage>
-              <gmd:protocol>
-                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
-              </gmd:protocol>
-              <gmd:name>
-                <gco:CharacterString>Direct Download (NetCDF)</gco:CharacterString>
-              </gmd:name>
-              <gmd:description>
-                <gco:CharacterString>{{ NetCDF_URL_description }}</gco:CharacterString>
-              </gmd:description>
-            </gmd:CI_OnlineResource>
-          </gmd:onLine>
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
@@ -601,6 +576,55 @@
           </gmd:onLine>
         </gmd:MD_DigitalTransferOptions>
       </gmd:transferOptions>
+
+      <!-- OPeNDAP part -->
+      {{#OPENDAP_URLs}}
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ URL }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>OPeNDAP</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>{{ description }}</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+      {{/OPENDAP_URLs}}
+
+      <!-- NetCDF file part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ NetCDF_URL }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>Direct Download (NetCDF)</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>{{ NetCDF_description }}</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+
+
+
     </gmd:MD_Distribution>
   </gmd:distributionInfo>
   <gmd:dataQualityInfo>
