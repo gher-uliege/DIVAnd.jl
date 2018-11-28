@@ -351,6 +351,20 @@ function URLsfromlabels(pname,labels)
     return d
 end
 
+"""
+    s = numstring(x)
+
+Converts `x` to string and avoid to return "-0.0" if `x` is equal to zero.
+https://github.com/gher-ulg/DIVAnd.jl/issues/28
+"""
+function numstring(x)
+    if x == 0
+        return "0"
+    else
+        return string(x)
+    end
+end
+
 
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
                          errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
@@ -519,6 +533,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     product_code = get(ds.attrib,"product_code","")
 
+
+
     templateVars = Dict(
         "project" => project,
         "product_id" => product_id,
@@ -534,7 +550,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_max" => maximum(lon),
         "latitude_min" => minimum(lat),
         "latitude_max" => maximum(lat),
-        "elevation_min" => minimum(-depth),
+        "elevation_min" => numstring(minimum(-depth)),
         "elevation_max" => maximum(-depth),
         "time_min" => Dates.format(minimum(obstime),isodateformat),
         "time_max" => Dates.format(maximum(obstime),isodateformat),
@@ -681,9 +697,14 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     for (name, description, filepath_) in templateVars["netcdf_variables"]
         if (name == "obsid") || (endswith(name,"_L1") && !endswith(name,"deepest_L1"))
+            layer_name = domain * "/" * filepath_ * layersep * name
+            if name == "obsid"
+                layer_name = "point:" * layer_name
+            end
+
             push!(templateVars["WMS_layers"],Dict(
                 "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-                "name" => domain * "/" * filepath_ * layersep * name,
+                "name" => layer_name,
                 "description" => "WMS layer for " * description)
                   )
         end
