@@ -455,9 +455,12 @@ export Anam
 include("ODVspreadsheet.jl");
 export ODVspreadsheet
 
-# ODV support
+# NetCDF support
 include("NCSDN.jl");
 export NCSDN
+
+include("NCODV.jl");
+export NCODV
 
 # Vocabulary
 include("Vocab.jl");

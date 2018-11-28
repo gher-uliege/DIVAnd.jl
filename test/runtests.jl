@@ -91,6 +91,7 @@ include("gen_example_file.jl");
 
     # SDN NetCDF
     include("test_ncsdn.jl");
+    include("test_ncodv.jl");
 
     # SDN metadata
     include("test_metadata.jl");
