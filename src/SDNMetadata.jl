@@ -351,6 +351,20 @@ function URLsfromlabels(pname,labels)
     return d
 end
 
+"""
+    s = numstring(x)
+
+Converts `x` to string and avoid to return "-0.0" if `x` is equal to zero.
+https://github.com/gher-ulg/DIVAnd.jl/issues/28
+"""
+function numstring(x)
+    if x == 0
+        return "0"
+    else
+        return string(x)
+    end
+end
+
 
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
                          errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
@@ -519,6 +533,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     product_code = get(ds.attrib,"product_code","")
 
+
+
     templateVars = Dict(
         "project" => project,
         "product_id" => product_id,
@@ -534,7 +550,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_max" => maximum(lon),
         "latitude_min" => minimum(lat),
         "latitude_max" => maximum(lat),
-        "elevation_min" => minimum(-depth),
+        "elevation_min" => numstring(minimum(-depth)),
         "elevation_max" => maximum(-depth),
         "time_min" => Dates.format(minimum(obstime),isodateformat),
         "time_max" => Dates.format(maximum(obstime),isodateformat),
@@ -621,7 +637,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_max","latitude_max"]],',')
 
 
-    preview_url = PROJECTS[project]["baseurl_wms"] * string(
+    preview_url_query_string = string(
         HTTP.URI(;query=
                  OrderedDict(
                      "service" => "WMS",
@@ -640,6 +656,10 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                      "height" => "500",
                      "width" => "800")))
 
+    # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
+    preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
+
+    preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
 
 
     # Specify any input variables to the template as a dictionary.
@@ -677,9 +697,14 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     for (name, description, filepath_) in templateVars["netcdf_variables"]
         if (name == "obsid") || (endswith(name,"_L1") && !endswith(name,"deepest_L1"))
+            layer_name = domain * "/" * filepath_ * layersep * name
+            if name == "obsid"
+                layer_name = "point:" * layer_name
+            end
+
             push!(templateVars["WMS_layers"],Dict(
                 "getcap" => baseurl_wms * "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
-                "name" => domain * "/" * filepath_ * layersep * name,
+                "name" => layer_name,
                 "description" => "WMS layer for " * description)
                   )
         end
@@ -723,6 +748,8 @@ Information can be overridden with the dictionary `additionalvars`. The keys sho
 corresponds to the template tags found the in `template` directory. Template
 tags are the strings inside {{ and }}.
 
+NetCDF_URL should be suppplied since it's a URL of a ZIP file which is usually not from OceanBrowser.
+
 If `filepath` is a vector of file names, the argument `WMSlayername` can be provided to give
 additional information to distinguish between the NetCDF files. The elements of the vector of string
 will be appended to the description of the WMS layer.
@@ -735,7 +762,8 @@ file names please do so before running this script.
 If the data is present in a subfolder (e.g. "Winter") later on the OceanBrowser
 webserver, the `filepath` should also contain this subfolder (e.g.
 "Winter/somefile.nc"). The local directories should mirror the directory
-structure on OceanBrowser.
+structure on OceanBrowser. Relative paths should be used, and if the Julia code isn't right above the NetCDF
+files, use cd("<path>") before each setting the files paramter which use paths relative to this path.
 
 ### Example
 
