@@ -748,6 +748,8 @@ Information can be overridden with the dictionary `additionalvars`. The keys sho
 corresponds to the template tags found the in `template` directory. Template
 tags are the strings inside {{ and }}.
 
+NetCDF_URL should be suppplied since it's a URL of a ZIP file which is usually not from OceanBrowser.
+
 If `filepath` is a vector of file names, the argument `WMSlayername` can be provided to give
 additional information to distinguish between the NetCDF files. The elements of the vector of string
 will be appended to the description of the WMS layer.
@@ -760,7 +762,8 @@ file names please do so before running this script.
 If the data is present in a subfolder (e.g. "Winter") later on the OceanBrowser
 webserver, the `filepath` should also contain this subfolder (e.g.
 "Winter/somefile.nc"). The local directories should mirror the directory
-structure on OceanBrowser.
+structure on OceanBrowser. Relative paths should be used, and if the Julia code isn't right above the NetCDF
+files, use cd("<path>") before each setting the files paramter which use paths relative to this path.
 
 ### Example
 
