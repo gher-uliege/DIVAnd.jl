@@ -26,81 +26,7 @@ end
 # # long_name for the primary variable to analysis are always P35 names
 # # longitude, latitude and time (including dates) have the standard attribute "longitude", "latitude" and "time" respectively
 
-
-@inline function load!(ncvar::NCDatasets.Variable{T,2}, data, i::Colon,j::UnitRange) where T
-    n_samples = size(ncvar,1)
-    # reversed and 0-based
-    NCDatasets.nc_get_vara!(ncvar.ncid,ncvar.varid,[first(j)-1,0],[length(j),n_samples],data)
-#    @show datac[1:10],size(datac)
-end
-
-
-@inline function load!(ncvar::NCDatasets.Variable{T,2}, data, indices::Union{Integer, UnitRange, Colon}...) where T
-    ind = to_indices(ncvar,indices)
-    start = [first(ind[2])-1,first(ind[1])-1]
-    count = [length(ind[2]),length(ind[1])]
-    stride = [step(ind[2]),step(ind[1])]
-    NCDatasets.nc_get_vars!(ncvar.ncid,ncvar.varid,start,count,stride,data)
-end
-
-function loadmis(ncvar::NCDatasets.Variable{T,2},fillval) where T
-    n_samples,n_stations = size(ncvar)
-    n_stations = 100000
-    data = Vector{Vector{T}}(undef,n_stations);
-    tmp = Array{T,2}(undef,(n_samples,1))
-
-    @inbounds for i = 1:n_stations
-        # reversed and 0-based
-        NCDatasets.nc_get_vars!(ncvar.ncid,ncvar.varid,[i-1,0],[1,n_samples],[1,1],tmp)
-        #data[i] = tmp[tmp .!= fillval]
-        data[i] = filter(x -> x != fillval,tmp)
-    end
-    return data
-end
-
-#=
-reference for n_stations = 10000
-1.467 s (14975 allocations: 3.78 MiB)
-1.459 s vara
-1.463 s (19975 allocations: 4.03 MiB) - load!
-=#
-function loadmis2(ncvar::NCDatasets.Variable{T,2},fillval) where T
-    nchunk = 10
-    n_samples,n_stations = size(ncvar)
-#    n_stations = 100000
-    n_stations = 10000
-    data = Vector{Vector{T}}(undef,n_stations);
-    data_chunk = Array{T,2}(undef,(n_samples,nchunk))
-
-    profile = Vector{T}(undef,n_samples)
-
-    @inbounds for i = 1:nchunk:n_stations
-        if (i-1) % (nchunk*1000) == 0
-            println("$(i-1) out of $n_stations - $(100*(i-1)/n_stations) %")
-        end
-        nc = i:min(i+nchunk-1,n_stations)
-        clen = length(nc)
-
-        #NCDatasets.nc_get_vara(ncvar.ncid,ncvar.varid,[i-1,0],[clen,n_samples],data_chunk)
-        load!(ncvar,data_chunk,:,nc)
-
-        for k = 1:clen
-            iprofile = 0
-            for l = 1:n_samples
-                if data_chunk[l,k] != fillval
-                    iprofile = iprofile+1
-                    profile[iprofile] = data_chunk[l,k]
-                end
-            end
-            j = i+k-1
-            data[j] = profile[1:iprofile]
-        end
-    end
-    return data
-end
-
-
-function loadmis3(ncvar::NCDatasets.Variable{T,2},
+function loadprof(ncvar::NCDatasets.Variable{T,2},
                   flag::NCDatasets.Variable{Tflag,2},
                   fillval,accepted_status_flag_values,
                   ncz::NCDatasets.Variable{Tz,2},
@@ -124,16 +50,16 @@ function loadmis3(ncvar::NCDatasets.Variable{T,2},
     profile_z = Vector{T}(undef,n_samples)
 
     @inbounds for i = 1:nchunk:n_stations
-        if (i-1) % (nchunk*1000) == 0
+        if ((i-1) % (nchunk*1000) == 0) && (n_stations > 2*nchunk)
             println("$(i-1) out of $n_stations - $(100*(i-1)/n_stations) %")
         end
         nc = i:min(i+nchunk-1,n_stations)
         clen = length(nc)
 
-        load!(ncvar,data_chunk,:,nc)
-        load!(ncz,  z_chunk,   :,nc)
-        load!(flag, flag_chunk,:,nc)
-        load!(flag_z, flag_z_chunk,:,nc)
+        NCDatasets.load!(ncvar,data_chunk,:,nc)
+        NCDatasets.load!(ncz,  z_chunk,   :,nc)
+        NCDatasets.load!(flag, flag_chunk,:,nc)
+        NCDatasets.load!(flag_z, flag_z_chunk,:,nc)
 
         for k = 1:clen
             iprofile = 0
@@ -157,23 +83,6 @@ function loadmis3(ncvar::NCDatasets.Variable{T,2},
     return data,data_z
 end
 
-
-
-
-
-#data = @time loadmis(ncvar.var,fillval)
-#data = @time loadmis2(ncvar.var,fillval)
-
-
-#=
-
-ll = 8529
-
-@show extrema(length.(data))
-@test data[ll][1:3] == [24.2607f0, 24.2608f0, 24.2525f0]
-
-
-=#
 
 function flatten_data(T,obsproflon,obsproflat,obsproftime,EDMO_CODE,LOCAL_CDI_ID,data,data_z)
     len = sum(length.(data))
@@ -231,13 +140,13 @@ function flagvalues(attrib,accepted_status_flags)
 end
 
 """
-    obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,fname,long_name;
+    obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname,long_name;
          qv_flags = ["good_value","probably_good_value"])
 
 Load all profiles in the file `fname` corresponding to netcdf variable with the
 `long_name` attribute equal to long_name. `qv_flags` is a list of strings
 with the quality flags to be kept. `obsids` is a vector of strings with the
-EDMO code and local CDI id concatenated by a hypthen.
+EDMO code and local CDI id concatenated by a hyphen.
 """
 function load(T,fname,long_name;
               qv_flags = ["good_value","probably_good_value"])
@@ -261,12 +170,12 @@ function load(T,fname,long_name;
 
     accepted_status_flag_values = flagvalues(ncv_ancillary.attrib,accepted_status_flags)
     accepted_status_flag_values_z = flagvalues(ncv_ancillary_z.attrib,accepted_status_flags)
-    @show accepted_status_flag_values
+    @debug accepted_status_flag_values
 
     fillval = ncvar.attrib["_FillValue"]
     fillval_z = get(ncvar.attrib,"_FillValue",nothing)
-    data,data_z = @time loadmis3(ncvar.var,ncv_ancillary,fillval,accepted_status_flag_values,
-                                 ncvar_z.var,ncv_ancillary_z,fillval_z,accepted_status_flag_values_z)
+    data,data_z = loadprof(ncvar.var,ncv_ancillary,fillval,accepted_status_flag_values,
+                            ncvar_z.var,ncv_ancillary_z,fillval_z,accepted_status_flag_values_z)
 
     close(ds)
 
