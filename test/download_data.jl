@@ -12,10 +12,10 @@ mkpath(joinpath(basedir,"Global","Bathymetry"))
 mkpath(joinpath(basedir,"Provencal"))
 
 if !isfile(bathname)
-    download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download",bathname)
+    download("https://dox.ulg.ac.be/index.php/s/U0pqyXhcQrXjEUX/download",bathname)
 end
 
 if !isfile(obsname)
-    download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download",obsname)
+    download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download",obsname)
 end
 

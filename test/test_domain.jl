@@ -9,7 +9,7 @@ bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data","Global",
 bathisglobal = true
 
 if !isfile(bathname)
-    bathname = download("https://b2drop.eudat.eu/s/o0vinoQutAC7eb0/download")
+    bathname = download("https://dox.ulg.ac.be/index.php/s/U0pqyXhcQrXjEUX/download")
 end
 
 dx = dy = 0.1
