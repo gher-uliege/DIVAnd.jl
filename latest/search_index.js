@@ -261,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.NCSDN.load",
     "category": "function",
-    "text": "data,lon,lat,z,time,ids = load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE]) where TS <: AbstractString\n\n\n\ndata,lon,lat,z,time,ids = SDN.load(T,fnames,param; qualityflags = ...)\n\nLoad all data in the vector of file names fnames corresponding to the parameter param as the data type T. Only the data with the quality flags SDN.good_data and SDN.probably_good_data are loaded per default. The output parameters correspondata to the data, longitude, latitude, depth, time (as DateTime) and an identifier (as String).\n\n\n\n"
+    "text": "obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,\n  fname,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE])\n\n\n\ndata,lon,lat,z,time,ids = SDN.load(T,fnames,param; qualityflags = ...)\n\nLoad all data in the vector of file names fnames corresponding to the parameter param as the data type T. Only the data with the quality flags SDN.good_data and SDN.probably_good_data are loaded per default. The output parameters correspondata to the data, longitude, latitude, depth, time (as DateTime) and an identifier (as String).\n\n\n\n"
 },
 
 {
@@ -270,6 +270,14 @@ var documenterSearchIndex = {"docs": [
     "title": "DIVAnd.NCSDN.loadvar",
     "category": "function",
     "text": "data = loadvar(ds,param;\n               fillvalue::T = NaN,\n               qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],\n               qfname = param * QC_SUFFIX,\n               )\n\nLoad the NetCDF variable param from the NCDataset ds. Data points not having the provide quality flags will be masked by fillvalue. qfname is the NetCDF variable name for the quality flags.\n\n\n\n"
+},
+
+{
+    "location": "index.html#DIVAnd.NCODV.load",
+    "page": "DIVAnd.jl documentation",
+    "title": "DIVAnd.NCODV.load",
+    "category": "function",
+    "text": "obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname,long_name;\n     qv_flags = [\"good_value\",\"probably_good_value\"])\n\nLoad all profiles in the file fname corresponding to netcdf variable with the long_name attribute equal to long_name. qv_flags is a list of strings with the quality flags to be kept. obsids is a vector of strings with the EDMO code and local CDI id concatenated by a hyphen.\n\n\n\n"
 },
 
 {
@@ -301,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Load observations",
     "category": "section",
-    "text": "DIVAnd.saveobs\nDIVAnd.loadobs\nDIVAnd.NCSDN.load\nDIVAnd.NCSDN.loadvar\nDIVAnd.ODVspreadsheet.loaddata\nDIVAnd.ODVspreadsheet.parsejd\nDIVAnd.ODVspreadsheet.myparse"
+    "text": "DIVAnd.saveobs\nDIVAnd.loadobs\nDIVAnd.NCSDN.load\nDIVAnd.NCSDN.loadvar\nDIVAnd.NCODV.load\nDIVAnd.ODVspreadsheet.loaddata\nDIVAnd.ODVspreadsheet.parsejd\nDIVAnd.ODVspreadsheet.myparse"
 },
 
 {
@@ -501,7 +509,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.ODVspreadsheet.load",
     "category": "function",
-    "text": " profiles,lons,lats,depths,times,ids = load(T,fnames,datanames;\n    qv_flags = [DIVAnd.ODVspreadsheet.GOOD_VALUE,\n                DIVAnd.ODVspreadsheet.PROBABLY_GOOD_VALUE],\n    nametype = :P01,\n    qvlocalname = \"QV:SEADATANET\")\n\nLoad all profiles in all file from the array fnames corresponding to one of the parameter names datanames. If nametype is :P01 (default), the datanames are P01 vocabulary names with the SDN prefix. If nametype is :localname, then they are the ODV column header without units. For example if the column header is Water body salinity [per mille], then datenames should be [\"Water body salinity\"]. The resulting vectors have the data type T (expect times and ids which are vectors of DateTime and String respectively). Only values matching the quality flag qv_flags are retained. qv_flags is a vector of Strings (based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. \"1\" means \"good value\"). One can also use the constants these constants (prefixed with DIVAnd.ODVspreadsheet.):\n\nqvlocalname is the column name to denote quality flags. It is assumed that the quality flags follow immediatly the data column.\n\nconstant value\nNO_QUALITY_CONTROL \"0\"\nGOOD_VALUE \"1\"\nPROBABLY_GOOD_VALUE \"2\"\nPROBABLY_BAD_VALUE \"3\"\nBAD_VALUE \"4\"\nCHANGED_VALUE \"5\"\nVALUE_BELOW_DETECTION \"6\"\nVALUE_IN_EXCESS \"7\"\nINTERPOLATED_VALUE \"8\"\nMISSING_VALUE \"9\"\nVALUE_PHENOMENON_UNCERTAIN \"A\"\n\nIf the ODV does not contain a semantic header (e.g. for the aggregated ODV files), then local names must be used.\n\njulia> data,lon,lat,depth,time,ids = DIVAnd.ODVspreadsheet.load(Float64,[\"data_from_med_profiles_non-restricted_v2.txt\"],\n      [\"Water body salinity\"]; nametype = :localname );\n\nNo checks are done if the units are consistent.\n\n\n\n profiles,lons,lats,depths,times,ids = load(T,dir,P01names)\n\nLoad all ODV files under the directory dir corresponding the one of the parameter names P01names. The resulting vectors have the data type T (expect times and ids which are vectors of DateTime and String respectively).\n\nNo checks are done if the units are consistent.\n\n\n\n"
+    "text": " obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,fnames,datanames;\n    qv_flags = [DIVAnd.ODVspreadsheet.GOOD_VALUE,\n                DIVAnd.ODVspreadsheet.PROBABLY_GOOD_VALUE],\n    nametype = :P01,\n    qvlocalname = \"QV:SEADATANET\")\n\nLoad all profiles in all file from the array fnames corresponding to one of the parameter names datanames. If nametype is :P01 (default), the datanames are P01 vocabulary names with the SDN prefix. If nametype is :localname, then they are the ODV column header without units. For example if the column header is Water body salinity [per mille], then datenames should be [\"Water body salinity\"]. The resulting vectors have the data type T (expect times and ids which are vectors of DateTime and String respectively). Only values matching the quality flag qv_flags are retained. qv_flags is a vector of Strings (based on http://vocab.nerc.ac.uk/collection/L20/current/, e.g. \"1\" means \"good value\"). One can also use the constants these constants (prefixed with DIVAnd.ODVspreadsheet.):\n\nqvlocalname is the column name to denote quality flags. It is assumed that the quality flags follow immediatly the data column.\n\nconstant value\nNO_QUALITY_CONTROL \"0\"\nGOOD_VALUE \"1\"\nPROBABLY_GOOD_VALUE \"2\"\nPROBABLY_BAD_VALUE \"3\"\nBAD_VALUE \"4\"\nCHANGED_VALUE \"5\"\nVALUE_BELOW_DETECTION \"6\"\nVALUE_IN_EXCESS \"7\"\nINTERPOLATED_VALUE \"8\"\nMISSING_VALUE \"9\"\nVALUE_PHENOMENON_UNCERTAIN \"A\"\n\nIf the ODV does not contain a semantic header (e.g. for the aggregated ODV files), then local names must be used.\n\njulia> data,lon,lat,depth,time,ids = DIVAnd.ODVspreadsheet.load(Float64,[\"data_from_med_profiles_non-restricted_v2.txt\"],\n      [\"Water body salinity\"]; nametype = :localname );\n\nNo checks are done if the units are consistent.\n\n\n\n profiles,lons,lats,depths,times,ids = load(T,dir,P01names)\n\nLoad all ODV files under the directory dir corresponding the one of the parameter names P01names. The resulting vectors have the data type T (expect times and ids which are vectors of DateTime and String respectively).\n\nNo checks are done if the units are consistent.\n\n\n\n"
 },
 
 {
