@@ -32,6 +32,7 @@ You need [Julia](http://julialang.org) (version 0.6 or 1.0) to run `DIVAnd`. The
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
+using Pkg
 Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl")
 ```
 
@@ -80,12 +81,12 @@ fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
 
 ```
 where
-`mask` is the land-sea mask, usually obtained from the bathymetry/topography,     
-`(pm,pn,po,pq)` is a *n*-element tuple (4 in this case) containing the scale factors of the grid,     
-`(xi,yi,zi,ti)` is a *n*-element tuple containing the coordinates of the final grid,       
-`(x,y,z,t)` is a *n*-element tuple containing the coordinates of the observations,        
-`f` is the data anomalies (with respect to a background field),         
-`len` is the correlation length and      
+`mask` is the land-sea mask, usually obtained from the bathymetry/topography,
+`(pm,pn,po,pq)` is a *n*-element tuple (4 in this case) containing the scale factors of the grid,
+`(xi,yi,zi,ti)` is a *n*-element tuple containing the coordinates of the final grid,
+`(x,y,z,t)` is a *n*-element tuple containing the coordinates of the observations,
+`f` is the data anomalies (with respect to a background field),
+`len` is the correlation length and
 `epsilon2` is the error variance of the observations.
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
@@ -105,9 +106,9 @@ If zero is not a valid first guess for your variable (as it is the case for e.g.
 
 ## Determining the analysis parameters
 
-The parameter `epsilon2` and parameter `len` are crucial for the analysis.  
+The parameter `epsilon2` and parameter `len` are crucial for the analysis.
 
-`epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.      
+`epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.
 `len` corresponds to the correlation length and the value of `len` can sometimes be determined by physical arguments. Note that there should be one correlation length per dimension of the analysis.
 
 One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
