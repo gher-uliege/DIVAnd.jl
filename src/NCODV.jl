@@ -109,7 +109,7 @@ function flatten_data(T,obsproflon,obsproflat,obsproftime,EDMO_CODE,LOCAL_CDI_ID
             sel[j+1:jend] .= false
         else
             flat_lon[j+1:jend] .= obsproflon[i]
-            flat_lat[j+1:jend] .= obsproflon[i]
+            flat_lat[j+1:jend] .= obsproflat[i]
             flat_time[j+1:jend] .= obsproftime[i]
             flat_ids[j+1:jend] .= obsid
         end

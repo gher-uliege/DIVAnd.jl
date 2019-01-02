@@ -358,10 +358,11 @@ Converts `x` to string and avoid to return "-0.0" if `x` is equal to zero.
 https://github.com/gher-ulg/DIVAnd.jl/issues/28
 """
 function numstring(x)
-    if x == 0
+    s = string(x)
+    if (s == "-0.0") || (x == 0)
         return "0"
     else
-        return string(x)
+        return s
     end
 end
 
@@ -551,7 +552,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "latitude_min" => minimum(lat),
         "latitude_max" => maximum(lat),
         "elevation_min" => numstring(minimum(-depth)),
-        "elevation_max" => maximum(-depth),
+        "elevation_max" => numstring(maximum(-depth)),
         "time_min" => Dates.format(minimum(obstime),isodateformat),
         "time_max" => Dates.format(maximum(obstime),isodateformat),
         "default_field_min" => default_field_min,
@@ -575,6 +576,8 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     )
 
     close(ds)
+    #@show templateVars["elevation_min"]
+    #@show templateVars["elevation_max"]
 
     for i = 1:length(filepaths)
         filepath_ = filepaths[i]
