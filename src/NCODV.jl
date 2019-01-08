@@ -158,7 +158,13 @@ function load(T,fname,long_name;
 
     ncvar_LOCAL_CDI_ID = varbyattrib_first(ds,long_name = "LOCAL_CDI_ID")
     LOCAL_CDI_ID = chararray2strings(ncvar_LOCAL_CDI_ID.var[:]);
-    EDMO_CODE = varbyattrib_first(ds,long_name = "EDMO_CODE")[:];
+
+    EDMO_CODE =
+        if length(varbyattrib(ds; long_name = "EDMO_code")) > 0
+            varbyattrib_first(ds,long_name = "EDMO_code")[:]
+        else
+            varbyattrib_first(ds,long_name = "EDMO_CODE")[:]
+        end
 
     obsproflon = varbyattrib_first(ds,standard_name = "longitude")[:]
     obsproflat = varbyattrib_first(ds,standard_name = "latitude")[:]
