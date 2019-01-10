@@ -434,7 +434,13 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     if haskey(ds,"time")
         nctime = ds["time"].var[:]
-        dtime = nctime[2]-nctime[1]
+
+        dtime =
+            if length(nctime) > 1
+                nctime[2]-nctime[1]
+            else
+                zero(eltype(nctime))
+            end
 
         timeunit = lowercase(ds["time"].attrib["units"])
         deltaunit,origin = split(timeunit," since ")
