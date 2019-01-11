@@ -135,10 +135,10 @@ weight = DIVAnd.weight_RtimesOne(([0.,0.1,2],[0.,0.,0.]),[1.,1.])
 mask = trues(8,8)
 mask[3,:] .= false
 
-m = DIVAnd.floodfill(mask,CartesianIndex(1,1))
+m = DIVAnd.floodfillpoint(mask,CartesianIndex(1,1))
 @test all(m[1:2,:])
 @test all(.!m[3:end,:])
 
-index = DIVAnd.floodfillcat(mask)
+index = DIVAnd.floodfill(mask)
 @test index[1,1] == 2
 @test index[end,1] == 1
