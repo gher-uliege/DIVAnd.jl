@@ -993,16 +993,25 @@ Optional arguments:
  * `maxnsamp` (default 5000): maximum number of samples
  * `limitlen` (default false): limit correlation length by mean distance between
     observations
+ * `limitfun` (default no function): a function with with the two arguments (depth and
+estimated correlation length) which returns an adjusted correlation length. For
+example to force the correlation length to be between 300 km and 50 km one would
+use the following: `limitfun = (z,len) -> max(min(len,300),10))`. If provided
+`limitfun` is used before and after the smoothing.
  * `epsilon2` (default is a vector of the same size as `value` with all elements
     equal to 1): the relative error variance of the observations. Less reliable
     observation would have a larger corresponding value.
+
+
 """
 function fithorzlen(x,value::Vector{T},z;
                     tolrel::T = 1e-4,
                     smoothz::T = 100.,
+                    smoothk::T = 3.,
                     searchz::T = 50.,
                     progress = (iter,var,len,fitness) -> nothing,
                     distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
+                    limitfun = (z,len) -> len,
                     maxnsamp = 5000,
                     limitlen = false,
                     epsilon2 = ones(size(value)),
@@ -1054,11 +1063,29 @@ function fithorzlen(x,value::Vector{T},z;
     DIVAnd_fill!(var0opt,NaN)
     DIVAnd_fill!(lenopt,NaN)
 
+    for k = 1:length(z)
+        lenopt[k] = limitfun(z[k],lenopt[k])
+    end
+
     # filter vertically
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
         DIVAnd.smoothfilter!(z,lenoptf,smoothz)
     end
+    if (smoothk > 0) && (kmax > 1)
+        DIVAnd.smoothfilter!(1:length(z),lenoptf,smoothk)
+    end
+
+    for k = 1:length(z)
+        lenoptf[k] = limitfun(z[k],lenoptf[k])
+    end
+
+    for k = 1:length(z)
+        @debug "Smoothed horz. correlation length at z=$(z[k]): $(lenoptf[k])"
+    end
+
+
+    @show z,lenoptf
 
     return lenoptf,Dict(
         :var0 => var0opt,
@@ -1076,12 +1103,14 @@ See also DIVAnd.fithorzlen
 """
 function fitvertlen(x,value::Vector{T},z;
                      smoothz::T = 100.,
+                     smoothk::T = 3.,
                      searchz::T = 10.,
                      searchxy::T = 1_000., # meters
                      maxntries::Int = 10000,
                      maxnsamp = 50,
                      progress = (iter,var,len,fitness) -> nothing,
                      distfun = (xi,xj) -> sqrt(sum(abs2,xi-xj)),
+                     limitfun = (z,len) -> len,
                      epsilon2 = ones(size(value)),
                     ) where T
 
@@ -1127,10 +1156,25 @@ function fitvertlen(x,value::Vector{T},z;
     DIVAnd_fill!(var0opt,NaN)
     DIVAnd_fill!(lenopt,NaN)
 
+    for k = 1:length(z)
+        lenopt[k] = limitfun(z[k],lenopt[k])
+    end
+
     # filter vertically
     lenoptf = copy(lenopt)
     if (smoothz > 0) && (kmax > 1)
         DIVAnd.smoothfilter!(z,lenoptf,smoothz)
+    end
+    if (smoothk > 0) && (kmax > 1)
+        DIVAnd.smoothfilter!(1:length(z),lenoptf,smoothk)
+    end
+
+    for k = 1:length(z)
+        lenoptf[k] = limitfun(z[k],lenoptf[k])
+    end
+
+    for k = 1:length(z)
+        @debug "Smoothed vert. correlation length at z=$(z[k]): $(lenoptf[k])"
     end
 
     return lenoptf,Dict(

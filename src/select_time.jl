@@ -139,7 +139,7 @@ end
 """
     TS = TimeSelectorRunningAverage(times,window)
 
-The structure `TS` handles the time aggregation based on vector of 
+The structure `TS` handles the time aggregation based on vector of
 central `times` and the time window given in days.
 Observations at the i-th time instance will be selected
 if the dates is between `times[i]-w/2` and `time[i]+w/2` where

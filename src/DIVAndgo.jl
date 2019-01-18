@@ -238,6 +238,10 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                 end
 
                 if errormethod==:cpme
+                    #@info "save CPME"
+                    #@save "/tmp/CPME.jld2"  windowpoints mask pmniw xiw xinwin finwin Labsw epsinwin moddim MEMTOFIT QCMETHOD RTIMESONESCALES velocity
+                    #@save "/tmp/CPME.jld2"  windowpoints mask pmniw xiw xinwin finwin Labsw epsinwin csteps lmask  alphanormpc moddim MEMTOFIT QCMETHOD RTIMESONESCALES velocity
+
                     errw = DIVAnd_cpme(
                         mask[windowpoints...],
                         pmniw,

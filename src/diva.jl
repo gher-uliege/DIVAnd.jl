@@ -52,7 +52,7 @@ NetCDF file `filename` under the variable `varname`.
 * `background`: if different from `nothing`, then this parameter allows one
 to load the background from a call-back function (default `nothing`). The call-back functions has the parameters
 `(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
-(possibly transformed) and `trans` the transformation function. The output of this function is the 
+(possibly transformed) and `trans` the transformation function. The output of this function is the
 gridded background field and the observations minus the background field.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.).
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
@@ -111,6 +111,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         else
             (xi[1],xi[2],Float64[0.],xi[3])
         end
+
+    checkdepth(depthr)
 
     # metadata of observations
     lon,lat,depth,time =
@@ -319,6 +321,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                             len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1]
                         end
                     end
+
+                    for i = 1:2
+                        @info "scaled correlation length (min,max) in $i dimension: $(extrema(len_scaled[i]))"
+                    end
                 end
 
                 if n == 4
@@ -341,6 +347,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                                 len_scaled[3][i,j,k] = len0[3][i,j,k] * lenz1[k]
                             end
                         end
+                    end
+
+                    for i = 1:3
+                        @info "scaled correlation length (min,max) in dimension $i: $(extrema(len_scaled[i]))"
                     end
                 end
             end

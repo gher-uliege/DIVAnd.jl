@@ -1,3 +1,36 @@
+
+"""
+    checkresolution(mask,pmn,len)
+
+Returns a warning of the resolution is too coarse relative to the correlation
+length. The resolution must be at least 4 times finer than the correlation
+length.
+"""
+function checkresolution(mask,pmn::NTuple{N,Array{T1,N}},len::NTuple{N,Array{T2,N}}) where {N,T1,T2}
+    for i = 1:length(pmn)
+        for j in CartesianIndices(pmn[i])
+            if (pmn[i][j] * len[i][j] < 4) && mask[j]
+                res = 1/pmn[i][j]
+                @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping future tests). It is recommended that the resolution is at least 4 times finer than the correlation length."
+                break
+            end
+        end
+    end
+end
+
+checkresolution(mask,pmn,len) = checkresolution(mask,pmn,len_harmonise(len,mask))
+
+
+function checkdepth(depthr)
+    if length(unique(depthr)) !== length(depthr)
+        error("Depth levels should be unique $(depth)")
+    end
+
+    if any(depthr[2:end] .<= depthr[1:end-1])
+        error("Depth levels should increase monotonically")
+    end
+end
+
 """
     cfilled = ufill(c,valex)
 

@@ -27,9 +27,11 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
 				   QCMETHOD=()
                    ) where {N,T}
 
+    # check pmn .* len > 4
+    checkresolution(mask,pmnin,lin)
+
     pmn,xi,len = DIVAnd_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
-    # check pmn .* len > 4
 
     # observation error covariance (scaled)
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
