@@ -49,7 +49,7 @@ xa_check, diagP_check = naive_analysis(s,v)
 
 # diagonal R with varying diagonal elements
 
-diagR = sin(4x) + 2
+diagR = sin.(4x) .+ 2
 xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),diagR,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
@@ -59,7 +59,7 @@ xa_check, diagP_check = naive_analysis(s,v)
 
 # diagonal R with varying diagonal elements (2)
 
-R = Diagonal(sin(4x) + 2)
+R = Diagonal(sin.(4x) .+ 2)
 xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))
 xa_check, diagP_check = naive_analysis(s,v)
@@ -69,7 +69,8 @@ xa_check, diagP_check = naive_analysis(s,v)
 # non-diagonal R
 m = length(x)
 
-R = spdiagm((ones(m-1),4*ones(m),ones(m-1)),(-1,0,1))
+#R = spdiagm((ones(m-1),4*ones(m),ones(m-1)),(-1,0,1))
+R = spdiagm(-1 => ones(m-1), 0 => 4*ones(m), 1 => ones(m-1))
 
 xa,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),R,primal=true)
 diagP, = statevector_unpack(s.sv,diag(s.P))

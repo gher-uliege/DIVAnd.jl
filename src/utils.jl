@@ -18,7 +18,7 @@ function checkresolution(mask,pmn::NTuple{N,Array{T1,N}},len::NTuple{N,Array{T2,
     end
 end
 
-checkresolution(mask,pmn,len) = checkresolution(mask,pmn,len_harmonise(len,mask))
+checkresolution(mask,pmn,len) = checkresolution(mask,pmn,len_harmonize(len,mask))
 
 
 function checkdepth(depthr)
