@@ -250,12 +250,30 @@ function writeerrors(notfound,errname)
     end
 end
 
+
+function loadandcheckobsid(filepath)
+   obsid = loadobsid(filepath)
+   nbwrong = 0
+   for i = 1:length(obsid)
+       if !occursin('-',obsid[i])
+         if nbwrong == 0
+            @warn "in file $filepath observation identifier $(obsid[i]) does not contain a hypthen at index $i"
+         end
+         nbwrong += 1
+       end
+   end
+   if nbwrong != 0
+      error("$nbwrong invalid observation identifiers in $filepath")
+   end
+   return obsid
+end
+
 # EDMO information from originators
 
 function getoriginators(db,filepaths::Vector{<:AbstractString},
                         errname; ignore_errors = false)
 
-    obsids = Iterators.flatten(loadobsid.(filepaths))
+    obsids = Iterators.flatten(loadandcheckobsid.(filepaths))
     errname = replace(filepaths[1],r".nc$" => "") * ".cdi_import_errors_test.csv"
     originators,notfound = get_originators_from_obsid(
         db,obsids; ignore_errors = ignore_errors)
@@ -366,6 +384,17 @@ function numstring(x)
     end
 end
 
+function WMStimeparam(nctime,n)
+    dtime = nctime[2]-nctime[1]
+    paramstr =
+       if Dates.Day(360) <= dtime <= Dates.Day(366)
+          string(Dates.year(nctime[n]))
+       else   
+	 string(nctime[n])
+       end
+    @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $paramstr"
+    return paramstr
+end
 
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
                          errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
@@ -476,12 +505,27 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     # load default layer (first time instance and surface)
     # (time depth) lat lon
     var = ds[varnameL1]
+    n_time = 1
+    min_non_missing = 0
+    preview_url_time = nothing
+
     if ("time" in dimnames(var)) && ("depth" in dimnames(var))
         if size(var,3) == 1
             # only one depth level
             field = var[:,:,1,1]
         else
-            field = var[:,:,end,1]
+            # find the time slice with the maximum data
+            count_valid = zeros(Int,size(var,4))
+	    for n = 1:size(var,4)
+                field = var[:,:,end,n]
+            	count_valid[n] = sum(.!ismissing.(field))
+            end		
+            n_time = findmax(count_valid)[2]
+	    field = var[:,:,end,n_time]
+            if n_time != 1
+                preview_url_time = WMStimeparam(ds["time"],n_time)
+            end
+            @debug "use n_time: $n_time $preview_url_time"
         end
     elseif "time" in dimnames(var)
         # only time
@@ -493,6 +537,11 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         else
             field = var[:,:,end]
         end
+    end
+
+    @debug "n_time: $n_time $(sum(.!ismissing.(field)))"
+    if sum(.!ismissing.(field)) == 0
+        @warn "only missing data in default view"
     end
 
     default_field_min,default_field_max = extrema(field[.!ismissing.(field)])
@@ -626,9 +675,6 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     db = loadoriginators(cdilist)
 
-    #UPDATE!! fixme
-    #filepath = "/home/abarth/workspace/divadoxml-gui/Water_body_ammonium.4Danl_autumn.nc"
-
     originators = getoriginators(
         db,filepaths,errname,
         ignore_errors = ignore_errors)
@@ -640,9 +686,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_max","latitude_max"]],',')
 
 
-    preview_url_query_string = string(
-        HTTP.URI(;query=
-                 OrderedDict(
+    preview_url_query = OrderedDict(
                      "service" => "WMS",
                      "request" => "GetMap",
                      "version" => "1.3.0",
@@ -657,13 +701,20 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                      #"time" => "03",
                      "transparent" => "true",
                      "height" => "500",
-                     "width" => "800")))
+                     "width" => "800")
+
+    if (preview_url_time != nothing)
+        preview_url_query["time"] = preview_url_time
+    end		     
+
+    preview_url_query_string = string(
+        HTTP.URI(;query=preview_url_query))
 
     # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
     preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
 
     preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
-
+    @debug "preview_url: $preview_url"
 
     # Specify any input variables to the template as a dictionary.
     merge!(templateVars, Dict(
@@ -715,6 +766,9 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
 #    @debug println("templateVars",templateVars)
 #    @debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
+     @debug "NetCDF_URL: $(templateVars["NetCDF_URL"])"
+     @debug "WMS_layers: $(templateVars["WMS_layers"])"
+
     return templateVars
 end
 
