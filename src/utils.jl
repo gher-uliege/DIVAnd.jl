@@ -216,7 +216,7 @@ function vonNeumannNeighborhood(mask::AbstractArray{Bool,N}) where N
 end
 
 """
-    m = floodfill(mask,I,directions)
+    m = floodfillpoint(mask,I,directions)
 
 Fill the binary mask starting at index `I` (`CartesianIndex`). All element
 directly connected to the starting location `I` will be `true` without crossing
@@ -224,7 +224,7 @@ any element equal to `false` in `mask`. Per default the value of `I` is the
 first true element in `mask` and `directions ` correspond to the Von Neumann
 neighborhood.
 """
-function floodfill(mask,I = findfirst(mask),directions = vonNeumannNeighborhood(mask))
+function floodfillpoint(mask,I = findfirst(mask),directions = vonNeumannNeighborhood(mask))
     m = falses(size(mask))
 
     m[I] = true
@@ -264,10 +264,15 @@ function floodfill(mask,I = findfirst(mask),directions = vonNeumannNeighborhood(
 end
 
 """
-    index = floodfillcat(mask)
+    label = floodfill(mask)
 
+Attribute an integer number (a numeric label) to every element in mask such that
+all grid points connected by a von Neumann neighborhood (without crossing
+elements which are `false` in mask) have the same label.
+Labels are sorted such that the label 1 corresponds to the largest area, label 2
+the 2nd largest and so on.
 """
-function floodfillcat(mask,directions = vonNeumannNeighborhood(mask))
+function floodfill(mask,directions = vonNeumannNeighborhood(mask))
     m = copy(mask)
     index = zeros(Int,size(mask))
     area = Int[]
@@ -275,7 +280,7 @@ function floodfillcat(mask,directions = vonNeumannNeighborhood(mask))
     l = 0
     while any(m)
         l = l+1
-        ml = floodfill(m, findfirst(m), directions)
+        ml = floodfillpoint(m, findfirst(m), directions)
         index[ml] .= l
         m[ml] .= false
         push!(area,sum(ml))
