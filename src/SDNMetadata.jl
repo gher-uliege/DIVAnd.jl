@@ -657,7 +657,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     DOI_URL =
         if doi != ""
-            "http://dx.doi.org/" * doi
+            "https://dx.doi.org/" * doi
         else
             "na"
         end
