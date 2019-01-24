@@ -9,9 +9,10 @@ length.
 function checkresolution(mask,pmn::NTuple{N,Array{T1,N}},len::NTuple{N,Array{T2,N}}) where {N,T1,T2}
     for i = 1:length(pmn)
         for j in CartesianIndices(pmn[i])
-            if (pmn[i][j] * len[i][j] < 4) && mask[j]
+            if (pmn[i][j] * len[i][j] < 1) && mask[j]
                 res = 1/pmn[i][j]
-                @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping future tests). It is recommended that the resolution is at least 4 times finer than the correlation length."
+                @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping future tests). It is recommended that the resolution is at least 2 times finer than the correlation length."
+                #error("ll")
                 break
             end
         end
@@ -648,11 +649,57 @@ function backgroundfile(fname,varname)
     v = ds[varname]
     x = (lon,lat,depth)
 
-    return function (xi,n,value,trans; selection = [])
+    return function (xi,n,value,trans; selection = [], obstime = nothing)
 
         vn = zeros(size(v[:,:,:,n]))
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
 
+
+        vn .= trans.(DIVAnd.ufill(vn,.!isnan.(vn)))
+        fi = DIVAnd.interp(x,vn,xi)
+
+        return vn,value - fi
+    end
+end
+
+"""
+    fun = backgroundfile(fname,varname,TS)
+
+Return a function `fun` which is used in DIVAnd to make
+anomalies out of observations based relative to the field
+defined in the NetCDF variable `varname` in the NetCDF file
+`fname`. It is assumed that the NetCDF variables has the variable
+`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the
+same grid as the analysis and was generated according to the provided time selector
+`TS` (TimeSelectorYearListMonthList or TimeSelectorRunningAverage).
+
+"""
+function backgroundfile(fname,varname,
+                        TS::Union{TimeSelectorYearListMonthList,TimeSelectorRunningAverage,AbstractTimeSelector})
+
+    ds = Dataset(fname)
+    lon = nomissing(ds["lon"][:])
+    lat = nomissing(ds["lat"][:])
+    depth = nomissing(ds["depth"][:])
+
+    v = ds[varname]
+    x = (lon,lat,depth)
+    TSbackground  = TS
+
+    return function (xi,n,value,trans; selection = [], obstime = nothing)
+        # check which background estimate has the best overlap
+        overlap = zeros(Int,length(TSbackground))
+        for timeindex = 1:length(TSbackground)
+            sel = select(TSbackground,timeindex,obstime)
+            overlap[timeindex] = sum(selection .& sel)
+        end
+
+        nbackground = findmax(overlap)[2]
+
+        @info "analysis time index $n uses the backgrond time index $nbackground"
+
+        vn = zeros(size(v[:,:,:,nbackground]))
+        vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,nbackground])
 
         vn .= trans.(DIVAnd.ufill(vn,.!isnan.(vn)))
         fi = DIVAnd.interp(x,vn,xi)

@@ -835,6 +835,9 @@ function SDNObsMetadata(id)
                      "edmo" => edmo,
                      "identifier" => local_CDI_ID)))
 
+    # work-around bug in HTTP
+    url = replace(url,"/print_wfs.asp:?" => "/print_wfs.asp?")
+
     display("text/html", """
         Open in a new window <a target="blank" href="$(url)" >$(id)</a>
         <iframe width="900" height="700" src="$(url)"</iframe>

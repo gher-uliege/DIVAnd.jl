@@ -292,7 +292,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 else
                     # anamorphosis transform must already be included to the
                     # background
-                    background(xsel,timeindex,value_trans,trans; selection = sel)
+                    background(xsel,timeindex,value_trans,trans;
+                               selection = sel, obstime = time)
                 end
 
             # the background is not computed for points outside of the domain
