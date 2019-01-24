@@ -28,7 +28,7 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
                    ) where {N,T}
 
     # check pmn .* len > 4
-    checkresolution(mask,pmnin,lin)
+    #checkresolution(mask,pmnin,lin)
 
     pmn,xi,len = DIVAnd_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 

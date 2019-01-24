@@ -9,9 +9,9 @@ length.
 function checkresolution(mask,pmn::NTuple{N,Array{T1,N}},len::NTuple{N,Array{T2,N}}) where {N,T1,T2}
     for i = 1:length(pmn)
         for j in CartesianIndices(pmn[i])
-            if ((pmn[i][j] * len[i][j] <= 1) && mask[j]) && (len[i][j] != 0.0)
+            if ((pmn[i][j] * len[i][j] <= 2) && mask[j]) && (len[i][j] != 0.0)
                 res = 1/pmn[i][j]
-#                @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping future tests). It is recommended that the resolution is at least 2 times finer than the correlation length."
+                @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping future tests). It is recommended that the resolution is at least 2 times finer than the correlation length."
                 break
             end
         end

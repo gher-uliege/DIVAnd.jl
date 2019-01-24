@@ -28,10 +28,8 @@ f = sin.(π * x/len_true) .* cos.(π * y/len_true);
 f = f+sqrt(epsilon2_true) * randn(nobs);
 
 # final grid
-#mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-#    range(0,stop=1,length=14),range(0,stop=1,length=13))
 mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-    range(0,stop=1,length=101),range(0,stop=1,length=102))
+    range(0,stop=1,length=14),range(0,stop=1,length=13))
 
 # correlation length (first guess)
 len = 0.1;

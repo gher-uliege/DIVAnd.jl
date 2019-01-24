@@ -376,6 +376,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         :none,kwargs_without_qcm
                     end
 
+                # check the resolution
+                checkresolution(mask,pmn,len_scaled)
+
                 # analysis
                 fi2, erri, residual, qcdata, scalefactore =
                     DIVAnd.DIVAndgo(mask,pmn,xyi,
