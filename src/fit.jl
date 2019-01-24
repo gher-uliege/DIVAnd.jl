@@ -1085,8 +1085,6 @@ function fithorzlen(x,value::Vector{T},z;
     end
 
 
-    @show z,lenoptf
-
     return lenoptf,Dict(
         :var0 => var0opt,
         :len => lenopt,
