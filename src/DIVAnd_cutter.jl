@@ -1,22 +1,16 @@
 """
+    windowlist,csteps,lmask,alphapc = DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT);
 
-
-windowlist,csteps,lmask,alphapc = DIVAnd_cutter(Lpmnrange,gridsize,moddim,MEMTOFIT);
-
-# Creates a list of windows for subsequent domain decomposition
-# Also calculates already the subsampling steps csteps for the preconditionners
-# as well as the mask lmask to apply to the length scales in the preconditionner, allowing to reduce
-# the problem size
+Creates a list of windows for subsequent domain decomposition.
+Also calculates already the subsampling steps csteps for the preconditionners
+as well as the mask lmask to apply to the length scales in the preconditionner, allowing to reduce
+the problem size
 
 # Input:
 
 * `Lpmnrange`:
-
 * `gridsize`: number of points in each direction (size(mask))
-
 * `moddim`:
-
-
 
 # Output:
 
