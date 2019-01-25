@@ -389,7 +389,7 @@ function WMStimeparam(nctime,n)
     paramstr =
        if Dates.Day(360) <= dtime <= Dates.Day(366)
           string(Dates.year(nctime[n]))
-       else   
+       else
 	 string(nctime[n])
        end
     @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $paramstr"
@@ -397,7 +397,7 @@ function WMStimeparam(nctime,n)
 end
 
 
-function previewURL(filepath,varname,project,domain;  
+function previewURL(filepath,varname,project,domain;
     	 colorbar_quantiles = [0.01,0.99],
          default_field_min = nothing,
          default_field_max = nothing)
@@ -434,7 +434,7 @@ function previewURL(filepath,varname,project,domain;
 		for n = 1:size(var,4)
 		    field = var[:,:,end,n]
 		    count_valid[n] = sum(.!ismissing.(field))
-		end		
+		end
 		@debug "count $(count_valid)"
 
 		n_time = findmax(count_valid)[2]
@@ -494,7 +494,7 @@ function previewURL(filepath,varname,project,domain;
 
 	if (preview_url_time != nothing)
 	    preview_url_query["time"] = preview_url_time
-	end		     
+	end
 
 	preview_url_query_string = string(
 	    HTTP.URI(;query=preview_url_query))
@@ -506,7 +506,7 @@ function previewURL(filepath,varname,project,domain;
 	@debug "preview_url: $preview_url"
 
 	return preview_url
-    end    
+    end
 end
 
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
@@ -826,7 +826,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     if (preview_url_time != nothing)
         preview_url_query["time"] = preview_url_time
-    end		     
+    end
 
     preview_url_query_string = string(
         HTTP.URI(;query=preview_url_query))
