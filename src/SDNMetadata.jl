@@ -398,114 +398,114 @@ end
 
 
 function previewURL(filepath,varname,project,domain;
-    	 colorbar_quantiles = [0.01,0.99],
-         default_field_min = nothing,
-         default_field_max = nothing)
+    	            colorbar_quantiles = [0.01,0.99],
+                    default_field_min = nothing,
+                    default_field_max = nothing)
 
     Dataset(filepath,"r") do ds
-	lon = ds["lon"][:]
-	lonr = [minimum(lon), maximum(lon)]
+	    lon = ds["lon"][:]
+	    lonr = [minimum(lon), maximum(lon)]
 
-	lat = ds["lat"][:]
-	latr = [minimum(lat), maximum(lat)]
+	    lat = ds["lat"][:]
+	    latr = [minimum(lat), maximum(lat)]
 
-	# prefer layer L1 for plotting if available
-	varnameL1 =
-	    if haskey(ds,varname * "_L1")
-		varname * "_L1"
-	    else
-		varname
-	    end
+	    # prefer layer L1 for plotting if available
+	    varnameL1 =
+	        if haskey(ds,varname * "_L1")
+		        varname * "_L1"
+	        else
+		        varname
+	        end
 
         # load default layer (first time instance and surface)
-	# (time depth) lat lon
-	var = ds[varnameL1]
-	n_time = 1
-	min_non_missing = 0
-	preview_url_time = nothing
+	    # (time depth) lat lon
+	    var = ds[varnameL1]
+	    n_time = 1
+	    min_non_missing = 0
+	    preview_url_time = nothing
 
-	if ("time" in dimnames(var)) && ("depth" in dimnames(var))
-	    if size(var,3) == 1
-		# only one depth level
-		field = var[:,:,1,1]
+	    if ("time" in dimnames(var)) && ("depth" in dimnames(var))
+	        if size(var,3) == 1
+		        # only one depth level
+		        field = var[:,:,1,1]
+	        else
+		        # find the time slice with the maximum data
+		        count_valid = zeros(Int,size(var,4))
+		        for n = 1:size(var,4)
+		            field = var[:,:,end,n]
+		            count_valid[n] = sum(.!ismissing.(field))
+		        end
+		        @debug "count $(count_valid)"
+
+		        n_time = findmax(count_valid)[2]
+		        field = var[:,:,end,n_time]
+		        if n_time != 1
+		            preview_url_time = WMStimeparam(ds["time"],n_time)
+		        end
+		        @debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+	        end
+	    elseif "time" in dimnames(var)
+	        # only time
+	        field = var[:,:,1]
 	    else
-		# find the time slice with the maximum data
-		count_valid = zeros(Int,size(var,4))
-		for n = 1:size(var,4)
-		    field = var[:,:,end,n]
-		    count_valid[n] = sum(.!ismissing.(field))
-		end
-		@debug "count $(count_valid)"
-
-		n_time = findmax(count_valid)[2]
-		field = var[:,:,end,n_time]
-		if n_time != 1
-		    preview_url_time = WMStimeparam(ds["time"],n_time)
-		end
-		@debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+	        # only depth
+	        if size(var,3) == 1
+		        field = var[:,:,1]
+	        else
+		        field = var[:,:,end]
+	        end
 	    end
-	elseif "time" in dimnames(var)
-	    # only time
-	    field = var[:,:,1]
-	else
-	    # only depth
-	    if size(var,3) == 1
-		field = var[:,:,1]
-	    else
-		field = var[:,:,end]
+
+	    @debug "n_time: $n_time $(sum(.!ismissing.(field)))"
+	    if sum(.!ismissing.(field)) == 0
+	        @warn "only missing data in default view"
 	    end
-	end
 
-	@debug "n_time: $n_time $(sum(.!ismissing.(field)))"
-	if sum(.!ismissing.(field)) == 0
-	    @warn "only missing data in default view"
-	end
-
-	ranges = quantile(nomissing(field[.!ismissing.(field)]),
-    	            colorbar_quantiles)
+	    ranges = quantile(nomissing(field[.!ismissing.(field)]),
+    	                  colorbar_quantiles)
 
         if default_field_min == nothing
-           default_field_min = ranges[1]
+            default_field_min = ranges[1]
         end
 
         if default_field_max == nothing
-           default_field_max = ranges[2]
+            default_field_max = ranges[2]
         end
 
-	@debug "default_field_min $default_field_min"
-	@debug "default_field_max $default_field_max"
+	    @debug "default_field_min $default_field_min"
+	    @debug "default_field_max $default_field_max"
 
-	preview_url_query = OrderedDict(
-			 "service" => "WMS",
-			 "request" => "GetMap",
-			 "version" => "1.3.0",
-			 "crs" => "CRS:84",
-			 "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
-			 "decorated" => "true",
-			 "format" => "image/png",
-			 "layers" => domain * "/" * filepath * layersep * varnameL1,
-			 "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
-							 "vmax" => default_field_max)),
-			 #"elevation" => "-0.0",
-			 #"time" => "03",
-			 "transparent" => "true",
-			 "height" => "500",
-			 "width" => "800")
+	    preview_url_query = OrderedDict(
+			"service" => "WMS",
+			"request" => "GetMap",
+			"version" => "1.3.0",
+			"crs" => "CRS:84",
+			"bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
+			"decorated" => "true",
+			"format" => "image/png",
+			"layers" => domain * "/" * filepath * layersep * varnameL1,
+			"styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
+							                "vmax" => default_field_max)),
+			#"elevation" => "-0.0",
+			#"time" => "03",
+			"transparent" => "true",
+			"height" => "500",
+			"width" => "800")
 
-	if (preview_url_time != nothing)
-	    preview_url_query["time"] = preview_url_time
-	end
+	    if (preview_url_time != nothing)
+	        preview_url_query["time"] = preview_url_time
+	    end
 
-	preview_url_query_string = string(
-	    HTTP.URI(;query=preview_url_query))
+	    preview_url_query_string = string(
+	        HTTP.URI(;query=preview_url_query))
 
-	# work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
-	preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
+	    # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
+	    preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
 
-	preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
-	@debug "preview_url: $preview_url"
+	    preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
+	    @debug "preview_url: $preview_url"
 
-	return preview_url
+	    return preview_url
     end
 end
 
