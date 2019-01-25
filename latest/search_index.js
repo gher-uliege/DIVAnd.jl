@@ -917,7 +917,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "DIVAnd.DIVAnd_background_components",
     "category": "function",
-    "text": "Form the different components of the background error covariance matrix.\n\niB = DIVAnd_background_components(s,D,alpha; kwargs...)\n\nCompute the components of the background error covariance matrix iB_ and their sum based on alpha (the a-dimensional coefficients for norm, gradient, laplacian,...).\n\nIf the optional arguments contains btrunc, the calculation of iB is limited to the term up and including alpha[btrunc]\n\n\n\n"
+    "text": "iB = DIVAnd_background_components(s,D,alpha; kwargs...)\n\nForm the different components of the background error covariance matrix. Compute the components of the background error covariance matrix s.iB_ and their sum based on alpha (the adimensional coefficients for norm, gradient, laplacian,...).\n\nIf the optional arguments contains btrunc, the calculation of iB is limited  to the term up and including alpha[btrunc]\n\n\n\n"
 },
 
 {
