@@ -33,10 +33,25 @@ Inside Julia, you can download and install the package by issuing:
 
 ```julia
 using Pkg
-Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl")
+Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+```
+
+For Julia 0.6, you can use the following:
+```julia
+Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl") # only for Julia 0.6
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
+
+
+# Updating DIVAnd
+
+To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
+
+```julia
+Pkg.update()
+```
+
 
 # Testing
 
