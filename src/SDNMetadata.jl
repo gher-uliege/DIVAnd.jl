@@ -501,7 +501,7 @@ function previewURL(filepath,varname,project,domain;
 	        @warn "only missing data in default view"
 	    end
 
-	    ranges = quantile(nomissing(field[.!ismissing.(field)]),
+	    ranges = quantile(nomissing(field[.!(ismissing.(field) .| isnan.(field))]),
     	                  colorbar_quantiles)
 
         if default_field_min == nothing
