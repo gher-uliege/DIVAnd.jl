@@ -2,7 +2,7 @@ using Documenter
 using DIVAnd
 
 makedocs(
-    format = Documenter.HTML(),
+    format = :html,
     modules = [DIVAnd],
     sitename = "DIVAnd",
     pages = [
@@ -15,8 +15,4 @@ makedocs(
 
 deploydocs(
     repo = "github.com/gher-ulg/DIVAnd.jl.git",
-    target = "build",
-    julia  = "0.6",
-    deps = nothing,
-    make = nothing,
 )
