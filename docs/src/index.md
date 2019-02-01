@@ -272,11 +272,11 @@ In DIVAnd, the vertical levels must resolve the vertical correlation length. If 
 surface resolution, this can result in a bias of the surface value. A similar problem can also be present at the deepest layer.
 The solution is to either refine the vertical resolution or to increase the vertical correlation length.
 
-### How do I estimate correlation the horizontal and vertical correlation length in DIVAnd?
+### How do I estimate the horizontal and vertical correlation length in DIVAnd?
 
 Set the option `fitcorrlen` to `true` in `diva3d` and parameter `len` to an empty tuple (`()`) or a tuple of arrays equal to one.
 
-### How do I limit estimate correlation the horizontal and vertical correlation length in DIVAnd?
+### How do I limit the estimated horizontal and vertical correlation length in DIVAnd?
 
 It can be necessary to limit the estimated correlation length to an acceptable range. The function (called `limitfun`) can be
 applied to the estimated correlation to make such adjustment. This function takes as argument the estimated correlation length and the depth
@@ -313,13 +313,13 @@ The same can be achieved more compactly as follows:
 
 A similar option has also be added for the vertical correlation length.
 
-### How to I reduce the estimated correlation length near the coast when it is estimated internally?
+### How do I reduce the estimated correlation length near the coast when it is estimated internally?
 
 The actual used correlation lengths is the product between the estimated one (by fitting) and the
 arrays in the parameter `len` (if provided). The function `lengraddepth` can be used to create a reduced correlation length near the bathymetry.
 (https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/17-relative-correlation-length.ipynb)
 
-### How to handle data set of very different resolution?
+### How can I handle data set of very different resolution?
 
 If data from a high-resolution data (e.g. profiling float, dense time serie) set is
 combined with data with a low spatial resolution (e.g. profiles from a research
