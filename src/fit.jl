@@ -996,7 +996,7 @@ Optional arguments:
  * `limitfun` (default no function): a function with with the two arguments (depth and
 estimated correlation length) which returns an adjusted correlation length. For
 example to force the correlation length to be between 300 km and 50 km one would
-use the following: `limitfun = (z,len) -> max(min(len,300),10))`. If provided
+use the following: `limitfun = (z,len) -> max(min(len,300_000),10_000))`. If provided
 `limitfun` is used before and after the smoothing.
  * `epsilon2` (default is a vector of the same size as `value` with all elements
     equal to 1): the relative error variance of the observations. Less reliable

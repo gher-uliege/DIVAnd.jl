@@ -2,7 +2,7 @@ using Documenter
 using DIVAnd
 
 makedocs(
-    format = :html,
+    format = Documenter.HTML(),
     modules = [DIVAnd],
     sitename = "DIVAnd",
     pages = [

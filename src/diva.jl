@@ -44,6 +44,7 @@ NetCDF file `filename` under the variable `varname`.
 * `ncglobalattrib`: dictionary of NetCDF global attributes.
 * `transform`: Anamorphosis transformation function (default: `Anam.notransform()`).
 * `fitcorrlen`: true of the correlation length is determined from the observation (default `false`).
+     Note that the parameter `len` is interpreted differently when `fitcorrlen` is set to `true`.
 * `fithorz_param`: dictionary with additional optional parameters for `fithorzlen`.
 * `fitvert_param`: dictionary with additional optional parameters for `fitvertlen`.
 * `distfun`: function to compute the distance (default `(xi,xj) -> DIVAnd.distance(xi[2],xi[1],xj[2],xj[1])`).
