@@ -11,7 +11,7 @@
 
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
 
-`DIVAnd` performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
+`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
 
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
@@ -22,10 +22,10 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` which you can install under Debian/Ubuntu with:
+Under Linux you will also need the packages `make`, `gcc` and `netcdf` which you can install under Debian/Ubuntu with:
 
 ```bash
-apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
+apt-get install make gcc libnetcdf-dev netcdf-bin
 ```
 
 You need [Julia](http://julialang.org) (version 0.6 or 1.0) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
@@ -33,10 +33,25 @@ Inside Julia, you can download and install the package by issuing:
 
 ```julia
 using Pkg
-Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl")
+Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+```
+
+For Julia 0.6, you can use the following:
+```julia
+Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl") # only for Julia 0.6
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
+
+
+# Updating DIVAnd
+
+To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
+
+```julia
+Pkg.update()
+```
+
 
 # Testing
 

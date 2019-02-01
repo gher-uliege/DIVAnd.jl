@@ -124,34 +124,22 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
     if (field != nothing) || (
         (default_field_min != nothing) && (default_field_max != nothing))
 
+
         if (default_field_min == nothing) || (default_field_max == nothing)
             # default layer (first time instance and surface)
             default_field = field[:,:,end,1]
             default_field_min,default_field_max = extrema(default_field[.!isnan.(default_field)])
         end
 
+        domain = Vocab.prefLabel(area)
+        preview_url = previewURL(filename,varname,lonr,latr,metadata["project"],domain;
+                                 default_field_min = default_field_min,
+                                 default_field_max = default_field_max)
 
-        ncglobalattrib["preview"] = project["baseurl_wms"] * string(
-            HTTP.URI(;query=
-                     OrderedDict(
-                         "service" => "WMS",
-                         "request" => "GetMap",
-                         "version" => "1.3.0",
-                         "crs" => "CRS:84",
-                         "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
-                         "decorated" => "true",
-                         "format" => "image/png",
-                         "layers" => Vocab.prefLabel(area) * "/" * filename * layersep * varname,
-                         "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
-                                                         "vmax" => default_field_max)),
-                         #"elevation" => "-0.0",
-                         #"time" => "03",
-                         "transparent" => "true",
-                         "height" => "500",
-                         "width" => "800")))
 
         # Example  http://ec.oceanbrowser.net/emodnet/Python/web/wms?styles=vmax%3A1.97872%2Bvmin%3A1.67568&format=image%2Fpng&height=500&bbox=27.5%2C42.0%2C30.0%2C44.5&decorated=true&transparent=true&layers=Back+Sea%2Fvarname.4Danl_autumn.nc%2Avarname&crs=CRS%3A84&service=WMS&request=GetMap&width=800&version=1.3.0
-
+        ncglobalattrib["preview"] = preview_url
+        @debug preview_url
     end
 
     ncvarattrib = OrderedDict("units" => metadata["netcdf_units"],
@@ -389,16 +377,160 @@ function WMStimeparam(nctime,n)
     paramstr =
        if Dates.Day(360) <= dtime <= Dates.Day(366)
           string(Dates.year(nctime[n]))
-       else   
+       else
 	 string(nctime[n])
        end
     @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $paramstr"
     return paramstr
 end
 
+
+function previewURL(filepath,varnameL1,lonr,latr,project,domain;
+                    colorbar_quantiles = [0.01,0.99],
+                    basemap = "shadedrelief",
+                    preview_url_time = nothing,
+                    default_field_min = nothing,
+                    default_field_max = nothing)
+
+	preview_url_query = OrderedDict(
+		"service" => "WMS",
+		"request" => "GetMap",
+		"version" => "1.3.0",
+		"crs" => "CRS:84",
+		"bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
+		"decorated" => "true",
+		"format" => "image/png",
+		"layers" => domain * "/" * filepath * layersep * varnameL1,
+		"styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
+							            "vmax" => default_field_max)),
+		#"elevation" => "-0.0",
+		#"time" => "03",
+		"transparent" => "true",
+		"height" => "500",
+		"width" => "800",
+        "basemap" => basemap,
+    )
+
+	if (preview_url_time != nothing)
+	    preview_url_query["time"] = preview_url_time
+	end
+
+	preview_url_query_string = string(
+	    HTTP.URI(;query=preview_url_query))
+
+	# work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
+	preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
+
+	preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
+	@debug "preview_url: $preview_url"
+    return preview_url
+end
+
+
+"""
+    URL = previewURL(filepath,varname,project,domain;
+                    colorbar_quantiles = [0.01,0.99],
+                    basemap = "shadedrelief",
+                    default_field_min = nothing,
+                    default_field_max = nothing)
+
+Generates a WMS preview URL
+"""
+function previewURL(filepath,varname,project,domain;
+                    colorbar_quantiles = [0.01,0.99],
+                    basemap = "shadedrelief",
+                    default_field_min = nothing,
+                    default_field_max = nothing)
+
+    Dataset(filepath,"r") do ds
+	    lon = ds["lon"][:]
+	    lonr = [minimum(lon), maximum(lon)]
+
+	    lat = ds["lat"][:]
+	    latr = [minimum(lat), maximum(lat)]
+
+	    # prefer layer L1 for plotting if available
+	    varnameL1 =
+	        if haskey(ds,varname * "_L1")
+		        varname * "_L1"
+	        else
+		        varname
+	        end
+
+        # load default layer (first time instance and surface)
+	    # (time depth) lat lon
+	    var = ds[varnameL1]
+	    n_time = 1
+	    min_non_missing = 0
+	    preview_url_time = nothing
+
+	    if ("time" in dimnames(var)) && ("depth" in dimnames(var))
+	        if size(var,3) == 1
+		        # only one depth level
+		        field = var[:,:,1,1]
+	        else
+		        # find the time slice with the maximum data
+		        count_valid = zeros(Int,size(var,4))
+		        for n = 1:size(var,4)
+		            field = var[:,:,end,n]
+		            count_valid[n] = sum(.!ismissing.(field))
+		        end
+		        @debug "count $(count_valid)"
+
+		        n_time = findmax(count_valid)[2]
+		        field = var[:,:,end,n_time]
+		        if n_time != 1
+		            preview_url_time = WMStimeparam(ds["time"],n_time)
+		        end
+		        @debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+	        end
+	    elseif "time" in dimnames(var)
+	        # only time
+	        field = var[:,:,1]
+	    else
+	        # only depth
+	        if size(var,3) == 1
+		        field = var[:,:,1]
+	        else
+		        field = var[:,:,end]
+	        end
+	    end
+
+	    @debug "n_time: $n_time $(sum(.!ismissing.(field)))"
+	    if sum(.!ismissing.(field)) == 0
+	        @warn "only missing data in default view"
+	    end
+
+	    ranges = quantile(nomissing(field[.!(ismissing.(field) .| isnan.(field))]),
+    	                  colorbar_quantiles)
+
+        if default_field_min == nothing
+            default_field_min = ranges[1]
+        end
+
+        if default_field_max == nothing
+            default_field_max = ranges[2]
+        end
+
+	    @debug "default_field_min $default_field_min"
+	    @debug "default_field_max $default_field_max"
+
+        preview_url = previewURL(filepath,varnameL1,lonr,latr,project,domain;
+                                 colorbar_quantiles = colorbar_quantiles,
+                                 basemap = basemap,
+                                 preview_url_time = preview_url_time,
+                                 default_field_min = default_field_min,
+                                 default_field_max = default_field_max)
+
+	    return preview_url
+    end
+end
+
 function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdilist;
                          errname = split(filepaths[1],".nc")[1] * ".cdi_import_errors.csv",
                          WMSlayername = String[],
+                         previewindex = 1,
+                         basemap = "shadedrelief",
                          ignore_errors = false)
 
     # assume that grid and time coverage is the same as the
@@ -500,62 +632,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     obstime = ds["obstime"][:]
 
-    # prefer layer L1 for plotting if available
-    varnameL1 =
-        if haskey(ds,varname * "_L1")
-            varname * "_L1"
-        else
-            varname
-        end
-
-    # load default layer (first time instance and surface)
-    # (time depth) lat lon
-    var = ds[varnameL1]
-    n_time = 1
-    min_non_missing = 0
-    preview_url_time = nothing
-
-    if ("time" in dimnames(var)) && ("depth" in dimnames(var))
-        if size(var,3) == 1
-            # only one depth level
-            field = var[:,:,1,1]
-        else
-            # find the time slice with the maximum data
-            count_valid = zeros(Int,size(var,4))
-	    for n = 1:size(var,4)
-                field = var[:,:,end,n]
-            	count_valid[n] = sum(.!ismissing.(field))
-            end		
-            n_time = findmax(count_valid)[2]
-	    field = var[:,:,end,n_time]
-            if n_time != 1
-                preview_url_time = WMStimeparam(ds["time"],n_time)
-            end
-            @debug "use n_time: $n_time $preview_url_time"
-        end
-    elseif "time" in dimnames(var)
-        # only time
-        field = var[:,:,1]
-    else
-        # only depth
-        if size(var,3) == 1
-            field = var[:,:,1]
-        else
-            field = var[:,:,end]
-        end
-    end
-
-    @debug "n_time: $n_time $(sum(.!ismissing.(field)))"
-    if sum(.!ismissing.(field)) == 0
-        @warn "only missing data in default view"
-    end
-
-    default_field_min,default_field_max = extrema(field[.!ismissing.(field)])
-
     rmprefix(urn) = split(urn,':')[end]
-    #P02_keywords = rmprefix.(split(ds.attrib["search_keywords_urn"]))
-    #P35_keywords = rmprefix.(split(ds.attrib["parameter_keyword_urn"]))
-    #C19_keywords = rmprefix.(split(ds.attrib["area_keywords_urn"]))
 
     P02_keywords =
         if haskey(ds.attrib,"search_keywords_urn")
@@ -590,6 +667,13 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
     product_code = get(ds.attrib,"product_code","")
 
 
+	# prefer layer L1 for plotting if available
+	varnameL1 =
+	    if haskey(ds,varname * "_L1")
+		    varname * "_L1"
+	    else
+		    varname
+	    end
 
     templateVars = Dict(
         "project" => project,
@@ -610,8 +694,6 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "elevation_max" => numstring(maximum(-depth)),
         "time_min" => Dates.format(minimum(obstime),isodateformat),
         "time_max" => Dates.format(maximum(obstime),isodateformat),
-        "default_field_min" => default_field_min,
-        "default_field_max" => default_field_max,
         "ndims" => ndims(ds[varname]),
         "nvertlevels" => length(depth),
         "temp_resolution_unit" => temp_resolution_unit,
@@ -691,36 +773,9 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         "longitude_min","latitude_min",
         "longitude_max","latitude_max"]],',')
 
-
-    preview_url_query = OrderedDict(
-                     "service" => "WMS",
-                     "request" => "GetMap",
-                     "version" => "1.3.0",
-                     "crs" => "CRS:84",
-                     "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
-                     "decorated" => "true",
-                     "format" => "image/png",
-                     "layers" => domain * "/" * filepath * layersep * varnameL1,
-                     "styles" => encodeWMSStyle(Dict("vmin" => default_field_min,
-                                                     "vmax" => default_field_max)),
-                     #"elevation" => "-0.0",
-                     #"time" => "03",
-                     "transparent" => "true",
-                     "height" => "500",
-                     "width" => "800")
-
-    if (preview_url_time != nothing)
-        preview_url_query["time"] = preview_url_time
-    end		     
-
-    preview_url_query_string = string(
-        HTTP.URI(;query=preview_url_query))
-
-    # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
-    preview_url_query_string = replace(preview_url_query_string,r"^:" => "")
-
-    preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
-    @debug "preview_url: $preview_url"
+    preview_url = previewURL(filepaths[previewindex],varname,project,domain;
+                             basemap = basemap
+                             )
 
     # Specify any input variables to the template as a dictionary.
     merge!(templateVars, Dict(
@@ -795,6 +850,7 @@ end
     DIVAnd.divadoxml(filepath,varname,project,cdilist,xmlfilename;
                      ignore_errors = false,
                      WMSlayername = [],
+                     previewindex = 1,
                      additionalvars = Dict{String,Any}())
 
 Generate the XML metadata file `xmlfilename` from the NetCDF
@@ -849,6 +905,8 @@ DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zi
 """
 function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,xmlfilename;
                    ignore_errors = false,
+		           previewindex = 1,
+                   basemap = "shadedrelief",
                    additionalvars = Dict{String,Any}(), WMSlayername = String[])
 
     # template file we will use.
@@ -857,6 +915,8 @@ function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,x
     templateVars = gettemplatevars(
         filepaths,varname,project,cdilist,
         WMSlayername = WMSlayername,
+	    previewindex = previewindex,
+        basemap = basemap,
         ignore_errors = ignore_errors)
 
     merge!(templateVars,additionalvars)

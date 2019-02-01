@@ -1,14 +1,13 @@
 """
+    iB = DIVAnd_background_components(s,D,alpha; kwargs...)
+
 Form the different components of the background error covariance matrix.
-
-iB = DIVAnd_background_components(s,D,alpha; kwargs...)
-
-Compute the components of the background error covariance matrix iB_ and
-their sum based on alpha (the a-dimensional coefficients for norm, gradient,
+Compute the components of the background error covariance matrix `s.iB_` and
+their sum based on alpha (the adimensional coefficients for norm, gradient,
 laplacian,...).
 
-If the optional arguments contains btrunc, the calculation of iB is limited to the term up and including alpha[btrunc]
-
+If the optional arguments contains btrunc, the calculation of iB is limited 
+to the term up and including alpha[btrunc]
 """
 function DIVAnd_background_components(s,D,alpha; kwargs...)
 

@@ -3,7 +3,7 @@
     checkresolution(mask,pmn,len)
 
 Returns a warning of the resolution is too coarse relative to the correlation
-length. The resolution must be at least 4 times finer than the correlation
+length. The resolution must be at least 2 times finer than the correlation
 length.
 """
 function checkresolution(mask,pmn::NTuple{N,Array{T1,N}},len::NTuple{N,Array{T2,N}}) where {N,T1,T2}
