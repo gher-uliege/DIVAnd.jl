@@ -709,3 +709,59 @@ end
 
 
 dayssince(dt; t0 = DateTime(1900,1,1)) = Dates.value.(dt - t0)/1000/60/60/24;
+
+
+
+
+function _diffusionfix!(ivol,nus,α,nmax,x0,x)
+    work1 = similar(x)
+    x[:] = x0
+
+    for niter = 1:nmax
+        DIVAnd.DIVAnd_laplacian_apply!(ivol,nus,x,work1)
+        for i in 1:length(x0)
+           if x0[i] != 0
+              x[i] = x[i] + α * work1[i]
+           end
+         end
+    end
+
+end
+
+
+"""
+    mergedfield = hmerge(field,L)
+
+Merge several `field[:,:,1]`, `field[:,:,2]`,... into a single 2d field
+`mergedfield` values equal to NaN are ignored. This function is typically used
+to merge different DIVAnd anayses.
+"""
+function hmerge(f,L)
+    # L ∼ (α * nmax)²
+    # nmax ∼ √(L)/α
+
+    weight0 = Float64.(isfinite.(f));
+
+    mask,pmn = DIVAnd.DIVAnd_rectdom(1:size(f,1),1:size(f,2))
+    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,(ones(size(mask)),ones(size(mask))))
+
+    α = 0.1;
+    nmax = round(Int,sqrt(L)/α)
+    @debug "nmax: $(nmax)"
+
+    #nmax = 20;
+    weight = similar(weight0);
+
+    for k = 1:size(weight,3)
+        wk0 = @view weight0[:,:,k]
+        wk = @view weight[:,:,k]
+
+        _diffusionfix!(ivol,nus,α,nmax,wk0,wk)
+    end
+    f[.!isfinite.(f)] .= 0
+
+    weight = weight.^2;
+
+    f2 = (sum(weight .* f, dims = 3) ./ sum(weight, dims = 3))[:,:,1]
+    return f2
+end

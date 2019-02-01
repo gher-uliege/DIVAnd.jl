@@ -111,6 +111,7 @@ include("gen_example_file.jl");
 
     # Test utility functions
     include("test_utils.jl");
+    include("test_hmerge.jl");
 
     # Test utility functions
     include("test_obsstat.jl");
