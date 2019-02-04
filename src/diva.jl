@@ -55,7 +55,9 @@ to load the background from a call-back function (default `nothing`). The call-b
 `(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
 (possibly transformed) and `trans` the transformation function. The output of this function is the
 gridded background field and the observations minus the background field.
-* `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.).
+* `background_espilon2_factor`: multiplication for `epsilon2` when computing a
+   vertical profile as a background estimate (default 10.). This parameter is not used
+   when the parameter `background` is provided.
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
