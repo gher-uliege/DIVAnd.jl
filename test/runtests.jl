@@ -52,6 +52,8 @@ include("gen_example_file.jl");
 
     include("test_2dvar_all_masked.jl");
 
+    include("test_2dvar_obs_out.jl")
+
     # cross-validation
     include("test_2dvar_cv.jl"); # problematic
 
