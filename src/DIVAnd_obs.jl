@@ -50,7 +50,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
     s.obsout = out
 
     if isa(R,Diagonal)
-        diagR = diag(Float64.(R))
+        diagR = Float64.(diag(R))
         diagR[out] .= Inf
         R = Diagonal(diagR)
     else
