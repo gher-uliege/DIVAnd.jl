@@ -762,6 +762,12 @@ function hmerge(f,L)
 
     weight = weight.^2;
 
-    f2 = (sum(weight .* f, dims = 3) ./ sum(weight, dims = 3))[:,:,1]
+    f2 =
+        if VERSION >= v"0.7.0-beta.0"
+            (sum(weight .* f, dims = 3) ./ sum(weight, dims = 3))[:,:,1]
+        else
+            (sum(weight .* f, 3) ./ sum(weight, 3))[:,:,1]
+        end
+
     return f2
 end
