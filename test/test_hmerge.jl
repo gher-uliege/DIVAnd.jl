@@ -1,5 +1,9 @@
 using DIVAnd
-using Test
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 
 sz = (80,90,3)
 f = fill(NaN,sz);
