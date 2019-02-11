@@ -42,7 +42,7 @@ function localize_separable_grid(
         itp =
             @static if VERSION >= v"0.7"
                 # https://github.com/JuliaMath/Interpolations.jl/issues/237
-                extrapolate(interpolate(X,IJ[i],Gridded(Linear())), Line())
+                extrapolate(interpolate(X,IJ[i],Gridded(Linear())), -1.)
             else
                 interpolate(X,IJ[i],Gridded(Linear()))
             end
@@ -53,6 +53,11 @@ function localize_separable_grid(
             I[i,j] = itp(ind...)
         end
     end
+
+    indices = I
+    #JLD2.@save "/tmp/loc.jld2" X indices IJ xi x
+    #@show extrema(I),size(I)
+    #@show I[:,1]
 
     # handle rounding errors
     # snap to domain bounding box if difference does not exceeds tol

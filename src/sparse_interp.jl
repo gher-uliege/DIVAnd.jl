@@ -119,8 +119,6 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
         end
     end
 
-
-
     H = sparse(si[:],sj[:],ss[:],mi,m)
     return H,out,outbbox
 
