@@ -5,9 +5,8 @@ SpecialFunctions
 DataStructures
 HTTP
 EzXML 0.7.3
-Mustache 0.3.2 0.5.9
+Mustache 0.3.2
 ZipFile
 Missings
 StatsBase
 Compat
-Tables 0.1.0 0.1.13

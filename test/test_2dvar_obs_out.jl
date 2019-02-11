@@ -9,41 +9,26 @@ using DIVAnd
 
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0,stop=1,length=30))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,0.:1:2)
+mask .= false
+mask[2,2] = true
 
 epsilon = 1e-10;
 
 # grid of observations
-x,y = ndgrid(range(epsilon,stop = 1-epsilon, length = 20),
-             range(epsilon,stop = 1-epsilon, length = 20))
-x = x[:]
-y = y[:]
-v = sin.(x*6) .* cos.(y*6)
-
+nobs = 10000
+x = fill(1.99,(nobs,))
+y = fill(1.,(nobs,))
+v = fill(1.,(nobs,))
 
 lenx = .15;
 leny = .15;
 
-epsilon2 = 0.05;
+epsilon2 = 1;
 
-#,err,s
 va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
 
-#Z = randn(size(s.H,1),size(s.H,1));
-Z = eye(size(s.H,1));
-
-ZtHKZ = Z' * (s.H*(s.P * (s.H'* (s.R \ Z))));
-WW=s.P * (s.H'* (s.R \ Z)); ZtHKZ2 =  Z'*s.H*WW;
-
-@time ZtHKZ = Z'*s.H*(s.P * (s.H'* (s.R \ Z)));
-
-@time begin
-    WW=s.P * (s.H'* (s.R \ Z));
-    ZtHKZ2 =  Z'*s.H*WW;
-end
-
-
-
+@test va[2,2] ≈ 0.
 
 
 # Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
