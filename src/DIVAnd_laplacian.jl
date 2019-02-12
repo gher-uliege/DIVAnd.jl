@@ -34,7 +34,9 @@ function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{Number,N}},iscy
     return DIVAnd_laplacian(operatortype,mask,pmn,nu_,iscyclic)
 end
 
-function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{AbstractArray{T,n},n}},iscyclic) where {T,n}
+function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{AbstractArray{T,n},n}},iscyclic;
+                          coeff_laplacian::Vector{Float64} = ones(ndims(mask))
+                          ) where {T,n}
     sz = size(mask)
 
     # extraction operator of sea points
@@ -45,57 +47,59 @@ function DIVAnd_laplacian(operatortype,mask,pmn,nu::Tuple{Vararg{AbstractArray{T
 	DD = spzeros(size(H,2),size(H,1))
 
     for i=1:n
-        # operator for staggering in dimension i
-        S = oper_stagger(operatortype,sz,i,iscyclic[i])
+        if coeff_laplacian[i] != 0
+            # operator for staggering in dimension i
+            S = oper_stagger(operatortype,sz,i,iscyclic[i])
 
-        # d = 1 for interfaces surounded by water, zero otherwise
-        d = zeros(Float64,size(S,1))
-        d[(S * mask[:]) .== 1] .= 1.
+            # d = 1 for interfaces surounded by water, zero otherwise
+            d = zeros(Float64,size(S,1))
+            d[(S * mask[:]) .== 1] .= 1.
 
-        # metric
-        for j = 1:n
-            tmp = S * pmn[j][:]
+            # metric
+            for j = 1:n
+                tmp = S * pmn[j][:]
 
-            if j==i
-                d = d .* tmp
+                if j==i
+                    d = d .* tmp
+                else
+                    d = d ./ tmp
+                end
+            end
+
+            # nu[i] "diffusion coefficient"  along dimension i
+
+            d = coeff_laplacian[i] * (d .* (S * nu[i][:]))
+            #d = d .* (S * nu[i][:])
+
+            # Flux operators D
+            # zero at "coastline"
+
+            #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
+            # Already include final operation to reduce problem size in real problems with land mask
+
+            D = oper_diag(operatortype,d) * (oper_diff(operatortype,sz,i,iscyclic[i])*H')
+
+            # add laplacian along dimension i
+            if !iscyclic[i]
+                # extx: extension operator
+                tmp_szt = collect(sz)
+                tmp_szt[i] = tmp_szt[i]+1
+                szt = NTuple{n,Int}(tmp_szt)
+                #szt = ntuple(j -> (j == i ? size(mask,j)+1 : size(mask,j) ),Val(n))
+
+                extx = oper_trim(operatortype,szt,i)'
+                # Tried to save an explicitely created intermediate matrix D
+                #D = extx * D
+                #DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
+                #@show size(extx),size(D),typeof(extx),typeof(D)
+                #@show extx
+                DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * (extx * D)
             else
-                d = d ./ tmp
+                # shift back one grid cell along dimension i
+                D = oper_shift(operatortype,sz,i,iscyclic[i])' * D
+                DD = DD + oper_diff(operatortype,sz,i,iscyclic[i]) * D
             end
         end
-
-        # nu[i] "diffusion coefficient"  along dimension i
-
-        d = d .* (S * nu[i][:])
-
-        # Flux operators D
-        # zero at "coastline"
-
-        #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
-		# Already include final operation to reduce problem size in real problems with land mask
-
-        D = oper_diag(operatortype,d) * (oper_diff(operatortype,sz,i,iscyclic[i])*H')
-
-        if !iscyclic[i]
-            # extx: extension operator
-            tmp_szt = collect(sz)
-            tmp_szt[i] = tmp_szt[i]+1
-            szt = NTuple{n,Int}(tmp_szt)
-            #szt = ntuple(j -> (j == i ? size(mask,j)+1 : size(mask,j) ),Val(n))
-
-            extx = oper_trim(operatortype,szt,i)'
-			# Tried to save an explicitely created intermediate matrix D
-            #D = extx * D
-            #DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
-			#@show size(extx),size(D),typeof(extx),typeof(D)
-			#@show extx
-			DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * (extx * D)
-        else
-            # shift back one grid cell along dimension i
-            D = oper_shift(operatortype,sz,i,iscyclic[i])' * D
-            DD = DD + oper_diff(operatortype,sz,i,iscyclic[i]) * D
-        end
-
-        # add laplacian along dimension i
     end
 
     ivol = .*(pmn...)
@@ -205,7 +209,61 @@ end # for N = 1:6
 
 
 
-# Copyright (C) 2014,2016,2017 Alexander Barth 		<a.barth@ulg.ac.be>
+function _derivative2n!(dim,mask,pm,len,va,D,Rpre,n,Rpost)
+    for Ipost in Rpost
+        for i = 2:n-1
+            for Ipre in Rpre
+                if mask[Ipre,i-1,Ipost] && mask[Ipre,i,Ipost] && mask[Ipre,i+1,Ipost]
+                    D[Ipre,i,Ipost] += len[Ipre,i,Ipost]^2 * pm[Ipre,i,Ipost]^2 * (va[Ipre,i-1,Ipost] - 2*va[Ipre,i,Ipost] + va[Ipre,i+1,Ipost])
+                end
+            end
+        end
+    end
+end
+
+function derivative2n!(dim::Integer,mask,pmn,len,va,D)
+    Rpre = CartesianIndices(size(va)[1:dim-1])
+    Rpost = CartesianIndices(size(va)[dim+1:end])
+
+    _derivative2n!(dim,mask,pmn[dim],len[dim],va,D,Rpre,size(va,dim),Rpost)
+    return D
+end
+
+derivative2n(dim,mask,pmn,len,va) = derivative2n!(dim,mask,pmn,len,va,zeros(size(mask)))
+
+
+
+function _sparse_derivative2n!(dim,mask,pm,len,Rpre,n,Rpost)
+    S = sparse([], [], Float64[],length(mask),length(mask))
+    linindex = LinearIndices(mask)
+
+    for Ipost in Rpost
+        for i = 2:n-1
+            for Ipre in Rpre
+                if mask[Ipre,i-1,Ipost] && mask[Ipre,i,Ipost] && mask[Ipre,i+1,Ipost]
+                    coeff = len[Ipre,i,Ipost]^2 * pm[Ipre,i,Ipost]^2
+
+                    S[linindex[Ipre,i,Ipost],linindex[Ipre,i-1,Ipost]] += coeff
+                    S[linindex[Ipre,i,Ipost],linindex[Ipre,i  ,Ipost]] += -2*coeff
+                    S[linindex[Ipre,i,Ipost],linindex[Ipre,i+1,Ipost]] += coeff
+                end
+            end
+        end
+    end
+    return S
+end
+
+function sparse_derivative2n(dim::Integer,mask,pmn,len)
+    Rpre = CartesianIndices(size(mask)[1:dim-1])
+    Rpost = CartesianIndices(size(mask)[dim+1:end])
+
+    S = _sparse_derivative2n!(dim,mask,pmn[dim],len[dim],Rpre,size(mask,dim),Rpost)
+    return S
+end
+
+
+
+# Copyright (C) 2014,2016-2019 Alexander Barth 		<a.barth@ulg.ac.be>
 #                              Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

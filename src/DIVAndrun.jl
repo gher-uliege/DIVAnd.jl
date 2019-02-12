@@ -24,7 +24,9 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
 				   fluxes = (),
 				   epsfluxes = 0,
 				   RTIMESONESCALES=(),
-				   QCMETHOD=()
+				   QCMETHOD=(),
+                   coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
+                   coeff_derivative2::Vector{Float64} = zeros(ndims(mask))
                    ) where {N,T}
 
     # check pmn .* len > 4
@@ -37,7 +39,11 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
     # boundary
     # For testing this version of alphabc deactivate the other one
-    s = DIVAnd_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
+    s = DIVAnd_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[];
+                          btrunc = btrunc,
+                          coeff_laplacian = coeff_laplacian,
+                          coeff_derivative2 = coeff_derivative2
+                          );
 
     # check inputs
     if !any(mask[:])

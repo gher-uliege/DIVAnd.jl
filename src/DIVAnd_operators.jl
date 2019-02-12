@@ -21,7 +21,9 @@
 #     of a grid cell
 
 
-function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscyclic,mapindex,Labs) where n
+function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscyclic,mapindex,Labs;
+                          coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
+                          ) where n
 
     s = DIVAnd_struct(operatortype,mask)
 
@@ -47,7 +49,8 @@ function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscycl
         s.isinterior_unpacked = statevector_unpack(sv,s.isinterior)
     end
 
-    D = DIVAnd_laplacian(operatortype,mask,pmn,nu,iscyclic)
+    D = DIVAnd_laplacian(operatortype,mask,pmn,nu,iscyclic;
+                         coeff_laplacian = coeff_laplacian)
 
     s.Dx = DIVAnd_gradient(operatortype,mask,pmn,iscyclic)
 

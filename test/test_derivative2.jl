@@ -52,34 +52,12 @@ pmn = (pm,pn)
 
 
 
-function _derivative2!(idim,mask,pm,len,va,D,Rpre,n,Rpost)
-
-    for Ipost in Rpost
-        for i = 2:n-1
-            for Ipre in Rpre
-                if mask[Ipre,i-1,Ipost] && mask[Ipre,i,Ipost] && mask[Ipre,i+1,Ipost]
-                    D[Ipre,i,Ipost] += len[Ipre,i,Ipost]^2 * pm[Ipre,i,Ipost]^2 * (va[Ipre,i-1,Ipost] - 2*va[Ipre,i,Ipost] + va[Ipre,i+1,Ipost])
-                end
-            end
-        end
-    end
-end
-
-function _derivative2n!(dim::Integer,mask,pmn,len,va,D)
-    Rpre = CartesianIndices(size(va)[1:dim-1])
-    Rpost = CartesianIndices(size(va)[dim+1:end])
-
-    _derivative2!(dim,mask,pmn[dim],len[dim],va,D,Rpre,size(va,dim),Rpost)
-    return D
-end
-
-derivative2n(idim,mask,pmn,len,va) = _derivative2n!(idim,mask,pmn,len,va,zeros(size(mask)))
 
 
-function derivative2!(idim,mask,pmn,len,va,D)
+function derivative2!(dim,mask,pmn,len,va,D)
     pm,pn = pmn
     sz = size(mask)
-    if idim == 1
+    if dim == 1
         for j = 1:sz[2]
             for i = 2:sz[1]-1
                 if mask[i-1,j] && mask[i,j] && mask[i+1,j]
@@ -99,40 +77,8 @@ function derivative2!(idim,mask,pmn,len,va,D)
     return D
 end
 
-function sparse_derivative2(idim,mask,pmn,len,va)
-    pm,pn = pmn
-    D = zeros(size(mask))
-    S = sparse([], [], Float64[],length(mask),length(mask))
 
-    linindex = LinearIndices(D)
-    sz = size(mask)
-    if idim == 1
-        for j = 1:sz[2]
-            for i = 2:sz[1]-1
-                if mask[i-1,j] && mask[i,j] && mask[i+1,j]
-                    coeff = len[1][i,j]^2 * pm[i,j]^2
-                    S[linindex[i,j],linindex[i-1,j]] += coeff
-                    S[linindex[i,j],linindex[i  ,j]] += -2*coeff
-                    S[linindex[i,j],linindex[i+1,j]] += coeff
-                end
-            end
-        end
-    else
-        for j = 2:sz[2]-1
-            for i = 1:sz[1]
-                if mask[i,j-1] && mask[i,j] && mask[i,j+1]
-                    D[i,j] += len[2][i,j]^2 * pn[i,j]^2 * (va[i,j-1] - 2*va[i,j] + va[i,j+1])
-                end
-            end
-        end
-    end
-
-    D .= reshape(S*va[:],size(mask))
-    return D
-end
-
-
-derivative2(idim,mask,pmn,len,va) = derivative2!(idim,mask,pmn,len,va,zeros(size(mask)))
+derivative2(dim,mask,pmn,len,va) = derivative2!(dim,mask,pmn,len,va,zeros(size(mask)))
 
 sz = (100,101)
 mask = rand(sz...) .> 0.1
@@ -140,15 +86,17 @@ va = randn(sz...)
 pmn = (2*ones(sz),3*ones(sz))
 len = (0.2*ones(sz),0.4*ones(sz))
 
-D = derivative2(1,mask,pmn,len,va)
+D1 = derivative2(1,mask,pmn,len,va)
 D2 = derivative2(2,mask,pmn,len,va)
 
+@test D1 ≈ DIVAnd.derivative2n(1,mask,pmn,len,va)
+@test D2 ≈ DIVAnd.derivative2n(2,mask,pmn,len,va)
 
-SD = sparse_derivative2(1,mask,pmn,len,va)
+S1 = DIVAnd.sparse_derivative2n(1,mask,pmn,len)
+@test D1 ≈ reshape(S1 * va[:],size(mask))
 
-@test D ≈ SD
-
-@test D ≈ derivative2n(1,mask,pmn,len,va)
+S2 = DIVAnd.sparse_derivative2n(2,mask,pmn,len)
+@test D2 ≈ reshape(S2 * va[:],size(mask))
 
 #nothing
 

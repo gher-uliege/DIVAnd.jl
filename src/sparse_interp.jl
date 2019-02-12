@@ -111,7 +111,8 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
             for i=1:2^n
                 # sj must refer to a valid point or its interpolation coefficient
                 # must be zero
-                inside = inside && ((mask[sj[i,k]]) || (ss[i,k] == 0))
+                #inside = inside && ((mask[sj[i,k]]) || (ss[i,k] == 0))
+                inside = inside && mask[sj[i,k]]
             end
 
             out[k2] = !inside
@@ -132,6 +133,7 @@ function sparse_interp_g(x,mask,xi)
     I = localize_separable_grid(xi,mask,x)
     return sparse_interp(mask,I)
 end
+
 
 # LocalWords:  interp
 

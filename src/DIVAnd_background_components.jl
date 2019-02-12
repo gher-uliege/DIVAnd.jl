@@ -9,7 +9,8 @@ laplacian,...).
 If the optional arguments contains btrunc, the calculation of iB is limited 
 to the term up and including alpha[btrunc]
 """
-function DIVAnd_background_components(s,D,alpha; kwargs...)
+function DIVAnd_background_components(s,D,alpha;
+                                      kwargs...)
 
     WE = s.WE;
     coeff = s.coeff;

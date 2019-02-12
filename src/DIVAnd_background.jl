@@ -17,7 +17,11 @@ finite-difference operators on a curvilinear grid
     * s.n: number of dimenions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
-function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = true,mapindex = []; btrunc = [])
+function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = true,mapindex = [];
+                           btrunc = [],
+                           coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
+                           coeff_derivative2::Vector{Float64} = zeros(ndims(mask))
+                           )
 
     # number of dimensions
     n = ndims(mask)
@@ -69,7 +73,9 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     alphabc = 0
 
     s,D = DIVAnd_operators(operatortype,mask,pmn,([L.^2 for L in Labs]...,),
-                           iscyclic,mapindex,Labs)
+                           iscyclic,mapindex,Labs;
+                           coeff_laplacian = coeff_laplacian,
+                           )
 
     # D is laplacian (a dimensional, since nu = Labs.^2)
     sv = s.sv
@@ -164,6 +170,15 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 	s.Ld = Ld
 
 	iB = DIVAnd_background_components(s,D,alpha,btrunc=btrunc)
+
+    # second order derivative background constraint without cross-terms
+    pack = sparse_pack(mask)
+    for i = 1:n
+        if coeff_derivative2[i] != 0.
+            S = s.WE * pack * DIVAnd.sparse_derivative2n(i,mask,pmn,Labs) * pack'
+            iB += S' * (coeff_derivative2[i]) * S
+        end
+    end
 
 	# inverse of background covariance matrix
 	s.iB = iB
