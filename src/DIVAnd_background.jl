@@ -169,16 +169,8 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 	# mean correlation legth
 	s.Ld = Ld
 
-	iB = DIVAnd_background_components(s,D,alpha,btrunc=btrunc)
-
-    # second order derivative background constraint without cross-terms
-    pack = sparse_pack(mask)
-    for i = 1:n
-        if coeff_derivative2[i] != 0.
-            S = s.WE * pack * DIVAnd.sparse_derivative2n(i,mask,pmn,Labs) * pack'
-            iB += S' * (coeff_derivative2[i]) * S
-        end
-    end
+	iB = DIVAnd_background_components(
+        s,D,alpha,btrunc=btrunc,coeff_derivative2=coeff_derivative2)
 
 	# inverse of background covariance matrix
 	s.iB = iB

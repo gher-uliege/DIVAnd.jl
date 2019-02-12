@@ -10,6 +10,7 @@ If the optional arguments contains btrunc, the calculation of iB is limited
 to the term up and including alpha[btrunc]
 """
 function DIVAnd_background_components(s,D,alpha;
+                                      coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
                                       kwargs...)
 
     WE = s.WE;
@@ -95,6 +96,15 @@ function DIVAnd_background_components(s,D,alpha;
 		s.WEss[1]=s.WEss[1]+s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i])))
 	  end
 	end
+
+    # second order derivative background constraint without cross-terms
+    pack = sparse_pack(mask)
+    for i = 1:n
+        if coeff_derivative2[i] != 0.
+            S = sqrt(coeff_derivative2[i]) * s.WE * pack * DIVAnd.sparse_derivative2n(i,mask,pmn,Labs) * pack'
+            iB += S' * S
+        end
+    end
 
     return iB
 end
