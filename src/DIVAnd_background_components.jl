@@ -6,7 +6,7 @@ Compute the components of the background error covariance matrix `s.iB_` and
 their sum based on alpha (the adimensional coefficients for norm, gradient,
 laplacian,...).
 
-If the optional arguments contains btrunc, the calculation of iB is limited 
+If the optional arguments contains btrunc, the calculation of iB is limited
 to the term up and including alpha[btrunc]
 """
 function DIVAnd_background_components(s,D,alpha;
@@ -56,7 +56,7 @@ function DIVAnd_background_components(s,D,alpha;
             # normalized by surface
 
             for i=1:n
-			# OPTIMIZATION: Do not calculate in directions where L is zero 
+			# OPTIMIZATION: Do not calculate in directions where L is zero
 			   if s.Ld[i]>0
                 Dx = s.WEss[i] * s.Dx[i] * D^k;
                 iB_ = iB_ + Dx'*Dx;
@@ -83,7 +83,7 @@ function DIVAnd_background_components(s,D,alpha;
         end
 
         iB = iB + alpha[j] * iB_
-		
+
     end
 
     # iB is adimensional
@@ -95,7 +95,7 @@ function DIVAnd_background_components(s,D,alpha;
 		s.WEss[1]=s.WEss[1]+s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i])))
 	  end
 	end
-	
+
     return iB
 end
 

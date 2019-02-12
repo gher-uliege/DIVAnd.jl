@@ -1,12 +1,12 @@
 function jmBix(s,x::Array{Float64,1};btrunc=[])
 
     iBx=s.iB*x   ::Array{Float64,1}
-    
+
     if btrunc==[]
         return iBx
     end
 
-    
+
     #WE = s.WE;
     coeff = s.coeff;
     n = s.n;
@@ -24,15 +24,15 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
         iBx_=0 * iBx ::Array{Float64,1};
 # Certainly a gain to make; not recompute D^(k+1) but Dk*D if k+1 is one larger than already calculated value if it exists
 # But only for n larger than 5 probably, so not an urgent thing
-        
+
         if mod(j,2) == 0
             # constrain of derivative with uneven order (j-1)
             # (gradient, gradient*laplacian,...)
             # normalized by surface
-			
+
 			Dk=s.D^k
 			Dkx=Dk*x ::Array{Float64,1}
-			
+
             for i=1:n
 			#? Not take up ?
 			    if s.Ld[i]>0
@@ -58,13 +58,13 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
             # such that inner produces (i.e. WE'*WE)
             # become integrals
             # WD: units length^(n/2)
-           #@show k 
+           #@show k
            #@time WD = s.WE * s.D^(k+1);
 		    sDkp=s.D^(k+1)
 			#iBx_ = WD'*(WD*x);
-			
+
 			iBx_ = sDkp'*(s.WE*(s.WE*(sDkp*x)))
-			
+
 			#Dk=s.WE * s.D^(k+1)
             #Dkx=Dk*x
             #iBx_ = Dk'*Dkx
@@ -74,7 +74,7 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
 		#iBx = iBx + alpha[j] * iBx_
 
         iBx=BLAS.axpy!(asurc,iBx_,iBx)
-        
+
     end
     return iBx
 end
