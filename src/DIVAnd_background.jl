@@ -172,6 +172,15 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 	iB = DIVAnd_background_components(
         s,D,alpha,btrunc=btrunc,coeff_derivative2=coeff_derivative2)
 
+    # second order derivative background constraint without cross-terms
+    pack = sparse_pack(mask)
+    for i = 1:n
+        if coeff_derivative2[i] != 0.
+            S = sqrt(coeff_derivative2[i]) * s.WE * pack * DIVAnd.sparse_derivative2n(i,mask,pmn,Labs) * pack'
+            iB += S' * S
+        end
+    end
+
 	# inverse of background covariance matrix
 	s.iB = iB
 

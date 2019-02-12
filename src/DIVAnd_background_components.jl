@@ -97,15 +97,6 @@ function DIVAnd_background_components(s,D,alpha;
 	  end
 	end
 
-    # second order derivative background constraint without cross-terms
-    pack = sparse_pack(mask)
-    for i = 1:n
-        if coeff_derivative2[i] != 0.
-            S = sqrt(coeff_derivative2[i]) * s.WE * pack * DIVAnd.sparse_derivative2n(i,mask,pmn,Labs) * pack'
-            iB += S' * S
-        end
-    end
-
     return iB
 end
 

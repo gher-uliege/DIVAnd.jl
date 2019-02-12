@@ -58,6 +58,9 @@ gridded background field and the observations minus the background field.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing a
    vertical profile as a background estimate (default 10.). This parameter is not used
    when the parameter `background` is provided.
+* `background_lenz`: vertical correlation for background computation (default 20 m). This parameter is not used
+   when the parameter `background` is provided.
+* `background_len`: deprecated option replaced by `background_lenz`.
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
@@ -93,7 +96,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 mask = nothing,
                 background = nothing,
                 background_epsilon2_factor::Float64 = 10.,
-                background_len = (len[1],len[2],4*len[3]),
+                background_lenz = nothing, # m
+                background_len = nothing,
                 fitcorrlen::Bool = false,
                 fithorz_param = Dict(),
                 fitvert_param = Dict(),
@@ -188,6 +192,23 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         end
     # scaling comes later
     len_scaled = deepcopy(len0)
+
+    if background_len == nothing
+        if (background_lenz == nothing) && (len == ())
+            # default value if nothing is provided
+            background_lenz = 20 # m
+        end
+
+        if background_lenz !== nothing
+            background_len = (1., # unused
+                              1., # unused
+                              background_lenz)
+        end
+        if len !== ()
+            background_len = (len[1],len[2],4*len[3])
+        end
+    end
+
 
     # epsilon: change to vector if scalar provided (same value for all the points)
     if ndims(epsilon2) == 0
