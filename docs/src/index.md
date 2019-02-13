@@ -4,7 +4,7 @@ DIVAnd
 
 # DIVAnd.jl documentation
 
-
+## API refence
 
 ```@docs
 DIVAnd.diva3d
@@ -26,7 +26,9 @@ DIVAnd.backgroundfile
 DIVAnd.Quadtrees.checkduplicates
 ```
 
-# Bathymetry and spatial-temporal domain
+
+### Bathymetry and spatial-temporal domain
+
 
 ```@docs
 DIVAnd.load_bath
@@ -40,19 +42,20 @@ DIVAnd.TimeSelectorYW
 DIVAnd.TimeSelectorYearListMonthList
 ```
 
-# Load observations
+### Load observations
 
 ```@docs
 DIVAnd.saveobs
 DIVAnd.loadobs
 DIVAnd.NCSDN.load
 DIVAnd.NCSDN.loadvar
+DIVAnd.NCODV.load
 DIVAnd.ODVspreadsheet.loaddata
 DIVAnd.ODVspreadsheet.parsejd
 DIVAnd.ODVspreadsheet.myparse
 ```
 
-# Parameter optimization
+### Parameter optimization
 
 ```@docs
 DIVAnd.fit_isotropic
@@ -67,7 +70,7 @@ DIVAnd.weight_RtimesOne
 DIVAnd.Rtimesx!
 ```
 
-# Vocabulary
+### Vocabulary
 
 
 ```@docs
@@ -86,10 +89,10 @@ DIVAnd.Vocab.canonical_units
 DIVAnd.Vocab.splitURL
 ```
 
-# Internal API or advanced usage
+## Internal API or advanced usage
 
 
-## State vector
+### State vector
 
 ```@docs
 DIVAnd.statevector
@@ -100,14 +103,14 @@ Base.ind2sub
 Base.length
 ```
 
-## Constraints
+### Constraints
 
 ```@docs
 DIVAnd_constr_fluxes
 DIVAnd_constr_constcoast
 ```
 
-## ODV files
+### ODV files
 
 ```@docs
 DIVAnd.ODVspreadsheet.listSDNparams
@@ -121,7 +124,7 @@ DIVAnd.ODVspreadsheet.colnumber
 DIVAnd.ODVspreadsheet.nprofiles
 ```
 
-## Operators
+### Operators
 
 ```@docs
 DIVAnd.sparse_interp
@@ -134,7 +137,7 @@ DIVAnd.matfun_diff
 DIVAnd.matfun_shift
 ```
 
-## Quadtree
+### Quadtree
 
 ```@docs
 DIVAnd.Quadtrees.QT
@@ -148,7 +151,7 @@ DIVAnd.Quadtrees.split!
 ```
 
 
-## Conjugate gradient
+### Conjugate gradient
 
 ```@docs
 DIVAnd.conjugategradient
@@ -156,7 +159,7 @@ DIVAnd.pc_none!
 DIVAnd.checksym
 ```
 
-## Utility functions
+### Utility functions
 
 ```@docs
 DIVAnd.DIVAnd_laplacian
@@ -210,7 +213,7 @@ DIVAnd.loadoriginators
 
 
 
-# Examples
+## Examples
 
 To run the example, you need to install `PyPlot`.
 In the folder `examples` of DIVAnd, you can run e.g. the example `DIVAnd_simple_example_1D.jl` by issuing:
@@ -220,17 +223,17 @@ In the folder `examples` of DIVAnd, you can run e.g. the example `DIVAnd_simple_
 include("DIVAnd_simple_example_1D.jl")
 ```
 
-Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of `Pkg.dir("DIVAnd")` if you installed `DIVAnd` using Julias package manager.
+Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of `Pkg.dir("DIVAnd")` if you installed `DIVAnd` using Julia's package manager.
 
 
-# Performance considerations
+## Performance considerations
 
 
-## Tuning the domain decomposition
+### Tuning the domain decomposition
 
 The functions `diva3d` and `DIVAndgo` split the domain into overlapping subdomains to reduce the required amount of memory. In some circumstances (in particular few vertical levels), this can unnecessarily degrade the performance. The CPU time of the analysis can be improved by increasing the `diva3d` option `memtofit` from 3 (default) to higher values (as long as one does not run out of memory). If this parameter is set to a very high value then the domain decomposition is effectively disabled.
 
-## Multiple CPU system
+### Multiple CPU system
 
 Per default julia tries to use all CPUs on your system when doing matrix operations. The number of CPUs is controlled by the call to `BLAS.set_num_threads`. Using multiple CPUs can result in overhead and it can be beneficial to reduce the number of CPUs:
 
@@ -238,15 +241,92 @@ Per default julia tries to use all CPUs on your system when doing matrix operati
 BLAS.set_num_threads(2)
 ```
 
-# Information for developers
+## Debugging message
 
-To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.
+In Julia 1.0 debugging message can be activated using the following Julia command:
 
 ```julia
-Pkg.add("Documenter")
+ENV["JULIA_DEBUG"] = "DIVAnd"
 ```
 
-# API changes
+
+See also https://docs.julialang.org/en/v1/stdlib/Logging/index.html#Environment-variables-1 .
+
+## Fequently asked questions
+
+### Which data points are using for the analysis?
+
+An individual data point is used if all following conditions are met:
+1. longitude/latitude is inside the domain and not adjacent to a land point
+2. the depth is within the depth range of the domain
+3. the time is within the temporal range
+4. if an anamorphosis transform is used, it should correspond to a finite transformed value
+5. during the loading, the corresponding quality flag is among the accepted quality flags
+
+Note that for points 1.-3. the finite precision of floating point numbers can affect the results.
+
+
+### How to resolve a bias of the surface layer (or the deepest layer)?
+
+In DIVAnd, the vertical levels must resolve the vertical correlation length. If the vertical correlation length is smaller than the
+surface resolution, this can result in a bias of the surface value. A similar problem can also be present at the deepest layer.
+The solution is to either refine the vertical resolution or to increase the vertical correlation length.
+
+### How do I estimate the horizontal and vertical correlation length in DIVAnd?
+
+Set the option `fitcorrlen` to `true` in `diva3d` and parameter `len` to an empty tuple (`()`) or a tuple of arrays equal to one.
+
+### How do I limit the estimated horizontal and vertical correlation length in DIVAnd?
+
+It can be necessary to limit the estimated correlation length to an acceptable range. The function (called `limitfun`) can be
+applied to the estimated correlation to make such adjustment. This function takes as argument the estimated correlation length and the depth
+and returns the adjusted correlation length. For example the following function forces the horizontal correlation length to be between 50 km
+and 200 km (independently of the depth).
+
+```julia
+# len and z are expressed in meters
+function mylimitfun(len,z)
+   if len > 200_000
+      return 200_000
+   end
+   if len < 50_000
+      return 50_000
+   end
+   return len
+end
+```
+(`200_000` is just a more readable way to write `200000`). This function is used in `diva3d` as follow:
+
+
+```julia
+... = diva3d(...
+   fithorz_param = Dict(:limitfun => mylimitfun)
+```
+
+The same can be achieved more compactly as follows:
+
+```julia
+... = diva3d(...
+   fithorz_param = Dict(:limitfun => (len,z) -> min(max(len,50_000),200_000)),
+   fitvert_param = Dict(:limitfun => (len,z) -> min(max(len,20),200)))
+```
+
+A similar option has also be added for the vertical correlation length.
+
+### How do I reduce the estimated correlation length near the coast when it is estimated internally?
+
+The actual used correlation lengths is the product between the estimated one (by fitting) and the
+arrays in the parameter `len` (if provided). The function `lengraddepth` can be used to create a reduced correlation length near the bathymetry.
+(https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/17-relative-correlation-length.ipynb)
+
+### How can I handle data set of very different resolution?
+
+If data from a high-resolution data (e.g. profiling float, dense time serie) set is
+combined with data with a low spatial resolution (e.g. profiles from a research
+vessel), then the analysis can be biased toward the high-resolution data. The function `weight_RtimesOne(x,len)` can be used to reduce the weight of the high-resoliution data (https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/13-processing-parameter-optimization.ipynb). Alternative methods are averaging data in bins ("binning") or simply sub-sampling the data.
+
+
+## API changes
 
 We do are best to avoid changing the API, but sometimes it is unfortunately necessary.
 
@@ -255,7 +335,17 @@ We do are best to avoid changing the API, but sometimes it is unfortunately nece
 
 
 
-# Troubleshooting
+## Information for developers
+
+To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.
+
+```julia
+Pkg.add("Documenter")
+```
+
+
+
+## Troubleshooting
 
 
 If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.
@@ -269,7 +359,7 @@ Pkg.add("EzXML")
 
 
 
-## No plotting window appears
+### No plotting window appears
 
 If the following command doesn't produce any figure
 ```julia
@@ -293,7 +383,7 @@ backend      : TkAgg
 
 The `matplotlibrc` need to be created if it does not exists.
 
-## C runtime library when calling PyPlot
+### C runtime library when calling PyPlot
 
 `R6034 an application has made an attempt to load the C runtime library incorrectly` on Windows 10 with julia 0.6.1, matplotlib 2.1.0, PyPlot 2.3.2:
 
@@ -302,7 +392,7 @@ ENV["MPLBACKEND"]="qt4agg"
 ```
 You can put this line in a file `.juliarc.jl` placed in your home directory (the output of `homedir()` in Julia).
 
-## Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
+### Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
 
 Cloning METADATA or downloading a julia packages fails with:
 
@@ -313,7 +403,7 @@ GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )
 The problem is that Windows 7 and Windows Server 2012 uses outdated encryption protocols. The solution is to run the
 "Easy fix" tool from the [Microsoft support page](https://stackoverflow.com/questions/49065986/installation-of-julia-on-windows7-64-bit)
 
-## MbedTLS.jl does not install on Windows 7
+### MbedTLS.jl does not install on Windows 7
 
 
 The installion of `MbedTLS.jl` fails with the error message:
@@ -335,7 +425,7 @@ See also the issue <https://github.com/JuliaWeb/MbedTLS.jl/issues/133>.
 
 The solution is to install the [Windows Management Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=40855).
 
-## EzXML.jl cannot be installed on RedHat 6
+### EzXML.jl cannot be installed on RedHat 6
 
 The `zlib` library of RedHat 6, is slightly older than the library which `EzXML.jl` and `libxml2` requires.
 
@@ -383,7 +473,7 @@ exec /path/to/bin/julia "$@"
 by replacing `/path/to/bin/julia` to the full path of your installation directory.
 The script should be marked executable and it can be included in your Linux search [`PATH` environement variable](http://www.linfo.org/path_env_var.html). Julia can then be started by calling directly this script.
 
-## The DIVAnd test suite fails with `automatic download failed`
+### The DIVAnd test suite fails with `automatic download failed`
 
 Running `Pkg.test("DIVAnd")` fails with the error:
 
@@ -401,7 +491,7 @@ You can check the current working directory with:
 pwd()
 ```
 
-## METADATA cannot be updated
+### METADATA cannot be updated
 
 `Pkg.update` fails with the error message `METADATA cannot be updated`.
 
@@ -417,7 +507,7 @@ and then in Julia run `Pkg.update()` again.
 If this does not work, then, you can also delete `~/.julia` (<https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521>) and in Julia enter `Pkg.init(); Pkg.update()`.
 
 
-## Convert error in `DIVAnd_obs`
+### Convert error in `DIVAnd_obs`
 
 The full error message:
 
@@ -429,7 +519,7 @@ since type constructors fall back to convert methods.
 
 The solution is to use the same type of all input parameters: all Float32 or all Float64.
 
-## Monthlist issue
+### Monthlist issue
 
 Using comments inside list can lead to unexpected results.
 
@@ -450,7 +540,7 @@ should be written as
        ]
 ```
 
-## Error in the factorisation
+### Error in the factorisation
 
 The error message `Base.LinAlg.PosDefException(95650)`
 followed by the stack-trace below might be due to a wrong choice in the analysis parameters, for example a too long correlation length.
@@ -463,7 +553,7 @@ Stacktrace:
 ```
 
 
-## Installing additional packages when using a git clone
+### Installing additional packages when using a git clone
 
 If `DIVAnd` is installed without the package manager, it can be necessary
 to install additional packages. This will be explicitly shown,
@@ -473,3 +563,13 @@ for example:
 LoadError: ArgumentError: Module Roots not found in current path.
 Run `Pkg.add("Roots")` to install the Roots package.
 ```
+
+### Kernel not working with IJulia/Jupyter under julia0.7 Windows
+
+Try these commands
+```julia
+Pkg.add("ZMQ")
+Pkg.add("IJulia")
+Pkg.update()
+```
+

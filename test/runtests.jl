@@ -11,6 +11,7 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
     import Base.LinAlg.BLAS
+    using Compat: range
 end
 using Compat
 using SpecialFunctions
@@ -51,6 +52,8 @@ include("gen_example_file.jl");
 
     include("test_2dvar_all_masked.jl");
 
+    include("test_2dvar_obs_out.jl")
+
     # cross-validation
     include("test_2dvar_cv.jl"); # problematic
 
@@ -90,6 +93,7 @@ include("gen_example_file.jl");
 
     # SDN NetCDF
     include("test_ncsdn.jl");
+    include("test_ncodv.jl");
 
     # SDN metadata
     include("test_metadata.jl");
@@ -109,6 +113,7 @@ include("gen_example_file.jl");
 
     # Test utility functions
     include("test_utils.jl");
+    include("test_hmerge.jl");
 
     # Test utility functions
     include("test_obsstat.jl");

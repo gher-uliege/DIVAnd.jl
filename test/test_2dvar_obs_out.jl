@@ -1,31 +1,37 @@
-# Testing DIVAnd in 2 dimensions with advection.
-using DIVAnd
+# Testing DIVAnd in 2 dimensions with independent verification.
+
 if VERSION >= v"0.7.0-beta.0"
     using Test
 else
     using Base.Test
 end
+using DIVAnd
+
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(-1, stop = 1, length = 30))
+mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,0.:1:2)
+mask .= false
+mask[2,2] = true
 
-x = [.4]
-y = [.4]
-f = [1.]
+epsilon = 1e-10;
 
-a = 5;
-u = a*yi;
-v = -a*xi;
-epsilon2 = 1/200
-len = 0.2
+# grid of observations
+nobs = 10000
+x = fill(1.99,(nobs,))
+y = fill(1.,(nobs,))
+v = fill(1.,(nobs,))
 
-fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;velocity = (u,v),alphabc=0);
+lenx = .15;
+leny = .15;
 
-@test abs(fi[18,24] - 0.8993529043140029) < 1e-2
+epsilon2 = 1;
+
+va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+
+@test va[2,2] ≈ 0.
 
 
-
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

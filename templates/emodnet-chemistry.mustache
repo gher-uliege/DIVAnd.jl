@@ -1,690 +1,674 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<gmd:MD_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml" xmlns:gmd="http://www.isotc211.org/2005/gmd">
-    <gmd:fileIdentifier>
-        <!-- MANDATORY: uuid -->
-        <gco:CharacterString>{{ product_id }}</gco:CharacterString>
-    </gmd:fileIdentifier>
-    <gmd:language>
-        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng"/>
-    </gmd:language>
-    <gmd:characterSet>
-        <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"/>
-    </gmd:characterSet>
-    <gmd:hierarchyLevel>
-        <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="series"/>
-    </gmd:hierarchyLevel>
-    <gmd:contact>
-        <!-- MANDATORY : define the project which has the governance over the current metadata (e.g. SEADATANET, EMODNET, ...) -->
-        <gmd:CI_ResponsibleParty>
-            <gmd:organisationName>
-                <gco:CharacterString>EMODNET CHEMISTRY</gco:CharacterString>
-            </gmd:organisationName>
-            <gmd:contactInfo>
-                <gmd:CI_Contact>
-                    <gmd:address>
-                        <gmd:CI_Address>
-                            <gmd:electronicMailAddress>
-                                <gco:CharacterString>sextant@ifremer.fr</gco:CharacterString>
-                            </gmd:electronicMailAddress>
-                        </gmd:CI_Address>
-                    </gmd:address>
-                    <gmd:onlineResource>
-                        <gmd:CI_OnlineResource>
-                            <gmd:linkage>
-                                <gmd:URL>http://www.emodnet.eu/chemistry</gmd:URL>
-                            </gmd:linkage>
-                        </gmd:CI_OnlineResource>
-                    </gmd:onlineResource>
-                </gmd:CI_Contact>
-            </gmd:contactInfo>
-            <gmd:role>
-                <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
-            </gmd:role>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd http://www.isotc211.org/2005/gmx http://www.isotc211.org/2005/gmx/gmx.xsd http://www.isotc211.org/2005/srv http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>{{ product_id }}</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language>
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng" />
+  </gmd:language>
+  <gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" />
+  </gmd:characterSet>
+  <gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="series" />
+  </gmd:hierarchyLevel>
+  <gmd:hierarchyLevelName>
+    <gco:CharacterString>Product record</gco:CharacterString>
+  </gmd:hierarchyLevelName>
+  <gmd:contact>
+    <gmd:CI_ResponsibleParty>
+      <gmd:individualName gco:nilReason="missing">
+        <gco:CharacterString />
+      </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>{{ project_name }}</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:address>
+            <gmd:CI_Address>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>sextant@ifremer.fr</gco:CharacterString>
+              </gmd:electronicMailAddress>
+            </gmd:CI_Address>
+          </gmd:address>
+          <gmd:onlineResource>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ project_url }}</gmd:URL>
+              </gmd:linkage>
+            </gmd:CI_OnlineResource>
+          </gmd:onlineResource>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" />
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+    <gco:DateTime>{{ xml_creation_time }}</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName>
+    <gco:CharacterString>ISO 19115:2003/19139 - EMODNET - SDN</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>1.0</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+
+  <!-- from grid template.xmk -->
+  <gmd:spatialRepresentationInfo>
+    <gmd:MD_GridSpatialRepresentation>
+      <gmd:numberOfDimensions>
+        <gco:Integer>{{ ndims }}</gco:Integer>
+      </gmd:numberOfDimensions>
+      <gmd:axisDimensionProperties>
+        <gmd:MD_Dimension>
+          <gmd:dimensionName>
+            <gmd:MD_DimensionNameTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_DimensionNameTypeCode"
+                                                codeListValue="vertical"/>
+          </gmd:dimensionName>
+          <gmd:dimensionSize>
+            <gco:Integer>{{ nvertlevels }}</gco:Integer>
+          </gmd:dimensionSize>
+        </gmd:MD_Dimension>
+      </gmd:axisDimensionProperties>
+      <gmd:axisDimensionProperties>
+        <gmd:MD_Dimension>
+          <gmd:dimensionName>
+            <gmd:MD_DimensionNameTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_DimensionNameTypeCode"
+                                          codeListValue="time"/>
+          </gmd:dimensionName>
+          <gmd:dimensionSize/>
+          <gmd:resolution>
+            <gco:Measure uom="{{ temp_resolution_unit }}">{{ temp_resolution }}</gco:Measure>
+          </gmd:resolution>
+        </gmd:MD_Dimension>
+      </gmd:axisDimensionProperties>
+      <gmd:cellGeometry>
+        <gmd:MD_CellGeometryCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CellGeometryCode"
+                                 codeListValue="surface"/>
+      </gmd:cellGeometry>
+      <gmd:transformationParameterAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </gmd:transformationParameterAvailability>
+    </gmd:MD_GridSpatialRepresentation>
+  </gmd:spatialRepresentationInfo>
+
+  <gmd:referenceSystemInfo>
+    <gmd:MD_ReferenceSystem>
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code>
+            <gco:CharacterString>{{ CRS }}</gco:CharacterString>
+          </gmd:code>
+          <gmd:codeSpace>
+            <gco:CharacterString>EPSG</gco:CharacterString>
+          </gmd:codeSpace>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>{{ title }}</gco:CharacterString>
+          </gmd:title>
+          <gmd:alternateTitle>
+            <gco:CharacterString>{{ product_code }}</gco:CharacterString>
+          </gmd:alternateTitle>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>{{ creation_date }}</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" />
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:edition>
+            <gco:CharacterString>{{ product_version }}</gco:CharacterString>
+          </gmd:edition>
+          <gmd:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>{{ product_id }}</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:identifier>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>{{ abstract }}</gco:CharacterString>
+      </gmd:abstract>
+      <gmd:credit>
+        <gco:CharacterString>{{ project_name }}</gco:CharacterString>
+      </gmd:credit>
+
+      <!-- EMODNET CONTACT -->
+      {{#contacts}}
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty uuid="{{ EDMO_URL }}">
+          <gmd:organisationName>
+            <gco:CharacterString>{{ name }}</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone xmlns:xslt="http://xml.apache.org/xslt">
+                <gmd:CI_Telephone>
+                  <gmd:voice gco:nilReason="missing">
+                    <gco:CharacterString>{{ phone }}</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile gco:nilReason="missing">
+                    <gco:CharacterString>{{ fax }}</gco:CharacterString>
+                  </gmd:facsimile>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint xmlns:xslt="http://xml.apache.org/xslt">
+                    <gco:CharacterString>{{ address }}</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city xmlns:xslt="http://xml.apache.org/xslt">
+                    <gco:CharacterString>{{ city }}</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:administrativeArea xmlns:xslt="http://xml.apache.org/xslt" gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:administrativeArea>
+                  <gmd:postalCode xmlns:xslt="http://xml.apache.org/xslt">
+                    <gco:CharacterString>{{ zip }}</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country xmlns:xslt="http://xml.apache.org/xslt">
+                    <gco:CharacterString>{{ country }}</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>{{ mail }}</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <gmd:onlineResource xmlns:xslt="http://xml.apache.org/xslt">
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage>
+                    <gmd:URL>{{ website }}</gmd:URL>
+                  </gmd:linkage>
+                  <gmd:name>
+                    <gco:CharacterString>web site</gco:CharacterString>
+                  </gmd:name>
+                  <gmd:function>
+                    <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information" />
+                  </gmd:function>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role xmlns:xslt="http://xml.apache.org/xslt">
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="{{ role }}" />
+          </gmd:role>
         </gmd:CI_ResponsibleParty>
-    </gmd:contact>
-    <gmd:dateStamp>
-        <!-- MANDATORY: time when metadata is created or updated -->
-        <gco:DateTime>{{ xml_creation_time }}</gco:DateTime>
-    </gmd:dateStamp>
-    <gmd:metadataStandardName>
-        <gco:CharacterString>ISO 19115:2003/19139 - EMODNET - CHEMISTRY</gco:CharacterString>
-    </gmd:metadataStandardName>
-    <gmd:metadataStandardVersion>
-        <!-- applicable for gridded datasets, used to describe time and vertical axis -->
-        <gco:CharacterString>1.0</gco:CharacterString>
-    </gmd:metadataStandardVersion>
-    <gmd:spatialRepresentationInfo>
-        <gmd:MD_Georectified>
-            <gmd:numberOfDimensions>
-                <!--  MANDATORY, CONSTANT: 4 axis always (x,y,z,t)-->
-                <gco:Integer>{{ ndims }}</gco:Integer>
-            </gmd:numberOfDimensions>
-            <gmd:axisDimensionProperties>
-                <gmd:MD_Dimension>
-                    <gmd:dimensionName>
-                        <gmd:MD_DimensionNameTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="vertical"/>
-                    </gmd:dimensionName>
-                    <gmd:dimensionSize>
-                        <!-- OPTIONAL: number of vertical levels -->
-                        <gco:Integer>{{ nvertlevels }}</gco:Integer>
-                    </gmd:dimensionSize>
-                </gmd:MD_Dimension>
-            </gmd:axisDimensionProperties>
-            <gmd:axisDimensionProperties>
-                <gmd:MD_Dimension>
-                    <gmd:dimensionName>
-                        <gmd:MD_DimensionNameTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="time"/>
-                    </gmd:dimensionName>
-                    <gmd:dimensionSize/>
-                    <!-- OPTIONAL: temporal resolution (mean period between each time steps) -->
-                    <gmd:resolution>
-                        <gco:Measure uom="{{ temp_resolution_unit }}">{{ temp_resolution }}</gco:Measure>
-                    </gmd:resolution>
-                </gmd:MD_Dimension>
-            </gmd:axisDimensionProperties>
-            <gmd:cellGeometry>
-                <gmd:MD_CellGeometryCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CellGeometryCode" codeListValue="point"/>
-            </gmd:cellGeometry>
-            <gmd:transformationParameterAvailability>
-                <gco:Boolean>false</gco:Boolean>
-            </gmd:transformationParameterAvailability>
-            <gmd:checkPointAvailability>
-                <gco:Boolean>false</gco:Boolean>
-            </gmd:checkPointAvailability>
-            <gmd:pointInPixel>
-                <gmd:MD_PixelOrientationCode>center</gmd:MD_PixelOrientationCode>
-            </gmd:pointInPixel>
-        </gmd:MD_Georectified>
-    </gmd:spatialRepresentationInfo>
-    <gmd:referenceSystemInfo>
-        <gmd:MD_ReferenceSystem>
-            <gmd:referenceSystemIdentifier>
-                <gmd:RS_Identifier>
-                    <gmd:code>
-                        <!-- MANDATORY: coordinate reference system of the product among EPSG labels at http://spatialreference.org/ref/epsg/ -->
-                        <!-- Controlled vocabulary from Geonetwork embeded GeoTools database -->
-                        <gco:CharacterString>{{ CRS }}</gco:CharacterString>
-                    </gmd:code>
-                    <gmd:codeSpace>
-                        <gco:CharacterString>EPSG</gco:CharacterString>
-                    </gmd:codeSpace>
-                </gmd:RS_Identifier>
-            </gmd:referenceSystemIdentifier>
-        </gmd:MD_ReferenceSystem>
-    </gmd:referenceSystemInfo>
-    <gmd:identificationInfo>
-        <gmd:MD_DataIdentification>
-            <gmd:citation>
+      </gmd:pointOfContact>
+      {{/contacts}}
+      <gmd:graphicOverview>
+        <gmd:MD_BrowseGraphic>
+          <gmd:fileName>
+            <gco:CharacterString>{{ preview }}</gco:CharacterString>
+          </gmd:fileName>
+          <gmd:fileDescription>
+            <gco:CharacterString>large_thumbnail</gco:CharacterString>
+          </gmd:fileDescription>
+        </gmd:MD_BrowseGraphic>
+      </gmd:graphicOverview>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>Thèmes Sextant</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2018-05-24</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/eng/thesaurus.download?ref=local.theme.sextant-theme">geonetwork.thesaurus.local.theme.sextant-theme</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/api/registries/vocabularies/keyword?thesaurus=external.theme.inspire-theme&amp;id=http://rdfdata.eionet.europa.eu/inspirethemes/themes/28">Oceanographic geographical features</gmx:Anchor>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2009-09-22</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/eng/thesaurus.download?ref=external.theme.inspire-theme">geonetwork.thesaurus.external.theme.inspire-theme</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          {{#P02_keywords}}
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="{{ URL }}">{{ label }} </gmx:Anchor>
+          </gmd:keyword>
+          {{/P02_keywords}}
+          {{^P02_keywords}}
+          <gmd:keyword/>
+          {{/P02_keywords}}
+
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="parameter" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>Parameter Discovery Vocabulary (P02)</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>{{ P02_date }}</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/eng/thesaurus.download?ref=external.parameter.NVS.P02">geonetwork.thesaurus.external.parameter.NVS.P02</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+
+          {{#P35_keywords}}
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="{{ URL }}">{{ label }} </gmx:Anchor>
+          </gmd:keyword>
+          {{/P35_keywords}}
+          {{^P35_keywords}}
+          <gmd:keyword/>
+          {{/P35_keywords}}
+
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="parameter" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>EMODNET chemistry lot aggregated parameter names</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>{{ P35_date }}</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/eng/thesaurus.download?ref=external.parameter.NVS.P35">geonetwork.thesaurus.external.parameter.NVS.P35</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+
+          {{#C19_keywords}}
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="{{ URL }}">{{ label }}</gmx:Anchor>
+          </gmd:keyword>
+          {{/C19_keywords}}
+          {{^C19_keywords}}
+          <gmd:keyword/>
+          {{/C19_keywords}}
+
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="reference-geographical-area" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>SeaVoX salt and fresh water body gazetteer</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>{{ C19_date }}</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/eng/thesaurus.download?ref=external.reference-geographical-area.NVS.C19">geonetwork.thesaurus.external.reference-geographical-area.NVS.C19</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>EMODnet Chemistry</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme" />
+          </gmd:type>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints>
+        <gmd:MD_LegalConstraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>Transcopyright: http://transcopyright.org/#License</gco:CharacterString>
+          </gmd:useLimitation>
+          <gmd:accessConstraints>
+            <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="unrestricted" />
+          </gmd:accessConstraints>
+          <gmd:otherConstraints>
+            <gco:CharacterString>Usage is subject to mandatory citation: "This resource was generated in the framework of EMODnet Chemistry, under the support of DG MARE Call for Tender EASME/EMFF/2016/006 - lot4."</gco:CharacterString>
+          </gmd:otherConstraints>
+        </gmd:MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <gmd:spatialResolution>
+        <gmd:MD_Resolution>
+          <gmd:distance>
+            <gco:Distance uom="{{ horizontal_resolution_units }}">{{ horizontal_resolution }}</gco:Distance>
+          </gmd:distance>
+        </gmd:MD_Resolution>
+      </gmd:spatialResolution>
+      <gmd:language>
+        <gco:CharacterString>eng</gco:CharacterString>
+      </gmd:language>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>oceans</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:description>
+            <gco:CharacterString>bounding box</gco:CharacterString>
+          </gmd:description>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>{{ longitude_min }}</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>{{ longitude_max }}</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>{{ latitude_min }}</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>{{ latitude_max }}</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+          <gmd:temporalElement>
+            <gmd:EX_TemporalExtent>
+              <gmd:extent>
+                <gml:TimePeriod>
+                  <gml:beginPosition>{{ time_min }}</gml:beginPosition>
+                  <gml:endPosition>{{ time_max }}</gml:endPosition>
+                </gml:TimePeriod>
+              </gmd:extent>
+            </gmd:EX_TemporalExtent>
+          </gmd:temporalElement>
+          <gmd:verticalElement>
+            <gmd:EX_VerticalExtent>
+              <gmd:minimumValue>
+                <gco:Real>{{ elevation_min }}</gco:Real>
+              </gmd:minimumValue>
+              <gmd:maximumValue>
+                <gco:Real>{{ elevation_max }}</gco:Real>
+              </gmd:maximumValue>
+              <gmd:verticalCRS uuidref="http://spatialreference.org/ref/epsg/5714/" />
+            </gmd:EX_VerticalExtent>
+          </gmd:verticalElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:contentInfo>
+    <gmd:MD_FeatureCatalogueDescription xmlns:srv="http://www.isotc211.org/2005/srv">
+      <gmd:includedWithDataset>
+        <gco:Boolean>false</gco:Boolean>
+      </gmd:includedWithDataset>
+      <gmd:featureTypes>
+        <!-- MANDATORY: type of the feature in the dataset                              -->
+        <!-- http://vocab.nerc.ac.uk/collection/L02/current/                    -->
+        <!-- (Grid series always except if only one time step in dataset, then Grid     -->
+        <!-- Issued from controlled vocabulary -->
+        <gco:LocalName codeSpace="{{ L02_URL }}">{{ L02_label }}</gco:LocalName>
+      </gmd:featureTypes>
+      <gmd:featureCatalogueCitation/>
+    </gmd:MD_FeatureCatalogueDescription>
+  </gmd:contentInfo>
+  <gmd:distributionInfo xmlns:che="http://www.geocat.ch/2008/che">
+    <gmd:MD_Distribution>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>Climate and Forecast NetCDF</gco:CharacterString>
+          </gmd:name>
+          <gmd:version>
+            <gco:CharacterString>1.6</gco:CharacterString>
+          </gmd:version>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+
+      <!-- WMS part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <!-- bloc for the layer selected -->
+          <!-- n gmd:onLine may be used. Depends on the number of layers -->
+
+          {{#WMS_layers}}
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ getcap }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>{{ name }}</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>{{ description }}</gco:CharacterString>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          {{/WMS_layers}}
+
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+
+
+      <!-- DOI part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ DOI_URL }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>DOI</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>Data Access and Citation</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+
+      <!-- OPeNDAP part -->
+      {{#OPENDAP_URLs}}
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ URL }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>OPeNDAP</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>{{ description }}</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+      {{/OPENDAP_URLs}}
+
+      <!-- NetCDF file part -->
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>{{ NetCDF_URL }}</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>Direct Download (NetCDF)</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>{{ NetCDF_description }}</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+
+
+
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="series" />
+          </gmd:level>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:report>
+        <gmd:DQ_DomainConsistency>
+          <gmd:result>
+            <gmd:DQ_ConformanceResult>
+              <gmd:specification>
                 <gmd:CI_Citation>
-                    <gmd:title>
-                        <!-- MANDATORY: title in readable english, for example "chimistry climatology in Baltic Sea" -->
-                        <gco:CharacterString>{{ title }}</gco:CharacterString>
-                    </gmd:title>
-                    <gmd:alternateTitle>
-                        <!-- MANDATORY: code used for external references, product code for users -->
-                        <gco:CharacterString>{{ product_code }}</gco:CharacterString>
-                    </gmd:alternateTitle>
-                    <gmd:date>
-                        <gmd:CI_Date>
-                            <gmd:date>
-                                <!-- MANDATORY: creation date for the product (ie for the data of the product) -->
-                                <gco:Date>{{ creation_date }}</gco:Date>
-                            </gmd:date>
-                            <gmd:dateType>
-                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
-                            </gmd:dateType>
-                        </gmd:CI_Date>
-                    </gmd:date>
-                    <gmd:edition>
-                        <!-- OPTIONAL: version of the product (depends on observation datasets and algorithm -->
-                        <gco:CharacterString>{{ product_version }}</gco:CharacterString>
-                    </gmd:edition>
-                    <gmd:editionDate>
-                        <!-- MANDATORY: latest update date for the product (ie for the data of the product) -->
-                        <gco:Date>{{ update_date }}</gco:Date>
-                    </gmd:editionDate>
-                    <gmd:identifier>
-                        <gmd:MD_Identifier>
-                            <gmd:code>
-                                <!-- MANDATORY: same as fileIdentifier -->
-                                <gco:CharacterString>{{ product_id }}</gco:CharacterString>
-                            </gmd:code>
-                        </gmd:MD_Identifier>
-                    </gmd:identifier>
+                  <gmd:title>
+                    <gco:CharacterString>COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services</gco:CharacterString>
+                  </gmd:title>
+                  <gmd:date>
+                    <gmd:CI_Date>
+                      <gmd:date>
+                        <gco:Date>2010-12-08</gco:Date>
+                      </gmd:date>
+                      <gmd:dateType>
+                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                      </gmd:dateType>
+                    </gmd:CI_Date>
+                  </gmd:date>
                 </gmd:CI_Citation>
-            </gmd:citation>
-            <gmd:abstract>
-                <!-- MANDATORY: wikipedia-like syntax may be used for bold, italic underlined, bullets and hyperlinks -->
-                <gco:CharacterString>{{ abstract }}</gco:CharacterString>
-            </gmd:abstract>
-            <gmd:credit>
-                <!-- OPTIONAL: credit defining the project of the product  -->
-                <gco:CharacterString>Emodnet chemistry</gco:CharacterString>
-            </gmd:credit>
-            <!-- EMODNET CONTACT -->
-            <!-- originator of the product (responsible for processing and results) . From EDMO directory -->
-            <!-- Note: We could also define another pointOfContact xml block for the custodian contact (responsible for the data management for the product). This part is not present here. -->
-            <!-- The only difference in the xml block with the originator is that in the gmd:CI_RoleCode tag, the attribute "codeListValue" should be custodian instead of originator. -->
-
-            {{#contacts}}
-            <gmd:pointOfContact xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gsr="http://www.isotc211.org/2005/gsr">
-                <gmd:CI_ResponsibleParty xmlns:xslt="http://xml.apache.org/xslt" uuid="{{ EDMO_URL }}">
-                    <gmd:organisationName>
-                        <gco:CharacterString>{{ name }}</gco:CharacterString>
-                    </gmd:organisationName>
-                    <gmd:contactInfo>
-                        <gmd:CI_Contact>
-                            <gmd:phone>
-                                <gmd:CI_Telephone>
-                                    <gmd:voice>
-                                        <gco:CharacterString>{{ phone }}</gco:CharacterString>
-                                    </gmd:voice>
-                                    <gmd:facsimile>
-                                        <gco:CharacterString>{{ fax }}</gco:CharacterString>
-                                    </gmd:facsimile>
-                                </gmd:CI_Telephone>
-                            </gmd:phone>
-                            <gmd:address>
-                                <gmd:CI_Address>
-                                    <gmd:deliveryPoint>
-                                        <gco:CharacterString>{{ address }}</gco:CharacterString>
-                                    </gmd:deliveryPoint>
-                                    <gmd:city>
-                                        <gco:CharacterString>{{ city }}</gco:CharacterString>
-                                    </gmd:city>
-                                    <gmd:administrativeArea gco:nilReason="missing">
-                                        <gco:CharacterString/>
-                                    </gmd:administrativeArea>
-                                    <gmd:postalCode>
-                                        <gco:CharacterString>{{ zip }}</gco:CharacterString>
-                                    </gmd:postalCode>
-                                    <gmd:country>
-                                        <gco:CharacterString>{{ country }}</gco:CharacterString>
-                                    </gmd:country>
-                                    <gmd:electronicMailAddress>
-                                        <gco:CharacterString>{{ mail }}</gco:CharacterString>
-                                    </gmd:electronicMailAddress>
-                                </gmd:CI_Address>
-                            </gmd:address>
-                            <gmd:onlineResource>
-                                <gmd:CI_OnlineResource>
-                                    <gmd:linkage>
-                                        <gmd:URL>{{ website }}</gmd:URL>
-                                    </gmd:linkage>
-                                    <gmd:name>
-                                        <gco:CharacterString>web site</gco:CharacterString>
-                                    </gmd:name>
-                                    <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
-                                    </gmd:function>
-                                </gmd:CI_OnlineResource>
-                            </gmd:onlineResource>
-                        </gmd:CI_Contact>
-                    </gmd:contactInfo>
-                    <gmd:role>
-                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="{{ role }}"/>
-                    </gmd:role>
-                </gmd:CI_ResponsibleParty>
-            </gmd:pointOfContact>
-            {{/contacts}}
-            <!-- Quickview -->
-            <gmd:graphicOverview xmlns:srv="http://www.isotc211.org/2005/srv">
-                <gmd:MD_BrowseGraphic>
-                    <gmd:fileName>
-                        <gco:CharacterString>{{ preview }}</gco:CharacterString>
-                    </gmd:fileName>
-                    <gmd:fileDescription>
-                        <gco:CharacterString>large_thumbnail</gco:CharacterString>
-                    </gmd:fileDescription>
-                    <gmd:fileType>
-                        <gco:CharacterString>png</gco:CharacterString>
-                    </gmd:fileType>
-                </gmd:MD_BrowseGraphic>
-            </gmd:graphicOverview>
-            <gmd:descriptiveKeywords>
-                <!-- MANDATORY: constant, for INSPIRE compliance -->
-                <gmd:MD_Keywords>
-                    <gmd:keyword>
-                        <gmx:Anchor xlink:href="http://rdfdata.eionet.europa.eu/inspirethemes/themes/28">Oceanographic geographical features</gmx:Anchor>
-                    </gmd:keyword>
-                    <gmd:type>
-                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
-                    </gmd:type>
-                    <gmd:thesaurusName>
-                        <gmd:CI_Citation>
-                            <gmd:title>
-                                <gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
-                            </gmd:title>
-                            <gmd:date>
-                                <gmd:CI_Date>
-                                    <gmd:date>
-                                        <gco:DateTime>2009-09-22T07:57:15</gco:DateTime>
-                                    </gmd:date>
-                                    <gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
-                                    </gmd:dateType>
-                                </gmd:CI_Date>
-                            </gmd:date>
-                        </gmd:CI_Citation>
-                    </gmd:thesaurusName>
-                </gmd:MD_Keywords>
-            </gmd:descriptiveKeywords>
-            <gmd:descriptiveKeywords>
-                <!-- MANDATORY : ocean parameters processed in the current dataset (P02)   -->
-                <!-- http://vocab.nerc.ac.uk/collection/P02/current/                -->
-                <gmd:MD_Keywords xmlns:srv="http://www.isotc211.org/2005/srv">
-
-                    {{#P02_keywords}}
-                    <gmd:keyword>
-                        <gmx:Anchor xlink:href="{{ URL }}">{{ label }} </gmx:Anchor>
-                    </gmd:keyword>
-                    {{/P02_keywords}}
-                    {{^P02_keywords}}
-                    <gmd:keyword/>
-                    {{/P02_keywords}}
-
-                    <!-- 0 or n keyword may be used. If 0  => put <gmd:keyword/>  -->
-                    <gmd:type>
-                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="parameter"/>
-                    </gmd:type>
-                    <gmd:thesaurusName>
-                        <gmd:CI_Citation>
-                            <gmd:title>
-                                <gco:CharacterString>external.parameter.NVS.P02</gco:CharacterString>
-                            </gmd:title>
-                            <gmd:date>
-                                <gmd:CI_Date>
-                                    <gmd:date>
-                                        <gco:DateTime>{{ P02_date }}</gco:DateTime>
-                                    </gmd:date>
-                                    <gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-                                    </gmd:dateType>
-                                </gmd:CI_Date>
-                            </gmd:date>
-                        </gmd:CI_Citation>
-                    </gmd:thesaurusName>
-                </gmd:MD_Keywords>
-            </gmd:descriptiveKeywords>
-            <gmd:descriptiveKeywords>
-                <!-- MANDATORY : Ocean chemistry variable  -->
-                <!-- EMODNET chemistry lot aggregated parameter names    (NVS/P035)      -->
-                <!-- http://vocab.nerc.ac.uk/collection/P35/current/EPC00099/    -->
-                <!-- use rdf:about attribute for href                                   -->
-                <!-- use prefLabel text value for text                                  -->
-                <gmd:MD_Keywords>
-                   <!-- <gmd:keyword/> -->
-                    <!-- 0 or n keyword may be used. If 0  => put <gmd:keyword/>  -->
-
-                    <!-- Exemple of keyword : -->
-                    {{#P35_keywords}}
-                    <gmd:keyword>
-                        <gmx:Anchor xlink:href="{{ URL }}">{{ label }} </gmx:Anchor>
-                    </gmd:keyword>
-                    {{/P35_keywords}}
-                    {{^P35_keywords}}
-                    <gmd:keyword/>
-                    {{/P35_keywords}}
-
-                    <gmd:type>
-                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="parameter"/>
-                    </gmd:type>
-                    <gmd:thesaurusName>
-                        <gmd:CI_Citation>
-                            <gmd:title>
-                                <gco:CharacterString>external.parameter.NVS.P35</gco:CharacterString>
-                            </gmd:title>
-                            <gmd:date>
-                                <gmd:CI_Date>
-                                    <gmd:date>
-                                        <gco:DateTime>{{ P35_date }}</gco:DateTime>
-                                    </gmd:date>
-                                    <gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-                                    </gmd:dateType>
-                                </gmd:CI_Date>
-                            </gmd:date>
-                        </gmd:CI_Citation>
-                    </gmd:thesaurusName>
-                </gmd:MD_Keywords>
-            </gmd:descriptiveKeywords>
-            <gmd:descriptiveKeywords>
-                <!-- MANDATORY : sea areas covered by the current dataset  -->
-                <!-- http://vocab.nerc.ac.uk/collection/C19/current/                   -->
-                <!-- use rdf:about attribute for href                                   -->
-                <!-- use prefLabel text value for text                                  -->
-                <gmd:MD_Keywords xmlns:srv="http://www.isotc211.org/2005/srv">
-                    <!-- 0 or n keyword may be used. If 0  => put <gmd:keyword/>  -->
-
-                    {{#C19_keywords}}
-                    <gmd:keyword>
-                      <gmx:Anchor xlink:href="{{ URL }}">{{ label }}</gmx:Anchor>
-                    </gmd:keyword>
-                    {{/C19_keywords}}
-                    {{^C19_keywords}}
-                    <gmd:keyword/>
-                    {{/C19_keywords}}
-
-
-                    <!-- 0 or n keyword may be used. If 0  => put <gmd:keyword/>  -->
-                    <gmd:type>
-                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="reference-geographical-area"/>
-                    </gmd:type>
-                    <gmd:thesaurusName>
-                        <gmd:CI_Citation>
-                            <gmd:title>
-                                <gco:CharacterString>external.reference-geographical-area.NVS.C19</gco:CharacterString>
-                            </gmd:title>
-                            <gmd:date>
-                                <gmd:CI_Date>
-                                    <gmd:date>
-                                        <gco:DateTime>{{ C19_date }}</gco:DateTime>
-                                    </gmd:date>
-                                    <gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-                                    </gmd:dateType>
-                                </gmd:CI_Date>
-                            </gmd:date>
-                        </gmd:CI_Citation>
-                    </gmd:thesaurusName>
-                </gmd:MD_Keywords>
-            </gmd:descriptiveKeywords>
-            <gmd:resourceConstraints>
-                <gmd:MD_Constraints>
-                    <gmd:useLimitation>
-                        <!-- MANDATORY : licence under which the current dataset is release and can be used -->
-                        <!-- http://vocab.nerc.ac.uk/collection/L08/current/                                -->
-                        <!-- in href attribute use rdf:about attribute value                                -->
-                        <!-- in text value use prefLabel tag value                                          -->
-                       <!--  <gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/L08/current/LS/">SeaDataNet licence</gmx:Anchor> -->
-<gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/L08/current/UN/">unrestricted</gmx:Anchor>
-                    </gmd:useLimitation>
-                </gmd:MD_Constraints>
-            </gmd:resourceConstraints>
-
-            <!-- MANDATORY: constant, for INSPIRE compliance -->
-            <gmd:resourceConstraints>
-                <gmd:MD_LegalConstraints>
-                    <gmd:accessConstraints>
-                        <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
-                    </gmd:accessConstraints>
-                    <gmd:otherConstraints>
-                        <gco:CharacterString>no limitations</gco:CharacterString>
-                    </gmd:otherConstraints>
-                </gmd:MD_LegalConstraints>
-            </gmd:resourceConstraints>
-            <!-- MANDATORY : spatial resolution, distance in degrees of latitude/longitude or kilometres, stored as one float -->
-            <gmd:spatialResolution>
-                <gmd:MD_Resolution>
-                    <gmd:distance>
-                        <gco:Distance uom="{{ horizontal_resolution_units }}">{{ horizontal_resolution }}</gco:Distance>
-                    </gmd:distance>
-                </gmd:MD_Resolution>
-            </gmd:spatialResolution>
-            <gmd:language>
-                <gco:CharacterString>eng</gco:CharacterString>
-            </gmd:language>
-            <gmd:topicCategory>
-                <gmd:MD_TopicCategoryCode>oceans</gmd:MD_TopicCategoryCode>
-            </gmd:topicCategory>
-            <gmd:extent>
-                <gmd:EX_Extent>
-                    <gmd:description>
-                        <gco:CharacterString>bounding box</gco:CharacterString>
-                    </gmd:description>
-                    <!-- MANDATORY: geographical coverage of the dataset -->
-                    <gmd:geographicElement>
-                        <gmd:EX_GeographicBoundingBox>
-                            <gmd:westBoundLongitude>
-                                <gco:Decimal>{{ longitude_min }}</gco:Decimal>
-                            </gmd:westBoundLongitude>
-                            <gmd:eastBoundLongitude>
-                                <gco:Decimal>{{ longitude_max }}</gco:Decimal>
-                            </gmd:eastBoundLongitude>
-                            <gmd:southBoundLatitude>
-                                <gco:Decimal>{{ latitude_min }}</gco:Decimal>
-                            </gmd:southBoundLatitude>
-                            <gmd:northBoundLatitude>
-                                <gco:Decimal>{{ latitude_max }}</gco:Decimal>
-                            </gmd:northBoundLatitude>
-                        </gmd:EX_GeographicBoundingBox>
-                    </gmd:geographicElement>
-                    <!-- MANDATORY: temporal coverage of the dataset -->
-                    <gmd:temporalElement>
-                        <gmd:EX_TemporalExtent>
-                            <gmd:extent>
-                                <gml:TimePeriod gml:id="extent">
-                                    <gml:beginPosition>{{ time_min }}</gml:beginPosition>
-                                       <gml:endPosition>{{ time_max }}</gml:endPosition>
-                                    <!-- <gml:endPosition indeterminatePosition="unknown"/> -->
-                                </gml:TimePeriod>
-                            </gmd:extent>
-                        </gmd:EX_TemporalExtent>
-                    </gmd:temporalElement>
-                    <!-- OPTIONAL : vertical coverage of the dataset, in meter below sea surface (positive up)-->
-                    <gmd:verticalElement>
-                        <gmd:EX_VerticalExtent>
-                            <gmd:minimumValue>
-                                <gco:Real>{{ elevation_min }}</gco:Real>
-                            </gmd:minimumValue>
-                            <gmd:maximumValue>
-                                <gco:Real>{{ elevation_max }}</gco:Real>
-                            </gmd:maximumValue>
-                            <gmd:verticalCRS uuidref="http://spatialreference.org/ref/epsg/5714/"/>
-                        </gmd:EX_VerticalExtent>
-                    </gmd:verticalElement>
-                </gmd:EX_Extent>
-            </gmd:extent>
-        </gmd:MD_DataIdentification>
-    </gmd:identificationInfo>
-    <gmd:contentInfo>
-        <gmd:MD_FeatureCatalogueDescription xmlns:srv="http://www.isotc211.org/2005/srv">
-            <gmd:includedWithDataset>
-                <gco:Boolean>false</gco:Boolean>
-            </gmd:includedWithDataset>
-            <gmd:featureTypes>
-                            <!-- MANDATORY: type of the feature in the dataset                              -->
-                <!-- http://vocab.nerc.ac.uk/collection/L02/current/                    -->
-                <!-- (Grid series always except if only one time step in dataset, then Grid     -->
-                <!-- Issued from controlled vocabulary -->
-                <gco:LocalName codeSpace="{{ L02_URL }}">{{ L02_label }}</gco:LocalName>
-            </gmd:featureTypes>
-            <gmd:featureCatalogueCitation/>
-        </gmd:MD_FeatureCatalogueDescription>
-    </gmd:contentInfo>
-    <gmd:distributionInfo xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:date="http://exslt.org/dates-and-times" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <gmd:MD_Distribution>
-            <gmd:distributor>
-            <!--MANDATORY: DOI part -->
-                <gmd:MD_Distributor>
-                    <gmd:distributorContact/>
-                    <gmd:distributorFormat/>
-                    <gmd:distributorTransferOptions>
-                        <gmd:MD_DigitalTransferOptions>
-                            <gmd:onLine>
-                                <gmd:CI_OnlineResource>
-                                    <gmd:linkage>
-                                        <gmd:URL>{{ DOI_URL }}</gmd:URL>
-                                    </gmd:linkage>
-                                    <gmd:protocol>
-                                        <gco:CharacterString>WWW:LINK</gco:CharacterString>
-                                    </gmd:protocol>
-                                    <gmd:description>
-                                        <gco:CharacterString>Point of truth URL of this metadata record</gco:CharacterString>
-                                    </gmd:description>
-                                    <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
-                                    </gmd:function>
-                                </gmd:CI_OnlineResource>
-                            </gmd:onLine>
-                        </gmd:MD_DigitalTransferOptions>
-                    </gmd:distributorTransferOptions>
-                </gmd:MD_Distributor>
-            </gmd:distributor>
-            <!-- Online resources part (dépos GHER) -->
-            <gmd:distributor>
-            <!-- WMS link. The first gmd:online bloc is for the definition of the dataset. Then, one gmd:online per selected layer -->
-                <gmd:MD_Distributor>
-                    <gmd:distributorContact/>
-                    <gmd:distributorFormat/>
-                    <gmd:distributorTransferOptions>
-                        <gmd:MD_DigitalTransferOptions>
-                            <gmd:onLine>
-                            <!-- bloc for dataset description -->
-                                <gmd:CI_OnlineResource>
-                                    <gmd:linkage>
-                                        <gmd:URL>{{ WMS_dataset_getcap }}</gmd:URL>
-                                    </gmd:linkage>
-                                    <gmd:protocol>
-                                        <gco:CharacterString>OGC:WMS:getCapabilities</gco:CharacterString>
-                                    </gmd:protocol>
-                                    <gmd:name>
-                                        <gco:CharacterString>{{ WMS_dataset_layer }}</gco:CharacterString>
-                                    </gmd:name>
-                                    <gmd:description gco:nilReason="missing">
-                                        <gco:CharacterString/>
-                                    </gmd:description>
-                                    <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
-                                    </gmd:function>
-                                </gmd:CI_OnlineResource>
-                            </gmd:onLine>
-                            <!-- bloc for the layer selected -->
-                            <!-- n gmd:onLine may be used. Depends on the number of layers -->
-
-                            {{#WMS_layers}}
-                            <gmd:onLine>
-                                <gmd:CI_OnlineResource>
-                                    <gmd:linkage>
-                                        <gmd:URL>{{ getcap }}</gmd:URL>
-                                    </gmd:linkage>
-                                    <gmd:protocol>
-                                        <gco:CharacterString>OGC:WMS</gco:CharacterString>
-                                    </gmd:protocol>
-                                    <gmd:name>
-                                        <gco:CharacterString>{{ name }}</gco:CharacterString>
-                                    </gmd:name>
-                                    <gmd:description>
-                                        <gco:CharacterString>{{ description }}</gco:CharacterString>
-                                    </gmd:description>
-                                    <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
-                                    </gmd:function>
-                                </gmd:CI_OnlineResource>
-                            </gmd:onLine>
-                            {{/WMS_layers}}
-                        </gmd:MD_DigitalTransferOptions>
-                    </gmd:distributorTransferOptions>
-                </gmd:MD_Distributor>
-            </gmd:distributor>
-            <gmd:distributor>
-            <!-- NetCDF file part -->
-                <gmd:MD_Distributor>
-                    <gmd:distributorContact/>
-                    <gmd:distributorFormat/>
-                    <gmd:distributorTransferOptions>
-                        <gmd:MD_DigitalTransferOptions>
-                            <gmd:onLine>
-                                <gmd:CI_OnlineResource>
-                                    <gmd:linkage>
-                                        <gmd:URL>{{ NetCDF_URL }} </gmd:URL>
-                                    </gmd:linkage>
-                                    <gmd:protocol>
-                                        <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
-                                    </gmd:protocol>
-                                    <gmd:name>
-                                        <gco:CharacterString>NetCDF file</gco:CharacterString>
-                                    </gmd:name>
-                                    <gmd:description>
-                                        <gco:CharacterString>{{ NetCDF_URL_description }}</gco:CharacterString>
-                                    </gmd:description>
-                                    <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
-                                    </gmd:function>
-                                </gmd:CI_OnlineResource>
-                            </gmd:onLine>
-                        </gmd:MD_DigitalTransferOptions>
-                    </gmd:distributorTransferOptions>
-                </gmd:MD_Distributor>
-            </gmd:distributor>
-            <gmd:distributor>
-            <!-- OpeNDAP part -->
-                <gmd:MD_Distributor>
-                    <gmd:distributorContact/>
-                    <gmd:distributorFormat/>
-                    <gmd:distributorTransferOptions>
-                        <gmd:MD_DigitalTransferOptions>
-                            <gmd:onLine>
-                                <gmd:CI_OnlineResource>
-                                    <gmd:linkage>
-                                        <gmd:URL>{{ OPENDAP_URL }}</gmd:URL>
-                                    </gmd:linkage>
-                                    <gmd:protocol>
-                                        <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
-                                    </gmd:protocol>
-                                    <gmd:name>
-                                        <gco:CharacterString>OpeNDAP</gco:CharacterString>
-                                    </gmd:name>
-                                    <gmd:description>
-                                        <gco:CharacterString>{{ OPENDAP_description }}</gco:CharacterString>
-                                    </gmd:description>
-                                    <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue=""/>
-                                    </gmd:function>
-                                </gmd:CI_OnlineResource>
-                            </gmd:onLine>
-                        </gmd:MD_DigitalTransferOptions>
-                    </gmd:distributorTransferOptions>
-                </gmd:MD_Distributor>
-            </gmd:distributor>
-        </gmd:MD_Distribution>
-    </gmd:distributionInfo>
-    <!-- MANDATORY: constant, for INSPIRE compliance -->
-    <gmd:dataQualityInfo>
-        <gmd:DQ_DataQuality>
-            <gmd:scope>
-                <gmd:DQ_Scope>
-                    <gmd:level>
-                        <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="series"/>
-                    </gmd:level>
-                </gmd:DQ_Scope>
-            </gmd:scope>
-            <gmd:report>
-                <gmd:DQ_DomainConsistency>
-                    <gmd:result>
-                        <gmd:DQ_ConformanceResult>
-                            <gmd:specification>
-                                <gmd:CI_Citation>
-                                    <gmd:title>
-                                        <gco:CharacterString>COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services</gco:CharacterString>
-                                    </gmd:title>
-                                    <gmd:date>
-                                        <gmd:CI_Date>
-                                            <gmd:date>
-                                                <gco:Date>2010-12-08</gco:Date>
-                                            </gmd:date>
-                                            <gmd:dateType>
-                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-                                            </gmd:dateType>
-                                        </gmd:CI_Date>
-                                    </gmd:date>
-                                </gmd:CI_Citation>
-                            </gmd:specification>
-                            <gmd:explanation>
-                                <gco:CharacterString>See the referenced specification</gco:CharacterString>
-                            </gmd:explanation>
-                            <gmd:pass gco:nilReason="inapplicable"/>
-                        </gmd:DQ_ConformanceResult>
-                    </gmd:result>
-                </gmd:DQ_DomainConsistency>
-            </gmd:report>
-            <gmd:lineage>
-                <gmd:LI_Lineage>
-                    <gmd:statement>
-                        <gco:CharacterString>The data used as input for this product have been extracted from the Emodnet Download Service: http://www.seadatanet.org/Data-Access/Common-Data-Index-CDI</gco:CharacterString>
-                    </gmd:statement>
-                </gmd:LI_Lineage>
-            </gmd:lineage>
-        </gmd:DQ_DataQuality>
-    </gmd:dataQualityInfo>
+              </gmd:specification>
+              <gmd:explanation>
+                <gco:CharacterString>See the referenced specification</gco:CharacterString>
+              </gmd:explanation>
+              <gmd:pass gco:nilReason="inapplicable" />
+            </gmd:DQ_ConformanceResult>
+          </gmd:result>
+        </gmd:DQ_DomainConsistency>
+      </gmd:report>
+      <gmd:lineage>
+        <gmd:LI_Lineage>
+          <gmd:statement>
+            <gco:CharacterString>The data used as input for this product have been extracted from the EMODnet Chemistry Download Service: http://emodnet-chemistry.maris2.nl/v_cdi_v3/search.asp</gco:CharacterString>
+          </gmd:statement>
+        </gmd:LI_Lineage>
+      </gmd:lineage>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
 </gmd:MD_Metadata>

@@ -1,3 +1,36 @@
+
+"""
+    checkresolution(mask,pmn,len)
+
+Returns a warning of the resolution is too coarse relative to the correlation
+length. The resolution must be at least 2 times finer than the correlation
+length.
+"""
+function checkresolution(mask,pmn::NTuple{N,Array{T1,N}},len::NTuple{N,Array{T2,N}}) where {N,T1,T2}
+    for i = 1:length(pmn)
+        for j in CartesianIndices(pmn[i])
+            if ((pmn[i][j] * len[i][j] <= 2) && mask[j]) && (len[i][j] != 0.0)
+                res = 1/pmn[i][j]
+                @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping future tests). It is recommended that the resolution is at least 2 times finer than the correlation length."
+                break
+            end
+        end
+    end
+end
+
+checkresolution(mask,pmn,len) = checkresolution(mask,pmn,len_harmonize(len,mask))
+
+
+function checkdepth(depthr)
+    if length(unique(depthr)) !== length(depthr)
+        error("Depth levels should be unique $(depth)")
+    end
+
+    if any(depthr[2:end] .<= depthr[1:end-1])
+        error("Depth levels should increase monotonically")
+    end
+end
+
 """
     cfilled = ufill(c,valex)
 
@@ -204,8 +237,98 @@ for k = 1:kmax
 end
 end
 
+"""
+    directions = vonNeumannNeighborhood(mask)
 
+Return a vector will all search directions corresponding to the Von Neumann
+neighborhood in N dimensions where N is the dimension of the boolean array
+`mask`.
+"""
+function vonNeumannNeighborhood(mask::AbstractArray{Bool,N}) where N
+    return [CartesianIndex(ntuple(i -> (i == j ? s : 0),Val(N))) for j = 1:N for s in [-1,1]]
+end
 
+"""
+    m = floodfillpoint(mask,I,directions)
+
+Fill the binary mask starting at index `I` (`CartesianIndex`). All element
+directly connected to the starting location `I` will be `true` without crossing
+any element equal to `false` in `mask`. Per default the value of `I` is the
+first true element in `mask` and `directions ` correspond to the Von Neumann
+neighborhood.
+"""
+function floodfillpoint(mask,I = findfirst(mask),directions = vonNeumannNeighborhood(mask))
+    m = falses(size(mask))
+
+    m[I] = true
+
+    anyflip = true
+
+    CI =
+        @static if VERSION >= v"0.7"
+            CartesianIndices(size(m))
+        else
+            CartesianRange(size(m))
+        end
+
+    while anyflip
+        anyflip = false
+
+        for I in CI
+            if m[I]
+                for dir = directions
+
+                    i1 = I+dir
+                    if checkbounds(Bool, m, i1)
+                        if mask[i1] && !m[i1]
+                            m[i1] = true
+                            anyflip = true
+                        end
+                    end
+                end
+            end
+        end
+
+        if !anyflip
+            break
+        end
+    end
+    return m
+end
+
+"""
+    label = floodfill(mask)
+
+Attribute an integer number (a numeric label) to every element in mask such that
+all grid points connected by a von Neumann neighborhood (without crossing
+elements which are `false` in mask) have the same label.
+Labels are sorted such that the label 1 corresponds to the largest area, label 2
+the 2nd largest and so on.
+"""
+function floodfill(mask,directions = vonNeumannNeighborhood(mask))
+    m = copy(mask)
+    index = zeros(Int,size(mask))
+    area = Int[]
+
+    l = 0
+    while any(m)
+        l = l+1
+        ml = floodfillpoint(m, findfirst(m), directions)
+        index[ml] .= l
+        m[ml] .= false
+        push!(area,sum(ml))
+    end
+
+    sortp = sortperm(area; rev = true)
+    for I in eachindex(index)
+        tmp = index[I]
+        if tmp != 0
+            index[I] = sortp[tmp]
+        end
+    end
+
+    return index
+end
 
 """
     hx,hy = cgradient(pmn,h)
@@ -525,7 +648,7 @@ function backgroundfile(fname,varname)
     v = ds[varname]
     x = (lon,lat,depth)
 
-    return function (xi,n,value,trans)
+    return function (xi,n,value,trans; selection = [], obstime = nothing)
 
         vn = zeros(size(v[:,:,:,n]))
         vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
@@ -538,5 +661,113 @@ function backgroundfile(fname,varname)
     end
 end
 
+"""
+    fun = backgroundfile(fname,varname,TS)
+
+Return a function `fun` which is used in DIVAnd to make
+anomalies out of observations based relative to the field
+defined in the NetCDF variable `varname` in the NetCDF file
+`fname`. It is assumed that the NetCDF variables has the variable
+`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the
+same grid as the analysis and was generated according to the provided time selector
+`TS` (TimeSelectorYearListMonthList or TimeSelectorRunningAverage).
+
+"""
+function backgroundfile(fname,varname,
+                        TS::Union{TimeSelectorYearListMonthList,TimeSelectorRunningAverage,AbstractTimeSelector})
+
+    ds = Dataset(fname)
+    lon = nomissing(ds["lon"][:])
+    lat = nomissing(ds["lat"][:])
+    depth = nomissing(ds["depth"][:])
+
+    v = ds[varname]
+    x = (lon,lat,depth)
+    TSbackground  = TS
+
+    return function (xi,n,value,trans; selection = [], obstime = nothing)
+        # check which background estimate has the best overlap
+        overlap = zeros(Int,length(TSbackground))
+        for timeindex = 1:length(TSbackground)
+            sel = select(TSbackground,timeindex,obstime)
+            overlap[timeindex] = sum(selection .& sel)
+        end
+
+        nbackground = findmax(overlap)[2]
+
+        @info "analysis time index $n uses the backgrond time index $nbackground"
+
+        vn = zeros(size(v[:,:,:,nbackground]))
+        vn .= map((x -> ismissing(x) ? NaN : x), v[:,:,:,nbackground])
+
+        vn .= trans.(DIVAnd.ufill(vn,.!isnan.(vn)))
+        fi = DIVAnd.interp(x,vn,xi)
+
+        return vn,value - fi
+    end
+end
+
 
 dayssince(dt; t0 = DateTime(1900,1,1)) = Dates.value.(dt - t0)/1000/60/60/24;
+
+
+
+
+function _diffusionfix!(ivol,nus,α,nmax,x0,x)
+    work1 = similar(x)
+    x[:] = x0
+
+    for niter = 1:nmax
+        DIVAnd.DIVAnd_laplacian_apply!(ivol,nus,x,work1)
+        for i in 1:length(x0)
+           if x0[i] != 0
+              x[i] = x[i] + α * work1[i]
+           end
+         end
+    end
+
+end
+
+
+"""
+    mergedfield = hmerge(field,L)
+
+Merge several `field[:,:,1]`, `field[:,:,2]`,... into a single 2d field
+`mergedfield` values equal to NaN are ignored. This function is typically used
+to merge different DIVAnd anayses.
+"""
+function hmerge(f,L)
+    # L ∼ (α * nmax)²
+    # nmax ∼ √(L)/α
+
+    weight0 = Float64.(isfinite.(f));
+
+    mask,pmn = DIVAnd.DIVAnd_rectdom(1:size(f,1),1:size(f,2))
+    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,(ones(size(mask)),ones(size(mask))))
+
+    α = 0.1;
+    nmax = round(Int,sqrt(L)/α)
+    @debug "nmax: $(nmax)"
+
+    #nmax = 20;
+    weight = similar(weight0);
+
+    for k = 1:size(weight,3)
+        wk0 = @view weight0[:,:,k]
+        wk = @view weight[:,:,k]
+
+        _diffusionfix!(ivol,nus,α,nmax,wk0,wk)
+    end
+    f[.!isfinite.(f)] .= 0
+
+    weight = weight.^2;
+
+    f2 =
+        if VERSION >= v"0.7.0-beta.0"
+            (sum(weight .* f, dims = 3) ./ sum(weight, dims = 3))[:,:,1]
+        else
+            (sum(weight .* f, 3) ./ sum(weight, 3))[:,:,1]
+        end
+
+    return f2
+end

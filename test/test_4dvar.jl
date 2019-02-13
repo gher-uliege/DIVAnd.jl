@@ -12,17 +12,17 @@ fun(x,y,z,t) = sin(k*x) * sin(k*y) * sin(k*z) * sin(k*t)
 
 # grid of background field
 mask,(pm,pn,po,pp),(xi,yi,zi,ti) = DIVAnd_squaredom(4,
-    Compat.range(0,stop=1,length=7))
+    range(0,stop=1,length=7))
 
 fi_ref = fun.(xi,yi,zi,ti)
 
 # grid of observations
 ϵ = eps()
 
-x,y,z,t = ndgrid(Compat.range(ϵ, stop=1-ϵ, length=5),
-                 Compat.range(ϵ, stop=1-ϵ, length=5),
-                 Compat.range(ϵ, stop=1-ϵ, length=5),
-                 Compat.range(ϵ, stop=1-ϵ, length=5));
+x,y,z,t = ndgrid(range(ϵ, stop=1-ϵ, length=5),
+                 range(ϵ, stop=1-ϵ, length=5),
+                 range(ϵ, stop=1-ϵ, length=5),
+                 range(ϵ, stop=1-ϵ, length=5));
 
 x = x[:];
 y = y[:];

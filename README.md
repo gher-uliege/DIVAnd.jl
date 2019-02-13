@@ -9,7 +9,9 @@
 <!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)-->
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
 
-`DIVAnd` performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
+[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
+
+`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
 
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
@@ -20,20 +22,36 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-Under Linux you will also need the packages `make`, `gcc`, `netcdf` and `nlopt` which you can install under Debian/Ubuntu with:
+Under Linux you will also need the packages `make`, `gcc` and `netcdf` which you can install under Debian/Ubuntu with:
 
 ```bash
-apt-get install make gcc libnlopt0 libnetcdf-dev netcdf-bin
+apt-get install make gcc libnetcdf-dev netcdf-bin
 ```
 
-You need [Julia](http://julialang.org) (version 0.6) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 0.6 or 1.0) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
-Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl")
+using Pkg
+Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+```
+
+For Julia 0.6, you can use the following:
+```julia
+Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl") # only for Julia 0.6
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
+
+
+# Updating DIVAnd
+
+To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
+
+```julia
+Pkg.update()
+```
+
 
 # Testing
 
@@ -78,12 +96,12 @@ fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
 
 ```
 where
-`mask` is the land-sea mask, usually obtained from the bathymetry/topography,     
-`(pm,pn,po,pq)` is a *n*-element tuple (4 in this case) containing the scale factors of the grid,     
-`(xi,yi,zi,ti)` is a *n*-element tuple containing the coordinates of the final grid,       
-`(x,y,z,t)` is a *n*-element tuple containing the coordinates of the observations,        
-`f` is the data anomalies (with respect to a background field),         
-`len` is the correlation length and      
+`mask` is the land-sea mask, usually obtained from the bathymetry/topography,
+`(pm,pn,po,pq)` is a *n*-element tuple (4 in this case) containing the scale factors of the grid,
+`(xi,yi,zi,ti)` is a *n*-element tuple containing the coordinates of the final grid,
+`(x,y,z,t)` is a *n*-element tuple containing the coordinates of the observations,
+`f` is the data anomalies (with respect to a background field),
+`len` is the correlation length and
 `epsilon2` is the error variance of the observations.
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
@@ -103,9 +121,9 @@ If zero is not a valid first guess for your variable (as it is the case for e.g.
 
 ## Determining the analysis parameters
 
-The parameter `epsilon2` and parameter `len` are crucial for the analysis.  
+The parameter `epsilon2` and parameter `len` are crucial for the analysis.
 
-`epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.      
+`epsilon2` corresponds to the inverse of the [signal-to-noise ratio](https://en.wikipedia.org/wiki/Signal-to-noise_ratio). `epsilon2` is the normalized variance of observation error (i.e. divided by the background error variance). Therefore, its value depends on how accurate and how representative the observations are.
 `len` corresponds to the correlation length and the value of `len` can sometimes be determined by physical arguments. Note that there should be one correlation length per dimension of the analysis.
 
 One statistical way to determine the parameter(s) is to do a [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29).
@@ -148,9 +166,9 @@ Thanks to Lennert and Bart (VLIZ) for this trick.
 
 # Example data
 
-Some examples in `DIVAnd.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://b2drop.eudat.eu/s/wWelpGU8B927hlK/download. The zip file should be decompressed and the directory `DIVAnd-example-data` should be placed on the same level than the directory `DIVAnd.jl`.
+Some examples in `DIVAnd.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://dox.ulg.ac.be/index.php/s/Bo01EicxnMgP9E3/download. The zip file should be decompressed and the directory `DIVAnd-example-data` should be placed on the same level than the directory `DIVAnd.jl`.
 
 
 # Fun
 
-An [educational web application](http://data-assimilation.net/Tools/DIVAnd_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
+An [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.

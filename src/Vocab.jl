@@ -249,6 +249,10 @@ function findbylabel(collection::Vocab.Collection,labels::Vector{T}) where T <: 
 
     for i = 1:length(labels)
         index = findfirst(alllabels .== labels[i])
+
+        if (index == 0) || (index == nothing)
+            error("Label $(labels[i]) is not found in collection $(collection.baseurl)")
+        end
         foundconcepts[i] = concepts[index]
     end
 

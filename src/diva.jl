@@ -44,15 +44,20 @@ NetCDF file `filename` under the variable `varname`.
 * `ncglobalattrib`: dictionary of NetCDF global attributes.
 * `transform`: Anamorphosis transformation function (default: `Anam.notransform()`).
 * `fitcorrlen`: true of the correlation length is determined from the observation (default `false`).
+     Note that the parameter `len` is interpreted differently when `fitcorrlen` is set to `true`.
 * `fithorz_param`: dictionary with additional optional parameters for `fithorzlen`.
 * `fitvert_param`: dictionary with additional optional parameters for `fitvertlen`.
 * `distfun`: function to compute the distance (default `(xi,xj) -> DIVAnd.distance(xi[2],xi[1],xj[2],xj[1])`).
 * `mask`: if different from `nothing`, then this mask overrides land-sea mask based on the bathymetry
 (default `nothing`).
 * `background`: if different from `nothing`, then this parameter allows one
-to load the background from a call-back function
-(default `nothing`).
-* `background_espilon2_factor`: multiplication for `epsilon2` when computing the background (default 10.).
+to load the background from a call-back function (default `nothing`). The call-back functions has the parameters
+`(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
+(possibly transformed) and `trans` the transformation function. The output of this function is the
+gridded background field and the observations minus the background field.
+* `background_espilon2_factor`: multiplication for `epsilon2` when computing a
+   vertical profile as a background estimate (default 10.). This parameter is not used
+   when the parameter `background` is provided.
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
@@ -61,7 +66,6 @@ to load the background from a call-back function
 * `niter_e`: Number of iterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
-
 Any additional keywoard arguments understood by `DIVAndgo` can also be used here
 (e.g. velocity constrain)
 
@@ -110,6 +114,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         else
             (xi[1],xi[2],Float64[0.],xi[3])
         end
+
+    checkdepth(depthr)
 
     # metadata of observations
     lon,lat,depth,time =
@@ -289,7 +295,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 else
                     # anamorphosis transform must already be included to the
                     # background
-                    background(xsel,timeindex,value_trans,trans)
+                    background(xsel,timeindex,value_trans,trans;
+                               selection = sel, obstime = time)
                 end
 
             # the background is not computed for points outside of the domain
@@ -318,6 +325,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                             len_scaled[2][i,j] = len0[2][i,j] * lenxy1[1]
                         end
                     end
+
+                    for i = 1:2
+                        @info "scaled correlation length (min,max) in $i dimension: $(extrema(len_scaled[i]))"
+                    end
                 end
 
                 if n == 4
@@ -341,6 +352,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                             end
                         end
                     end
+
+                    for i = 1:3
+                        @info "scaled correlation length (min,max) in dimension $i: $(extrema(len_scaled[i]))"
+                    end
                 end
             end
 
@@ -363,6 +378,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     else
                         :none,kwargs_without_qcm
                     end
+
+                # check the resolution
+                checkresolution(mask,pmn,len_scaled)
 
                 # analysis
                 fi2, erri, residual, qcdata, scalefactore =

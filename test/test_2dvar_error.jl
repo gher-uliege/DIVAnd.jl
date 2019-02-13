@@ -8,7 +8,7 @@ end
 
 # grid of background field (its size should be odd)
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,Compat.range(0, stop = 1, length = 9))
+    2,range(0, stop = 1, length = 9))
 
 # grid of observations
 x = [0.5]

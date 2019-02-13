@@ -1,9 +1,13 @@
 using NCDatasets
 using Missings
 import DIVAnd
+if VERSION >= v"0.7.0-beta.0"
+    using Test
+else
+    using Base.Test
+end
 
 NCSDN = DIVAnd.NCSDN
-
 basedir = joinpath(@__DIR__,"..","data")
 
 fname = joinpath(basedir,"netCDF_vertical_profiles_ctd.nc")

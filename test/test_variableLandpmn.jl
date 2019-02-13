@@ -16,7 +16,7 @@ f=ones(3)
 
 # final grid
 mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-    Compat.range(0,stop=6,length=15),Compat.range(0,stop=5,length=15))
+    range(0,stop=6,length=15),range(0,stop=5,length=15))
 
 # correlation length
 len = 1;

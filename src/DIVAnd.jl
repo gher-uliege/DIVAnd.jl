@@ -13,6 +13,7 @@ import Mustache
 import ZipFile
 using Missings
 using StatsBase
+#import JLD2, FileIO
 
 if VERSION >= v"0.7.0-beta.0"
     using Printf
@@ -43,7 +44,7 @@ else
     const mul! = A_mul_B!
 
     using Compat: @info, @warn, @debug
-    using Compat: stdout
+    using Compat: stdout, range
 
     macro distributed(expr)
         return :( @parallel $(esc(expr)) )
@@ -300,7 +301,8 @@ end
 
 
 """
-Len = len_harmonise(len,mask)
+    Len = len_harmonise(len,mask)
+
 Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
 a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
 """
@@ -458,9 +460,12 @@ export Anam
 include("ODVspreadsheet.jl");
 export ODVspreadsheet
 
-# ODV support
+# NetCDF support
 include("NCSDN.jl");
 export NCSDN
+
+include("NCODV.jl");
+export NCODV
 
 # Vocabulary
 include("Vocab.jl");
@@ -488,6 +493,7 @@ include("DIVAnd_datainboundingbox.jl")
 include("DIVAnd_cpme_go.jl")
 
 include("scaleseparation.jl")
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 

@@ -250,7 +250,7 @@ function ncfile(ds,filename,xyi,varname;
     ds.attrib["Conventions"] = "CF-1.6"
     ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
     ds.attrib["file_name"] = filename
-    ds.attrib["product_id"] =  repr(uuid1())
+    ds.attrib["product_id"] =  string(uuid1())
     ds.attrib["date"] = Dates.format(now(),"yyyy-mm-ddTHH:MM:SS")
 
     for (k,v) in ncglobalattrib
@@ -451,6 +451,7 @@ end
     DIVAnd.saveobs(filename,varname,value,xy,ids;
                    type_save = Float32,
                    timeorigin = DateTime(1900,1,1,0,0,0),
+                   used = trues(size(ids)),
                    )
 
 Save `value` and the location and time of the observation in the NetCDF file `filename` and
@@ -484,7 +485,7 @@ function saveobs(filename,varname,value,xy,ids;
     ds = Dataset(filename,"a")
     ncobs = defVar(ds,varname, type_save, ("observations",),
                    checksum = checksum)
-    ncobs[:] = value
+    ncobs[:] = value[used]
     close(ds)
 
 end

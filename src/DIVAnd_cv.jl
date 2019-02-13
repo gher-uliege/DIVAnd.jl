@@ -82,7 +82,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
     # sample multiplication factor to optimise in log space
     if nl>0
-        logfactorsl=collect(Compat.range(-worderl,stop=worderl,length=2*nl+1));
+        logfactorsl=collect(range(-worderl,stop=worderl,length=2*nl+1));
     else
         logfactorsl=[0]
     end
@@ -90,7 +90,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 
     if ne>0
-        logfactorse=collect(Compat.range(-wordere,stop=wordere,length=2*ne+1));
+        logfactorse=collect(range(-wordere,stop=wordere,length=2*ne+1));
     else
         logfactorse=[0]
     end
@@ -248,7 +248,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     if nl==0
 
         # interpolate only on epsilon
-        epsilon2inter=collect(Compat.range(-wordere*1.1,stop=1.1*wordere,length=101))
+        epsilon2inter=collect(range(-wordere*1.1,stop=1.1*wordere,length=101))
         maskcv = trues(size(epsilon2inter))
         pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
         lenin = wordere;
@@ -271,7 +271,7 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 if ne==0
 
     # interpolate only on L
-    linter=collect(Compat.range(-worderl*1.1,stop=1.1*worderl,length=101))
+    linter=collect(range(-worderl*1.1,stop=1.1*worderl,length=101))
     maskcv = trues(size(linter))
     pmcv = ones(size(linter)) / (linter[2]-linter[1])
     lenin = worderl;
@@ -296,8 +296,8 @@ end
 # Otherwise 2D
 
 maskcv,(pm2D,pn2D),(xi2D,yi2D) = DIVAnd_rectdom(
-    Compat.range(-worderl*1.1,stop=worderl*1.1,length=71),
-    Compat.range(-wordere*1.1,stop=wordere*1.1,length=71))
+    range(-worderl*1.1,stop=worderl*1.1,length=71),
+    range(-wordere*1.1,stop=wordere*1.1,length=71))
 
 # correlation length
 lenin = (worderl,wordere);

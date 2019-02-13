@@ -5,6 +5,8 @@ using Missings
 
 if VERSION >= v"0.7.0-beta.0"
     using Dates
+else
+    using Compat: @info, @warn, @debug
 end
 using Compat
 
@@ -81,7 +83,70 @@ function loadvar(ds,param;
 end
 
 """
-    data,lon,lat,z,time,ids = load(T,fname::TS,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE]) where TS <: AbstractString
+loadvar_byprof(ds,param;
+                 fillvalue::T = NaN,
+                 qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],
+                 qfname = param * "_qc",
+                 )
+
+Load the netCDF variable `param` from the NCDataset `ds`.
+
+"""
+function loadvar_byprof(ds::Dataset,param::String;
+                 fillvalue::T = NaN,
+                 qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],
+                 qfname = param * "_qc",
+                 ) where T
+
+    if !(param in ds)
+        @debug "No data for variable $(param)"
+        return T[]
+    end
+
+    # Get dimensions
+    nstations, nsamples = size(ds[param])
+    @debug "Size: $(nsamples) samples × $(nstations) stations"
+
+    # Allocate an empty array of the right type
+    dtype = typeof(ds[param][1,1])
+    data = Float64[]
+
+    # Loop on the samples
+    for i = 1:nsamples
+        append!(data, collect(skipmissing(ds[param][:,i])));
+    end;
+
+    # Load the QF values
+    @info "Trying to load QF values"
+    if qfname in ds
+
+        @debug "$(qfname) exists in the Dataset"
+        @info "Keeping only data with specified QF"
+        qf = Int8[];
+        for i = 1:nsamples
+            append!(qf, collect(skipmissing(ds[qfname][:,i])));
+        end;
+
+        @debug "here"
+        keep_data = falses(size(qf))
+
+        @debug "Loop on the quality flags"
+        for flag in qualityflags
+            keep_data[:] =  keep_data .| (qf .== flag[1])
+        end
+
+        @debug "Use fill value"
+        data[(.!keep_data)] .= fillvalue
+    else
+        @debug "$(qfname) doesn't exist in the Dataset"
+    end
+
+    return data;
+end
+
+"""
+    obsvalue,obslon,obslat,obsdepth,obstime,obsids = load(T,
+      fname,param; qualityflags = [GOOD_VALUE, PROBABLY_GOOD_VALUE])
 
 
 """

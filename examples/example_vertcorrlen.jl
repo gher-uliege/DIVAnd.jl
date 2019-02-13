@@ -14,7 +14,7 @@ varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
 if !isfile(filename)
-    download("https://b2drop.eudat.eu/s/UsF3RyU3xB1UM2o/download",filename)
+    download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download",filename)
 end
 
 value,lon,lat,depth,time,ids = DIVAnd.loadobs(Float64,filename,"Salinity")
