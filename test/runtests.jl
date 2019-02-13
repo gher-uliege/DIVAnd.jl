@@ -55,10 +55,12 @@ include("gen_example_file.jl");
     include("test_2dvar_obs_out.jl")
 
     include("test_derivative2.jl")
+    include("test_2dvar_edge.jl")
+
     include("test_ndvar_point_cmp.jl")
 
     # cross-validation
-    include("test_2dvar_cv.jl"); # problematic
+    include("test_2dvar_cv.jl");
 
     include("test_2dvar_matfun.jl");
     include("test_2dvar_qc.jl");

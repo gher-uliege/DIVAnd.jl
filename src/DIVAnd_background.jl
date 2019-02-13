@@ -168,6 +168,8 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 
 	# mean correlation legth
 	s.Ld = Ld
+    s.coeff_derivative2 = coeff_derivative2
+    s.coeff_laplacian = coeff_laplacian
 
 	iB = DIVAnd_background_components(
         s,D,alpha,btrunc=btrunc,coeff_derivative2=coeff_derivative2)

@@ -93,6 +93,8 @@ mutable struct DIVAnd_struct{T,Ti,N,OT}
     WEss::Vector{OT}
     Dx::NTuple{N,AbstractMatrix{T}}
     alpha::Vector{T}
+    coeff_laplacian::Vector{T}
+    coeff_derivative2::Vector{T}
     iB::OT
     #iB_::Vector{Any}
     iB_
@@ -137,6 +139,8 @@ end
         moddim = Float64[]
         iscyclic = convert(Vector{Bool},falses(n))
         alpha = Float64[]
+        coeff_laplacian = Float64[]
+        coeff_derivative2 = Float64[]
         yo = Float64[]
         R = Diagonal(Float64[])
         H = sparse(Int[],Int[],Float64[],0,0)
@@ -196,6 +200,8 @@ end
             WEss,
             Dx,
             alpha,
+            coeff_laplacian,
+            coeff_derivative2,
             iB,
             iB_,
             Ld,
