@@ -50,6 +50,16 @@ fi2,s2 = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha,
 @test fi ≈ fi2 rtol=0.3
 
 
+btrunc = []
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha, btrunc = btrunc)
+x = pack(s.sv,(fi,))
+iBx1 = s.iB * x
+
+btrunc = 2
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha, btrunc = btrunc)
+iBx2 = DIVAnd.jmBix(s,x,btrunc=btrunc)
+
+@test iBx2 ≈ iBx1 atol=1e-7
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>

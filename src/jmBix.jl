@@ -1,11 +1,9 @@
 function jmBix(s,x::Array{Float64,1};btrunc=[])
-
     iBx=s.iB*x   ::Array{Float64,1}
 
     if btrunc==[]
         return iBx
     end
-
 
     #WE = s.WE;
     coeff = s.coeff;
@@ -33,20 +31,17 @@ function jmBix(s,x::Array{Float64,1};btrunc=[])
 			Dk=s.D^k
 			Dkx=Dk*x ::Array{Float64,1}
 
+            # see dirty hack in DIVAnd_background_components
+
+            #=
             for i=1:n
-			    #? Not take up ?
 			    if s.Ld[i]>0
-                    #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
-                    #                iBx_ = iBx_ + Dx'*(Dx*x);
-				    #@show i
-                    #@time Dx = s.WEss[i] * s.Dx[i];
-                    # maybe gain if Dk=Dk'? Check with alex if s.Wess is diagonal
-                    #iBx_ = iBx_ + Dk'*(Dx'*(Dx*Dkx));
-				    #iBx_ = iBx_ + (s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i]*Dkx))));
 				    iBx_ = iBx_ + (s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i]*Dkx))));
-				    #iBx_ = iBx_ + (Dx'*(Dx*Dkx));
 				end
 			end
+            =#
+			iBx_ = iBx_ + s.WEss[1]*Dkx
+
 			if k>0
 				iBx_=Dk'*iBx_
 			end
