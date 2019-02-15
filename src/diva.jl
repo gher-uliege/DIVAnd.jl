@@ -121,6 +121,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
     checkdepth(depthr)
 
+    if niter_e < 1
+        error("niter_e (currently $niter_e) should be larger than 1")
+    end
+
     # metadata of observations
     lon,lat,depth,time =
         if length(xi) == 4
