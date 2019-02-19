@@ -48,6 +48,10 @@ latr = 42.0:dy:44.0
 depthr = [0.,20.]
 epsilon2 = 0.01
 
+# put one point on land
+index_land_point = 897297
+obslat[index_land_point] = 43.6333
+obslon[index_land_point] = 6
 
 sz = (length(lonr),length(latr),length(depthr))
 
@@ -275,4 +279,7 @@ dbinfo =
         )
     end
 
+@test isnan(dbinfo[:residuals][index_land_point])
+
 nothing
+
