@@ -53,6 +53,10 @@ index_land_point = 897297
 obslat[index_land_point] = 43.6333
 obslon[index_land_point] = 6
 
+# put one to NaN
+index_NaN = 897298
+obsvalue[index_NaN] = NaN
+
 sz = (length(lonr),length(latr),length(depthr))
 
 lenx = fill(200_000,sz)
@@ -280,6 +284,8 @@ dbinfo =
     end
 
 @test isnan(dbinfo[:residuals][index_land_point])
+@test isnan(dbinfo[:residuals][index_NaN])
+@test !dbinfo[:used][index_NaN]
 
 nothing
 
