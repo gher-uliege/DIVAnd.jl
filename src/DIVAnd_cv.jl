@@ -125,10 +125,11 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 
             fi,s =  DIVAndrun(mask,pmn,xi,x,f,len.*factorsl[i],epsilon2.*factorse[j]; otherargs...);
-            residual=DIVAnd_residualobs(s,fi);
-            nrealdata=sum(1 .- s.obsout);
-            d0d=dot((1 .- s.obsout).*(s.yo),(s.yo));
-            d0dmd1d=dot((1 .- s.obsout).*residual,(s.yo));
+            residual = DIVAnd_residualobs(s,fi);
+            obsin = .!s.obsout
+            nrealdata = sum(obsin)
+            d0d = s.yo[obsin] ⋅ s.yo[obsin]
+            d0dmd1d = s.yo[obsin] ⋅ residual[obsin]
 
             # Determine which method to use
 

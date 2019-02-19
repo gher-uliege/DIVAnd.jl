@@ -2,7 +2,6 @@ meanepsilon2(epsilon2::Number) = epsilon2
 meanepsilon2(epsilon2::Vector) = mean(epsilon2)
 meanepsilon2(epsilon2::Matrix) = mean(diag(epsilon2))
 
-
 """
 
     fi, erri, residuals, qcvalues, scalefactore = DIVAndgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);

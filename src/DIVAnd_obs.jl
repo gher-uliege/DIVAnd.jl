@@ -41,7 +41,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
     if nnanobs != 0
         out = out .| nanobs
         yo = deepcopy(yo)
-        yo[nanobs] = 0.
+        yo[nanobs] .= 0.
         @warn "Observations equal to NaN: $(nnanobs)"
     end
 
