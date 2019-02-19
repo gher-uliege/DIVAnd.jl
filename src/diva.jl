@@ -203,13 +203,25 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             background_lenz = 20 # m
         end
 
-        if background_lenz !== nothing
-            background_len = (1., # unused
-                              1., # unused
-                              background_lenz)
-        end
-        if len !== ()
-            background_len = (len[1],len[2],4*len[3])
+        # 4D analysis (lon,lat,depth,time)
+        if n == 4
+            if background_lenz !== nothing
+                background_len = (1., # unused
+                                  1., # unused
+                                  background_lenz)
+            end
+            if len !== ()
+                background_len = (len[1],len[2],4*len[3])
+            end
+        # 3D analysis (lon,lat,time)
+        else
+            if background_lenz !== nothing
+                background_len = (1., # unused
+                                  1.) # unused
+            end
+            if len !== ()
+                background_len = (len[1],len[2])
+            end
         end
     end
 
