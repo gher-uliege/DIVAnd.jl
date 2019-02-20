@@ -57,6 +57,11 @@ obslon[index_land_point] = 6
 index_NaN = 897298
 obsvalue[index_NaN] = NaN
 
+# put an outlier
+index_outlier = 897299
+obsvalue[index_outlier] = 50.
+
+
 sz = (length(lonr),length(latr),length(depthr))
 
 lenx = fill(200_000,sz)
@@ -283,9 +288,15 @@ dbinfo =
         )
     end
 
-@test isnan(dbinfo[:residuals][index_land_point])
-@test isnan(dbinfo[:residuals][index_NaN])
-@test !dbinfo[:used][index_NaN]
+qcvalue = dbinfo[:qcvalues]
+used = dbinfo[:used]
+residuals = dbinfo[:residuals]
+
+@test isnan(residuals[index_land_point])
+@test isnan(residuals[index_NaN])
+@test !used[index_NaN]
+@test all(isfinite.(qcvalue[used]))
+@test qcvalue[index_outlier] > 9
 
 nothing
 
