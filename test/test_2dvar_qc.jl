@@ -75,7 +75,7 @@ qcval_2 =
         @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
     end
 
-@test qcval_2 == 0
+@test all(qcval_2 .== 0)
 
 
 
