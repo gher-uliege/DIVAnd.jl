@@ -18,9 +18,10 @@ NetCDF file `filename` under the variable `varname`.
 * `value`: value of the observations
 
 * `len`: tuple with n elements. Every element represents the correlation length.
+   If `fitcorrlen` is `false` (default), the correlation length should be expressed in meters.
    If `fitcorrlen` is `true`, then `len` can be the empty tuple `()` or a tuple containing
    3 arrays of normalized correlation lengths which will be multiplied by the
-   horizontal and vertical correlation lengths.
+   horizontal and vertical correlation lengths. 
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
