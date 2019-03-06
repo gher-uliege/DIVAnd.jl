@@ -66,6 +66,11 @@ gridded background field and the observations minus the background field.
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
 * `minfield`: if the analysed field is below `minfield`, its value is replace by `minfield` (default -Inf, i.e. no substitution is done).
 * `maxfield`: if the analysed field is above `maxfield`, its value is replace by `maxfield` (default +Inf, i.e. no substitution is done).
+* `saveindex`: controls if just a subset of the analysis should be saved to
+    the netCDF file. Per default, `saveindex` is `(:,:,:)` (corresponding to
+    longitude, latitude and depth indices) meaning that everything is saved.
+    If however, for example the first layer should not be saved then `saveindex`
+    should be `(:,:,2:length(depthr))` where `depthr` is the 3rd element of `xi`.
 * `niter_e`: Number of iterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
@@ -106,6 +111,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 niter_e::Int = 1,
                 minfield::Float64 = -Inf,
                 maxfield::Float64 = Inf,
+                saveindex = ntuple(i -> :, length(xi)-1),
                 kwargs...
                 )
 
@@ -249,6 +255,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 ncvarattrib = ncvarattrib,
                 ncglobalattrib = ncglobalattrib,
                 climatology_bounds = climatologybounds,
+                saveindex = saveindex,
                 relerr = true)
 
         # Prepare background as mean vertical profile and time evolution.
@@ -290,10 +297,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
                 if n == 4
                     DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                      fit, erri, (:,:,:,timeindex))
+                                      fit, erri, (:,:,:,timeindex),
+                                      saveindex = saveindex,
+                                      )
                 else
                     DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                      fit, erri, (:,:,timeindex))
+                                      fit, erri, (:,:,timeindex),
+                                      saveindex = saveindex,
+                                      )
                 end
 
                 # write to file
@@ -462,10 +473,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             erri[.!mask] .= NaN
             if n == 4
                 DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                  fit, erri, (:,:,:,timeindex))
+                                  fit, erri, (:,:,:,timeindex),
+                                  saveindex = saveindex,
+                                  )
             else
                 DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                  fit, erri, (:,:,timeindex))
+                                  fit, erri, (:,:,timeindex),
+                                  saveindex = saveindex,
+                                  )
             end
 
             # write to file

@@ -45,7 +45,7 @@ obsids[4:end] .= "101-125"
 dx = dy = 0.5
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
-depthr = [0.,20.]
+depthr = [-20., 0.,20.,30.]
 epsilon2 = 0.01
 
 # put one point on land
@@ -260,6 +260,7 @@ dbinfo =
             mask = mask,
             niter_e = 2,
             QCMETHOD = 0,
+            saveindex = (:,:,2:length(depthr))
         )
     else
         @test_warn r".*Be patient.*" DIVAnd.diva3d(

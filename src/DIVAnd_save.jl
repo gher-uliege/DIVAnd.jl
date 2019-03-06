@@ -50,6 +50,7 @@ function ncfile(ds,filename,xyi,varname;
                 type_save = Float32,
                 timeorigin = DateTime(1900,1,1,0,0,0),
                 checksum = :fletcher32,
+                saveindex = ntuple(i -> :,length(xyi)-1),
                 kwargs...)
 
     function defnD(ds,varname,dims,ncvarattrib)
@@ -109,11 +110,11 @@ function ncfile(ds,filename,xyi,varname;
 
     # Dimensions
 
-    ds.dim["lon"] = sz[1]
-    ds.dim["lat"] = sz[2]
+    ds.dim["lon"] = length((1:sz[1])[saveindex[1]])
+    ds.dim["lat"] = length((1:sz[2])[saveindex[2]])
 
     if idepth != -1
-        ds.dim["depth"] = sz[idepth]
+        ds.dim["depth"] = length((1:sz[idepth])[saveindex[3]])
     end
 
     if itime != -1
@@ -260,11 +261,11 @@ function ncfile(ds,filename,xyi,varname;
 
     # Define variables
 
-    nclon[:]   = xyi[1]
-    nclat[:]   = xyi[2]
+    nclon[:]   = xyi[1][saveindex[1]]
+    nclat[:]   = xyi[2][saveindex[2]]
 
     if idepth != -1
-        ds["depth"][:]  = xyi[idepth]
+        ds["depth"][:]  = xyi[idepth][saveindex[3]]
     end
 
     if itime != -1
@@ -291,24 +292,26 @@ end
 White a slice of data in a NetCDF given by the index `index`. The variable
 `relerr` can be nothing.
 """
-function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
+function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index;
+                    saveindex = ntuple(i -> :, length(index))
+                    )
     fillval = NC_FILL_FLOAT
 
     tmp = copy(fi)
     tmp[isnan.(fi)] .= fillval
-    ncvar[index...] = tmp
+    ncvar[index...] = tmp[saveindex...]
 
     if relerr != nothing
 
         for (thresholds_value,ncvar_L) in ncvar_Lx
             tmp = copy(fi)
             tmp[isnan.(fi) .| (relerr .> thresholds_value)] .= fillval
-            ncvar_L[index...] = tmp
+            ncvar_L[index...] = tmp[saveindex...]
         end
 
         tmp = copy(relerr)
         tmp[isnan.(relerr)] .= fillval
-        ncvar_relerr[index...] = tmp
+        ncvar_relerr[index...] = tmp[saveindex...]
     end
 
     # ncvar_deepest[:] = ...
