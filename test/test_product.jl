@@ -174,6 +174,7 @@ dbinfo = @static if VERSION >= v"0.7.0"
         ncvarattrib = ncvarattrib,
         ncglobalattrib = ncglobalattrib,
         mask = mask,
+        saveindex = (:,:,2:length(depthr))
     )
 else
     @test_warn r".netCDF.*" DIVAnd.diva3d(
@@ -188,6 +189,7 @@ else
         ncvarattrib = ncvarattrib,
         ncglobalattrib = ncglobalattrib,
         mask = mask,
+        saveindex = (:,:,2:length(depthr))
     )
 end
 
@@ -286,6 +288,7 @@ dbinfo =
             mask = mask,
             niter_e = 2,
             QCMETHOD = 0,
+            saveindex = (:,:,2:length(depthr))
         )
     end
 
