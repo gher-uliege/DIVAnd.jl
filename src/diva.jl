@@ -111,12 +111,46 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 niter_e::Int = 1,
                 minfield::Float64 = -Inf,
                 maxfield::Float64 = Inf,
-                saveindex = ntuple(i -> :, length(xi)-1),
+                surfextend = false,
                 kwargs...
                 )
 
     # dimension of the analysis
     n = length(xi)
+
+    # save everything per default
+    saveindex = ntuple(i -> :, length(xi)-1)
+    background_ext = background
+
+    # vertical extension at surface
+    if surfextend
+        if length(xi) == 3
+            error("surfextend can only be true for 3d analyses")
+        end
+        if mask != nothing
+            mask = cat(mask[:,:,1],mask,dims = Val(3))
+        end
+
+        dz = xi[3][2]-xi[3][1]
+        xi = ntuple(i -> (i == 3 ? vcat(xi[3][1]-dz,xi[3]) : xi[i] ), length(xi))
+
+        len = ntuple(i ->
+                     if typeof(len[i]) <: Array
+                     cat(len[i][:,:,1],len[i],dims = Val(3))
+                     else
+                     len[i]
+                     end, length(len))
+        saveindex = (:,:,2:length(xi[3]))
+
+        if background_ext != nothing
+            background_ext =
+                (args...; kwargs...) -> begin
+                    fbackground,vaa = background(args...; kwargs...)
+                    fbackground = cat(fbackground[:,:,1],fbackground,dims = Val(3))
+                    return fbackground,vaa
+                end
+        end
+    end
 
     # metadata of grid
     lonr,latr,depthr,TS =
@@ -163,6 +197,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                   "but got a mask of the size $(size(mask))")
         end
         # use mask in the following and not mask2
+    end
+
+    # vertical extension at surface
+    if surfextend
+        if length(xi) == 3
+            error("surfextend can only be true for 3d analyses")
+        end
+        mask[:,:,1] = mask[:,:,2]
     end
 
     sz = size(mask)
@@ -251,7 +293,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     Dataset(filename,"c") do ds
         ncvar, ncvar_relerr, ncvar_Lx =
             DIVAnd.ncfile(
-                ds,filename,(xi[1:end-1]...,timeclim),varname;
+                ds,filename,(xi[1:end-1]...,ctimes(TS)),varname;
                 ncvarattrib = ncvarattrib,
                 ncglobalattrib = ncglobalattrib,
                 climatology_bounds = climatologybounds,
@@ -344,7 +386,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 else
                     # anamorphosis transform must already be included to the
                     # background
-                    background(xsel,timeindex,value_trans,trans;
+                    background_ext(xsel,timeindex,value_trans,trans;
                                selection = sel, obstime = time)
                 end
 

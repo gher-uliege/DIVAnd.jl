@@ -17,7 +17,8 @@ lat = nomissing(ds["lat"][:])
 depth = nomissing(ds["depth"][:])
 time = nomissing(ds["time"][:])
 
-v = ds["Salinity"]
+v = ds["Salinity"][:,:,:,:]
+close(ds)
 
 i = 3
 j = 2

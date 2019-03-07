@@ -293,7 +293,7 @@ White a slice of data in a NetCDF given by the index `index`. The variable
 `relerr` can be nothing.
 """
 function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index;
-                    saveindex = ntuple(i -> :, length(index))
+                    saveindex = ntuple(i -> :, ndims(fi))
                     )
     fillval = NC_FILL_FLOAT
 
@@ -400,53 +400,52 @@ function saveobs(filename,xy,ids;
 
     mode = (isfile(filename) ? "a" : "c")
 
-    ds = Dataset(filename,mode)
-    #@show length(ids),idlen
+    Dataset(filename,mode) do ds
+        #@show length(ids),idlen
 
-    ds.dim["observations"] = length(ids)
-    ds.dim["idlen"] = idlen
+        ds.dim["observations"] = length(ids)
+        ds.dim["idlen"] = idlen
 
-    ncobslon = defVar(ds,"obslon", type_save, ("observations",),
-                      checksum = checksum)
-    ncobslon.attrib["units"] = "degrees_east"
-    ncobslon.attrib["standard_name"] = "longitude"
-    ncobslon.attrib["long_name"] = "longitude"
+        ncobslon = defVar(ds,"obslon", type_save, ("observations",),
+                          checksum = checksum)
+        ncobslon.attrib["units"] = "degrees_east"
+        ncobslon.attrib["standard_name"] = "longitude"
+        ncobslon.attrib["long_name"] = "longitude"
 
-    ncobslat = defVar(ds,"obslat", type_save, ("observations",),
-                      checksum = checksum)
-    ncobslat.attrib["units"] = "degrees_north"
-    ncobslat.attrib["standard_name"] = "latitude"
-    ncobslat.attrib["long_name"] = "latitude"
+        ncobslat = defVar(ds,"obslat", type_save, ("observations",),
+                          checksum = checksum)
+        ncobslat.attrib["units"] = "degrees_north"
+        ncobslat.attrib["standard_name"] = "latitude"
+        ncobslat.attrib["long_name"] = "latitude"
 
-    ncobstime = defVar(ds,"obstime", Float64, ("observations",),
-                       checksum = checksum)
-    ncobstime.attrib["units"] = "days since " *
-        Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
+        ncobstime = defVar(ds,"obstime", Float64, ("observations",),
+                           checksum = checksum)
+        ncobstime.attrib["units"] = "days since " *
+            Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
 
-    ncobstime.attrib["standard_name"] = "time"
-    ncobstime.attrib["long_name"] = "time"
+        ncobstime.attrib["standard_name"] = "time"
+        ncobstime.attrib["long_name"] = "time"
 
-    ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",),
-                        checksum = checksum)
-    ncobsdepth.attrib["units"] = "meters"
-    ncobsdepth.attrib["positive"] = "down"
-    ncobsdepth.attrib["standard_name"] = "depth"
-    ncobsdepth.attrib["long_name"] = "depth below sea level"
+        ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",),
+                            checksum = checksum)
+        ncobsdepth.attrib["units"] = "meters"
+        ncobsdepth.attrib["positive"] = "down"
+        ncobsdepth.attrib["standard_name"] = "depth"
+        ncobsdepth.attrib["long_name"] = "depth below sea level"
 
-    ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"),
-                     checksum = checksum)
-    ncobsid.attrib["long_name"] = "observation identifier"
-    ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
+        ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"),
+                         checksum = checksum)
+        ncobsid.attrib["long_name"] = "observation identifier"
+        ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
 
-    ncobslon[:] = xy[1]
-    ncobslat[:] = xy[2]
-    ncobsdepth[:] = xy[3]
-    # convertion is done in NCDatasets
-    #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
-    ncobstime[:] = xy[4]
-    ncobsid[:] = obsids
-
-    close(ds)
+        ncobslon[:] = xy[1]
+        ncobslat[:] = xy[2]
+        ncobsdepth[:] = xy[3]
+        # convertion is done in NCDatasets
+        #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
+        ncobstime[:] = xy[4]
+        ncobsid[:] = obsids
+    end
 end
 
 
