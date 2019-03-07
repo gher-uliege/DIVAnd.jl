@@ -67,6 +67,11 @@ gridded background field and the observations minus the background field.
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
 * `minfield`: if the analysed field is below `minfield`, its value is replace by `minfield` (default -Inf, i.e. no substitution is done).
 * `maxfield`: if the analysed field is above `maxfield`, its value is replace by `maxfield` (default +Inf, i.e. no substitution is done).
+* `saveindex`: controls if just a subset of the analysis should be saved to
+    the netCDF file. Per default, `saveindex` is `(:,:,:)` (corresponding to
+    longitude, latitude and depth indices) meaning that everything is saved.
+    If however, for example the first layer should not be saved then `saveindex`
+    should be `(:,:,2:length(depthr))` where `depthr` is the 3rd element of `xi`.
 * `niter_e`: Number of iterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
@@ -107,11 +112,46 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 niter_e::Int = 1,
                 minfield::Float64 = -Inf,
                 maxfield::Float64 = Inf,
+                surfextend = false,
                 kwargs...
                 )
 
     # dimension of the analysis
     n = length(xi)
+
+    # save everything per default
+    saveindex = ntuple(i -> :, length(xi)-1)
+    background_ext = background
+
+    # vertical extension at surface
+    if surfextend
+        if length(xi) == 3
+            error("surfextend can only be true for 3d analyses")
+        end
+        if mask != nothing
+            mask = cat(mask[:,:,1],mask,dims = 3)
+        end
+
+        dz = xi[3][2]-xi[3][1]
+        xi = ntuple(i -> (i == 3 ? vcat(xi[3][1]-dz,xi[3]) : xi[i] ), length(xi))
+
+        len = ntuple(i ->
+                     if typeof(len[i]) <: Array
+                     cat(len[i][:,:,1],len[i],dims = 3)
+                     else
+                     len[i]
+                     end, length(len))
+        saveindex = (:,:,2:length(xi[3]))
+
+        if background_ext != nothing
+            background_ext =
+                (args...; kwargs...) -> begin
+                    fbackground,vaa = background(args...; kwargs...)
+                    fbackground = cat(fbackground[:,:,1],fbackground,dims = 3)
+                    return fbackground,vaa
+                end
+        end
+    end
 
     # metadata of grid
     lonr,latr,depthr,TS =
@@ -158,6 +198,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                   "but got a mask of the size $(size(mask))")
         end
         # use mask in the following and not mask2
+    end
+
+    # vertical extension at surface
+    if surfextend
+        if length(xi) == 3
+            error("surfextend can only be true for 3d analyses")
+        end
+        mask[:,:,1] = mask[:,:,2]
     end
 
     sz = size(mask)
@@ -246,10 +294,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     Dataset(filename,"c") do ds
         ncvar, ncvar_relerr, ncvar_Lx =
             DIVAnd.ncfile(
-                ds,filename,(xi[1:end-1]...,timeclim),varname;
+                ds,filename,(xi[1:end-1]...,ctimes(TS)),varname;
                 ncvarattrib = ncvarattrib,
                 ncglobalattrib = ncglobalattrib,
                 climatology_bounds = climatologybounds,
+                saveindex = saveindex,
                 relerr = true)
 
         # Prepare background as mean vertical profile and time evolution.
@@ -291,10 +340,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
                 if n == 4
                     DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                      fit, erri, (:,:,:,timeindex))
+                                      fit, erri, (:,:,:,timeindex),
+                                      saveindex = saveindex,
+                                      )
                 else
                     DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                      fit, erri, (:,:,timeindex))
+                                      fit, erri, (:,:,timeindex),
+                                      saveindex = saveindex,
+                                      )
                 end
 
                 # write to file
@@ -334,7 +387,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 else
                     # anamorphosis transform must already be included to the
                     # background
-                    background(xsel,timeindex,value_trans,trans;
+                    background_ext(xsel,timeindex,value_trans,trans;
                                selection = sel, obstime = time)
                 end
 
@@ -463,10 +516,14 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             erri[.!mask] .= NaN
             if n == 4
                 DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                  fit, erri, (:,:,:,timeindex))
+                                  fit, erri, (:,:,:,timeindex),
+                                  saveindex = saveindex,
+                                  )
             else
                 DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
-                                  fit, erri, (:,:,timeindex))
+                                  fit, erri, (:,:,timeindex),
+                                  saveindex = saveindex,
+                                  )
             end
 
             # write to file

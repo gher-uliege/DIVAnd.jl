@@ -50,6 +50,7 @@ function ncfile(ds,filename,xyi,varname;
                 type_save = Float32,
                 timeorigin = DateTime(1900,1,1,0,0,0),
                 checksum = :fletcher32,
+                saveindex = ntuple(i -> :,length(xyi)-1),
                 kwargs...)
 
     function defnD(ds,varname,dims,ncvarattrib)
@@ -109,11 +110,11 @@ function ncfile(ds,filename,xyi,varname;
 
     # Dimensions
 
-    ds.dim["lon"] = sz[1]
-    ds.dim["lat"] = sz[2]
+    ds.dim["lon"] = length((1:sz[1])[saveindex[1]])
+    ds.dim["lat"] = length((1:sz[2])[saveindex[2]])
 
     if idepth != -1
-        ds.dim["depth"] = sz[idepth]
+        ds.dim["depth"] = length((1:sz[idepth])[saveindex[3]])
     end
 
     if itime != -1
@@ -260,11 +261,11 @@ function ncfile(ds,filename,xyi,varname;
 
     # Define variables
 
-    nclon[:]   = xyi[1]
-    nclat[:]   = xyi[2]
+    nclon[:]   = xyi[1][saveindex[1]]
+    nclat[:]   = xyi[2][saveindex[2]]
 
     if idepth != -1
-        ds["depth"][:]  = xyi[idepth]
+        ds["depth"][:]  = xyi[idepth][saveindex[3]]
     end
 
     if itime != -1
@@ -291,24 +292,26 @@ end
 White a slice of data in a NetCDF given by the index `index`. The variable
 `relerr` can be nothing.
 """
-function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
+function writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index;
+                    saveindex = ntuple(i -> :, ndims(fi))
+                    )
     fillval = NC_FILL_FLOAT
 
     tmp = copy(fi)
     tmp[isnan.(fi)] .= fillval
-    ncvar[index...] = tmp
+    ncvar[index...] = tmp[saveindex...]
 
     if relerr != nothing
 
         for (thresholds_value,ncvar_L) in ncvar_Lx
             tmp = copy(fi)
             tmp[isnan.(fi) .| (relerr .> thresholds_value)] .= fillval
-            ncvar_L[index...] = tmp
+            ncvar_L[index...] = tmp[saveindex...]
         end
 
         tmp = copy(relerr)
         tmp[isnan.(relerr)] .= fillval
-        ncvar_relerr[index...] = tmp
+        ncvar_relerr[index...] = tmp[saveindex...]
     end
 
     # ncvar_deepest[:] = ...
@@ -397,53 +400,52 @@ function saveobs(filename,xy,ids;
 
     mode = (isfile(filename) ? "a" : "c")
 
-    ds = Dataset(filename,mode)
-    #@show length(ids),idlen
+    Dataset(filename,mode) do ds
+        #@show length(ids),idlen
 
-    ds.dim["observations"] = length(ids)
-    ds.dim["idlen"] = idlen
+        ds.dim["observations"] = length(ids)
+        ds.dim["idlen"] = idlen
 
-    ncobslon = defVar(ds,"obslon", type_save, ("observations",),
-                      checksum = checksum)
-    ncobslon.attrib["units"] = "degrees_east"
-    ncobslon.attrib["standard_name"] = "longitude"
-    ncobslon.attrib["long_name"] = "longitude"
+        ncobslon = defVar(ds,"obslon", type_save, ("observations",),
+                          checksum = checksum)
+        ncobslon.attrib["units"] = "degrees_east"
+        ncobslon.attrib["standard_name"] = "longitude"
+        ncobslon.attrib["long_name"] = "longitude"
 
-    ncobslat = defVar(ds,"obslat", type_save, ("observations",),
-                      checksum = checksum)
-    ncobslat.attrib["units"] = "degrees_north"
-    ncobslat.attrib["standard_name"] = "latitude"
-    ncobslat.attrib["long_name"] = "latitude"
+        ncobslat = defVar(ds,"obslat", type_save, ("observations",),
+                          checksum = checksum)
+        ncobslat.attrib["units"] = "degrees_north"
+        ncobslat.attrib["standard_name"] = "latitude"
+        ncobslat.attrib["long_name"] = "latitude"
 
-    ncobstime = defVar(ds,"obstime", Float64, ("observations",),
-                       checksum = checksum)
-    ncobstime.attrib["units"] = "days since " *
-        Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
+        ncobstime = defVar(ds,"obstime", Float64, ("observations",),
+                           checksum = checksum)
+        ncobstime.attrib["units"] = "days since " *
+            Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
 
-    ncobstime.attrib["standard_name"] = "time"
-    ncobstime.attrib["long_name"] = "time"
+        ncobstime.attrib["standard_name"] = "time"
+        ncobstime.attrib["long_name"] = "time"
 
-    ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",),
-                        checksum = checksum)
-    ncobsdepth.attrib["units"] = "meters"
-    ncobsdepth.attrib["positive"] = "down"
-    ncobsdepth.attrib["standard_name"] = "depth"
-    ncobsdepth.attrib["long_name"] = "depth below sea level"
+        ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",),
+                            checksum = checksum)
+        ncobsdepth.attrib["units"] = "meters"
+        ncobsdepth.attrib["positive"] = "down"
+        ncobsdepth.attrib["standard_name"] = "depth"
+        ncobsdepth.attrib["long_name"] = "depth below sea level"
 
-    ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"),
-                     checksum = checksum)
-    ncobsid.attrib["long_name"] = "observation identifier"
-    ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
+        ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"),
+                         checksum = checksum)
+        ncobsid.attrib["long_name"] = "observation identifier"
+        ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
 
-    ncobslon[:] = xy[1]
-    ncobslat[:] = xy[2]
-    ncobsdepth[:] = xy[3]
-    # convertion is done in NCDatasets
-    #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
-    ncobstime[:] = xy[4]
-    ncobsid[:] = obsids
-
-    close(ds)
+        ncobslon[:] = xy[1]
+        ncobslat[:] = xy[2]
+        ncobsdepth[:] = xy[3]
+        # convertion is done in NCDatasets
+        #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
+        ncobstime[:] = xy[4]
+        ncobsid[:] = obsids
+    end
 end
 
 

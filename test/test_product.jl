@@ -45,7 +45,7 @@ obsids[4:end] .= "101-125"
 dx = dy = 0.5
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
-depthr = [0.,20.]
+depthr = [0.,20.,30.]
 epsilon2 = 0.01
 
 # put one point on land
@@ -62,6 +62,7 @@ index_outlier = 897299
 obsvalue[index_outlier] = 50.
 
 
+surfextend = true
 sz = (length(lonr),length(latr),length(depthr))
 
 lenx = fill(200_000,sz)
@@ -174,6 +175,7 @@ dbinfo = @static if VERSION >= v"0.7.0"
         ncvarattrib = ncvarattrib,
         ncglobalattrib = ncglobalattrib,
         mask = mask,
+        surfextend = surfextend,
     )
 else
     @test_warn r".netCDF.*" DIVAnd.diva3d(
@@ -188,6 +190,7 @@ else
         ncvarattrib = ncvarattrib,
         ncglobalattrib = ncglobalattrib,
         mask = mask,
+        surfextend = surfextend,
     )
 end
 
@@ -260,6 +263,7 @@ dbinfo =
             mask = mask,
             niter_e = 2,
             QCMETHOD = 0,
+            surfextend = surfextend,
         )
     else
         @test_warn r".*Be patient.*" DIVAnd.diva3d(
@@ -285,6 +289,7 @@ dbinfo =
             mask = mask,
             niter_e = 2,
             QCMETHOD = 0,
+            surfextend = surfextend,
         )
     end
 
