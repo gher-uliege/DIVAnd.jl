@@ -128,7 +128,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             error("surfextend can only be true for 3d analyses")
         end
         if mask != nothing
-            mask = cat(mask[:,:,1],mask,dims = Val(3))
+            mask = cat(mask[:,:,1],mask,dims = 3)
         end
 
         dz = xi[3][2]-xi[3][1]
@@ -136,7 +136,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         len = ntuple(i ->
                      if typeof(len[i]) <: Array
-                     cat(len[i][:,:,1],len[i],dims = Val(3))
+                     cat(len[i][:,:,1],len[i],dims = 3)
                      else
                      len[i]
                      end, length(len))
@@ -146,7 +146,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             background_ext =
                 (args...; kwargs...) -> begin
                     fbackground,vaa = background(args...; kwargs...)
-                    fbackground = cat(fbackground[:,:,1],fbackground,dims = Val(3))
+                    fbackground = cat(fbackground[:,:,1],fbackground,dims = 3)
                     return fbackground,vaa
                 end
         end

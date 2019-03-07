@@ -76,11 +76,7 @@ function matfun_diff(sz1,m,cyclic = false)
             ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
             ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
 
-            return if VERSION >= v"0.7.0-beta.0"
-                cat(-x[ind0...],x[ind2...]-x[ind1...],x[ind3...],dims = m)[:]
-            else
-                cat(m,-x[ind0...],x[ind2...]-x[ind1...],x[ind3...])[:]
-            end
+            return cat(-x[ind0...],x[ind2...]-x[ind1...],x[ind3...],dims = m)[:]
         else
             ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
             return (x[ind...] - x)[:]
@@ -126,11 +122,7 @@ function matfun_shift(sz1,m,cyclic = false)
         x = reshape(x,sz2)
         if !cyclic
             sz0 = ntuple(i -> (i == m ? 1 : sz2[i]), length(sz2))
-            return if VERSION >= v"0.7.0-beta.0"
-                cat(zeros(eltype(x),sz0),x, dims = m)[:]
-            else
-                cat(m,zeros(eltype(x),sz0),x)[:]
-            end
+            return cat(zeros(eltype(x),sz0),x, dims = m)[:]
         else
             ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
             return x[ind...][:]
@@ -180,11 +172,7 @@ function matfun_stagger(sz1,m,cyclic = false)
             ind1 = [ (i == m ? (2:sz2[i])      : (1:sz2[i])) for i = 1:length(sz2)]
             ind2 = [ (i == m ? (1:sz2[i]-1)    : (1:sz2[i])) for i = 1:length(sz2)]
             ind3 = [ (i == m ? (sz2[i]:sz2[i]) : (1:sz2[i])) for i = 1:length(sz2)]
-            return if VERSION >= v"0.7.0-beta.0"
-                cat(x[ind0...],x[ind2...]+x[ind1...],x[ind3...],dims = m)[:]/2
-            else
-                cat(m,x[ind0...],x[ind2...]+x[ind1...],x[ind3...])[:]/2
-            end
+            return cat(x[ind0...],x[ind2...]+x[ind1...],x[ind3...],dims = m)[:]/2
         else
             ind = [ (i == m ? [sz1[i]; 1:sz1[i]-1] : (1:sz1[i])) for i = 1:length(sz1)]
             return (x[ind...] + x)[:]/2
@@ -218,11 +206,7 @@ function matfun_trim(sz1,m)
     function funt(x)
         x = reshape(x,sz2)
         sz0 = ntuple(i -> (i == m ? 1 : sz2[i]), length(sz2))
-        return if VERSION >= v"0.7.0-beta.0"
-            cat(zeros(eltype(x),sz0),x,zeros(eltype(x),sz0),dims = m)[:]
-        else
-            cat(m,zeros(eltype(x),sz0),x,zeros(eltype(x),sz0))[:]
-        end
+        return cat(zeros(eltype(x),sz0),x,zeros(eltype(x),sz0),dims = m)[:]
     end
 
     return MatFun((prod(sz2),prod(sz1)),fun,funt)
