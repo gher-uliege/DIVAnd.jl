@@ -432,41 +432,50 @@ The `zlib` library of RedHat 6, is slightly older than the library which `EzXML.
 To verify this issue, you can type in Julia
 
 ```
+using Libdl
+using Pkg
 Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))
 ```
 
 It should not return an error message. On Redhat 6.6, the following error message is returned:
 
 ```
-ERROR: could not load library "/home/username/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so"
+ERROR: could not load library "/home/username/.../EzXML/deps/usr/lib/libxml2.so"
 
-/lib64/libz.so.1: version `ZLIB_1.2.3.3' not found (required by /home/divahs1/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so)
+/lib64/libz.so.1: version `ZLIB_1.2.3.3' not found (required by /home/.../EzXML/deps/usr/lib/libxml2.so)
 
 Stacktrace:
 
  [1] dlopen(::String, ::UInt32) at ./libdl.jl:97 (repeats 2 times)
 ```
 
+A newer version `zlib` can be installed by the following command:
+
+```julia
+using Pkg
+Pkg.add("CodecZlib")
+```
+
 However, the following command should work:
 
 ```julia
- LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH" julia --eval  'print(Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))'
+ LD_LIBRARY_PATH="$HOME/.julia/full/path/to/CodecZlib/.../deps/usr/lib/:$LD_LIBRARY_PATH" julia --eval  'print(Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))'
 ```
 
-Lukily, EzZML.jl includes a newer version of the `zlib` library, but it does not load the library automatically.
-(see also <https://github.com/JuliaLang/julia/issues/7004> and <https://github.com/JuliaIO/HDF5.jl/issues/97>)
+by replacing the file path appropriately.
+(see also <https://github.com/JuliaLang/julia/issues/7004>, <https://github.com/JuliaIO/HDF5.jl/issues/97>, and <https://github.com/bicycle1885/EzXML.jl/issues/102>)
 
 To make Julia use this library, a user on RedHat 6 should always start Julia with:
 
 ```bash
-LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH" julia
+LD_LIBRARY_PATH="$HOME/.julia/full/path/to/CodecZlib/.../deps/usr/lib/:$LD_LIBRARY_PATH" julia
 ```
 
 One can also create script with the following content:
 
 ```bash
 #!/bin/bash
-export LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$HOME/.julia/full/path/to/CodecZlib/.../deps/usr/lib/:$LD_LIBRARY_PATH"
 exec /path/to/bin/julia "$@"
 ```
 
