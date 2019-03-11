@@ -1237,7 +1237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "DIVAnd.jl documentation",
     "title": "Kernel not working with IJulia/Jupyter under Julia 0.7 Windows",
     "category": "section",
-    "text": "Try these commandsPkg.add(\"ZMQ\")\nPkg.add(\"IJulia\")\nPkg.update()"
+    "text": "Try these commandsusing Pkg\nPkg.add(\"ZMQ\")\nPkg.add(\"IJulia\")\nPkg.update()"
 },
 
 ]}
