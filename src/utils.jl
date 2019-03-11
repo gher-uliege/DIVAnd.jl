@@ -771,3 +771,12 @@ function hmerge(f,L)
 
     return f2
 end
+
+
+"""
+    meanerr(obsconstrain)
+
+Compute the mean error variance of the observational contraints `obsconstrain`
+ignoring values equal to `Inf` (due to e.g. observations outside of the grid).
+"""
+meanerr(obsconstrain) = mean(diag(obsconstrain.R)[isfinite.(diag(obsconstrain.R))])
