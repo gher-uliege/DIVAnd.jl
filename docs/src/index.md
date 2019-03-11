@@ -220,10 +220,15 @@ In the folder `examples` of DIVAnd, you can run e.g. the example `DIVAnd_simple_
 
 ```julia
 # cd("/path/to/DIVAnd/examples")
-include("DIVAnd_simple_example_1D.jl")
+include("test/DIVAnd_simple_example_1D.jl")
 ```
 
-Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of `Pkg.dir("DIVAnd")` if you installed `DIVAnd` using Julia's package manager.
+Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of the following code:
+
+```julia
+using DIVAnd;
+joinpath(dirname(pathof(DIVAnd)), "..")
+```
 
 
 ## Performance considerations
@@ -340,6 +345,7 @@ We do are best to avoid changing the API, but sometimes it is unfortunately nece
 To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.
 
 ```julia
+using Pkg
 Pkg.add("Documenter")
 ```
 
@@ -353,6 +359,7 @@ Julia calls the local copy of the packge list `METADATA`.
 For example to retry the installation of EzXML issue the following command:
 
 ```julia
+using Pkg
 Pkg.update()
 Pkg.add("EzXML")
 ```
@@ -482,9 +489,11 @@ exec /path/to/bin/julia "$@"
 by replacing `/path/to/bin/julia` to the full path of your installation directory.
 The script should be marked executable and it can be included in your Linux search [`PATH` environement variable](http://www.linfo.org/path_env_var.html). Julia can then be started by calling directly this script.
 
+
+
 ### The DIVAnd test suite fails with `automatic download failed`
 
-Running `Pkg.test("DIVAnd")` fails with the error:
+Running `using Pkg; Pkg.test("DIVAnd")` fails with the error:
 
 ```julia
 automatic download failed (error: 2147500036)
@@ -500,7 +509,7 @@ You can check the current working directory with:
 pwd()
 ```
 
-### METADATA cannot be updated
+### METADATA cannot be updated in Julia 0.6
 
 `Pkg.update` fails with the error message `METADATA cannot be updated`.
 
@@ -573,12 +582,12 @@ LoadError: ArgumentError: Module Roots not found in current path.
 Run `Pkg.add("Roots")` to install the Roots package.
 ```
 
-### Kernel not working with IJulia/Jupyter under julia0.7 Windows
+### Kernel not working with IJulia/Jupyter under Julia 0.7 Windows
 
 Try these commands
+
 ```julia
 Pkg.add("ZMQ")
 Pkg.add("IJulia")
 Pkg.update()
 ```
-
