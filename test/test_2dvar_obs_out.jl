@@ -28,7 +28,7 @@ epsilon2 = 1;
 
 va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
 
-@test va[2,2] ≈ 0.
+@test va[2,2] ≈ 1 atol=1e-3
 
 
 # Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>

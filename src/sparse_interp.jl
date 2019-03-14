@@ -106,13 +106,29 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
                 end
             end
 
-            inside = true
+            inside = false
+            sum_ss = zero(eltype(ss))
 
-            for i=1:2^n
-                # sj must refer to a valid point or its interpolation coefficient
-                # must be zero
-                #inside = inside && ((mask[sj[i,k]]) || (ss[i,k] == 0))
-                inside = inside && mask[sj[i,k]]
+            # point is inside if there is any sea surouding grid point (with a
+            # weight different from zero)
+            @inbounds for i=1:2^n
+                if mask[sj[i,k]] && (ss[i,k] != 0)
+                    sum_ss += ss[i,k]
+                    inside = true
+                end
+            end
+
+            # inside is only true if sum_ss is different from zero
+            if inside
+                @inbounds for i=1:2^n
+                    # interpolation weight are scaled such that their sum is 1
+                    # but taking only sea points into account
+                    if mask[sj[i,k]]
+                        ss[i,k] = ss[i,k]/sum_ss
+                    else
+                        ss[i,k] = 0
+                    end
+                end
             end
 
             out[k2] = !inside
@@ -120,6 +136,7 @@ function sparse_interp(mask,I,iscyclic = falses(size(I,1)))
         end
     end
 
+    @debug "number of point outside $(sum(out)) or  $(100 * sum(out) / length(out)) % "
     H = sparse(si[:],sj[:],ss[:],mi,m)
     return H,out,outbbox
 
