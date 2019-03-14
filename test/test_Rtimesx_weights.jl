@@ -5,7 +5,7 @@ else
 end
 using DIVAnd
 
-coord = [0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.7699; 0.357327 0.891722; 0.101827 0.856188; 0.862349 0.0555934; 0.992086 0.97036; 0.702955 0.591252; 0.685006 0.23132]'
+coord = copy([0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.7699; 0.357327 0.891722; 0.101827 0.856188; 0.862349 0.0555934; 0.992086 0.97036; 0.702955 0.591252; 0.685006 0.23132]')
 
 #x = (coord[:,1],coord[:,2])
 
@@ -50,7 +50,7 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
     xmin = zeros(ndim)
     xmax = zeros(ndim)
 
-    ilen = 1./len
+    ilen = 1 ./ len
 
     @fastmath @inbounds for i = 1:Nobs
         for j = 1:ndim
@@ -95,8 +95,8 @@ end
 # observations
 # uniformly distributed data with a cluster at (0.2,0.3)
 
-x = [rand(75); rand(75)/10 + 0.2]
-y = [rand(75); rand(75)/10 + 0.3]
+x = [rand(75); rand(75)/10 .+ 0.2]
+y = [rand(75); rand(75)/10 .+ 0.3]
 
 # length-scale to consider clustered data
 len = (0.01,0.01)
@@ -117,10 +117,10 @@ weight = DIVAnd.weight_RtimesOne((x,y),len)
 ndata = 70000
 ndim = 2
 
-ndata = 30000
-ndim = 4
+#ndata = 30000
+#ndim = 4
 
-coord = randn(ndata,ndim)'
+coord = randn(ndim,ndata)
 x = ones(ndata)
 Rx = zeros(ndata)
 LS = ntuple(i -> 0.1,ndim)
