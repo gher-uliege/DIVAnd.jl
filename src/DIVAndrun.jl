@@ -219,7 +219,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 
 # Output:
 *  `fi`: the analysed field
-*  `s`: structure with an array `s.P` representing the analysed error covariance
+*  `s`: a structure with an array `s.P` representing the analysed error covariance
 
 # Note:
   If zero is not a valid first guess for your variable (as it is the case for

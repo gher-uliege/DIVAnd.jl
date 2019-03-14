@@ -587,6 +587,7 @@ Run `Pkg.add("Roots")` to install the Roots package.
 Try these commands
 
 ```julia
+using Pkg
 Pkg.add("ZMQ")
 Pkg.add("IJulia")
 Pkg.update()
