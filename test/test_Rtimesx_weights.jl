@@ -45,12 +45,15 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
 
     maxcap = 10
     qt = DIVAnd.Quadtrees.QT(coord,collect(1:Nobs)) :: DIVAnd.Quadtrees.QT{T,Int,ndim}
-    DIVAnd.Quadtrees.rsplit!(qt, maxcap)
+    DIVAnd.Quadtrees.rsplit!(qt, maxcap, len)
+    @debug "Quadtree depth: $(DIVAnd.Quadtrees.maxdepth(qt))"
 
     xmin = zeros(ndim)
     xmax = zeros(ndim)
 
     ilen = 1 ./ len
+
+    index_buffer = zeros(Int,Nobs)
 
     @fastmath @inbounds for i = 1:Nobs
         for j = 1:ndim
@@ -58,10 +61,13 @@ function Rtimesx2!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
             xmax[j] = coord[j,i] + factor * len[j]
         end
 
-        index = DIVAnd.Quadtrees.within(qt,xmin,xmax)
+        nindex = DIVAnd.Quadtrees.within_buffer!(qt,xmin,xmax,index_buffer)
+
         Rx[i] = 0.
 
-        for ii in index
+        #for ii in @view index_buffer[1:nindex]
+        @inbounds for j in 1:nindex
+            ii = index_buffer[j]
 
             dist = 0.
             for j = 1:ndim
@@ -110,15 +116,14 @@ weight = DIVAnd.weight_RtimesOne((x,y),len)
 
 
 
-
 # "large" benchmark
 
 # large
 ndata = 70000
 ndim = 2
 
-#ndata = 30000
-#ndim = 4
+ndata = 30000*2*2
+ndim = 4
 
 coord = randn(ndim,ndata)
 x = ones(ndata)
@@ -128,6 +133,17 @@ LS = ntuple(i -> 0.1,ndim)
 
 Rx2 = zeros(ndata)
 @time Rtimesx2!(coord,LS,x,Rx2)
+
+len = LS
+n = size(coord,1)
+Nobs = size(coord,2)
+
+maxcap = 10
+qt = DIVAnd.Quadtrees.QT(coord,collect(1:Nobs)) :: DIVAnd.Quadtrees.QT{T,Int,ndim}
+DIVAnd.Quadtrees.rsplit!(qt, maxcap)
+@show DIVAnd.Quadtrees.maxdepth(qt)
+
+nothing
 
 # large 2D
 #=

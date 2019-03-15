@@ -63,7 +63,7 @@ end
  x0
 
 """
-function inside(x0,x1,y)
+@inline function inside(x0,x1,y)
     insd = true
 
     @inbounds for i = 1:length(y)
@@ -124,6 +124,30 @@ function intersect(x0,x1,y0,y1)
 
     return intersect_(x0,x1,y0,y1) || intersect_(y0,y1,x0,x1)
 end
+
+
+
+
+
+
+"""
+Test of the rectanges defined by x0,x1 is included in rectangle y0,y1
+             x1
+  +------------+
+  |            |
+  |   +--+ y1  |
+  |   |  |     |
+  |   +--+     |
+  | y0         |
+  +------------+
+ x0
+
+"""
+@inline function include(x0,x1,y0,y1)
+    return inside(x0,x1,y0) && inside(x0,x1,y1)
+end
+
+
 
 """
 number of points per node
@@ -255,7 +279,13 @@ function split!(qt::QT{T,TA,N}) where {T,TA,N}
             end
 
             child = QT(qt.points[:,sel],copy(cmin),copy(cmax),qt.attribs[sel])
-
+            #=
+            points_sel = qt.points[:,sel]
+            child = QT(points_sel,
+                       minimum(points_sel, dims = 1)[1,:],
+                       maximum(points_sel, dims = 1)[1,:],
+                       qt.attribs[sel])
+            =#
             # add only children with data
             if length(child) > 0
                  nchildreneff = nchildreneff+1
@@ -275,24 +305,37 @@ end
 """
 recursive split
 """
-function rsplit!(qt::QT{T,TA,N}, max_cap = 10) where {T,TA,N}
+function rsplit!(qt::QT{T,TA,N}, max_cap = 10, min_size = zeros(N)) where {T,TA,N}
 
 
 
     if isleaf(qt)
         if length(qt) < max_cap
-            # no enougth points, nothing to do
+            # no enougth points, stop recursion
             return
         end
 
+        # check if the minimum size is reached
+        min_size_reached = true
+
+        for i = 1:N
+            min_size_reached = min_size_reached && ((qt.max[i] - qt.min[i])  < min_size[i])
+        end
+
+        if min_size_reached
+            # small enought, stop recursion
+            return
+        end
+
+        # check of all are equal
         allequal = true
 
         @inbounds for i = 2:size(qt.points,2)
-            allequal = allequal & (qt.points[:,i] == qt.points[:,1])
+            allequal = allequal & ((@view qt.points[:,i]) == (@view qt.points[:,1]))
         end
 
-        # all points are equal, stop recursion
         if allequal
+            # all points are equal, stop recursion
             return
         end
 
@@ -300,7 +343,7 @@ function rsplit!(qt::QT{T,TA,N}, max_cap = 10) where {T,TA,N}
     end
 
     for child in qt.children
-        rsplit!(child,max_cap)
+        rsplit!(child,max_cap,min_size)
     end
 
 end
@@ -313,10 +356,11 @@ Search all points within a bounding box defined by the vectors `min` and `max`.
 """
 function within(qt::QT{T,TA,N}, min, max) where {T,TA,N}
     attribs = TA[]
-    sizehint!(attribs,1)
+    sizehint!(attribs,10)
     within!(qt,min,max,attribs)
     return attribs
 end
+
 
 function within!(qt::QT{T,TA,N}, min, max, attribs) where {T,TA,N}
     #@show Base.intersect(qt, min, max), min, max, qt.min, qt.max
@@ -328,7 +372,7 @@ function within!(qt::QT{T,TA,N}, min, max, attribs) where {T,TA,N}
     if isleaf(qt)
         #@show "checking"
         @inbounds for i = 1:length(qt)
-            if inside(min,max,qt.points[:,i])
+            if inside(min,max,@view qt.points[:,i])
                 push!(attribs,qt.attribs[i])
             end
         end
@@ -341,6 +385,53 @@ function within!(qt::QT{T,TA,N}, min, max, attribs) where {T,TA,N}
 
     return attribs
 end
+
+function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {T,TA,N}
+    #@show Base.intersect(qt, min, max), min, max, qt.min, qt.max
+    if !Base.intersect(qt, min, max)
+        # nothing to do
+        return nattribs
+    end
+
+    if isleaf(qt)
+        # check if node is entirely inside search area min-max
+        if include(min,max,qt.min,qt.max)
+            # add all
+            if nattribs+length(qt) > length(attribs)
+                # buffer too small
+                return -1
+            end
+
+            @inbounds for i = 1:length(qt)
+                nattribs += 1
+                attribs[nattribs] = qt.attribs[i]
+            end
+        else
+            @inbounds for i = 1:length(qt)
+                if inside(min,max,@view qt.points[:,i])
+                    nattribs += 1
+                    if nattribs > length(attribs)
+                        # buffer too small
+                        return -1
+                    end
+                    attribs[nattribs] = qt.attribs[i]
+                end
+            end
+        end
+        return nattribs
+    end
+
+    for child in qt.children
+        nattribs = within_buffer!(child, min, max, attribs, nattribs)
+
+        if nattribs == -1
+            return -1
+        end
+    end
+
+    return nattribs
+end
+
 
 function withincount!(qt::QT{T,TA,N}, min, max, count) where {T,TA,N}
     if !Base.intersect(qt, min, max)
@@ -362,6 +453,22 @@ function withincount!(qt::QT{T,TA,N}, min, max, count) where {T,TA,N}
     for child in qt.children
         withincount!(child, min, max, count)
     end
+end
+
+
+function maxdepth(qt::QT{T,TA,N},d = 0) where {T,TA,N}
+    if isleaf(qt)
+        return d
+    end
+
+    dchild = 0
+    for child in qt.children
+        tmp = maxdepth(child,d)
+        if tmp > dchild
+            dchild = tmp
+        end
+    end
+    return d + dchild + 1
 end
 
 
@@ -534,6 +641,8 @@ function checkduplicates(x1::Tuple,value1,
     xmin = zeros(n)
     xmax = zeros(n)
 
+    #index_buffer = zeros(Int,Nobs1)
+
     @fastmath @inbounds for i = 1:Nobs2
         for j = 1:n
             xmin[j] = X2[j,i] - delta[j]
@@ -541,6 +650,7 @@ function checkduplicates(x1::Tuple,value1,
         end
 
         index = Quadtrees.within(qt,xmin,xmax)
+        #nindex = DIVAnd.Quadtrees.within_buffer!(qt,xmin,xmax,index_buffer)
 
         if length(index) > 0
             # check for values
