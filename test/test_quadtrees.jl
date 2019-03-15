@@ -6,6 +6,7 @@ else
     using Base.Test
 end
 
+using DIVAnd
 import DIVAnd.Quadtrees
 
 # Quadtrees = DIVAnd.Quadtrees
@@ -26,6 +27,10 @@ qt = DIVAnd.Quadtrees.QT(copy(X'),collect(1:size(X,1)))
 attribs_res = DIVAnd.Quadtrees.within(qt,[0,0],[0.1,0.1])
 @test attribs_res == [1,5]
 
+@test DIVAnd.Quadtrees.within_count(qt,[0,0],[0.1,0.1]) == 2
+
+
+DIVAnd.Quadtrees.within(qt,[0,0],[0.1,0.1])
 
 @test [DIVAnd.Quadtrees.bitget(42,i) for i = 6:-1:1] == [true,false,true,false,true,false]
 

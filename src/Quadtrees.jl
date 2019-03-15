@@ -355,36 +355,38 @@ end
 Search all points within a bounding box defined by the vectors `min` and `max`.
 """
 function within(qt::QT{T,TA,N}, min, max) where {T,TA,N}
-    attribs = TA[]
-    sizehint!(attribs,10)
-    within!(qt,min,max,attribs)
+    nattrib = within_count(qt, min, max)
+    attribs = Vector{TA}(undef,nattrib)
+
+    within_buffer!(qt,min,max,attribs)
     return attribs
 end
 
 
-function within!(qt::QT{T,TA,N}, min, max, attribs) where {T,TA,N}
-    #@show Base.intersect(qt, min, max), min, max, qt.min, qt.max
+function within_count(qt::QT{T,TA,N}, min, max) where {T,TA,N}
+    nattrib = 0
+
     if !Base.intersect(qt, min, max)
         # nothing to do
-        return
+        return nattrib
     end
 
     if isleaf(qt)
         #@show "checking"
         @inbounds for i = 1:length(qt)
             if inside(min,max,@view qt.points[:,i])
-                push!(attribs,qt.attribs[i])
+                nattrib += 1
             end
         end
-        return
+        return nattrib
     end
 
     for child in qt.children
-        within!(child, min, max, attribs)
+        nattrib += within_count(child, min, max)
     end
-
-    return attribs
+    return nattrib
 end
+
 
 function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {T,TA,N}
     #@show Base.intersect(qt, min, max), min, max, qt.min, qt.max
@@ -432,28 +434,6 @@ function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {
     return nattribs
 end
 
-
-function withincount!(qt::QT{T,TA,N}, min, max, count) where {T,TA,N}
-    if !Base.intersect(qt, min, max)
-        # nothing to do
-        return
-    end
-
-    if isleaf(qt)
-        #@show "checking"
-        @inbounds for i = 1:length(qt)
-            #if inside(min,max,qt.points[:,i])
-            if inside(min,max,view(qt.points,:,i))
-                count[ qt.attribs[i] ] += 1
-            end
-        end
-        return
-    end
-
-    for child in qt.children
-        withincount!(child, min, max, count)
-    end
-end
 
 
 function maxdepth(qt::QT{T,TA,N},d = 0) where {T,TA,N}
@@ -547,7 +527,10 @@ longitude, latitude, depth and time
 (in days). `dupl` a vector of vectors containing indices of the duplicates.
 """
 function checkduplicates(x::Tuple,value,delta,deltavalue;
-                         maxcap = 100, label = collect(1:size(x[1],1)))
+                         maxcap = 10_000,
+                         label = collect(1:size(x[1],1)),
+                         factor = 5
+                         )
     n = length(x)
     Nobs = length(x[1])
 
@@ -563,12 +546,14 @@ function checkduplicates(x::Tuple,value,delta,deltavalue;
     end
 
     qt = Quadtrees.QT(X,label)
-    Quadtrees.rsplit!(qt, maxcap)
+    Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
 
     duplicates = Set{Int}[]
 
     xmin = zeros(n)
     xmax = zeros(n)
+
+    index_buffer = zeros(Int,Nobs)
 
     @fastmath @inbounds for i = 1:Nobs
         for j = 1:n
@@ -576,11 +561,11 @@ function checkduplicates(x::Tuple,value,delta,deltavalue;
             xmax[j] = X[j,i] + delta[j]
         end
 
-        index = Quadtrees.within(qt,xmin,xmax)
+        nindex = Quadtrees.within_buffer!(qt,xmin,xmax,index_buffer)
 
-        #@show index
+        if nindex > 0
+            index = @view index_buffer[1:nindex]
 
-        if length(index) > 1
             # check for values
             vv = value[index]
             ii = sortperm(vv)
@@ -623,8 +608,9 @@ corresponding values.
 function checkduplicates(x1::Tuple,value1,
                          x2::Tuple,value2,
                          delta, deltavalue;
-                         maxcap = 100,
-                         label1 = collect(1:length(x1[1]))
+                         maxcap = 10_000,
+                         label1 = collect(1:length(x1[1])),
+                         factor = 5
                          )
     X1 = catx(x1)
     X2 = catx(x2)
@@ -634,14 +620,14 @@ function checkduplicates(x1::Tuple,value1,
     Nobs2 = size(X2,2)
 
     qt = Quadtrees.QT(X1,label1)
-    Quadtrees.rsplit!(qt, maxcap)
+    Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
 
     duplicates = Vector{Vector{Int}}(undef,Nobs2)
 
     xmin = zeros(n)
     xmax = zeros(n)
 
-    #index_buffer = zeros(Int,Nobs1)
+    index_buffer = zeros(Int,Nobs1)
 
     @fastmath @inbounds for i = 1:Nobs2
         for j = 1:n
@@ -649,10 +635,10 @@ function checkduplicates(x1::Tuple,value1,
             xmax[j] = X2[j,i] + delta[j]
         end
 
-        index = Quadtrees.within(qt,xmin,xmax)
-        #nindex = DIVAnd.Quadtrees.within_buffer!(qt,xmin,xmax,index_buffer)
+        nindex = Quadtrees.within_buffer!(qt,xmin,xmax,index_buffer)
 
-        if length(index) > 0
+        if nindex > 0
+            index = @view index_buffer[1:nindex]
             # check for values
             vv = value1[index]
             duplicates[i] = sort(index[abs.(vv .- value2[i]) .< deltavalue])
