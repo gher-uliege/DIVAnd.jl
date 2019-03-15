@@ -122,6 +122,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     # save everything per default
     saveindex = ntuple(i -> :, length(xi)-1)
     background_ext = background
+    plotres_ext = plotres
 
     # vertical extension at surface
     if surfextend
@@ -151,6 +152,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     return fbackground,vaa
                 end
         end
+
+        # skip first layer when plotting
+        plotres_ext(timeindex,sel,fit,erri) = plotres(timeindex,sel,fit[:,:,2:end],erri)
     end
 
     # metadata of grid
@@ -510,7 +514,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             end
 
 
-            plotres(timeindex,isfinite.(residuals) .& sel,fit,erri)
+            plotres_ext(timeindex,isfinite.(residuals) .& sel,fit,erri)
 
             fit[.!mask] .= NaN
             erri[.!mask] .= NaN
