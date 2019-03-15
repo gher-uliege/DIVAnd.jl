@@ -122,8 +122,8 @@ weight = DIVAnd.weight_RtimesOne((x,y),len)
 ndata = 70000
 ndim = 2
 
-ndata = 30000*2*2
-ndim = 4
+#ndata = 30000*2*2
+#ndim = 4
 
 coord = randn(ndim,ndata)
 x = ones(ndata)
@@ -139,6 +139,7 @@ n = size(coord,1)
 Nobs = size(coord,2)
 
 maxcap = 10
+T = Float64
 qt = DIVAnd.Quadtrees.QT(coord,collect(1:Nobs)) :: DIVAnd.Quadtrees.QT{T,Int,ndim}
 DIVAnd.Quadtrees.rsplit!(qt, maxcap)
 @show DIVAnd.Quadtrees.maxdepth(qt)
