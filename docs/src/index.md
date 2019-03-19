@@ -330,6 +330,14 @@ If data from a high-resolution data (e.g. profiling float, dense time serie) set
 combined with data with a low spatial resolution (e.g. profiles from a research
 vessel), then the analysis can be biased toward the high-resolution data. The function `weight_RtimesOne(x,len)` can be used to reduce the weight of the high-resoliution data (https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/13-processing-parameter-optimization.ipynb). Alternative methods are averaging data in bins ("binning") or simply sub-sampling the data.
 
+### My parameter represent a concentration and I get unrealistic negative values
+
+
+* You can use an anamorphosis transform, in particular `DIVAnd.Anam.loglin`. The idea is that the transformed variable is close to a Gaussian distribution that the original variable.
+* Use the option `fieldmin = 0.0` of `diva3d`
+
+If the parameter `epsilon` of `DIVAnd.Anam.loglin` is larger than zero (which is necessary if some measurements are exactly zero), then the smallest value that analysis can have is `-epsilon`. Therefore the option `fieldmin` is still required to avoid negative values.
+
 
 ## API changes
 
