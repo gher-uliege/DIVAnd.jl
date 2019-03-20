@@ -707,7 +707,11 @@ function backgroundfile(fname,varname,
     end
 end
 
+"""
+    dayssince(dt; t0 = DateTime(1900,1,1))
 
+Number of days since a starting day `t0` (1900-01-01 per default).
+"""
 dayssince(dt; t0 = DateTime(1900,1,1)) = Dates.value.(dt - t0)/1000/60/60/24;
 
 
