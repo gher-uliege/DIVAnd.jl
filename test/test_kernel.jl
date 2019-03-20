@@ -5,7 +5,7 @@ if VERSION >= v"0.7.0-beta.0"
 else
     using Base.Test
 end
-
+using DIVAnd
 
 # correlation length
 len = 0.2;
@@ -51,3 +51,32 @@ fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[2,4,2]);
 
 fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha=[1,0,1]);
 @test 0.4 <= maximum(fi) <= 0.6
+
+
+
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,primal=true,coeff_derivative2 = [1.,1.],coeff_laplacian = [0.,0.]);
+@show maximum(fi)
+
+
+# dimension
+n = 3
+mask,pmn,xyi = DIVAnd_squaredom(n,range(0, stop = 1, length = 30))
+
+# grid of observations
+xy = ntuple(i -> [0.5], n)
+
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,primal=true);
+@show maximum(fi)
+
+# make the analysis
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,primal=true,coeff_derivative2 = [1.,1.,1.],coeff_laplacian = [0.,0.,0.]);
+@show maximum(fi)
+
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,primal=true,coeff_derivative2 = [0.,0.,1.],coeff_laplacian = [1.,1.,0.]);
+@show maximum(fi)
+
+
+fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,primal=true,coeff_derivative2 = [0.,0.,0.1],coeff_laplacian = [1.,1.,0.9]);
+@show maximum(fi)
+
+#@test all(abs.(va[isfinite.(va)]) .< 1)
