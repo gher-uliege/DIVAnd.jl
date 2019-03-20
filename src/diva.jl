@@ -21,7 +21,7 @@ NetCDF file `filename` under the variable `varname`.
    If `fitcorrlen` is `false` (default), the correlation length should be expressed in meters.
    If `fitcorrlen` is `true`, then `len` can be the empty tuple `()` or a tuple containing
    3 arrays of normalized correlation lengths which will be multiplied by the
-   horizontal and vertical correlation lengths. 
+   horizontal and vertical correlation lengths.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
@@ -110,8 +110,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 fitvert_param = Dict(),
                 memtofit = 3,
                 niter_e::Int = 1,
-                minfield::Float64 = -Inf,
-                maxfield::Float64 = Inf,
+                minfield::Number = -Inf,
+                maxfield::Number = Inf,
                 surfextend = false,
                 kwargs...
                 )
@@ -376,6 +376,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     vm = mean(value_trans[isfinite.(value_trans)])
                     va = value_trans .- vm
 
+                    #@show background_len[3][1,1,:], vm
+                    #JLD2.@save "/tmp/test.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm
+                    #@show "saving"
                     # background profile
                     fi,vaa = DIVAnd.DIVAnd_averaged_bg(
                         mask,pmn,xyi,
@@ -387,6 +390,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         moddim = moddim)
 
                     fbackground = fi .+ vm
+                    #@show size(fbackground),fbackground[1,1,end]
+                    #dbinfo[:background] = fbackground
                     fbackground,vaa
                 else
                     # anamorphosis transform must already be included to the
