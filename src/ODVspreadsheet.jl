@@ -326,7 +326,7 @@ function colnumber_qv(sheet,localname,qvlocalname)::Int
     end
 
     ind = ind+1
-    while ind < length(locnames)
+    while ind <= length(locnames)
         if locnames[ind] == qvlocalname
             # bingo!
             return ind
