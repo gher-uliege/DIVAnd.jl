@@ -311,6 +311,40 @@ function colnumber(sheet,localname)::Int
 end
 
 """
+    cn = colnumber_qv(sheet,localname)
+
+Return the column number `cn` of the quality flag column with
+for the local name
+`localname` (without the prefix "SDN:LOCAL:") in the ODV spreadsheet `sheet`.
+"""
+function colnumber_qv(sheet,localname,qvlocalname)::Int
+    locnames = localnames(sheet)
+    ind = colnumber(sheet,localname)
+    if ind == 0
+        # variable not found
+        return 0
+    end
+
+    ind = ind+1
+    while ind < length(locnames)
+        if locnames[ind] == qvlocalname
+            # bingo!
+            return ind
+        end
+
+        if locnames[ind] ∈ ["QV:SEADATANET","STANDARD_DEV"]
+            ind = ind+1
+        else
+            # a new data variable, stop searching
+            return 0
+        end
+    end
+    # all columns checked
+    return 0
+end
+
+
+"""
     dt = parsejd(t)
 
 Convert a Chronological Julian Day Number to a DateTime object. The
@@ -435,8 +469,11 @@ function loaddataqv(sheet,profile,locname,fillvalue::T;
 
         SDNparse!(profile[cn_data,:],fillmode,fillvalue,data)
 
-        if (cn_data < length(locnames)) && (locnames[cn_data+1] == qvlocalname)
-            data_qv[:] = profile[cn_data+1,:]
+        cn_qv = colnumber_qv(sheet,locname,qvlocalname)
+        if cn_qv == 0
+            @debug "no quality flag found for variable $(locname)"
+        else
+            data_qv[:] = profile[cn_qv,:]
         end
     end
 
@@ -594,26 +631,26 @@ One can also use the constants these constants (prefixed with
 `qvlocalname` is the column name to denote quality flags. It is assumed that the
 quality flags follow immediatly the data column.
 
-|                    constant | value |
-|-----------------------------|-------|
-|          NO_QUALITY_CONTROL |   "0" |
-|                  GOOD_VALUE |   "1" |
-|         PROBABLY_GOOD_VALUE |   "2" |
-|          PROBABLY_BAD_VALUE |   "3" |
-|                   BAD_VALUE |   "4" |
-|               CHANGED_VALUE |   "5" |
-|       VALUE_BELOW_DETECTION |   "6" |
-|             VALUE_IN_EXCESS |   "7" |
-|          INTERPOLATED_VALUE |   "8" |
-|               MISSING_VALUE |   "9" |
-|  VALUE_PHENOMENON_UNCERTAIN |   "A" |
+|                      constant | value |
+|-------------------------------|-------|
+|          `NO_QUALITY_CONTROL` |   "0" |
+|                  `GOOD_VALUE` |   "1" |
+|         `PROBABLY_GOOD_VALUE` |   "2" |
+|          `PROBABLY_BAD_VALUE` |   "3" |
+|                   `BAD_VALUE` |   "4" |
+|               `CHANGED_VALUE` |   "5" |
+|       `VALUE_BELOW_DETECTION` |   "6" |
+|             `VALUE_IN_EXCESS` |   "7" |
+|          `INTERPOLATED_VALUE` |   "8" |
+|               `MISSING_VALUE` |   "9" |
+|  `VALUE_PHENOMENON_UNCERTAIN` |   "A" |
 
 
 If the ODV does not contain a semantic header (e.g. for the aggregated ODV files),
 then local names must be used.
 
 ```julia-repl
-julia> data,lon,lat,depth,time,ids = DIVAnd.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
+julia> data,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
       ["Water body salinity"]; nametype = :localname );
 ```
 
