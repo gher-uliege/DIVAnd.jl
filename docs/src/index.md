@@ -290,7 +290,7 @@ and 200 km (independently of the depth).
 
 ```julia
 # len and z are expressed in meters
-function mylimitfun(len,z)
+function mylimitfun(z,len)
    if len > 200_000
       return 200_000
    end
@@ -312,8 +312,8 @@ The same can be achieved more compactly as follows:
 
 ```julia
 ... = diva3d(...
-   fithorz_param = Dict(:limitfun => (len,z) -> min(max(len,50_000),200_000)),
-   fitvert_param = Dict(:limitfun => (len,z) -> min(max(len,20),200)))
+   fithorz_param = Dict(:limitfun => (z,len) -> min(max(len,50_000),200_000)),
+   fitvert_param = Dict(:limitfun => (z,len) -> min(max(len,20),200)))
 ```
 
 A similar option has also be added for the vertical correlation length.

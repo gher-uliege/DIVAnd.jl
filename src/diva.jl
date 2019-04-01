@@ -321,6 +321,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 # vertical info
                 dbinfo[:fitvertlen] = Dict{Symbol,Any}(
                     :len => zeros(kmax,length(TS)),
+                    :lenf => zeros(kmax,length(TS)),
                     :var0 => zeros(kmax,length(TS)),
                     :fitinfos => Array{Dict{Symbol,Any},2}(undef,kmax,length(TS))
                 )
@@ -439,6 +440,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         fitvert_param...
                     )
 
+                    dbinfo[:fitvertlen][:lenf][:,timeindex] = lenz1
                     dbinfo[:fitvertlen][:len][:,timeindex] = infoz[:len]
                     dbinfo[:fitvertlen][:var0][:,timeindex] = infoz[:var0]
                     dbinfo[:fitvertlen][:fitinfos][:,timeindex] = infoz[:fitinfos]
