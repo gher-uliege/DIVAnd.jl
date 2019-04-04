@@ -256,6 +256,7 @@ dbinfo =
             background_len = (lenx,leny,lenz),
             fithorz_param = Dict(
                 :maxnsamp => 500,
+                :epsilon2 => ones(size(obsvalue))
             ),
             fitvert_param = Dict(
                 :maxnsamp => 100,
