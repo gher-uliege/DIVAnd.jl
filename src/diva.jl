@@ -46,7 +46,7 @@ NetCDF file `filename` under the variable `varname`.
 * `transform`: Anamorphosis transformation function (default: `Anam.notransform()`).
 * `fitcorrlen`: true of the correlation length is determined from the observation (default `false`).
      Note that the parameter `len` is interpreted differently when `fitcorrlen` is set to `true`.
-* `fithorz_param`: dictionary with additional optional parameters for `fithorzlen`.
+* `fithorz_param`: dictionary with additional optional parameters for `fithorzlen`, for example: `Dict(:smoothz => 200., :searchz => 50.)`.
 * `fitvert_param`: dictionary with additional optional parameters for `fitvertlen`.
 * `distfun`: function to compute the distance (default `(xi,xj) -> DIVAnd.distance(xi[2],xi[1],xj[2],xj[1])`).
 * `mask`: if different from `nothing`, then this mask overrides land-sea mask based on the bathymetry
