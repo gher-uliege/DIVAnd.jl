@@ -145,6 +145,7 @@ mutable struct Concept
 end
 
 function Concept(url::AbstractString)
+    @debug "get concept: $url"
     r = HTTP.get(url)
     xdoc = parsexml(String(r.body))
 
