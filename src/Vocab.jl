@@ -34,7 +34,7 @@ const namespaces = Dict(
 
 const CFStandardNameURL = "http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml"
 const CFAreaTypesURL = "http://cfconventions.org/Data/area-type-table/current/src/area-type-table.xml"
-const VocabURL = "http://vocab.ndg.nerc.ac.uk/collection"
+const VocabURL = "http://vocab.nerc.ac.uk/collection"
 const EDMOURL = "http://www.seadatanet.org/urnurl"
 
 
