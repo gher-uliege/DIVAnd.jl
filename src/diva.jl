@@ -412,11 +412,13 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             if fitcorrlen
                 # @info "Applying fit of the correlation length"
                 # fit correlation length
+                fithorz_param_sel = Dict{Symbol,Any}(fithorz_param)
+                fithorz_param_sel[:epsilon2] = get(fithorz_param,:epsilon2,epsilon2)[sel]
 
                 lenxy1,infoxy = DIVAnd.fithorzlen(
                     xsel,vaa,depthr;
                     distfun = distfun,
-                    fithorz_param...
+                    fithorz_param_sel...,
                 )
 
                 if n == 3
@@ -434,10 +436,13 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 end
 
                 if n == 4
+                    fitvert_param_sel = Dict{Symbol,Any}(fitvert_param)
+                    fitvert_param_sel[:epsilon2] = get(fitvert_param,:epsilon2,epsilon2)[sel]
+
                     lenz1,infoz = DIVAnd.fitvertlen(
                         xsel,vaa,depthr;
                         distfun = distfun,
-                        fitvert_param...
+                        fitvert_param_sel...
                     )
 
                     dbinfo[:fitvertlen][:lenf][:,timeindex] = lenz1
