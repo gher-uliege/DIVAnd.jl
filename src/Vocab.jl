@@ -6,6 +6,7 @@ using EzXML
 import HTTP
 if VERSION < v"0.7.0"
     import Base.find
+    using Compat: @info, @warn, @debug
 end
 import Base.findfirst
 import Base.repr
