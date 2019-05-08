@@ -105,6 +105,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 background_epsilon2_factor::Float64 = 10.,
                 background_lenz = nothing, # m
                 background_len = nothing,
+                background_lenz_factor = 4,
                 fitcorrlen::Bool = false,
                 fithorz_param = Dict(),
                 fitvert_param = Dict(),
@@ -265,7 +266,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                                   background_lenz)
             end
             if len !== ()
-                background_len = (len[1],len[2],4*len[3])
+                background_len = (len[1],len[2],background_lenz_factor*len[3])
             end
         # 3D analysis (lon,lat,time)
         else
@@ -391,6 +392,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         moddim = moddim)
 
                     fbackground = fi .+ vm
+                    @debug "fbackground: $(fbackground[1,1,:])"
                     #@show size(fbackground),fbackground[1,1,end]
                     #dbinfo[:background] = fbackground
                     fbackground,vaa
