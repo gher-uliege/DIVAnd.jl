@@ -146,7 +146,7 @@ end
          qv_flags = ["good_value","probably_good_value"])
 
 Load all profiles in the file `fname` corresponding to netcdf variable with the
-`long_name` attribute equal to long_name. `qv_flags` is a list of strings
+`long_name` attribute equal to the parameter `long_name`. `qv_flags` is a list of strings
 with the quality flags to be kept. `obsids` is a vector of strings with the
 EDMO code and local CDI id concatenated by a hyphen.
 """

@@ -373,6 +373,29 @@ Pkg.add("EzXML")
 ```
 
 
+### Installation problem of PyPlot on Linux (Debian/Ubuntu)
+
+Make sure that the following Debian/Ubuntu packages are installed:
+
+```bash
+sudo apt-get install python3 libpython3 python3-tk
+```
+
+Then start Julia and run:
+
+```
+using Pkg
+Pkg.build("PyCall")
+Pkg.build("PyPlot")
+```
+
+Test PyPlot with:
+
+```julia
+using PyPlot
+plot(1:10)
+```
+
 
 ### No plotting window appears
 
