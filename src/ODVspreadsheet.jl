@@ -253,6 +253,31 @@ function readODVspreadsheet(datafile)
     end
 end
 
+
+
+function getheaderline(fname)
+    for row in eachline(fname)
+        if startswith(row,"//")
+            continue
+        end
+        return split(row,'\t')
+    end
+end
+
+stripunits(h) = ('[' in h ? strip(split(h,'[')[1]) : h)
+
+"""
+    parameters = ODVspreadsheet.listparameters(fname,ignore = ["QF","QV:SEADATANET","QV:SEADATANET:SAMPLE","STANDARD_DEV"])
+
+List all parameters defined in the ODV file `fname` ignoring the
+variables listed in `ignore` (i.e. quality flags)
+"""
+function listparameters(fname,ignore = ["QF","QV:SEADATANET",
+    "QV:SEADATANET:SAMPLE","STANDARD_DEV"])
+    return stripunits.(filter(h -> !(h ∈ ignore),  getheaderline(fname)))
+end
+
+
 """
     p = listSDNparam(ODVData)
 

@@ -961,13 +961,13 @@ end
 
 
 function updateNCfile(file; update_area_keywords = true)
-    ds = Dataset(file,"a")
-    if update_area_keywords
-        area_keywords = ds.attrib["area_keywords"]
-        # replace comma by the pipe symbol and strips white-space
-        area_keywords = join(strip.(split(area_keywords,",")),"|")
-        @show area_keywords
-        ds.attrib["area_keywords"] =  area_keywords
+    Dataset(file,"a") do ds
+        if update_area_keywords
+            area_keywords = ds.attrib["area_keywords"]
+            # replace comma by the pipe symbol and strips white-space
+            area_keywords = join(strip.(split(area_keywords,",")),"|")
+            @show area_keywords
+            ds.attrib["area_keywords"] =  area_keywords
+        end
     end
-    close(ds)
 end

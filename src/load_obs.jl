@@ -89,16 +89,17 @@ Numeric output arguments will have the type `T`.
 
 """
 function loadobs(T,filename,varname)
-    ds = Dataset(filename,"r")
-    time = nomissing(ds["obstime"][:]) :: Vector{DateTime}
 
-    lon = Vector{T}(nomissing(ds["obslon"][:],NaN))
-    lat = Vector{T}(nomissing(ds["obslat"][:],NaN))
-    depth = Vector{T}(nomissing(ds["obsdepth"][:],NaN))
-    value = Vector{T}(nomissing(ds[varname][:],NaN))
+    Dataset(filename,"r") do ds
+        time = nomissing(ds["obstime"][:]) :: Vector{DateTime}
 
-    obsid = loadobsid(ds,"obsid")
+        lon = Vector{T}(nomissing(ds["obslon"][:],NaN))
+        lat = Vector{T}(nomissing(ds["obslat"][:],NaN))
+        depth = Vector{T}(nomissing(ds["obsdepth"][:],NaN))
+        value = Vector{T}(nomissing(ds[varname][:],NaN))
 
-    close(ds)
-    return value,lon,lat,depth,time,obsid
+        obsid = loadobsid(ds,"obsid")
+
+        return value,lon,lat,depth,time,obsid
+    end
 end

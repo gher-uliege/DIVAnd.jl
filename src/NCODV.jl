@@ -154,41 +154,40 @@ function load(T,fname,long_name;
               qv_flags = ["good_value","probably_good_value"])
 
     accepted_status_flags = qv_flags
-    ds = Dataset(fname);
 
-    ncvar_LOCAL_CDI_ID = varbyattrib_first(ds,long_name = "LOCAL_CDI_ID")
-    LOCAL_CDI_ID = chararray2strings(ncvar_LOCAL_CDI_ID.var[:]);
+    Dataset(fname) do ds
+        ncvar_LOCAL_CDI_ID = varbyattrib_first(ds,long_name = "LOCAL_CDI_ID")
+        LOCAL_CDI_ID = chararray2strings(ncvar_LOCAL_CDI_ID.var[:]);
 
-    EDMO_CODE =
-        if length(varbyattrib(ds; long_name = "EDMO_code")) > 0
-            varbyattrib_first(ds,long_name = "EDMO_code")[:]
-        else
-            varbyattrib_first(ds,long_name = "EDMO_CODE")[:]
-        end
+        EDMO_CODE =
+            if length(varbyattrib(ds; long_name = "EDMO_code")) > 0
+                varbyattrib_first(ds,long_name = "EDMO_code")[:]
+            else
+                varbyattrib_first(ds,long_name = "EDMO_CODE")[:]
+            end
 
-    obsproflon = varbyattrib_first(ds,standard_name = "longitude")[:]
-    obsproflat = varbyattrib_first(ds,standard_name = "latitude")[:]
-    obsproftime = varbyattrib_first(ds,standard_name = "time")[:]
+        obsproflon = varbyattrib_first(ds,standard_name = "longitude")[:]
+        obsproflat = varbyattrib_first(ds,standard_name = "latitude")[:]
+        obsproftime = varbyattrib_first(ds,standard_name = "time")[:]
 
-    ncvar = varbyattrib_first(ds,long_name = long_name);
-    ncvar_z = varbyattrib_first(ds,long_name = "Depth");
+        ncvar = varbyattrib_first(ds,long_name = long_name);
+        ncvar_z = varbyattrib_first(ds,long_name = "Depth");
 
-    ncv_ancillary = NCDatasets.ancillaryvariables(ncvar,"status_flag").var
-    ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z,"status_flag").var
+        ncv_ancillary = NCDatasets.ancillaryvariables(ncvar,"status_flag").var
+        ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z,"status_flag").var
 
-    accepted_status_flag_values = flagvalues(ncv_ancillary.attrib,accepted_status_flags)
-    accepted_status_flag_values_z = flagvalues(ncv_ancillary_z.attrib,accepted_status_flags)
-    @debug accepted_status_flag_values
+        accepted_status_flag_values = flagvalues(ncv_ancillary.attrib,accepted_status_flags)
+        accepted_status_flag_values_z = flagvalues(ncv_ancillary_z.attrib,accepted_status_flags)
+        @debug accepted_status_flag_values
 
-    fillval = ncvar.attrib["_FillValue"]
-    fillval_z = get(ncvar.attrib,"_FillValue",nothing)
-    data,data_z = loadprof(ncvar.var,ncv_ancillary,fillval,accepted_status_flag_values,
-                            ncvar_z.var,ncv_ancillary_z,fillval_z,accepted_status_flag_values_z)
+        fillval = ncvar.attrib["_FillValue"]
+        fillval_z = get(ncvar.attrib,"_FillValue",nothing)
+        data,data_z = loadprof(ncvar.var,ncv_ancillary,fillval,accepted_status_flag_values,
+                               ncvar_z.var,ncv_ancillary_z,fillval_z,accepted_status_flag_values_z)
 
-    close(ds)
-
-    obsvalue,obslon,obslat,obsdepth,obstime,obsids = flatten_data(T,obsproflon,obsproflat,obsproftime,EDMO_CODE,LOCAL_CDI_ID,data,data_z)
-    return obsvalue,obslon,obslat,obsdepth,obstime,obsids
+        obsvalue,obslon,obslat,obsdepth,obstime,obsids = flatten_data(T,obsproflon,obsproflat,obsproftime,EDMO_CODE,LOCAL_CDI_ID,data,data_z)
+        return obsvalue,obslon,obslat,obsdepth,obstime,obsids
+    end
 end
 
 end

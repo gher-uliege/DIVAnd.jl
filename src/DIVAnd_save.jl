@@ -2,19 +2,17 @@ function DIVAnd_save(filename,mask::AbstractArray{Bool,N},varname,fi) where N
 
     sz = size(mask)
 
-    ds = Dataset(filename,"c")
+    Dataset(filename,"c") do ds
+        # Dimensions
+        ds.dim["time"] = sz[4]
+        ds.dim["depth"] = sz[3]
+        ds.dim["lat"] = sz[2]
+        ds.dim["lon"] = sz[1]
 
-    # Dimensions
-
-    ds.dim["time"] = sz[4]
-    ds.dim["depth"] = sz[3]
-    ds.dim["lat"] = sz[2]
-    ds.dim["lon"] = sz[1]
-
-    ncvar = defVar(ds, varname, Float32, ("lon", "lat", "depth", "time"),
-                   checksum = checksum)
-    ncvar[:,:,:,:] = fi
-    close(ds)
+        ncvar = defVar(ds, varname, Float32, ("lon", "lat", "depth", "time"),
+                       checksum = checksum)
+        ncvar[:,:,:,:] = fi
+    end
 
     return nothing
 end
@@ -484,12 +482,13 @@ function saveobs(filename,varname,value,xy,ids;
             )
 
 
-    ds = Dataset(filename,"a")
-    ncobs = defVar(ds,varname, type_save, ("observations",),
-                   checksum = checksum)
-    ncobs[:] = value[used]
-    close(ds)
+    Dataset(filename,"a") do ds
+        ncobs = defVar(ds,varname, type_save, ("observations",),
+                       checksum = checksum)
+        ncobs[:] = value[used]
+    end
 
+    return nothing
 end
 
 
