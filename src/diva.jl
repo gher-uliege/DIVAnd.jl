@@ -382,6 +382,12 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     #JLD2.@save "/tmp/test.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm
                     #@show "saving"
                     # background profile
+
+                    if all(background_len[3] .== 0)
+                        @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
+                        background_len[3] .= 2 ./ pmn[3];
+                    end
+
                     fi,vaa = DIVAnd.DIVAnd_averaged_bg(
                         mask,pmn,xyi,
                         xsel,
