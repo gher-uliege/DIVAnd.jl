@@ -72,6 +72,9 @@ varname = "Salinity"
 # File name based on the variable (but all spaces are replaced by _)
 filename = "Water_body_$(replace(varname,' ' => '_')).3Danl.nc"
 
+if isfile(filename)
+    rm(filename)
+end
 
 metadata = OrderedDict(
     # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-Chemistry, ...)

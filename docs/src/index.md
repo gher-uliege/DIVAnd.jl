@@ -257,6 +257,22 @@ ENV["JULIA_DEBUG"] = "DIVAnd"
 
 See also https://docs.julialang.org/en/v1/stdlib/Logging/index.html#Environment-variables-1 .
 
+## Correlation length
+
+The estimation of the correlation length in the function `diva3d` can be activated with the option
+`fitcorrlen` for the horizontal and vertical correlaton. The parameter `len` should then
+an empty tuple (`()`) or a tuple of arrays equal to one. The actually used correlation length is a product
+between the prodived values of the array `len` and the estimated correlation length by fitting. Setting `fitcorrlen`
+to true means thus that the intepretation of the parameters changes from absolution correlation
+length to relative correlation length.
+
+The estimation of the horizontal and vertical correlation can also be activated selectively by just setting
+`fithorzcorrlen` and `fitvertcorrlen` (respectively) to true.
+
+If one wants to not use the vertical correlation length, the one can put the corresponding value in `len` to zero.
+Consequently the value of `fitvertcorrlen` and `fitcorrlen` should be keep to `false` (i.e. its default values).
+Optimizing the horizontal correlation length is still possible by setting `fithorzcorrlen` to `true`.
+
 ## Fequently asked questions
 
 ### Which data points are using for the analysis?
@@ -270,16 +286,12 @@ An individual data point is used if all following conditions are met:
 
 Note that for points 1.-3. the finite precision of floating point numbers can affect the results.
 
-
 ### How to resolve a bias of the surface layer (or the deepest layer)?
 
 In DIVAnd, the vertical levels must resolve the vertical correlation length. If the vertical correlation length is smaller than the
 surface resolution, this can result in a bias of the surface value. A similar problem can also be present at the deepest layer.
 The solution is to either refine the vertical resolution or to increase the vertical correlation length.
 
-### How do I estimate the horizontal and vertical correlation length in DIVAnd?
-
-Set the option `fitcorrlen` to `true` in `diva3d` and parameter `len` to an empty tuple (`()`) or a tuple of arrays equal to one.
 
 ### How do I limit the estimated horizontal and vertical correlation length in DIVAnd?
 

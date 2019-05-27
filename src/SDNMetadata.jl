@@ -482,7 +482,7 @@ function previewURL(filepath,varname,project,domain;
 		        if n_time != 1
 		            preview_url_time = WMStimeparam(ds["time"],n_time)
 		        end
-		        @debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+		        #@debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
 	        end
 	    elseif "time" in dimnames(var)
 	        # only time
