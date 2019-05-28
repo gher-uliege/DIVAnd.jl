@@ -389,9 +389,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     #@show "saving"
                     # background profile
 
-                    if all(background_len[3] .== 0)
-                        @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
-                        background_len[3] .= 2 ./ pmn[3];
+                    if n == 4
+                        if all(background_len[3] .== 0)
+                            @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
+                            background_len[3] .= 2 ./ pmn[3];
+                        end
                     end
 
                     fi,vaa = DIVAnd.DIVAnd_averaged_bg(
