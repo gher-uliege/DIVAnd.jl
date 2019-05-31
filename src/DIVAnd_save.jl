@@ -384,6 +384,8 @@ function saveobs(filename,xy,ids;
                  timeorigin = DateTime(1900,1,1,0,0,0),
                  used = trues(size(ids)),
                  checksum = :fletcher32,
+                 chunksize = 10_000,
+                 deflatelevel = 9,
                  )
     x,y,z,t = xy
     # keep only used observations
@@ -405,19 +407,26 @@ function saveobs(filename,xy,ids;
         ds.dim["idlen"] = idlen
 
         ncobslon = defVar(ds,"obslon", type_save, ("observations",),
-                          checksum = checksum)
+                          checksum = checksum,
+                          deflatelevel = deflatelevel,
+                          chunksizes = [chunksize],
+                          )
         ncobslon.attrib["units"] = "degrees_east"
         ncobslon.attrib["standard_name"] = "longitude"
         ncobslon.attrib["long_name"] = "longitude"
 
         ncobslat = defVar(ds,"obslat", type_save, ("observations",),
-                          checksum = checksum)
+                          checksum = checksum,
+                          deflatelevel = deflatelevel,
+                          chunksizes = [chunksize])
         ncobslat.attrib["units"] = "degrees_north"
         ncobslat.attrib["standard_name"] = "latitude"
         ncobslat.attrib["long_name"] = "latitude"
 
         ncobstime = defVar(ds,"obstime", Float64, ("observations",),
-                           checksum = checksum)
+                           checksum = checksum,
+                           deflatelevel = deflatelevel,
+                           chunksizes = [chunksize])
         ncobstime.attrib["units"] = "days since " *
             Dates.format(timeorigin,"yyyy-mm-dd HH:MM:SS")
 
@@ -425,14 +434,19 @@ function saveobs(filename,xy,ids;
         ncobstime.attrib["long_name"] = "time"
 
         ncobsdepth = defVar(ds,"obsdepth", type_save, ("observations",),
-                            checksum = checksum)
+                            checksum = checksum,
+                            deflatelevel = deflatelevel,
+                            chunksizes = [chunksize])
+
         ncobsdepth.attrib["units"] = "meters"
         ncobsdepth.attrib["positive"] = "down"
         ncobsdepth.attrib["standard_name"] = "depth"
         ncobsdepth.attrib["long_name"] = "depth below sea level"
 
         ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"),
-                         checksum = checksum)
+                         checksum = checksum,
+                         deflatelevel = deflatelevel,
+                         chunksizes = [idlen,chunksize])
         ncobsid.attrib["long_name"] = "observation identifier"
         ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
 
@@ -444,6 +458,8 @@ function saveobs(filename,xy,ids;
         ncobstime[:] = xy[4]
         ncobsid[:] = obsids
     end
+
+    return nothing
 end
 
 
@@ -452,6 +468,7 @@ end
                    type_save = Float32,
                    timeorigin = DateTime(1900,1,1,0,0,0),
                    used = trues(size(ids)),
+                   chunksize = 10_000,
                    )
 
 Save `value` and the location and time of the observation in the NetCDF file `filename` and
@@ -473,18 +490,23 @@ function saveobs(filename,varname,value,xy,ids;
                  timeorigin = DateTime(1900,1,1,0,0,0),
                  used = trues(size(ids)),
                  checksum = :fletcher32,
+                 chunksize = 10_000,
+                 deflatelevel = 9,
                  )
 
     saveobs(filename,xy,ids;
             type_save = type_save,
             timeorigin = timeorigin,
-            used = used
+            used = used,
+            chunksize = chunksize,
             )
 
 
     Dataset(filename,"a") do ds
         ncobs = defVar(ds,varname, type_save, ("observations",),
-                       checksum = checksum)
+                       checksum = checksum,
+                       deflatelevel = deflatelevel,
+                       chunksizes = [chunksize])
         ncobs[:] = value[used]
     end
 

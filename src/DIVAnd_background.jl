@@ -66,6 +66,8 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
     Ld = [mean(L) for L in Labs]
     neff = sum(Ld .> 0)
 
+    @debug "effective number of dimensions (neff): $neff"
+
     # geometric mean
     geomean(v) = prod(v)^(1/length(v))
     L = geomean(Ld[Ld .> 0])
