@@ -392,6 +392,9 @@ function saveobs(filename,xy,ids;
     xy = [xy_element[used] for xy_element in xy]
     ids = ids[used]
 
+    # chunksizes should not exceed the number of observations
+    chunksize = min(chunksize,length(ids))
+
     idlen = maximum(length.(ids))
     obsids = fill('\0',(idlen,length(ids)))
     for i = 1:length(ids)
@@ -493,6 +496,9 @@ function saveobs(filename,varname,value,xy,ids;
                  chunksize = 10_000,
                  deflatelevel = 9,
                  )
+
+    # chunksizes should not exceed the number of observations
+    chunksize = min(chunksize,sum(used))
 
     saveobs(filename,xy,ids;
             type_save = type_save,
