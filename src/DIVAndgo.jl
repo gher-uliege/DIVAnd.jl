@@ -210,6 +210,9 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                 # for errors here maybe add a parameter to DIVAndjog ? at least for "exact error" should be possible; and cpme directly reprogrammed here as well as aexerr ? assuming s.P can be calculated ?
             else
                 # Here would be a natural place to test which error fields are demanded and add calls if the direct method is selected
+
+                @debug "call DIVAndrun"
+
                 fw,s = DIVAndrun(
                     mask[windowpoints...],
                     pmniw,
@@ -302,10 +305,14 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
     end
 
+    #FileIO.save("/tmp/test_fi_ingo.jld",Dict("fi"=>Array(fi)))
+
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
     # it also makes the shared array possible to save in netCDF??
     fi_filtered = DIVAnd_filter3(fi,NaN,2)
     erri_filtered = DIVAnd_filter3(erri,NaN,3)
+
+    #FileIO.save("/tmp/test_fi_filtered_ingo.jld",Dict("fi_filtered" => Array(fi_filtered)))
 
     #@show size(fidata)
     # Add desroziers type of correction

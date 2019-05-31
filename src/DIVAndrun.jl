@@ -35,6 +35,7 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
     pmn,xi,len = DIVAnd_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
 
 
+
     # observation error covariance (scaled)
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
     # boundary
@@ -102,6 +103,19 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
     fi = DIVAnd_solve!(s,fi0_pack,f0;btrunc=btrunc) :: Array{T,N}
 
     # @info "Done solving"
+
+    # iii = findfirst(x[1] .== 12.43212345678)
+
+    # if iii !== nothing
+    #     if f[iii] !== 1.0
+    #         @show iii
+    #         @show f[iii]
+    #         @show obscon.H[iii,:]
+    #         @show (obscon.H* pack(s.sv,(fi,)))[iii]
+    #         JLD2.@save "/tmp/test_fi.jld2" fi
+    #     end
+    # end
+
     return fi,s
 end
 

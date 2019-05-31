@@ -161,7 +161,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         end
 
         # skip first layer when plotting
-        plotres_ext(timeindex,sel,fit,erri) = plotres(timeindex,sel,fit[:,:,2:end],erri)
+        plotres_ext(timeindex,sel,fit,erri) = plotres(timeindex,sel,fit[:,:,2:end],erri[:,:,2:end])
     end
 
     # metadata of grid
@@ -530,6 +530,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
             # sum analysis and backgrounds
             fit = fi2 + fbackground
+            #@show niter_e
+            #JLD2.@save "/tmp/test_fi2.jld" fi2 fit fbackground
 
             # inverse anamorphosis transformation
             fit .= invtrans.(fit)
@@ -540,14 +542,15 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
             end
             if maxfield != Inf
                 fit[fit .> maxfield] .= maxfield
-
             end
 
+            #JLD2.@save "/tmp/test_fit.jld2" fit fbackground
 
             plotres_ext(timeindex,isfinite.(residuals) .& sel,fit,erri)
 
             fit[.!mask] .= NaN
             erri[.!mask] .= NaN
+
             if n == 4
                 DIVAnd.writeslice(ncvar, ncvar_relerr, ncvar_Lx,
                                   fit, erri, (:,:,:,timeindex),
