@@ -614,6 +614,7 @@ function _next(iter::VertRandomCoupels,state)
             k = rand(1:length(iter.x[1]))
             if ((distfun_m([iter.x[1][k],iter.x[2][k]],[iter.x[1][j],iter.x[2][j]]) < iter.searchxy) &&
                 (j != k))
+#            if (distfun_m([iter.x[1][k],iter.x[2][k]],[iter.x[1][j],iter.x[2][j]]) < iter.searchxy)
                 jindex = k
                 break
             end
@@ -678,7 +679,7 @@ function fitlen(x::Tuple,d,weight,nsamp; kwargs...)
 end
 
 
-function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs...)
+function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, iseed = length(d), kwargs...)
     if length(d) == 0
         @warn "no data is provided to fitlen"
         return NaN,NaN,Dict{Symbol,Any}()
@@ -723,9 +724,9 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, kwargs..
     x1 = zeros(ndims)
 
     if VERSION >= v"0.7.0-beta.0"
-        Random.seed!(n)
+        Random.seed!(iseed)
     else
-        srand(n)
+        srand(iseed)
     end
 
     for (i,j) in iter

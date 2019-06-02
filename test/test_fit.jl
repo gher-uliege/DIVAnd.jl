@@ -166,7 +166,7 @@ fitlenxy,dbinfo =
 
 @test median(fitlenxy)  ≈ lenx             rtol=0.3
 
-s = 1:2:length(field)
+s = 1:3:length(field)
 x = (xi[s],yi[s],zi[s])
 v = field[s]
 epsilon2 = ones(length(x[3])) + x[3][:].^2
