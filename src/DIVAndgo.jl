@@ -37,6 +37,8 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                   QCMETHOD = (),
                   RTIMESONESCALES = (),
                   solver = :auto,
+                  filteranom = 2,
+                  filtererr = 3,
                   otherargs...
                   ) where n
 # function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme) where n
@@ -309,8 +311,8 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
     # it also makes the shared array possible to save in netCDF??
-    fi_filtered = DIVAnd_filter3(fi,NaN,2)
-    erri_filtered = DIVAnd_filter3(erri,NaN,3)
+    fi_filtered = DIVAnd_filter3(fi,NaN,filteranom)
+    erri_filtered = DIVAnd_filter3(erri,NaN,filtererr)
 
     #FileIO.save("/tmp/test_fi_filtered_ingo.jld",Dict("fi_filtered" => Array(fi_filtered)))
 

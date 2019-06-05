@@ -11,6 +11,10 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
     # central weight
     cw=1.
 
+    if ntimes == 0
+        return A
+    end
+
     out = similar(A)
     B =
         if ntimes > 1
