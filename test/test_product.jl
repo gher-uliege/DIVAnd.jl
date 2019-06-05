@@ -204,14 +204,23 @@ project = "SeaDataCloud"
 xmlfilename = "test.xml"
 ignore_errors = true
 
+additionalcontacts = [
+    DIVAnd.getedmoinfo(1977,"originator"),
+    DIVAnd.getedmoinfo(4630,"originator"),
+]
+
 @static if VERSION >= v"0.7.0"
     @test_logs (:info,r".*") match_mode=:any DIVAnd.divadoxml(
         filename,varname,project,cdilist,xmlfilename,
-        ignore_errors = ignore_errors)
+        ignore_errors = ignore_errors,
+        additionalcontacts = additionalcontacts
+    )
 else
     @test_warn r".*" DIVAnd.divadoxml(
         filename,varname,project,cdilist,xmlfilename,
-        ignore_errors = ignore_errors)
+        ignore_errors = ignore_errors,
+        additionalcontacts = additionalcontacts
+    )
 end
 
 errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
@@ -229,6 +238,8 @@ xmlstr = read(xmlfilename,String);
 
 keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
 @test occursin(keyword_code,xmlstr)
+@test occursin("1977",xmlstr)
+@test occursin("4630",xmlstr)
 
 # new analysis with background from file
 

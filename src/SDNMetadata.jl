@@ -531,6 +531,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
                          WMSlayername = String[],
                          previewindex = 1,
                          basemap = "shadedrelief",
+                         additionalcontacts = [],
                          ignore_errors = false)
 
     # assume that grid and time coverage is the same as the
@@ -768,6 +769,7 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
         ignore_errors = ignore_errors)
 
     append!(contacts,originators)
+    append!(contacts,additionalcontacts)
 
     bbox = join([string(templateVars[c]) for c in [
         "longitude_min","latitude_min",
@@ -907,7 +909,9 @@ function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,x
                    ignore_errors = false,
 		           previewindex = 1,
                    basemap = "shadedrelief",
-                   additionalvars = Dict{String,Any}(), WMSlayername = String[])
+                   additionalvars = Dict{String,Any}(),
+                   additionalcontacts = [],
+                   WMSlayername = String[])
 
     # template file we will use.
     templatefile = PROJECTS[project]["template"]
@@ -917,6 +921,7 @@ function divadoxml(filepaths::Vector{<:AbstractString},varname,project,cdilist,x
         WMSlayername = WMSlayername,
 	    previewindex = previewindex,
         basemap = basemap,
+        additionalcontacts = additionalcontacts,
         ignore_errors = ignore_errors)
 
     merge!(templateVars,additionalvars)
