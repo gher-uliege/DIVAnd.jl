@@ -1,36 +1,37 @@
 for OT in [:sparse,:MatFun]
     ot = Val{Symbol(OT)}
+
+    @eval begin
+        @doc """
+    Dx1,Dx2,...,Dxn = DIVAnd.DIVAnd_gradient(operatortype,mask,pmn,iscyclic)
+
+Form the gradient using finite differences in all n-dimensions.
+`mask` is a binary mask delimiting the domain. 1 is inside and 0 outside.
+For oceanographic application, this is the land-sea mask.
+`pmn` is a tuple of arrays with the scale factor of the grid.
+The output `Dx1,Dx2,...,Dxn` are sparse matrices represeting a gradient along
+different dimensions.
 """
-Sparse operator for a gradient.
-Dx1,Dx2,...,Dxn = DIVAnd_gradient(operatortype,mask,pmn,iscyclic)
-Form the gradient using finite differences in all n-dimensions
-Input:
-  mask: binary mask delimiting the domain. 1 is inside and 0 outside.
-        For oceanographic application, this is the land-sea mask.
-  pmn: scale factor of the grid.
-Output:
-  Dx1,Dx2,...,Dxn: operators represeting a gradient along
-    different dimensions
-"""
-    @eval function DIVAnd_gradient(::Type{$ot},mask::AbstractArray{Bool,N},pmn::NTuple{N,AbstractArray{T,N}},iscyclic = falses(ndims(mask))) where {N,T}
+        function DIVAnd_gradient(::Type{$ot},mask::AbstractArray{Bool,N},pmn::NTuple{N,AbstractArray{T,N}},iscyclic = falses(ndims(mask))) where {N,T}
 
-    H = oper_pack($ot,mask)
-    sz = size(mask)
+            H = oper_pack($ot,mask)
+            sz = size(mask)
 
-    out = ntuple(i ->
-                 begin
-                 # staggering operator
-                 S = oper_stagger($ot,sz,i,iscyclic[i])
+            out = ntuple(i ->
+                         begin
+                         # staggering operator
+                         S = oper_stagger($ot,sz,i,iscyclic[i])
 
-                 # mask for staggered variable
-                 m = (S * mask[:]) .== 1
+                         # mask for staggered variable
+                         m = (S * mask[:]) .== 1
 
-                 d = m .* (S * pmn[i][:])
+                         d = m .* (S * pmn[i][:])
 
-                 return oper_pack($ot,m) * oper_diag($ot,d) * oper_diff($ot,sz,i,iscyclic[i]) * H'
-                  end,
-                 Val(N))
-        return out
+                         return oper_pack($ot,m) * oper_diag($ot,d) * oper_diff($ot,sz,i,iscyclic[i]) * H'
+                         end,
+                         Val(N))
+            return out
+        end
     end
 end
 

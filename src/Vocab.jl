@@ -183,7 +183,7 @@ date(c::Concept) = DateTime(
 urn(c::Concept) = notation(c)
 
 """
-    find(c::Concept,name,collection)
+    concepts = Vocab.find(c::Concept,name,collection)
 
 Return a list of related concepts in the collection `collection`.
 `name` can be the string "related", "narrower", "broader".

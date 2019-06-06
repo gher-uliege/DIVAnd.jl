@@ -161,7 +161,6 @@ Returns a dictionary with the contact information from the EDMO registry
 based on the prodivided `emdo_code`. `role` is the Sextant contact information
 role, i.e. either "originator" or "author".
 """
-
 function getedmoinfo(edmo_code,role)
     entry = DIVAnd.Vocab.EDMO()[edmo_code]
 
