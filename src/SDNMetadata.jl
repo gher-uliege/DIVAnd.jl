@@ -154,6 +154,13 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
     return ncglobalattrib,ncvarattrib
 end
 
+"""
+    contact = DIVAnd.getedmoinfo(edmo_code,role)
+
+Returns a dictionary with the contact information from the EDMO registry
+based on the prodivided `emdo_code`. `role` is the Sextant contact information
+role, i.e. either "originator" or "author".
+"""
 
 function getedmoinfo(edmo_code,role)
     entry = DIVAnd.Vocab.EDMO()[edmo_code]
@@ -853,6 +860,7 @@ end
                      ignore_errors = false,
                      WMSlayername = [],
                      previewindex = 1,
+                     additionalcontacts = [],
                      additionalvars = Dict{String,Any}())
 
 Generate the XML metadata file `xmlfilename` from the NetCDF
@@ -886,6 +894,10 @@ webserver, the `filepath` should also contain this subfolder (e.g.
 structure on OceanBrowser. Relative paths should be used, and if the Julia code isn't right above the NetCDF
 files, use cd("<path>") before each setting the files paramter which use paths relative to this path.
 
+`additionalcontacts` is a list of dictionaries with additional condact
+information to be added in the XML file. Elements are typically create by the
+function `DIVAnd.getedmoinfo`.
+
 ### Example
 
 ```julia
@@ -897,10 +909,15 @@ files = [
          "Autumn (October-December) - 6-year running averages/Water_body_chlorophyll-a.4Danl.nc"
          ];
 
+additionalcontacts = [
+    DIVAnd.getedmoinfo(1977,"originator"), # US NODC for World Ocean Database
+    DIVAnd.getedmoinfo(4630,"originator"), # CORIOLIS for CORA
+]
 
 DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zip","test.xml";
     ignore_errors = true,
     additionalvars = Dict("abstract" => "Here goes the abstract"),
+    additionalcontacts = additionalcontacts,
     WMSlayername = ["winter","spring","summer","autumn"]
 )
 ```

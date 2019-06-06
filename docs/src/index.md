@@ -19,6 +19,7 @@ DIVAnd.smoothfilter
 DIVAnd.Anam.loglin
 DIVAnd.Anam.logit
 DIVAnd.divadoxml
+DIVAnd.getedmoinfo
 DIVAnd.random
 DIVAnd.distance
 DIVAnd.interp
