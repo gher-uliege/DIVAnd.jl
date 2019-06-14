@@ -78,33 +78,8 @@ Test if the n-th bit in a is set. The least significant bit is n = 1.
 bitget(a,n) = Bool((a & (1 << (n-1))) >> (n-1))
 
 
-
-
-
-function intersect_(x0,x1,y0,y1)
-    # number of dimensions
-    n = size(x0,1)
-
-    intrsct = false
-
-    @inbounds for i = 1:2^n
-        inside = true
-        @inbounds for j = 1:n
-            if bitget(i-1, j)
-                inside = inside & (x0[j] <= y0[j] <= x1[j])
-            else
-                inside = inside & (x0[j] <= y1[j] <= x1[j])
-            end
-        end
-
-        intrsct = intrsct | inside
-    end
-
-    return intrsct
-end
-
 """
-Test of the rectanges defined by x0,x1  and y0,y1 intersects
+Test of the rectanges defined by x0,x1  and y0,y1 intersects/overlap
              x1
   +----------+
   |          |
@@ -122,7 +97,12 @@ function intersect(x0,x1,y0,y1)
 #        throw(ArgumentError("all arguments of intersect must have the same length"))
 #    end
 
-    return intersect_(x0,x1,y0,y1) || intersect_(y0,y1,x0,x1)
+    # https://stackoverflow.com/a/306332/3801401
+    cond = true
+    for i = 1:length(x0)
+        cond = cond && (x0[i] <= y1[i]) && (x1[i] >= y0[i])
+    end
+    return cond
 end
 
 
@@ -395,7 +375,10 @@ function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {
         return nattribs
     end
 
+    @debug "within_buffer $(qt.min) - $(qt.max)"
+
     if isleaf(qt)
+        @debug "leaf $(qt.min) - $(qt.max)"
         # check if node is entirely inside search area min-max
         if include(min,max,qt.min,qt.max)
             # add all
@@ -409,6 +392,7 @@ function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {
                 attribs[nattribs] = qt.attribs[i]
             end
         else
+            #@show "check $qt"
             @inbounds for i = 1:length(qt)
                 if inside(min,max,@view qt.points[:,i])
                     nattribs += 1
@@ -621,6 +605,7 @@ function checkduplicates(x1::Tuple,value1,
 
     qt = Quadtrees.QT(X1,label1)
     Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
+    #@show qt
 
     duplicates = Vector{Vector{Int}}(undef,Nobs2)
 
