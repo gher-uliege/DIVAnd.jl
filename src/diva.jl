@@ -91,6 +91,9 @@ residual is NaN is the observations are not with in the domain as defined by
 the mask and the coordinates of the observations `x`.
 * `:qcvalues`: quality control scores (if activated)
 
+!!! note
+
+    At all vertical levels, there should at least one sea point.
 """
 function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 datadir = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data"),
@@ -130,6 +133,12 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     saveindex = ntuple(i -> :, length(xi)-1)
     background_ext = background
     plotres_ext = plotres
+
+    if surfextend && length(len) == 3
+        if all(len[3] .== 0)
+            error("surfextend should not be used when the vertical correlation length is set to zero")
+        end
+    end
 
     # vertical extension at surface
     if surfextend
@@ -209,6 +218,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                   "but got a mask of the size $(size(mask))")
         end
         # use mask in the following and not mask2
+    end
+
+    if any(sum(mask,dims = [1,2]) .== 0)
+        minval,minindex = findmin(sum(mask,dims = [1,2])[:])
+        error("some slices completely masked: k = $(minindex)")
     end
 
     # vertical extension at surface
