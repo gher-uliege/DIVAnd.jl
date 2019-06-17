@@ -220,9 +220,11 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
         # use mask in the following and not mask2
     end
 
-    if any(sum(mask,dims = [1,2]) .== 0)
-        minval,minindex = findmin(sum(mask,dims = [1,2])[:])
-        error("some slices completely masked: k = $(minindex)")
+    @static if VERSION >= v"0.7.0-beta.0"
+        if  any(sum(mask,dims = [1,2]) .== 0)
+            minval,minindex = findmin(sum(mask,dims = [1,2])[:])
+            error("some slices completely masked: k = $(minindex)")
+        end
     end
 
     # vertical extension at surface

@@ -50,11 +50,14 @@ function ufill(c::Array{T,3},valex::Number) where T
 
     cfilled = copy(c)
 
-    if any(sum(c .!= valex,dims = [1,2]) .== 0)
-        minval,minindex = findmin(sum(c .!= valex,dims = [1,2])[:])
-        @show valex
-        @show size(c)
-        error("some slices completely masked: k = $(minindex) of array $(size(c))")
+    @static if VERSION >= v"0.7.0-beta.0"
+        if any(sum(c .!= valex,dims = [1,2]) .== 0)
+
+            minval,minindex = findmin(sum(c .!= valex,dims = [1,2])[:])
+            @show valex
+            @show size(c)
+            error("some slices completely masked: k = $(minindex) of array $(size(c))")
+        end
     end
     ufill!(cfilled,valex,work,work2,iwork,iwork2)
 
