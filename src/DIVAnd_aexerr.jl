@@ -37,7 +37,7 @@
 
 * `sa`: the associated structure
 
-Compute a variational analysis of arbitrarily located observations to calculate the almost exact error 
+Compute a variational analysis of arbitrarily located observations to calculate the almost exact error
 
 """
 function DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
@@ -140,7 +140,7 @@ function DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
     # Analyse with semi-norm and larger length scales
     Bjmb,s1=DIVAndrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/20; alpha=alpha, otherargs...)
- 
+
     Bjmb=max.(Bjmb,0)
 
     # Now do the same with normal snr to get real error at the "data" points
@@ -176,7 +176,7 @@ function DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -1,11 +1,11 @@
 """
     dbinfo = diva3d(xi,x,value,len,epsilon2,filename,varname)
 
-Create a 3D analysis (or a series of 3D analyses) with DIVAnd using the
+Create a 3D analysis (or a series of 3D analysis) with DIVAnd using the
 observations `value` (vector) at the locations `x` (tuple of vectors) onto
 the regular grid defined by the vectors `xi` using the scaled observational error
-variance  `epsilon2` and the correlation length `len`. The result will be saved in the
-NetCDF file `filename` under the variable `varname`.
+variance `epsilon2` and the correlation length `len`. The result will be saved in the
+netCDF file `filename` under the variable `varname`.
 
 ## Inputs
 
@@ -23,15 +23,16 @@ NetCDF file `filename` under the variable `varname`.
    3 arrays of normalized correlation lengths which will be multiplied by the
    horizontal and vertical correlation lengths.
 
-* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field).
+`epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
-* `filename`: The output NetCDF filename.
+* `filename`: The output netCDF filename.
 
-* `varname`: The name of the variable (used in the NetCDF file).
+* `varname`: The name of the variable (used in the netCDF file).
 
 ## Optional input arguments:
 
-* `bathname`: path to the NetCDF bathymetry (default ../../DIVAnd-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
+* `bathname`: path to the netCDF bathymetry (default ../../DIVAnd-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
 * `bathisglobal`: true (default) is the bathymetry is a global data set
 * `plotres`: Call-back routine for plotting ((timeindex,sel,fit,erri) -> nothing)
 * `timeorigin`: Time origin (default DateTime(1900,1,1,0,0,0))
@@ -41,8 +42,8 @@ NetCDF file `filename` under the variable `varname`.
      is cyclic, then the grid point corresponding to `mask[1,j]` should be
      between `mask[end,1]` (left neighbor) and `mask[2,j]` (right neighbor). The default is [0,0,0],
 * `zlevel`: `:surface` (default) for surface analysis and `:floor` for analysis from the bottom floor.
-* `ncvarattrib`: dictionary of NetCDF variable attributes.
-* `ncglobalattrib`: dictionary of NetCDF global attributes.
+* `ncvarattrib`: dictionary of netCDF variable attributes.
+* `ncglobalattrib`: dictionary of netCDF global attributes.
 * `transform`: Anamorphosis transformation function (default: `Anam.notransform()`).
 * `fitcorrlen`: true if the correlation length is determined from the observation (default `false`).
      Note that the parameter `len` is interpreted differently when `fitcorrlen` is set to `true`.
@@ -67,7 +68,7 @@ gridded background field and the observations minus the background field.
    when the parameter `background` is provided.
 * `background_len`: deprecated option replaced by `background_lenz`.
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
-    remaining available for inversion. It is not total memory (default 3). Use a large value (e.g. 100) to force the
+    remaining available for inversion. It is not the total memory (default 3). Use a large value (e.g. 100) to force the
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
 * `minfield`: if the analysed field is below `minfield`, its value is replace by `minfield` (default -Inf, i.e. no substitution is done).
 * `maxfield`: if the analysed field is above `maxfield`, its value is replace by `maxfield` (default +Inf, i.e. no substitution is done).
@@ -87,7 +88,7 @@ The output is a dictionary with the followings keys:
 
 * `:residuals`: the difference between the analysis (interpolated linearly to the
 location of the observation) and the observations. The
-residual is NaN is the observations are not with in the domain as defined by
+residual is NaN if the observations are not within the domain as defined by
 the mask and the coordinates of the observations `x`.
 * `:qcvalues`: quality control scores (if activated)
 

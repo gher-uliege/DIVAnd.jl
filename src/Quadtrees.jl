@@ -104,7 +104,7 @@ function intersect_(x0,x1,y0,y1)
 end
 
 """
-Test of the rectanges defined by x0,x1  and y0,y1 intersects
+Test if the rectangles defined by x0,x1 and y0,y1 intersect
              x1
   +----------+
   |          |
@@ -131,7 +131,7 @@ end
 
 
 """
-Test of the rectanges defined by x0,x1 is included in rectangle y0,y1
+Test if the rectangle defined by x0,x1 is included in rectangle y0,y1
              x1
   +------------+
   |            |
@@ -177,7 +177,7 @@ end
 """
 sucess = add!(qt,x,attrib,max_cap = 10)
 Add point `x` with the attribute `attrib` to the quadtree `qt`.
-`sucess` is true if `x`is within the bounds of the quadtree node `qt` (otherwise
+`sucess` is true if `x` is within the bounds of the quadtree node `qt` (otherwise
 false and the point has not been added)
 """
 function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
@@ -352,7 +352,7 @@ end
 """
     attribs = within(qt,min,max)
 
-Search all points within a bounding box defined by the vectors `min` and `max`.
+Search all the points within a bounding box defined by the vectors `min` and `max`.
 """
 function within(qt::QT{T,TA,N}, min, max) where {T,TA,N}
     nattrib = within_count(qt, min, max)
@@ -520,11 +520,11 @@ end
 """
     dupl = checkduplicates(x,value,delta,deltavalue)
 
-Based the coordinates `x` (a tuple of longitude `lons`, latitudes `lats`, depth (`zs`)
-and time (`times` vector of `DateTime`)) check of points who are in the same spatio-temporal bounding
- box of a length `delta`. `delta` is a vector with 4 elements corresponding to
+Based on the coordinates `x` (a tuple of longitudes `lons`, latitudes `lats`, depths (`zs`)
+and times (`times` vector of `DateTime`)), search for points which are in the same spatio-temporal bounding
+ box of length `delta`. `delta` is a vector with 4 elements corresponding to
 longitude, latitude, depth and time
-(in days). `dupl` a vector of vectors containing indices of the duplicates.
+(in days). `dupl` a vector of vectors containing the indices of the duplicates.
 """
 function checkduplicates(x::Tuple,value,delta,deltavalue;
                          maxcap = 10_000,
@@ -601,8 +601,8 @@ end
 """
     dupl = checkduplicates(x1,value1,x2,v2,value2,delta,deltavalue)
 
-Report duplicate of observation in data set (x2,v2) which are also in data set
-(x1,v1). `x1` and `x2` is a tuple of vectors with the cooridantes and `v1` and `v2` the
+Report duplicates of observations in data set (x2,v2) which are also in data set
+(x1,v1). `x1` and `x2` are tuples of vectors with the coordinates, `v1` and `v2` are the
 corresponding values.
 """
 function checkduplicates(x1::Tuple,value1,

@@ -17,7 +17,7 @@ end
     trans,invtrans = loglin(t; epsilon = 0.)
 
 Provide the following transform `log(x + epsilon)` (for x < t) and its inverse.
-Beyond the threshold `t` (x ≥ t), the function is extended linearly in a 
+Beyond the threshold `t` (x ≥ t), the function is extended linearly in a
 continous way.
 
 `trans`,`invtrans` are scalar functions such that for any `x` (x > epsilon),
@@ -62,13 +62,13 @@ end
 """
     trans,invtrans = logit(; min = 0., max = 1.)
 
-Provide the logit transform and its inverse. Per default the logit transform 
-maps values within the interval from 0 and 1. This can be changed with the 
-`min` and `max` parameters. Note that trans(min) = -∞ and trans(max) = +∞. 
+Provide the logit transform and its inverse. Per default the logit transform
+maps values within the interval from 0 and 1. This can be changed with the
+`min` and `max` parameters. Note that trans(min) = -∞ and trans(max) = +∞.
 The use safety-margin might be necessary.
 """
 function logit(; min = 0., max = 1.)
-    
+
     function trans(x; position = ())
         xs = (x-min) / (max-min)
         y = log(xs/(1-xs))
@@ -80,7 +80,7 @@ function logit(; min = 0., max = 1.)
         x = min + xs * (max-min)
         return x
     end
-    
+
     return trans,invtrans
 end
 

@@ -2,9 +2,9 @@
    s = DIVAnd_addc(s,c)
 
 Add a constraint `c` to the cost function defined by `s`.
-The structure `s` is typically created by DIVAnd_background and the contrain `c` 
-has the following fields: R (a covariance matrix), H (extraction operator) and 
-yo (specified value for the constrain).
+The structure `s` is typically created by DIVAnd_background and the contrain `c`
+has the following fields: `R` (a covariance matrix), `H` (extraction operator) and
+`yo` (specified value for the constrain).
 The added contrain Jc(x) is quadratic and has the following structure.
 
 Jc(x) = (H x - yo)ᵀ R⁻¹ (H x - yo)
@@ -23,7 +23,7 @@ function DIVAnd_addc(s,constrain)
     return s
 end
 
-# Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014,2019 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

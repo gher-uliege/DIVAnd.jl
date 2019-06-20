@@ -2,7 +2,7 @@
 
     factor = DIVAnd_adaptedeps2(s,fi);
 
-# Input: 
+# Input:
 * `s`: structure returned by `DIVAndrun`
 * `fi`: analysis returned by `DIVAndrun`
 
@@ -10,7 +10,7 @@
 * `factor` : multiplicative factor to apply to epsilon2
 
 
- Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
+Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
 estimate of the R matrix. If you cannot use `DIVAndrun` but use `DIVAndgo`, the latter provides automatically this pamater as result.
 
 
