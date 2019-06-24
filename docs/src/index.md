@@ -59,8 +59,6 @@ DIVAnd.ODVspreadsheet.myparse
 ### Parameter optimization
 
 ```@docs
-DIVAnd.fit_isotropic
-DIVAnd.fit
 DIVAnd.DIVAnd_cv
 DIVAnd.empiriccovar
 DIVAnd.fithorzlen
@@ -408,6 +406,8 @@ If the parameter `epsilon` of `DIVAnd.Anam.loglin` is larger than zero (which is
 
 We do are best to avoid changing the API, but sometimes it is unfortunately necessary.
 
+* 2019-06-24: `DIVAnd.fit_isotropic` and `DIVAnd.fit` are removed and replaced by `DIVAnd.fithorzlen` and `DIVAnd.fitvertlen`.
+* 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preceedence will now be given for `background_lenz`.
 * 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
 * 2018-06-18: The options `nmean` and `distbin` of `fithorzlen` and `fitvertlen` have been removed. The functions now choose appropriate values for these parameters automatically.
 
