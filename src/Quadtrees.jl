@@ -81,7 +81,7 @@ bitget(a,n) = Bool((a & (1 << (n-1))) >> (n-1))
 
 
 """
-Test of the rectanges defined by x0,x1  and y0,y1 intersects/overlap
+Test if the rectanges defined by x0,x1 and y0,y1 intersects/overlap
              x1
   +----------+
   |          |
