@@ -18,20 +18,8 @@ addons:
           - libnetcdf-dev
 notifications:
   email: false
-jobs:
-  include:
-    - stage: "Documentation"
-      julia: 1.0
-      os: linux
-      script:
-        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
-                                               Pkg.instantiate()'
-        - julia --project=docs/ docs/make.jl
-      after_success: skip
-# uncomment the following lines to override the default test script
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'VERSION >= v"0.7.0" && using Pkg; Pkg.clone(pwd()); Pkg.build("DIVAnd"); Pkg.test("DIVAnd"; coverage=true)'
+
+# using default test script
 after_success:
   # push coverage results to Coveralls
   - julia -e 'VERSION >= v"0.7.0" && using Pkg; cd(Pkg.dir("DIVAnd")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
