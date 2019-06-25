@@ -6,8 +6,9 @@ if VERSION >= v"0.7.0-beta.0"
     using Dates
 else
     using Base.Test
+    using Compat: range
 end
-import DIVAnd
+using DIVAnd
 
 #include("../src/utils.jl")
 

@@ -91,11 +91,11 @@ function SDNMetadata(metadata,filename,varname,lonr,latr;
         elseif k == "search_keywords_urn"
             # Preferred label from SeaDataNet Parameter Discovery Vocabulary P02
             # example: Ammonium and ammonia concentration parameters in water bodies
-            ncglobalattrib["search_keywords"] = join(Vocab.prefLabel.(Vocab.resolve.(v)),", ")
+            ncglobalattrib["search_keywords"] = join(Vocab.prefLabel.(Vocab.resolve.(v)),"|")
         elseif k == "area_keywords_urn"
             # Preferred label from SeaDataNet Vocabulary C19
             # example: Black Sea
-            ncglobalattrib["area_keywords"] = join(Vocab.prefLabel.(Vocab.resolve.(v)),", ")
+            ncglobalattrib["area_keywords"] = join(Vocab.prefLabel.(Vocab.resolve.(v)),"|")
         elseif k == "product_version"
             # External shortname
             # example: SISMER-Atlantic Sea-Water_body_silicate-1.0-ANA
@@ -161,7 +161,6 @@ Returns a dictionary with the contact information from the EDMO registry
 based on the prodivided `emdo_code`. `role` is the Sextant contact information
 role, i.e. either "originator" or "author".
 """
-
 function getedmoinfo(edmo_code,role)
     entry = DIVAnd.Vocab.EDMO()[edmo_code]
 
@@ -644,21 +643,21 @@ function gettemplatevars(filepaths::Vector{<:AbstractString},varname,project,cdi
 
     P02_keywords =
         if haskey(ds.attrib,"search_keywords_urn")
-            labelandURL.(split(ds.attrib["search_keywords_urn"]))
+            labelandURL.(split(ds.attrib["search_keywords_urn"],", "))
         else
             URLsfromlabels("P02",split(ds.attrib["search_keywords"],'|'))
         end
 
     P35_keywords =
         if haskey(ds.attrib,"parameter_keyword_urn")
-            labelandURL.(split(ds.attrib["parameter_keyword_urn"]))
+            labelandURL.(split(ds.attrib["parameter_keyword_urn"],", "))
         else
             URLsfromlabels("P35",split(ds.attrib["parameter_keywords"],'|'))
         end
 
     C19_keywords =
         if haskey(ds.attrib,"area_keywords_urn")
-            labelandURL.(split(ds.attrib["area_keywords_urn"]))
+            labelandURL.(split(ds.attrib["area_keywords_urn"],", "))
         else
             URLsfromlabels("C19",split(ds.attrib["area_keywords"],'|'))
         end

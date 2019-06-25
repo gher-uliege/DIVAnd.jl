@@ -987,7 +987,7 @@ end
 
 Determines the horizontal correlation length `lenz` based on the
 measurments `value` at the location `x` (tuple of 3 vectors corresponding to
-longitude, latitude and depth).
+longitude, latitude and depth) at the depth levels defined in `z`.
 
 Optional arguments:
  * `smoothz` (default 100): spatial filter for the correlation scale

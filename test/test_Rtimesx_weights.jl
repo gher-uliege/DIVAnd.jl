@@ -1,9 +1,14 @@
 if VERSION >= v"0.7.0-beta.0"
     using Test
+    using Random
+    using Statistics
 else
     using Base.Test
 end
 using DIVAnd
+
+using LibSpatialIndex
+const SI = LibSpatialIndex
 
 coord = copy([0.0853508 0.939756; 0.784134 0.080227; 0.999551 0.784304; 0.636594 0.7699; 0.357327 0.891722; 0.101827 0.856188; 0.862349 0.0555934; 0.992086 0.97036; 0.702955 0.591252; 0.685006 0.23132]')
 
@@ -82,6 +87,54 @@ end
 
 
 
+
+function Rtimesx3!(coord,len::NTuple{ndim,T},w,Rx) where T where ndim
+    factor = 3
+
+    n = size(coord,1)
+    Nobs = size(coord,2)
+
+    rtree = SI.RTree(n)
+    for i=1:size(coord,2);
+        SI.insert!(rtree,i,coord[:,i],coord[:,i]);
+    end
+
+
+    xmin = zeros(ndim)
+    xmax = zeros(ndim)
+
+    ilen = 1 ./ len
+
+    index_buffer = zeros(Int,Nobs)
+
+    @fastmath @inbounds for i = 1:Nobs
+        for j = 1:ndim
+            xmin[j] = coord[j,i] - factor * len[j]
+            xmax[j] = coord[j,i] + factor * len[j]
+        end
+
+        index_buffer = SI.intersects(rtree, xmin, xmax)
+        nindex = length(index_buffer)
+
+        Rx[i] = 0.
+
+        #for ii in @view index_buffer[1:nindex]
+        @inbounds for j in 1:nindex
+            ii = index_buffer[j]
+
+            dist = 0.
+            for j = 1:ndim
+                dist += ((coord[j,i]-coord[j,ii]) * ilen[j])^2
+            end
+
+            cov = exp(-dist)
+            Rx[i] += cov * w[ii]
+        end
+    end
+end
+
+
+
 # compare naive and optimized method
 Rtimesx1!(coord,LS,x,Rx1)
 DIVAnd.Rtimesx!(coord,LS,x,Rx)
@@ -89,6 +142,9 @@ DIVAnd.Rtimesx!(coord,LS,x,Rx)
 @test Rx1 ≈ Rx
 
 Rtimesx2!(coord,LS,x,Rx)
+@test Rx1 ≈ Rx rtol=1e-4
+
+Rtimesx3!(coord,LS,x,Rx)
 @test Rx1 ≈ Rx rtol=1e-4
 
 # fix seed of random number generator

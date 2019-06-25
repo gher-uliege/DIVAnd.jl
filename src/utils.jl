@@ -39,6 +39,8 @@ Replace values in `c` equal to `valex` by averages of surrounding points.
 
 """
 function ufill(c::Array{T,3},valex::Number) where T
+    #JLD2.@save "/tmp/tmp-ufill.jld2" c valex
+
     imax,jmax,kmax = size(c)
     work = zeros(eltype(c),imax+2, jmax+2, kmax+2)
     work2 = zeros(eltype(c),imax+2, jmax+2, kmax+2)
@@ -47,6 +49,16 @@ function ufill(c::Array{T,3},valex::Number) where T
     iwork2 = zeros(Int8,imax+2, jmax+2, kmax+2)
 
     cfilled = copy(c)
+
+    @static if VERSION >= v"0.7.0-beta.0"
+        if any(sum(c .!= valex,dims = [1,2]) .== 0)
+
+            minval,minindex = findmin(sum(c .!= valex,dims = [1,2])[:])
+            @show valex
+            @show size(c)
+            error("some slices completely masked: k = $(minindex) of array $(size(c))")
+        end
+    end
     ufill!(cfilled,valex,work,work2,iwork,iwork2)
 
     return cfilled
@@ -673,6 +685,9 @@ defined in the NetCDF variable `varname` in the NetCDF file
 same grid as the analysis and was generated according to the provided time selector
 `TS` (TimeSelectorYearListMonthList or TimeSelectorRunningAverage).
 
+!!! note
+
+    At all vertical levels, there should at least one sea point.
 """
 function backgroundfile(fname,varname,
                         TS::Union{TimeSelectorYearListMonthList,TimeSelectorRunningAverage,AbstractTimeSelector})

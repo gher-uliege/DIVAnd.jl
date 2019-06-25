@@ -42,6 +42,9 @@ DIVAnd.Quadtrees.within(qt,[0,0],[0.1,0.1])
 @test DIVAnd.Quadtrees.intersect([0,0],[1,1],[1.5,1.5],[2,2]) == false
 # one rectange contains the other
 @test DIVAnd.Quadtrees.intersect([0,0],[1,1],[-1,-1],[2,2]) == true
+# one very wide and very narrow rectangle
+@test Quadtrees.intersect([-100,-1],[100,1],[-1,-100],[1,100]) == true
+
 #@test_throws ArgumentError intersect([0,0],[1,1],[0.5,0.5],[2,2,3])
 
 qt = DIVAnd.Quadtrees.QT(Int,[0.,0.],[1.,1.])

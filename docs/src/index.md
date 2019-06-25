@@ -59,8 +59,6 @@ DIVAnd.ODVspreadsheet.myparse
 ### Parameter optimization
 
 ```@docs
-DIVAnd.fit_isotropic
-DIVAnd.fit
 DIVAnd.DIVAnd_cv
 DIVAnd.empiriccovar
 DIVAnd.fithorzlen
@@ -84,7 +82,7 @@ DIVAnd.Vocab.altLabel
 DIVAnd.Vocab.notation
 DIVAnd.Vocab.definition
 DIVAnd.Vocab.resolve
-DIVAnd.Vocab.find(c::DIVAnd.Vocab.Concept,name,collection)
+DIVAnd.Vocab.find
 DIVAnd.Vocab.description
 DIVAnd.Vocab.canonical_units
 DIVAnd.Vocab.splitURL
@@ -99,9 +97,9 @@ DIVAnd.Vocab.splitURL
 DIVAnd.statevector
 DIVAnd.pack
 DIVAnd.unpack
-Base.sub2ind
-Base.ind2sub
-Base.length
+DIVAnd.sub2ind
+DIVAnd.ind2sub
+DIVAnd.length
 ```
 
 ### Constraints
@@ -130,7 +128,6 @@ DIVAnd.ODVspreadsheet.nprofiles
 ```@docs
 DIVAnd.sparse_interp
 DIVAnd.sparse_interp_g
-DIVAnd.sparse_gradient
 DIVAnd.sparse_diff
 DIVAnd.matfun_trim
 DIVAnd.matfun_stagger
@@ -164,6 +161,7 @@ DIVAnd.checksym
 
 ```@docs
 DIVAnd.DIVAnd_laplacian
+DIVAnd.DIVAnd_gradient
 DIVAnd.DIVAnd_obscovar
 DIVAnd.DIVAnd_adaptedeps2
 DIVAnd.DIVAnd_diagHKobs
@@ -274,9 +272,61 @@ If one wants to not use the vertical correlation length, the one can put the cor
 Consequently the value of `fitvertcorrlen` and `fitcorrlen` should be keep to `false` (i.e. its default values).
 Optimizing the horizontal correlation length is still possible by setting `fithorzcorrlen` to `true`.
 
+
+## Integrating different datasets
+
+To facilitated the integrating of different datasets,
+the function `WorldOceanDatabase.load` from the module `PhysOcean` now supports an option `prefixid` which can be set to `"1977-"`
+so that the obsids have automatically the right format for DIVAnd, e.g. `"1977-wod123456789O"`:
+
+```julia
+using PhysOcean
+# assuming the data in the directory "somedir": e.g. "somedir/CTD/file.nc", "somedir/XBT/file.nc"...
+basedir = "somedir"
+varname = "Temperature"
+prefixid = "1977-"
+obsvalue,obslon,obslat,obsdepth,obstime,obsid = WorldOceanDatabase.load(Float64,
+   basedir,varname; prefixid = prefixid);
+```
+
+In the module PhysOcean, we implemented the function ARGO.load which can load data following the ARGO format and in particular the CORA dataset.
+In fact, even if CORA is distributed through CMEMS, the netCDF files in CORA do not follow the same format than the other in situ netCDF files from CMEMS.
+Therefore the function `CMEMS.load` can not be used for the CORA dataset.
+ARGO.load also supports the option prefixid.
+
+
+```julia
+using Glob, PhysOcean
+# assuming the data in the directory "somedir": e.g. "somedir/someyear/file.nc"
+filenames = glob("*/*nc","somedir")
+obsvalue,obslon,obslat,obsdepth,obstime,obsids = ARGO.load(Float64,
+   filenames,varname; prefixid = "4630-")
+```
+
+In divadoxml we added the new argument additionalcontacts which allows to acknowledge other datasets which are not in the MARIS database:
+
+```julia
+using DIVAnd
+additionalcontacts = [
+    DIVAnd.getedmoinfo(1977,"originator"), # US NODC for World Ocean Database
+    DIVAnd.getedmoinfo(4630,"originator"), # CORIOLIS for CORA
+]
+ignore_errors = true
+DIVAnd.divadoxml(
+           filename,varname,project,cdilist,xmlfilename,
+           ignore_errors = ignore_errors,
+           additionalcontacts = additionalcontacts
+)
+```
+
+!!! note
+    You will see a warning that not all observation identifiers could be found, but this is normal and expected.
+
+
+
 ## Fequently asked questions
 
-### Which data points are using for the analysis?
+### Which data points are used for the analysis?
 
 An individual data point is used if all following conditions are met:
 1. longitude/latitude is inside the domain and not adjacent to a land point
@@ -356,6 +406,8 @@ If the parameter `epsilon` of `DIVAnd.Anam.loglin` is larger than zero (which is
 
 We do are best to avoid changing the API, but sometimes it is unfortunately necessary.
 
+* 2019-06-24: `DIVAnd.fit_isotropic` and `DIVAnd.fit` are removed and replaced by `DIVAnd.fithorzlen` and `DIVAnd.fitvertlen`.
+* 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preceedence will now be given for `background_lenz`.
 * 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
 * 2018-06-18: The options `nmean` and `distbin` of `fithorzlen` and `fitvertlen` have been removed. The functions now choose appropriate values for these parameters automatically.
 

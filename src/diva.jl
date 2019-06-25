@@ -63,7 +63,7 @@ to load the background from a call-back function (default `nothing`). The call-b
 gridded background field and the observations minus the background field.
 * `background_espilon2_factor`: multiplication for `epsilon2` when computing a
    vertical profile as a background estimate (default 10.). This parameter is not used
-   when the parameter `background` is provided.
+   when the parameter `background` or `background_lenz` is provided.
 * `background_lenz`: vertical correlation for background computation (default 20 m). This parameter is not used
    when the parameter `background` is provided.
 * `background_len`: deprecated option replaced by `background_lenz`.
@@ -80,6 +80,8 @@ gridded background field and the observations minus the background field.
 * `niter_e`: Number of iterations to estimate the optimal scale factor of
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
+* `coeff_derivative2` (vector of 3 floats): for every dimension where this value is non-zero, an additional term is added to the cost function penalizing the second derivative. A typical value of this parameter is `[0.,0.,1e-8]`.
+
 Any additional keywoard arguments understood by `DIVAndgo` can also be used here
 (e.g. velocity constrain)
 
@@ -92,6 +94,9 @@ residual is NaN if the observations are not within the domain as defined by
 the mask and the coordinates of the observations `x`.
 * `:qcvalues`: quality control scores (if activated)
 
+!!! note
+
+    At all vertical levels, there should at least one sea point.
 """
 function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 datadir = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data"),
@@ -132,6 +137,12 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
     background_ext = background
     plotres_ext = plotres
 
+    if surfextend && length(len) == 3
+        if all(len[3] .== 0)
+            error("surfextend should not be used when the vertical correlation length is set to zero")
+        end
+    end
+
     # vertical extension at surface
     if surfextend
         if length(xi) == 3
@@ -160,6 +171,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     return fbackground,vaa
                 end
         end
+
+        #TODO extend background_len if present
 
         # skip first layer when plotting
         plotres_ext(timeindex,sel,fit,erri) = plotres(timeindex,sel,fit[:,:,2:end],erri[:,:,2:end])
@@ -210,6 +223,13 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                   "but got a mask of the size $(size(mask))")
         end
         # use mask in the following and not mask2
+    end
+
+    @static if VERSION >= v"0.7.0-beta.0"
+        if  any(sum(mask,dims = [1,2]) .== 0)
+            minval,minindex = findmin(sum(mask,dims = [1,2])[:])
+            error("some slices completely masked: k = $(minindex)")
+        end
     end
 
     # vertical extension at surface
@@ -267,13 +287,12 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
 
         # 4D analysis (lon,lat,depth,time)
         if n == 4
-            if background_lenz !== nothing
-                background_len = (1., # unused
-                                  1., # unused
-                                  background_lenz)
-            end
             if len !== ()
-                background_len = (len[1],len[2],background_lenz_factor*len[3])
+                if background_lenz !== nothing
+                    background_len = (len[1], len[2], background_lenz)
+                else
+                    background_len = (len[1], len[2], background_lenz_factor*len[3])
+                end
             end
         # 3D analysis (lon,lat,time)
         else
@@ -391,10 +410,10 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     # background profile
 
                     if n == 4
-                        if all(background_len[3] .== 0)
-                            @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
-                            background_len[3] .= 2 ./ pmn[3];
-                        end
+                       if all(background_len[3] .== 0)
+                           @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
+                           background_len[3] .= 2 ./ pmn[3];
+                       end
                     end
 
                     fi,vaa = DIVAnd.DIVAnd_averaged_bg(
