@@ -2,17 +2,21 @@
 
     bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method;...);
 
+Performs a cross validation to estimate the analysis parameters
+(correlation length and signal-to-noise ratio).
+
 # Input
 
 Same as for `DIVAndrun` with three more parameters `nl`,`ne` and `method`
 
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
        element represents the scale factor of the corresponding dimension. Its
        inverse is the local resolution of the grid in a particular dimension.
 
-*  `xi`: tuple with n elements. Every element represents a coordinate
+* `xi`: tuple with n elements. Every element represents a coordinate
   of the final grid on which the observations are interpolated
 
 * `x`: tuple with n elements. Every element represents a coordinate of
@@ -323,7 +327,7 @@ return bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2
 
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

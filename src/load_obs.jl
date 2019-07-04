@@ -82,9 +82,9 @@ end
 """
     obsvalue,obslon,obslat,obsdepth,obstime,obsid = loadobs(T,filename,varname)
 
-Load the variable `varname` from the NetCDF file `filename`.
-Coordinates (the NetCDF variables "obslon", "obslat", "obsdepth"),
-time ("obstime") and identifies ("obsids") will also be loaded.
+Load the variable `varname` from the netCDF file `filename`.
+Coordinates (the netCDF variables "obslon", "obslat", "obsdepth"),
+time ("obstime") and identifiers ("obsids") will also be loaded.
 Numeric output arguments will have the type `T`.
 
 """

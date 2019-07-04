@@ -27,7 +27,8 @@ Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`.
 
-IMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use if DIVAndrun cannot fit into memory or if you want to parallelize. (In the latter case do not forget to define the number of workers; see `addprocs` for example)
+IMPORTANT: DIVAndgo is very similar to DIVAndrun and is only interesting to use if DIVAndrun cannot fit into memory or if you want to parallelize.
+(In the latter case do not forget to define the number of workers; see `addprocs` for example)
 
 """
 function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme;
@@ -108,7 +109,7 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
         windowpoints = ([iw1[i]:iw2[i] for i in 1:n]...,)
 
         #################################################
-        # Need to check how to work with aditional constraints...
+        # Need to check how to work with additional constraints...
         #################################################
 
         #################################

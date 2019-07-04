@@ -123,7 +123,7 @@ end
 
 # LocalWords:  iB DIVAnd
 
-# Copyright (C) 2014-2017 Alexander Barth	  	 <a.barth@ulg.ac.be>
+# Copyright (C) 2014-2019 Alexander Barth	  	 <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	 <JM.Beckers@ulg.ac.be>
 #
 #

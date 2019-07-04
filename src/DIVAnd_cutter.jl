@@ -21,14 +21,14 @@ the problem size
     and `(istore1,istore2)` correspond to the start and end indices of the solution
     relative to the global grid. They define thus where the local solution has to be
     stored in the combined global solution.
-* `csteps` : Array of steps for the coarse grid preconditionner. `csteps` is zero for the direct solver.
-* `lmask` : Array of multiplication factors for length scale of preconditionner
-* `alphapc` : Norm defining coefficients for preconditionner
+* `csteps`: Array of steps for the coarse grid preconditionner. `csteps` is zero for the direct solver.
+* `lmask`: Array of multiplication factors for length scale of preconditionner
+* `alphapc`: Norm defining coefficients for preconditionner
 
 """
 function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT; solver = :auto) where n
     @debug "cutter",Lpmnrange,gridsize,moddim,MEMTOFIT,solver
-    #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange, 
+    #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange,
     #         "gridsize", gridsize,"moddim",moddim,"MEMTOFIT",MEMTOFIT)
 
 
@@ -127,7 +127,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT; solver
         # window corners in main problem
         iw1=zeros(Int,n)
         iw2=zeros(Int,n)
-        
+
         # Solution indexes in submodel
         isol1=zeros(Int,n)
         isol2=zeros(Int,n)
@@ -154,7 +154,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT; solver
             iw2[nd]=ij[nd]+stepsize[nd]+2*overlapping[nd]-1;
 
 
-            # For normal tiles take middel part
+            # For normal tiles take middle part
             isol2[nd]=overlapping[nd]+stepsize[nd]
 
             if iw2[nd]>=gridsize[nd]
@@ -186,7 +186,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT; solver
     return windowlist,csteps,lmask,alphapc
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

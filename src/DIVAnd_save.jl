@@ -22,16 +22,17 @@ end
     DIVAnd_save(ds,filename,xyi,fi,varname;
                       ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)
 
-Save the result of the analysis in a NetCDF file .
+Save the result of the analysis in a netCDF file .
 
 # Input arguments
 
 * `ds`: the NetCDF dataset
 * `filename`: the name of the NetCDF file
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask where sea is true and land is false.
-*  `xyi`: tuple with n elements. Every element represents a coordinate
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+  For oceanographic application, this is the land-sea mask where sea is true and land is false.
+* `xyi`: tuple with n elements. Every element represents a coordinate
   of the final grid on which the observations are interpolated
-*  `fi`: the analysed field
+* `fi`: the analysed field
 * `varname`: the name of the NetCDF variable
 
 # Optional arguments:
@@ -325,7 +326,7 @@ end
     save(filename,xyi,fi,varname;
                           ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)
 
-Save the result of the analysis in a NetCDF file .
+Save the result of the analysis in a netCDF file.
 
 # Input arguments
 
@@ -366,7 +367,7 @@ end
                    timeorigin = DateTime(1900,1,1,0,0,0),
                    used = trues(size(ids)),
                    )
-Save the location and time of the observation in the NetCDF file `filename` and
+Save the location and time of the observation in the netCDF file `filename` and
 their identifier `ids`. `xy` is a tuple with the vectors longitude, latitude,
 depth and time (as a vector of `DateTime`).
 
@@ -375,7 +376,7 @@ depth and time (as a vector of `DateTime`).
      is always saved as `Float64`.
   * `timeorigin`: time origin for the time units attribute (default is
 1900-01-01 00:00:00)
-  * `used`: allows to subset the data to save only used variables in the netCDF
+  * `used`: allows one to subset the data to save only used variables in the netCDF
      file
 
 """

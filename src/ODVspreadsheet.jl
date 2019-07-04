@@ -63,7 +63,7 @@ nprofiles(ODVData) = length(ODVData.profileList)
     Input
 
     *`datafile`: the path to an ODV spreadsheet file.
-               The Path can be relative or absolute.
+               The path can be relative or absolute.
 
     Output
 
@@ -73,7 +73,7 @@ nprofiles(ODVData) = length(ODVData.profileList)
 function readODVspreadsheet(datafile)
 
     # metadata will be stored in a dictionary
-    # ODV doc: Comment lines start with two slashes  // as first two characters
+    # ODV doc: Comment lines start with two slashes // as first two characters
     metadata = Dict{String, String}()
     SDN_parameter_mapping = Dict{String,Dict{String,String}}()
 

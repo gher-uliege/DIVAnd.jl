@@ -2,7 +2,7 @@
 #
 # s = DIVAnd_operators(mask,pmn,nu,iscyclic)
 #
-# Form sparse matrixes representing the gradient and Laplacian using
+# Form sparse matrices representing the gradient and Laplacian using
 # finite differences
 #
 # Input:

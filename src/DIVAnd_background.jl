@@ -5,16 +5,16 @@ Form the inverse of the background error covariance matrix with
 finite-difference operators on a curvilinear grid
 # Input:
 * mask: binary mask delimiting the domain. 1 is inside and 0 outside.
-        For oceanographic application, this is the land-sea mask.
+        For oceanographic applications, this is the land-sea mask.
 * pmn: scale factor of the grid.
 * Labs: correlation length
-* alpha: a dimensional coefficients for norm, gradient, laplacian,...
+* alpha: dimensional coefficients for norm, gradient, laplacian,...
      alpha is usually [1,2,1] in 2 dimensions.
 # Output:
-*  s: stucture containing
+*  s: structure containing
     * s.iB: inverse of the background error covariance
-    * s.L: spatial average correlation length
-    * s.n: number of dimenions
+    * s.L: spatially averaged correlation length
+    * s.n: number of dimensions
     * s.coeff: scaling coefficient such that the background variance diag(inv(iB)) is one far away from the boundary.
 """
 function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = true,mapindex = [];
@@ -201,7 +201,7 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 	return s
 end
 
-# Copyright (C) 2014, 2017 Alexander Barth 		<a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2019 Alexander Barth 		<a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

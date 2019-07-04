@@ -48,9 +48,9 @@ const QC_SUFFIX = "SEADATANET_QC"
                    qfname = param * QC_SUFFIX,
                    )
 
-Load the NetCDF variable `param` from the NCDataset `ds`.
+Load the netCDF variable `param` from the NCDataset `ds`.
 Data points not having the provide quality flags will be masked by `fillvalue`.
-`qfname` is the NetCDF variable name for the quality flags.
+`qfname` is the netCDF variable name for the quality flags.
 
 """
 function loadvar(ds,param;
@@ -230,7 +230,7 @@ end
 Load all data in the vector of file names `fnames` corresponding to the parameter
 `param` as the data type `T`. Only the data with the quality flags
 `SDN.good_data` and `SDN.probably_good_data` are loaded per default.
-The output parameters correspondata to the data, longitude, latitude,
+The output parameters correspond to the data, longitude, latitude,
 depth, time (as `DateTime`) and an identifier (as `String`).
 """
 function load(T,fnames::Vector{TS},param;

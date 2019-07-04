@@ -1,9 +1,9 @@
 """
 
+    samplesteps = DIVAnd_sampler(pmn,len);
 
-samplesteps = DIVAnd_sampler(pmn,len);
-
-# Defines steps for sub-sampling in the discrete grid which would still allow to resolve the provided lengthscales
+# Defines steps for sub-sampling in the discrete grid which would still allow
+one to resolve the provided lengthscales
 
 # Input:
 

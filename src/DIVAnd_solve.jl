@@ -1,7 +1,7 @@
 """
 Solve the variational problem.
 
-fi = DIVAnd_solve(s)
+	fi = DIVAnd_solve(s)
 
 Derive the analysis based on all contraints included in s and using the
 observations yo
@@ -102,7 +102,7 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT},fi0,f0; btrunc = []) where {T
     return fi
 end
 
-# Copyright (C) 2014,2018 Alexander Barth 		<a.barth@ulg.ac.be>
+# Copyright (C) 2014,2019 Alexander Barth 		<a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers 	<jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
