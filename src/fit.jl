@@ -1003,7 +1003,8 @@ use the following: `limitfun = (z,len) -> max(min(len,300_000),10_000))`. If pro
  * `epsilon2` (default is a vector of the same size as `value` with all elements
     equal to 1): the relative error variance of the observations. Less reliable
     observation would have a larger corresponding value.
-
+ * `distfun`: function computing the distance between the points `xi` and `xj`.
+  Per default it represent the Euclidian distance.
 
 """
 function fithorzlen(x,value::Vector{T},z;
