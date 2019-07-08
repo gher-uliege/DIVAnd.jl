@@ -25,8 +25,8 @@ end
     mask,pmn,xyi = DIVAnd_squaredom(n,coord)
 
 Create a "square" domain in `n` dimensions with the coordinates `coord`
-assuming a Catersian metric. This functions returns
-the mask `mask`, the coordinates `(xi,yi,...)` and the metric `(pm,pn...)`.
+assuming a Cartesian metric. This functions returns
+the mask `mask`, the coordinates `(xi,yi,...)` and the metrics `(pm,pn...)`.
 
 # Example
 
@@ -69,7 +69,7 @@ end
 """
     mask,(pm,pn),(xi,yi) = domain(bathname,bathisglobal,lonr,latr)
 
-Generate a 2D geospatial domain based on the topography from the NetCDF file
+Generate a 2D geospatial domain based on the topography from the netCDF file
 `bathname`.
 """
 function domain(bathname,bathisglobal,lonr,latr)
@@ -85,9 +85,9 @@ end
 """
     mask,(pm,pn,po),(xi,yi,zi) = domain(bathname,bathisglobal,lonr,latr,depthr)
 
-Generate a 3D geospatial domain based on the topography from the NetCDF file
-`bathname`. If `zlevel` is `:surface`, then `depthr` is zero for the sea surface and 
-positive in water (positive is down). If `zlevel` is `:floor`, then `depthr` is 
+Generate a 3D geospatial domain based on the topography from the netCDF file
+`bathname`. If `zlevel` is `:surface`, then `depthr` is zero for the sea surface and
+positive in water (positive is down). If `zlevel` is `:floor`, then `depthr` is
 zero for the sea floor and positive in water (positive is up)
 """
 function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
@@ -105,9 +105,9 @@ function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
 
     if zlevel == :surface
         mxi,myi,mask[:,:,:] = DIVAnd.load_mask(bathname,bathisglobal,lonr,latr,depthr)
-    else        
+    else
         bxi,byi,bi = load_bath(bathname,bathisglobal,lonr,latr)
-        
+
         for k = 1:size(mask,3)
             mask[:,:,k] = depthr[k] .< bi
         end
@@ -120,7 +120,7 @@ end
 """
     mask,(pm,pn,po,pp),(xi,yi,zi,ti) = domain(bathname,bathisglobal,lonr,latr,depthr,timer)
 
-Generate a geospatial domain based on the topography from the NetCDF file
+Generate a geospatial domain based on the topography from the netCDF file
 `bathname`.
 """
 function domain(bathname,bathisglobal,lonr,latr,depthr,timer)
@@ -146,6 +146,3 @@ function domain(bathname,bathisglobal,lonr,latr,depthr,timer)
 
     return mask3,(pm,pn,po,pp),(xi,yi,zi,ti)
 end
-
-
-

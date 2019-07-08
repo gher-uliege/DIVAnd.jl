@@ -3,10 +3,10 @@
     bx,by,b = DIVAnd.extract_bath(bath_name,isglobal,xi,yi)
 
 Extract the bathymetry from the NetCDF file `bathname`. The parameter `isglobal`
- is true if the NetCDF file covers the whole globe and thus the last longitude
+is true if the NetCDF file covers the whole globe and thus the last longitude
 point can be considered to be right next to the first longitude point.
-`xi` and `yi` are vectors defining the bounding box of the data. No
-interpolation is performed.
+`xi` and `yi` are vectors defining the bounding box of the data.
+No interpolation is performed.
 
 **Convention:** b is positive in the water and negative in the air.
 """
@@ -68,7 +68,7 @@ end
 """
     xi,yi,bath = DIVAnd.load_bath(bath_name,isglobal,xi,yi)
 
-Load the bathymetry from the NetCDF file `bathname`. The parameter `isglobal` is true if the NetCDF file covers
+Load the bathymetry from the netCDF file `bathname`. The parameter `isglobal` is true if the NetCDF file covers
 the whole globe and thus the last longitude point can be considered to be right next to the first longitude point.
 `xi` and `yi` are vectors containing the longitude and latitude grid onto which the bathymetry should be
 interpolated.

@@ -2,7 +2,7 @@
 
 
 """
-    ulon,ulat = statpos(lon,lat)
+ulon,ulat = statpos(lon,lat)
 
 Return unique positions (`ulon`, `ulat`) as well their mean,
 standard deviation and count of the vector of observations `val` located
@@ -22,9 +22,9 @@ end
 
 
 """
-    ulon,ulat,meanval,stdval,count = statpos(val,lon,lat)
+ulon,ulat,meanval,stdval,count = statpos(val,lon,lat)
 
-Return unique positions (`ulon`, `ulat`) as well their mean,
+Return unique positions (`ulon`, `ulat`) as well as their mean,
 standard deviation and count of the vector of observations `val` located
 at the positions `lon` and `lat`.
 
@@ -59,8 +59,8 @@ end
 
 
 """
-     checkobs(x,v,ids)
-     checkobs(io::IO,x,v,ids)
+checkobs(x,v,ids)
+checkobs(io::IO,x,v,ids)
 
 Print some basic information about the coordinates `x` (tuple of vector) and
 values `v` (vector) having the identifier `ids` (vector of strings) to check

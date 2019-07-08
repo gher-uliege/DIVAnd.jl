@@ -222,14 +222,15 @@ For oceanographic application, this is the land-sea mask where sea is true and l
     than in 2D. The kernel behaves thus similar to
     the default kernel in two dimensions (alpha = [1,2,1]).
 
-* `alphabc` : numerical value defining how the last grid points are stretched outward.
+* `alphabc`: numerical value defining how the last grid points are stretched outward.
    If `alphabc` is 1, the default value mimics an infinite domain.
    To have previous behaviour of finite domain use alphabc equal to `0`.
 
-* `btrunc` : if provided defines where to truncate the calculation of the
+* `btrunc`: if provided defines where to truncate the calculation of the
     covariance matrix B. Only values up and including alpha[btrunc] will be
     calculated. If the iterative solution is calculated, the missing terms will
-    be calculated on the fly during the conjugate gradient calulcations. Default value is none and full covariance calculation.
+    be calculated on the fly during the conjugate gradient calculations.
+	Default value is none and full covariance calculation.
 
 # Output:
 *  `fi`: the analysed field

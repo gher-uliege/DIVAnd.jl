@@ -6,13 +6,14 @@
 
 
 # Input: Same as for `DIVAndrun`
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
        element represents the scale factor of the corresponding dimension. Its
        inverse is the local resolution of the grid in a particular dimension.
 
-*  `xi`: tuple with n elements. Every element represents a coordinate
+* `xi`: tuple with n elements. Every element represents a coordinate
   of the final grid on which the observations are interpolated
 
 * `x`: tuple with n elements. Every element represents a coordinate of
@@ -64,7 +65,7 @@ function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc
 
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -1,10 +1,9 @@
 """
 
+    Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
 
-Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
-
-# In each direction searches for the minimum and maximum value of the length scale times the metric in this diretion
-# Si it basically looks at the worst and the best resolution found in the grid
+# In each direction, searches for the minimum and maximum value of the length scale times the metric in this direction
+# So it basically looks at the worst and the best resolution found in the grid
 
 # Input:
 
@@ -13,7 +12,6 @@ Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
        inverse is the local resolution of the grid in a particular dimension.
 
 * `len`: correlation length
-
 
 
 # Output:
@@ -41,7 +39,7 @@ function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}},len) where {N,T}
     return Lpmnrange
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -1,7 +1,7 @@
 """
 Compute a variational analysis of arbitrarily located observations.
 
-fi,s = DIVAndjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask; alphapc=[1,2,1], otherargs...);
+	fi,s = DIVAndjog(mask,pmn,xi,x,f,len,epsilon2,csteps,lmask; alphapc=[1,2,1], otherargs...);
 
 Perform an n-dimensional variational analysis of the observations `f` located at
 the coordinates `x`. The array `fi` represent the interpolated field at the grid
@@ -12,7 +12,7 @@ defined by the coordinates `xi` and the scales factors `pmn`.
         * Two additional parameters:
                 * csteps: array of ndims values defining the sampling steps for the preconditionner
                 * lmask: array of ndims mutilplications factors for length scales
-        * One additional optiional parameter
+        * One additional optional parameter
                 * alphapc: The coefficients for the norm used in the preconditionner
 
 
@@ -576,7 +576,7 @@ function DIVAndjog(mask,pmn,xi,x,f,Labs,epsilon2,csteps,lmask,pcmethod=1; alphap
 
 
 
-        otherargsc = Dict(otherargs)        
+        otherargsc = Dict(otherargs)
 
         # Search for velocity argument:
         if haskey(otherargsc,:velocity)

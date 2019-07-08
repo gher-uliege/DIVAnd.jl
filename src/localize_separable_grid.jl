@@ -2,7 +2,7 @@
 """
 Derive fractional indices on a separable grid.
 
-I = localize_separable_grid(xi,mask,x)
+    I = localize_separable_grid(xi,mask,x)
 
 xi is a tuple of vectors and x and tuple of n-dimensional arrays, e.g.
 
@@ -12,7 +12,7 @@ x = (x1,x2)
 Derive fractional indices where xi are the points (typical discrete observations) to localize in the
 separable grid `x` (every dimension in independent on other dimension).
 The output `I` is an n-by-m array where n number of dimensions and m number of
-observations. The correspond element of I is negative if `xi` is outside of
+observations. The corresponding element of I is negative if `xi` is outside of
 the grid defined by `x`.
 """
 function localize_separable_grid(

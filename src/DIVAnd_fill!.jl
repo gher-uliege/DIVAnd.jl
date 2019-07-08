@@ -1,6 +1,6 @@
 # Adapted from
 # from http://julialang.org/blog/2016/02/iteration
-# to  fill values in a regular grid array.
+# to fill values in a regular grid array.
 # The major use to go from a coarse resolution to a fine resolution with grid ratio 2 i
 # It should be quick and better than linear interpolation
 # For the moment just weighted average using the nine points around ...

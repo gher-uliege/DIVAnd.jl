@@ -1,16 +1,15 @@
 """
 
-
-stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
+	stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
-# Also calculates already the subsampling steps csteps for the preconditionners
+# Also calculates already the subsampling steps `csteps` for the preconditionners
 
 # Input:
 
-* `Lpmnrange`: For every dimension the minimum and maximum correlation length scaled by the local resolution (i.e. the product between L and pm (pn,...))
+* `Lpmnrange`: for every dimension the minimum and maximum correlation length scaled by the local resolution (i.e. the product between L and pm (pn,...))
 * `gridsize`: number of points in each direction (size(mask))
-* `latercsteps`:  coarsening steps used later if a lower resolution model is used for preconditioning. 
+* `latercsteps`: coarsening steps used later if a lower resolution model is used for preconditioning.
 * `moddim`: modulo for cyclic dimension (vector with n elements). Zero is used for non-cyclic dimensions.
 
 # Output:
@@ -111,12 +110,12 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     end
 
     #problemsize=problemsize/prod(latercsteps[1:2])
-	
+
     # Take into account overhead due to multiple storage
-    problemsize=problemsize/sqrt(prod(latercsteps[1:2]))    
+    problemsize=problemsize/sqrt(prod(latercsteps[1:2]))
     epsilon = 1E-6
 
-    # tries to get the maximum multiplication factor with respect to the overlapping which can be applied 
+    # tries to get the maximum multiplication factor with respect to the overlapping which can be applied
     # to get the actual useful window size excluding the overlapping.
     if nwd>0
         epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
@@ -142,7 +141,7 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 		if gridsize[i]==stepsize[i]
 			overlapping[i]=0
 		end
-			
+
             end
         end
     end
@@ -163,7 +162,7 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     return stepsize,overlapping,isdirect
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

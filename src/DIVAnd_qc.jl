@@ -1,7 +1,8 @@
 """
 
-
     qcvalues = DIVAnd_qc(fi,s,method);
+
+Perform a quality control of the observations using the interpolated field.
 
 # Input:
 

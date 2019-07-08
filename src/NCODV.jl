@@ -24,9 +24,9 @@ function varbyattrib_first(ds; kwargs...)
 end
 
 
-# # files always hava variable with the long_name  "LOCAL_CDI_ID" and "EDMO_CODE" (all upper-case)
+# # files always have variables with the long_name  "LOCAL_CDI_ID" and "EDMO_CODE" (all upper-case)
 # # long_name for the primary variable to analysis are always P35 names
-# # longitude, latitude and time (including dates) have the standard attribute "longitude", "latitude" and "time" respectively
+# # longitude, latitude and time (including dates) have the standard attribute "longitude", "latitude" and "time", respectively
 
 function loadprof(ncvar::NCDatasets.Variable{T,2},
                   flag::NCDatasets.Variable{Tflag,2},
@@ -145,7 +145,7 @@ end
     obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname,long_name;
          qv_flags = ["good_value","probably_good_value"])
 
-Load all profiles in the file `fname` corresponding to netcdf variable with the
+Load all profiles in the file `fname` corresponding to netCDF variable with the
 `long_name` attribute equal to the parameter `long_name`. `qv_flags` is a list of strings
 with the quality flags to be kept. `obsids` is a vector of strings with the
 EDMO code and local CDI id concatenated by a hyphen.

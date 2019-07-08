@@ -1,11 +1,11 @@
 """
     Rtimesx!(coord,LS,x,Rx)
 
-Gaussian type `R` matix in `ndim` dimensions applied to vector `x` of length
+Gaussian type `R` matirx in `ndim` dimensions applied to vector `x` of length
 `ndata`. The Gaussian scale differs in each direction `k` : `LS[k]`
 Coordinates of point i are `coord[i,1],coord[i,2],...,coord[i,ndim]`
-To avoid an ndata² complexity a grid is set up first so as to allow only to calculate
-covarances when distances are smaller than `3*LS`
+To avoid an ndata² complexity a grid is set up first so as to allow only the calculation
+of covariances when distances are smaller than `3*LS`
 
 Adapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90
 """
@@ -108,7 +108,7 @@ end
      weights = weight_RtimesOne(x,len)
 
 Compute the weight of the observations at location `x` to reduce the influence
-of locally clustered data.  `x` is a tuple with n elements. Every element
+of locally clustered data. `x` is a tuple with n elements: every element
 represents a coordinate of the observations. `len` is a tuple of arrays
 representing the correlation length. `len[i]` is the correlation length in the
 i-th dimension.
