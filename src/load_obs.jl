@@ -74,8 +74,37 @@ function chararray2strings(obsids::Matrix{Char})
     return obsid
 end
 
+
+function array2strings(obsids::Matrix{UInt8})
+    obsid = Vector{String}(undef,size(obsids,2))
+
+    for i = 1:size(obsids,2)
+        id = view(obsids,:,i)
+        index = findfirst(c -> c == 0,id)
+
+        hasnonull =
+            @static if VERSION >= v"0.7.0-beta.0"
+                index == nothing
+            else
+                index == 0
+            end
+
+        obsid[i] =
+            if hasnonull
+                String(Char.(id))
+            else
+                String(Char.(view(id,1:index-1)))
+            end
+    end
+
+    return obsid
+end
+
 function loadobsid(ds,varname = "obsid")
-    return chararray2strings(ds[varname].var[:,:])
+    #return chararray2strings(ds[varname].var[:,:])
+    data = Array{UInt8,2}(undef,size(ds["obsid"]));
+    NCDatasets.load!(ds["obsid"].var,data,:,:);
+    return array2strings(data)
 end
 
 
