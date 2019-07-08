@@ -85,7 +85,12 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
     # Add now analysis at data points for further output
     fidata = SharedArray{Float32}(size(f,1))
-    fidata .= NaN
+    fidata .= 0
+
+    # fidata and qcdata is a weighted average to
+    # account for data point between the subdomains solution
+    fidata_weight = SharedArray{Float32}(size(f,1))
+    fidata_weight .= 0
 
     @debug "error method: $(errormethod)"
     @info "number of windows: $(length(windowlist))"
@@ -176,21 +181,11 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                 # Now need to look into the bounding box of windowpointssol to check which data points analysis are to be stored
 
                 finwindata = DIVAnd_residual(s,fw)
-                xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
-                    ([ x[windowpointssol...] for x in xiw ]...,),xinwin,
-                    finwindata)
-                fidata[winindex[winindexsol]]=finwinsol
 
                 if doqc
                     @warn "QC not fully implemented in jogging, using rough estimate of Kii"
                     finwinqc = DIVAnd_qc(fw,s,5)
-                    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
-                        ([ x[windowpointssol...] for x in xiw ]...,),
-                        xinwin,finwinqc)
-                    qcdata[winindex[winindexsol]]=finwinsol
                 end
-
-
 
                 if errormethod==:cpme
                     fw = 0
@@ -228,17 +223,9 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
                 fi[windowpointsstore...] = fw[windowpointssol...];
                 finwindata = DIVAnd_residualobs(s,fw)
-                xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
-                    ([ x[windowpointssol...] for x in xiw ]...,),
-                    xinwin,finwindata)
-                fidata[winindex[winindexsol]]=finwinsol
 
                 if doqc
                     finwinqc = DIVAnd_qc(fw,s,QCMETHOD)
-                    xinwinsol,finwinsol,winindexsol = DIVAnd_datainboundingbox(
-                        ([ x[windowpointssol...] for x in xiw ]...,),
-                        xinwin,finwinqc)
-                    qcdata[winindex[winindexsol]]=finwinsol
                 end
 
                 if errormethod==:cpme
@@ -259,6 +246,14 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
                 end
             end
 
+            # residuals
+            fidata[winindex] = fidata[winindex] + finwindata
+            fidata_weight[winindex] = fidata_weight[winindex] .+ 1
+
+            # quality control indicators
+            if doqc
+                qcdata[winindex] = qcdata[winindex] + finwinqc
+            end
 
 
             # Cpme: just run and take out same window
@@ -317,9 +312,16 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
     #FileIO.save("/tmp/test_fi_filtered_ingo.jld",Dict("fi_filtered" => Array(fi_filtered)))
 
     #@show size(fidata)
-    # Add desroziers type of correction
+    # compute residuals and qcdata
+    # where fidata_weight is zero fidata will be zero too
+    # and their ratio is NaN
+
+    fidata .= fidata ./ fidata_weight
+    qcdata .= qcdata ./ fidata_weight
+
     ongrid = findall(x -> !isnan(x), fidata)
 
+    # Add desroziers type of correction
     #d0d = dot((1-s.obsout).*(s.yo),(s.yo));
     d0d = dot(f[ongrid],f[ongrid])
     #d0dmd1d = dot((1-s.obsout).*residual,(s.yo));
