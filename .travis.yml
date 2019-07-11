@@ -6,6 +6,7 @@ os:
 julia:
   - 0.6
   - 1.0
+  - 1.2
 #  - nightly
 #matrix:
 #  allow_failures:
