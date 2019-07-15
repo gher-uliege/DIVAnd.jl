@@ -67,6 +67,7 @@ gridded background field and the observations minus the background field.
 * `background_lenz`: vertical correlation for background computation (default 20 m). This parameter is not used
    when the parameter `background` is provided.
 * `background_len`: deprecated option replaced by `background_lenz`.
+* `filterbackground`: number of iterations to filter the background profile (default 0, no filtering)
 * `memtofit`: keyword controlling how to cut the domain depending on the memory
     remaining available for inversion. It is not the total memory (default 3). Use a large value (e.g. 100) to force the
     usage for the more efficient direct solver if you are not limited by the amount of RAM memory.
@@ -116,6 +117,7 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                 background_lenz = nothing, # m
                 background_len = nothing,
                 background_lenz_factor = 4,
+                filterbackground = 0,
                 fitcorrlen::Bool = false,
                 fithorzcorrlen::Bool = fitcorrlen,
                 fitvertcorrlen::Bool = fitcorrlen,
@@ -405,8 +407,8 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                     va = value_trans .- vm
 
                     #@show background_len[3][1,1,:], vm
-                    #JLD2.@save "/tmp/test.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm
-                    #@show "saving"
+                    #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm
+                    #@show "background saving"
                     # background profile
 
                     if n == 4
@@ -423,7 +425,9 @@ function diva3d(xi,x,value,len,epsilon2,filename,varname;
                         background_len,
                         epsilon2[sel]*background_epsilon2_factor,
                         toaverage;
-                        moddim = moddim)
+                        moddim = moddim,
+                        filterbackground = filterbackground
+                    )
 
                     fbackground = fi .+ vm
                     @debug "fbackground: $(fbackground[1,1,:])"

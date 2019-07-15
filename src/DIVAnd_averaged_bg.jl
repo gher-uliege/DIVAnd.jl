@@ -15,7 +15,8 @@ As for DIVAndrun, including all dimensions before averaging
 * faanom: Data anomalies when the analysis is subtracted from the input field.
 
 """
-function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
+function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;
+                            moddim=[], filterbackground = 0)
 
     n=ndims(mask)
 
@@ -105,6 +106,9 @@ function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
 
     fm,sm=DIVAndrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
+
+    fm = DIVAnd_filter3(fm,NaN,filterbackground);
+
     vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
     vaanalyzed[sm.obsout] .= NaN
     faanom = f - vaanalyzed
