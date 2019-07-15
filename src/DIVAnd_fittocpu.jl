@@ -75,7 +75,11 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 
     higherdims=1
 
-    if n>2
+    if n == 3
+        stepsize[3]=10;
+        overlapping[3]=2;
+        higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
+    elseif n > 3
         stepsize[3]=2;
         overlapping[3]=2;
         higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
