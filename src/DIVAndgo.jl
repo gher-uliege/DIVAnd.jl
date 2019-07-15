@@ -303,14 +303,17 @@ function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormeth
 
     end
 
-    #FileIO.save("/tmp/test_fi_ingo.jld",Dict("fi"=>Array(fi)))
+
+    #fname_save = "/tmp/test_fi_ingo_$(mean(f[isfinite.(f)])).jld"
+    #@show fname_save
+    #FileIO.save(fname_save,Dict("fi"=>Array(fi)))
 
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
     # it also makes the shared array possible to save in netCDF??
     fi_filtered = DIVAnd_filter3(fi,NaN,filteranom)
     erri_filtered = DIVAnd_filter3(erri,NaN,filtererr)
 
-    #FileIO.save("/tmp/test_fi_filtered_ingo.jld",Dict("fi_filtered" => Array(fi_filtered)))
+    #FileIO.save("/tmp/test_fi_filtered_ingo_$(mean(f[isfinite.(f)])).jld",Dict("fi_filtered" => Array(fi_filtered)))
 
     #@show size(fidata)
     # compute residuals and qcdata
