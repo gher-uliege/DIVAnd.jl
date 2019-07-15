@@ -133,6 +133,8 @@ include("gen_example_file.jl");
     # interpolate background from a NetCDF file
     include("test_interp.jl");
 
+    include("test_binning.jl");
+
     # test DIVAnd_filter3
     A = zeros(5,5,5,5,5)
     A[3,3,3,3,3] = 1

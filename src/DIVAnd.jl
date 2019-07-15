@@ -497,6 +497,8 @@ include("DIVAnd_cpme_go.jl")
 
 include("scaleseparation.jl")
 
+include("binning.jl")
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
