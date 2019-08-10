@@ -1,3 +1,30 @@
+"""
+Computes a  heatmap based on locations of observations
+
+dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
+    optimizeheat=true,otherargs...)
+
+
+# Input:
+*  `mask`: mask as usual
+*  `pmn` : tuple of metrics as usual
+*  `xi`: tuple of coordinates of the grid for the heatmap
+*  `x` : tuple of coordinates of observations
+*  `inflation`: array generally of ones. For some applications an observation can carry a different weight which is then encoded in the as
+*  `Labs` : the length scales for diva. Here their meaning is the spread of the observations for the Kernel calculation
+*              if zero is provided, the routine applies an empirical estimate
+
+*   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate
+*   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical
+
+*   `otherargs...`: all other optional arguments DIVAndrun can take (advection etc)
+
+# Output:
+*  `lambda`: data density field (integral is one)
+
+
+"""
+
 function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
 
@@ -125,7 +152,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
         
             dens2=dens2/inflationsum
             
-            @show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
+            #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
             
         end
         # VERSION B: covariance of one grid point with all data points
