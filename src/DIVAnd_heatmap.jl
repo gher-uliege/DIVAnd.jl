@@ -16,6 +16,7 @@ dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheat
 
 *   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate
 *   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical
+*   `myheatmapmethod`: can be "Automatic", "GridKernel" or "DataKernel". 
 
 *   `otherargs...`: all other optional arguments DIVAndrun can take (advection etc)
 
@@ -39,6 +40,18 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
     LHEAT=Labs
     
     mymethod=myheatmapmethod
+	
+	if myheatmapmethod=="Automatic"
+		mymethod="DataKernel"
+		
+		if NP>sum(mask.==true)
+		mymethod="GridKernel"
+		end
+	
+	
+	end
+	
+	
     trytooptimize=optimizeheat
     #mymethod="GridKernel"
 # 
@@ -92,6 +105,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
         if trytooptimize
         #@show "Try to calculate a decomposition" 
             #Decompose once and for all
+			if mymethod=="DataKernel" 
             FIopt,Sopt=DIVAnd.DIVAndrun(mask,pmn,xi,x,inflation,Ltuple, 1.0E10 ;otherargs...)
             svf=statevector_init((mask,))
             #@show "a",size(Sopt.H'),
@@ -104,6 +118,11 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             #ongrid,=statevector_unpack(svf,vb)
             #@show size(ongrid)
             #@show vv*inflation,size(inflation)
+			end
+			if mymethod=="GridKernel"
+			 FIopt,Sopt=DIVAnd.DIVAndrun(mask,pmn,xi,x,inflation,Ltuple, 1.0E10 ;otherargs...)
+            svf=statevector_init((mask,))
+			end
         end
         
         # VERSION A: covariance of one data point with grid points
@@ -156,8 +175,32 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             
         end
         # VERSION B: covariance of one grid point with all data points
-        
+        # TODO: implement optimized version .....
         if mymethod=="GridKernel"
+		
+		  if trytooptimize
+		    svsize=sum(mask.==true)
+			xdens=zeros(Float64,svsize)
+			xval=zeros(Float64,svsize)
+		    @show "OPti",svsize
+			for myi=1:svsize
+			eiarr=zeros(Float64,svsize)
+            eiarr[myi]=1.0
+			vv= Sopt.P.factors.PtL \ eiarr
+            vb=Sopt.P.factors.UP \ vv
+                
+                FI,=statevector_unpack(svf,vb)
+                integ=DIVAnd_integral(mask,pmn,FI)
+				@show integ
+			vb=vb/integ
+			#@show size(vb),size(inflation),size((Sopt.H*vb))
+			xdens[myi]=sum(inflation .* (Sopt.H*vb))
+				
+			end
+			dens2,=statevector_unpack(svf,xdens)
+		    dens2=dens2/DIVAnd_integral(mask,pmn,dens2)
+		  
+		  else
             xaugmented=Array{Any}(undef,DIMS)
             @show "Grid based Kernels" 
             Rinf=deepcopy(inflation)
@@ -192,7 +235,8 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             end
             # Need for overall scaling ?
             dens2=dens2/DIVAnd_integral(mask,pmn,dens2)
-        end
+          end
+		end
         
         
         
