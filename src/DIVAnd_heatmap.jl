@@ -22,13 +22,10 @@ dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheat
 
 # Output:
 *  `lambda`: data density field (integral is one)
-
-
 """
-
 function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
-
+#
     
     # Create output array on the same grid as mask pmn and xi
     dens2=zeros(Float64,size(mask))
@@ -65,13 +62,13 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
         for i=1:DIMS
             meanxo=sum(inflation.*x[i])/sum(inflation)
             varx[i]=sum(inflation.*(x[i].-meanxo).^2)/sum(inflation)
-            @show i,meanxo,varx[i]
+            #@show i,meanxo,varx[i]
             LF[i]=sqrt(varx[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
         end
     
 
         LHEAT=(LF...,)
-        @show LHEAT
+        @show "Estimation", LHEAT
         
     end
     
@@ -191,7 +188,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
                 
                 FI,=statevector_unpack(svf,vb)
                 integ=DIVAnd_integral(mask,pmn,FI)
-				@show integ
+				#@show integ
 			vb=vb/integ
 			#@show size(vb),size(inflation),size((Sopt.H*vb))
 			xdens[myi]=sum(inflation .* (Sopt.H*vb))
@@ -204,8 +201,8 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             xaugmented=Array{Any}(undef,DIMS)
             @show "Grid based Kernels" 
             Rinf=deepcopy(inflation)
-            Rinf.=Inf
-            Raugmented=[Rinf...,0.001]
+            Rinf.=1.0E10
+            Raugmented=[Rinf...,0.000001]
             valaugmented=[inflation...,1.0]
             for myi in eachindex(mask)
                 
