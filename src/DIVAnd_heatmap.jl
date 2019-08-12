@@ -16,7 +16,7 @@ dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheat
 
 *   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate. Default "0"
 *   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical. Default is to optimize
-*   `myheatmapmethod`: can be "Automatic", "GridKernel" or "DataKernel". 
+*   `myheatmapmethod`: can be "Automatic", "GridKernel" or "DataKernel" (Results should be very similar except near boundaries)
 
 *   `otherargs...`: all other optional arguments DIVAndrun can take (advection etc)
 
@@ -129,7 +129,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
                 xxx[ii]=[x[ii][myi]]
             end
             #@show xxx,LF,size(xi[1]),size(pmn[1])
-              #  Use of WOODBURY and decomposed B in s could make it faster
+            #  Use of WOODBURY and decomposed B in s could make it faster, done in the optimized version
                 FI,S=DIVAnd.DIVAndrun(mask,pmn,xi,(xxx...,),[1.0],Ltuple,0.001;otherargs...)
         
     # Add here the constraint that each integral is one: accepts non unit values vi inflation to reflect mulitple observations
@@ -142,8 +142,8 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             if integ !=0
                 dens2=dens2 .+ inflation[myi]*FI/integ
                 inflationsum=inflationsum+inflation[myi]
-            else
-                @show "?? Not on grid ?",integ,sum(FI),xxx
+            #else
+            #    @show "?? Not on grid ?",integ,sum(FI),xxx
             end
            
            
@@ -165,7 +165,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 		    svsize=sum(mask.==true)
 			xdens=zeros(Float64,svsize)
 			xval=zeros(Float64,svsize)
-		    @show "OPti",svsize
+		    #@show "OPti",svsize
 			for myi=1:svsize
 				eiarr=zeros(Float64,svsize)
 				eiarr[myi]=1.0
@@ -241,7 +241,8 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 
     end    
         
-        
+    dens2[.!mask].=NaN
+	
     return dens2
     
 end

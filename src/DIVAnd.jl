@@ -516,7 +516,7 @@ DIVAnd_cvestimator, DIVAnd_erroratdatapoints, DIVAnd_cv, DIVAnd_qc, DIVAnd_adapt
 
 export checkobs
 
-export DIVAnd_heatmap,DIVAnd_integral,DIVAND_scaleL
+export DIVAnd_heatmap,DIVAnd_integral,DIVAnd_scaleL
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient
