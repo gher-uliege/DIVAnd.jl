@@ -21,7 +21,10 @@ dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheat
 *   `otherargs...`: all other optional arguments DIVAndrun can take (advection etc)
 
 # Output:
-*  `lambda`: data density field (integral is one)
+*  `dens`: data density field (integral is one)
+*  `Ltuple` : The bandwith used (either the input value or the calculated ones)
+*  `LSCV` : Least Square Cross validation estimator (the lower the better)
+*  `LCV` : Likelihood cross validation estimator value (the higher the better)
 """
 function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
@@ -32,6 +35,10 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 # Dimensionality of the problem and number of points
     DIMS=ndims(mask)
     NP=size(inflation)[1]
+	selfvalue=zeros(Float64,NP)
+	svf=statevector_init((mask,))
+	LCV=0.0
+	LSCV=0.0
 
     LHEAT=Labs
     
@@ -49,6 +56,11 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 	
 	end
 	
+	if mymethod=="GridKernel"
+	
+      @warn "Method GridKernel does not allow cross validation. If you need the latter, force myheatmapmethod to DataKernel"	
+	   
+	end
 	
     trytooptimize=optimizeheat
 #
@@ -103,7 +115,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 			#end
 			#if mymethod=="GridKernel"
 			FIopt,Sopt=DIVAnd.DIVAndrun(mask,pmn,xi,x,inflation,Ltuple, 1.0E10 ;otherargs...)
-            svf=statevector_init((mask,))
+            
 			#end
         end
         
@@ -115,12 +127,13 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             if trytooptimize
                 eiarr=zeros(size(inflation))
                 eiarr[myi]=1
-                vv= Sopt.P.factors.PtL \ (Sopt.H'*eiarr)
+				work1=Sopt.H'*eiarr
+                vv= Sopt.P.factors.PtL \ work1
                 vb=Sopt.P.factors.UP \ vv
-                   
+                   # Possible place for slight performance improvement. Do the integral in state-space with volumes created before.
                 FI,=statevector_unpack(svf,vb)
                 integ=DIVAnd_integral(mask,pmn,FI)
-                
+                selfvalue[myi]=(work1⋅vb)/integ
                     
             else    
                 
@@ -153,8 +166,18 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
         
             dens2=dens2/inflationsum
             
+			if trytooptimize
+			dens2x=statevector_pack(svf,(dens2,))
             #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
-            
+			selfvalueerr=(inflationsum.*Sopt.H*dens2x .-inflation.*selfvalue)./(inflationsum.-inflation)
+			logvalueerr=log.(selfvalueerr)
+			selfvalueerr[isnan.(selfvalueerr)].=0
+			logvalueerr[isnan.(logvalueerr)].=0
+            #errestim=inflation.*(selfvalue-Sopt.H*dens2x)./(inflationsum.-inflation)
+			#@show DIVAnd_integral(mask,pmn,dens2.^2), DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(selfvalueerr)/inflationsum,sum(logvalueerr)
+			LCV=sum(logvalueerr)
+			LSCV=DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(selfvalueerr)/inflationsum
+			end
         end
 		
 		
@@ -243,7 +266,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
         
     dens2[.!mask].=NaN
 	
-    return dens2
+    return dens2,Ltuple,LCV,LSCV
     
 end
 #
