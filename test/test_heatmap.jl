@@ -23,13 +23,13 @@ dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,0;Ladaptive
 dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=0)
 #@show dens1D[2]
 @test dens1D[2] ≈ 0.053735329940045436
-@time dens1D1,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=1)
+dens1D1,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=1)
 #@show dens1D1[2]
 @test dens1D1[2] ≈ 0.03222559084580536
-@time dens1D1,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=2)
+dens1D1,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=2)
 #@show dens1D1[2]
 @test dens1D1[2] ≈ 0.038056634649593586
-@time dens1D1nopt,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=2,optimizeheat=false)
+dens1D1nopt,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=2,optimizeheat=false)
 #@show dens1D1nopt[2]
 @test dens1D1nopt[2] ≈ 0.03805663463970936
 dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=0,myheatmapmethod="DataKernel")

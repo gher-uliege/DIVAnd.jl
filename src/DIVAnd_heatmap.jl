@@ -1,7 +1,7 @@
 """
-Computes a  heatmap based on locations of observations
+Computes a  heatmap based on locations of observations using kernel density estimation
 
-dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
+dens,Ltuple,LSCV,LCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
 
 
@@ -12,7 +12,7 @@ dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheat
 *  `x` : tuple of coordinates of observations
 *  `inflation`: array generally of ones. For some applications an observation can carry a different weight which is then encoded in the array
 *  `Labs` : the length scales for diva. Here their meaning is the spread of the observations for the Kernel calculation
-*              if zero is provided, the routine applies an empirical estimate
+*              if zero is provided, the routine applies an empirical estimate, returned in the Ltuple output.
 
 *   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate. Default "0"
 *   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical. Default is to optimize
@@ -23,8 +23,8 @@ dens2 = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheat
 # Output:
 *  `dens`: data density field (integral is one)
 *  `Ltuple` : The bandwith used (either the input value or the calculated ones)
-*  `LSCV` : Least Square Cross validation estimator (the lower the better)
-*  `LCV` : Likelihood cross validation estimator value (the higher the better)
+*  `LSCV` : Least Square Cross validation estimator (the lower the better) leave one out approach
+*  `LCV` : Likelihood cross validation estimator value (the higher the better) leave one out approach
 """
 function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
@@ -86,7 +86,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
     
 
         LHEAT=(LF...,)
-        @show "Estimation", LHEAT
+        #@show "Estimation", LHEAT
         
     end
     
@@ -256,10 +256,10 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
         # Optional L scaling
 
         if Ladaptiveiterations>0
-            @show Literations,size(Ltuple[1])
+            #@show Literations,size(Ltuple[1])
             lambda=DIVAnd_scaleL(mask,pmn,dens2)
             for jj=1:DIMS
-                @show LHEAT[jj]
+                #@show LHEAT[jj]
                 Lfortuple[jj] = LHEAT[jj] .* lambda
             end
             Ltuple=(Lfortuple...,)
