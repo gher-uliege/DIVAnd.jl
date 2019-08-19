@@ -43,6 +43,8 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
     LHEAT=Labs
     
     mymethod=myheatmapmethod
+	
+	trytooptimize=optimizeheat
 
 # If automatic selection take the one with the lower number of covariances to calculate
 	if myheatmapmethod=="Automatic"
@@ -56,13 +58,17 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 	
 	end
 	
-	if mymethod=="GridKernel"
+	if mymethod=="GridKernel" 
 	
-      @warn "Method GridKernel does not allow cross validation. If you need the latter, force myheatmapmethod to DataKernel"	
+      @warn "Method GridKernel does not allow for cross validation. If you need the latter, force myheatmapmethod to DataKernel"	
 	   
 	end
 	
-    trytooptimize=optimizeheat
+	if trytooptimize==false
+	 @warn "Unoptimized versions do not allow for cross validation"
+	end
+	
+    
 #
     if Labs==0
         # Estimate

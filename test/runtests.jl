@@ -127,6 +127,9 @@ include("gen_example_file.jl");
 
     # interpolate background from a NetCDF file
     include("test_interp.jl");
+	
+	# Heatmap
+	include("test_heatmap.jl")
 
     # test DIVAnd_filter3
     A = zeros(5,5,5,5,5)
