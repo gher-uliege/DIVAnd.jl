@@ -177,12 +177,26 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
             #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
 			selfvalueerr=(inflationsum.*Sopt.H*dens2x .-inflation.*selfvalue)./(inflationsum.-inflation)
 			logvalueerr=log.(selfvalueerr)
+			
+			
+			finalweights=inflation
+			#or 
+			finalweights=Ones(Float64,size(inflation))
+			
+			finalweights[isnan.(selfvalueerr)].=0
+			finalsum=sum(finalweights)
 			selfvalueerr[isnan.(selfvalueerr)].=0
 			logvalueerr[isnan.(logvalueerr)].=0
             #errestim=inflation.*(selfvalue-Sopt.H*dens2x)./(inflationsum.-inflation)
 			#@show DIVAnd_integral(mask,pmn,dens2.^2), DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(selfvalueerr)/inflationsum,sum(logvalueerr)
-			LCV=sum(logvalueerr)
-			LSCV=DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(selfvalueerr)/inflationsum
+			
+			LCV=sum(finalweights.*logvalueerr)/finalsum
+			LSCV=DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(finalweights.*selfvalueerr)/finalsum
+			#or
+            			
+			#LCV=sum(inflation.*logvalueerr)/inflationsum
+			#LSCV=DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(inflation.*selfvalueerr)/inflationsum
+			
 			end
         end
 		
