@@ -181,7 +181,7 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 			
 			finalweights=inflation
 			#or 
-			finalweights=Ones(Float64,size(inflation))
+			finalweights=ones(Float64,size(inflation))
 			
 			finalweights[isnan.(selfvalueerr)].=0
 			finalsum=sum(finalweights)
