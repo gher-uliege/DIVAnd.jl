@@ -20,13 +20,14 @@ function DIVAnd_scaleL(mask,pmn,dens)
     dim=size(mask)
     # Array which will hold the multiplication factors to be applied to Length scales
     lambda=ones(Float64,dim)
-    
+	dens=dens.^(1.0/NDIM)
+    dens[isnan.(dens)].=0
     # Total volume
     totalvolume=DIVAnd_integral(mask,pmn,lambda)
     #@show totalvolume
-    denspower=DIVAnd_integral(mask,pmn,dens.^(1.0/NDIM))
+    denspower=DIVAnd_integral(mask,pmn,dens)
     #@show denspower
-    lambda=(denspower/totalvolume)./dens.^(1.0/NDIM)
+    lambda=(denspower/totalvolume)./dens
     lambda[.!mask].=1.0
     return lambda
     
