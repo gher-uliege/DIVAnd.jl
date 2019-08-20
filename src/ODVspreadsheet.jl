@@ -640,11 +640,12 @@ end
         nametype = :P01,
         qvlocalname = "QV:SEADATANET")
 
-Load all profiles in all file from the array `fnames` corresponding to
-one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
-datanames are P01 vocabulary names with the SDN prefix. If nametype is
-`:localname`, then they are the ODV column header without units. For example
-if the column header is `Water body salinity [per mille]`, then `datenames`
+Load all the profiles from every files listed in the array `fnames` corresponding to
+one of the parameter names `datanames`.
+If `nametype` is `:P01` (default), the datanames are P01 vocabulary names with the SDN prefix.
+If nametype is `:localname`, then they are the ODV column header without units.
+
+For example if the column header is `Water body salinity [per mille]`, then `datenames`
 should be `["Water body salinity"]`.
 The resulting vectors have the data type `T` (expect `times` and `ids` which
 are vectors of `DateTime` and `String` respectively). Only values matching the
@@ -654,7 +655,7 @@ One can also use the constants these constants (prefixed with
 `DIVAnd.ODVspreadsheet.`):
 
 `qvlocalname` is the column name to denote quality flags. It is assumed that the
-quality flags follow immediatly the data column.
+quality flags follow immediately the data column.
 
 |                      constant | value |
 |-------------------------------|-------|
@@ -679,7 +680,17 @@ julia> data,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.ODVspreadsheet.load(F
       ["Water body salinity"]; nametype = :localname );
 ```
 
-No checks are done if the units are consistent.
+In order to read ODV spreasheet containing World Ocean Database file `odvfile`,
+one can use a command like:
+```julia-repl
+julia> obsval,obslon,obslat,obsdepth,obstime,obsid = ODVspreadsheet.load(Float64,[odvfile],
+                           ["Temperature"]; qv_flags=["0", "1"], nametype = :localname, qvlocalname = "QV:WOD");
+```
+i.e.,
+* explicitely specifying the accepted flags `qv_flags`
+* set `qvlocalname` as "QV:WOD".
+
+*Note:* no checks are performed to ensure the units are consistent.
 
 """
 function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
@@ -704,6 +715,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
         # loop over all parameters
         for dataname in datanames
+            @info "Working on variable $(dataname)"
             if nametype == :P01
                 if !(dataname in sheet_P01names)
                     # ignore this file
@@ -720,7 +732,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                 end
             end
 
-            # @info "Starting loop on the $(nprofiles(sheet)) profiles"
+            @info "Starting loop on the $(nprofiles(sheet)) profiles"
             for iprofile = 1:nprofiles(sheet)
                     data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
                        obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
@@ -749,7 +761,7 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                     append!(times,obstime[good])
                     append!(ids,obsids[good])
             end
-            # @info "Done reading the profiles"
+            @info "Done reading the profiles"
         end
     end
 
@@ -759,12 +771,12 @@ end
 """
      profiles,lons,lats,depths,times,ids = load(T,dir,P01names)
 
-Load all ODV files under the directory `dir` corresponding the
+Load all the ODV files under the directory `dir` corresponding the
 one of the parameter names `P01names`. The resulting vectors have the data
 type `T` (expect `times` and `ids` which are vectors of `DateTime` and
-`String` respectively).
+`String`, respectively).
 
-No checks are done if the units are consistent.
+No checks are done to ensure the units are consistent.
 """
 function load(T,dir::AbstractString,datanames;
               qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
