@@ -69,7 +69,7 @@ All tests should pass without error.
 ```
 INFO: Testing DIVAnd
 Test Summary: | Pass  Total
-  DIVAnd      |   100     100
+  DIVAnd      |  427    427
 INFO: DIVAnd tests passed
 ```
 
