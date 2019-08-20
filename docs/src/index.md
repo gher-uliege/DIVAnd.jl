@@ -24,6 +24,7 @@ DIVAnd.distance
 DIVAnd.interp
 DIVAnd.backgroundfile
 DIVAnd.Quadtrees.checkduplicates
+DIVAnd.DIVAnd_heatmap
 ```
 
 
@@ -209,6 +210,8 @@ DIVAnd.ncfile
 DIVAnd.writeslice
 DIVAnd.encodeWMSStyle
 DIVAnd.loadoriginators
+DIVAnd.DIVAnd_inegral
+DIVAnd.DIVAnd_scaleL
 ```
 
 
