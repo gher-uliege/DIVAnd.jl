@@ -11,7 +11,9 @@
 
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
 
-`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated on a curvilinear grid in 2, 3 or more dimensions.
+`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 2, 3 or more dimensions.
+
+The method bears some similarities with Optimal Interpolation or Krigging in the sense that it allows to create a smooth and continous field from a collection of observations. The analysis method is however different in practise, allowing to take into account topological features, physical constraints etc in a natural way.
 
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
