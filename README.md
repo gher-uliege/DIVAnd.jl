@@ -15,6 +15,8 @@
 
 The method bears some similarities with Optimal Interpolation or Krigging in the sense that it allows to create a smooth and continous field from a collection of observations. The analysis method is however different in practise, allowing to take into account topological features, physical constraints etc in a natural way. The method was initially developped with ocean data in mind, but it can be applied to any field where localized observations have to be used to produce gridded fields which are "smooth".
 
+See also https://gher-ulg.github.io/DIVAnd-presentation/#1
+
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
 Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: DIVAnd-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
