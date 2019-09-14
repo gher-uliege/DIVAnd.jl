@@ -2,7 +2,7 @@
 Computes a  heatmap based on locations of observations using kernel density estimation (probability density field whose integral over the domain is one)
 
 dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
-    optimizeheat=true,otherargs...)
+    optimizeheat=true,nmax=1000,otherargs...)
 
 
 # Input:
@@ -17,6 +17,7 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate. Default "0"
 *   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical. Default is to optimize
 *   `myheatmapmethod`: can be "Automatic", "GridKernel" or "DataKernel" (Results should be very similar except near boundaries)
+*   `nmax`: maximum number of data points. If actual data size is larger, approximatively nmax superobservations are calculated and a warning issued.
 
 *   `otherargs...`: all other optional arguments DIVAndrun can take (advection etc)
 
@@ -26,10 +27,20 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *  `LCV` : Likelihood Cross Validation estimator value (the higher the better) leave one out approach
 *  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
 """
-function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
-    optimizeheat=true,otherargs...)
+function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
+    optimizeheat=true,nmax=1000,otherargs...)
 #
-    
+    x=xin
+	inflation=inflationin
+    if size(inflationin)[1]>nmax
+	  @warn "Data array is larger then maximum specified $nmax. Superobservations will be created. If this is not desired, increase nmax to the number of superobs you want"
+	  
+	  x,inflation,sumw,varp=DIVAnd_superobs(xin,ones(size(inflationin)),nmax;weights=inflationin,intensive=false)
+	  @show size(inflationin),nmax,size(inflation)
+	end
+	
+	
+	
 # Create output array on the same grid as mask pmn and xi
     dens2=zeros(Float64,size(mask))
 # Dimensionality of the problem and number of points
