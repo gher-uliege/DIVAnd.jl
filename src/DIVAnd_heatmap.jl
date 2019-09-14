@@ -1,7 +1,7 @@
 """
 Computes a  heatmap based on locations of observations using kernel density estimation (probability density field whose integral over the domain is one)
 
-dens,Ltuple,LSCV,LCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
+dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
 
 
@@ -23,8 +23,8 @@ dens,Ltuple,LSCV,LCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 # Output:
 *  `dens`: data density field (integral is one)
 *  `Ltuple` : The bandwidthth used (either the input value or the calculated ones)
-*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
 *  `LCV` : Likelihood Cross Validation estimator value (the higher the better) leave one out approach
+*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
 """
 function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,otherargs...)
@@ -176,6 +176,8 @@ function DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myhea
 			dens2x=statevector_pack(svf,(dens2,))
             #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
 			selfvalueerr=(inflationsum.*Sopt.H*dens2x .-inflation.*selfvalue)./(inflationsum.-inflation)
+			selfvalueerr[selfvalueerr.<0.0].=0.0
+			
 			logvalueerr=log.(selfvalueerr)
 			
 			
