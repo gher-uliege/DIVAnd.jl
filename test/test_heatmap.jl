@@ -41,3 +41,10 @@ dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptive
 dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptiveiterations=0,myheatmapmethod="Automatic")
 #@show dens1D[2]
 @test dens1D[2] ≈ 0.05661676688382721
+
+xo=randn(150)
+inflation=ones(size(xo))
+
+dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,0;Ladaptiveiterations=0,nmax=100)
+#@show dens1D[2]
+@test dens1D[2] ≈ 0.033593831115271915

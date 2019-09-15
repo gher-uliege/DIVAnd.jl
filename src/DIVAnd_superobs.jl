@@ -1,6 +1,9 @@
 """
 Computes superobservations to reduce the number of observation point. 
 IMPORTANT: assumes all points are located in the domain of interest.
+Also, if topology (not taken into account in the present version) is complicated, a superobs could fall on land. 
+In that case possible solution: take as coordinates those of the closest real observation (in water).
+Also consider that when using superobs for heatmap calculations, the automatic calculation of bandwidth can become too optimistic (and yield to small bandwidth). 
 
 newx,newval,sumw,varp=DIVAnd_superobs(x,val,nmax;weights=[],intensive=true)
 

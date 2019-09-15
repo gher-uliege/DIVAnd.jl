@@ -46,6 +46,7 @@ function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,m
 # Dimensionality of the problem and number of points
     DIMS=ndims(mask)
     NP=size(inflation)[1]
+	NPI=sum(inflation)
 	selfvalue=zeros(Float64,NP)
 	svf=statevector_init((mask,))
 	LCV=0.0
@@ -86,13 +87,20 @@ function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,m
 		# Empirial estimate Silverman's (1986) rule of thumb
     
         varx=zeros(Float64,DIMS)
+		#varxb=zeros(Float64,DIMS)
         LF=zeros(Float64,DIMS)
         
         for i=1:DIMS
             meanxo=sum(inflation.*x[i])/sum(inflation)
             varx[i]=sum(inflation.*(x[i].-meanxo).^2)/sum(inflation)
-            #@show i,meanxo,varx[i]
-            LF[i]=sqrt(varx[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
+			#meanxob=sum(x[i])/size(inflation)[1]
+            #varxb[i]=sum((x[i].-meanxob).^2)/size(inflation)[1]
+			#@show i,meanxo,varx[i],meanxob,varxb[i]
+            LF[i]=sqrt(varx[i])/((DIMS+2.0)*NPI/4.0)^(1.0/(4.0+DIMS))
+			#@show LF[i]
+			#LF[i]=sqrt(varxb[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
+			#@show LF[i]
+			
         end
     
 
