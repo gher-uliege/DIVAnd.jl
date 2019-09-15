@@ -5,7 +5,7 @@ Also, if topology (not taken into account in the present version) is complicated
 In that case possible solution: take as coordinates those of the closest real observation (in water).
 Also consider that when using superobs for heatmap calculations, the automatic calculation of bandwidth can become too optimistic (and yield to small bandwidth). 
 
-newx,newval,sumw,varp=DIVAnd_superobs(x,val,nmax;weights=[],intensive=true)
+newx,newval,sumw,varp,idx=DIVAnd_superobs(x,val,nmax;weights=[],intensive=true)
 
 # Input:
 * `x`   : tuple of coordinates of the original observations
@@ -20,6 +20,7 @@ newx,newval,sumw,varp=DIVAnd_superobs(x,val,nmax;weights=[],intensive=true)
 * `newval`: array of values of the new super observations
 * `sumw`: array containing for each superobservation value the sum of weights that where involved. Can be used for defining weight of superobservation
 * `varp`: array of variance (variance around the mean defining the new super observation). Can be used for defining weight of superobservation
+* `idx` : tuple containing the inverse of grid spacings that were used for the binning
 
 Normal use with default values creates classical superobservations
 
@@ -124,5 +125,5 @@ function DIVAnd_superobs(x,val,nmax;weights=[],intensive=true)
        XPa[j,:]=XPa[j,:]./WPa
     end
     # Finished, return coordinate tuple and arrays
-    return ([XPa[j,:] for j=1:ndim]...,),VPa, WPa,VARPa
+    return ([XPa[j,:] for j=1:ndim]...,),VPa, WPa,VARPa,ilenmax
 end

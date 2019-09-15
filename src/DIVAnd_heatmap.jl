@@ -28,14 +28,15 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
 """
 function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
-    optimizeheat=true,nmax=1000,otherargs...)
+    optimizeheat=true,nmax=10000,otherargs...)
 #
     x=xin
 	inflation=inflationin
+	idx=[]
     if size(inflationin)[1]>nmax
 	  @warn "Data array is larger then maximum specified $nmax. Superobservations will be created. If this is not desired, increase nmax to the number of superobs you want"
 	  
-	  x,inflation,sumw,varp=DIVAnd_superobs(xin,ones(size(inflationin)),nmax;weights=inflationin,intensive=false)
+	  x,inflation,sumw,varp,idx=DIVAnd_superobs(xin,ones(size(inflationin)),nmax;weights=inflationin,intensive=false)
 	  @show size(inflationin),nmax,size(inflation)
 	end
 	
@@ -102,7 +103,17 @@ function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,m
 			#@show LF[i]
 			
         end
-    
+		
+        if idx!=[]
+		#@show "was binned"
+		#@show LF.*idx
+		for i=1:DIMS
+		 if LF[i]*idx[i]<1
+		 @warn "Superobserving made length scale $(LF[i]) in direction $(i) estimate too small, forced to bin size $(1/idx[i])"
+		 LF[i]=1.0/idx[i]
+		 end
+		end
+		end
 
         LHEAT=(LF...,)
         #@show "Estimation", LHEAT

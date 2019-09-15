@@ -42,6 +42,8 @@ dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,1;Ladaptive
 #@show dens1D[2]
 @test dens1D[2] ≈ 0.05661676688382721
 
+
+Random.seed!(1)
 xo=randn(150)
 inflation=ones(size(xo))
 
@@ -50,8 +52,8 @@ dens1D,LHM,LCV,LSCV= DIVAnd_heatmap(mask1D,pm1D,xi1D,(xo,),inflation,0;Ladaptive
 @test dens1D[2] ≈ 0.033593831115271915
 
 
-newcoord,newval,sumw,varp= DIVAnd_superobs((xo,),inflation,100)
+newcoord,newval,sumw,varp,idx= DIVAnd_superobs((xo,),inflation,100)
 @test newval[7] ≈ 1.0
 
-newcoord,newval,sumw,varp= DIVAnd_superobs((xo,),inflation,100;intensive=false)
+newcoord,newval,sumw,varp,idx= DIVAnd_superobs((xo,),inflation,100;intensive=false)
 @test newval[7] ≈ 2.0
