@@ -34,10 +34,10 @@ function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,m
 	inflation=inflationin
 	idx=[]
     if size(inflationin)[1]>nmax
-	  @warn "Data array is larger then maximum specified $nmax. Superobservations will be created. If this is not desired, increase nmax to the number of superobs you want"
+	  @warn "Data array size $(size(inflationin)) is larger then maximum $nmax. Superobservations will be created. To avoid, increase nmax to the desired number of superobs"
 	  
 	  x,inflation,sumw,varp,idx=DIVAnd_superobs(xin,ones(size(inflationin)),nmax;weights=inflationin,intensive=false)
-	  @show size(inflationin),nmax,size(inflation)
+	  #@show size(inflationin),nmax,size(inflation)
 	end
 	
 	
@@ -90,7 +90,7 @@ function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,m
         varx=zeros(Float64,DIMS)
 		#varxb=zeros(Float64,DIMS)
         LF=zeros(Float64,DIMS)
-        
+        #fromgausstodivaL=[0.8099,0.62,0.62,0.62,0.62,0.62,0.62]
         for i=1:DIMS
             meanxo=sum(inflation.*x[i])/sum(inflation)
             varx[i]=sum(inflation.*(x[i].-meanxo).^2)/sum(inflation)
@@ -213,7 +213,7 @@ function DIVAnd_heatmap(mask,pmn,xi,xin,inflationin,Labs;Ladaptiveiterations=0,m
 			
 			finalweights=inflation
 			#or 
-			finalweights=ones(Float64,size(inflation))
+			#finalweights=ones(Float64,size(inflation))
 			
 			finalweights[isnan.(selfvalueerr)].=0
 			finalsum=sum(finalweights)
