@@ -69,7 +69,8 @@ include("gen_example_file.jl");
 
     include("test_variableLandpmn.jl");
 
-    include("test_3dvar.jl");
+    include("test_3dvar.jl")
+    include("test_3dvar_large_stacked.jl")
 
     include("test_4dvar.jl");
 
