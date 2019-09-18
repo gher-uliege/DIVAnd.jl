@@ -1,8 +1,4 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 import DIVAnd
 
 obstime = DateTime(1990,1,1) : Dates.Day(1) : DateTime(2010,12,31)

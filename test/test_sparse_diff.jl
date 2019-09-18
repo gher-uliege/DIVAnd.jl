@@ -1,9 +1,5 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using LinearAlgebra
-else
-    using Base.Test
-end
+using Test
+using LinearAlgebra
 
 # Testing sparse and MatFun operators.
 

@@ -1,13 +1,8 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Compat
-    using Random
-    using Statistics
-    using Dates
-else
-    using Base.Test
-    using Compat: range
-end
+using Test
+using Compat
+using Random
+using Statistics
+using Dates
 using DIVAnd
 
 #include("../src/utils.jl")
@@ -95,11 +90,8 @@ leny = .05;
 Nens = 100
 pmn = (pm,pn)
 len = (lenx,leny)
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(123)
-else
-   srand(123)
-end
+Random.seed!(123)
+
 field = DIVAnd.random(mask,pmn,len,Nens)
 @test size(field) == (size(mask,1),size(mask,2),Nens)
 
