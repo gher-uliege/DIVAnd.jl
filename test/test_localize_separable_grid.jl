@@ -1,9 +1,4 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
-
+using Test
 
 gridindices = localize_separable_grid(([4],),trues((10,)),(2*collect(1:10),))
 @test gridindices[1] ≈ 2.

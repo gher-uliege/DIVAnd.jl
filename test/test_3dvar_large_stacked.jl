@@ -2,12 +2,8 @@
 # (vertically stacked).
 
 using DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Statistics
-else
-    using Base.Test
-end
+using Test
+using Statistics
 
 # function to interpolate
 fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)

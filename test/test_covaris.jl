@@ -1,10 +1,6 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using LinearAlgebra
-    using SparseArrays
-else
-    using Base.Test
-end
+using Test
+using LinearAlgebra
+using SparseArrays
 
 function testprod(C,C2)
 
