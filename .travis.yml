@@ -4,7 +4,6 @@ os:
   - linux
   - osx
 julia:
-  - 0.6
   - 1.0
   - 1.2
 #  - nightly
@@ -22,9 +21,9 @@ notifications:
 # using default test script
 after_success:
   # push coverage results to Coveralls
-  - julia -e 'VERSION >= v"0.7.0" && using Pkg; cd(Pkg.dir("DIVAnd")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia -e 'using Pkg; cd(Pkg.dir("DIVAnd")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
-  - julia -e 'VERSION >= v"0.7.0" && using Pkg; cd(Pkg.dir("DIVAnd")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'using Pkg; cd(Pkg.dir("DIVAnd")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
 jobs:
   include:
