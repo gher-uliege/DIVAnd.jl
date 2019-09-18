@@ -20,7 +20,7 @@ newx,newval,sumw,varp,idx=DIVAnd_superobs(x,val,nmax;weights=[],intensive=true)
 * `newval`: array of values of the new super observations
 * `sumw`: array containing for each superobservation value the sum of weights that where involved. Can be used for defining weight of superobservation
 * `varp`: array of variance (variance around the mean defining the new super observation). Can be used for defining weight of superobservation
-* `idx` : tuple containing the inverse of grid spacings that were used for the binning
+* `idx` : array containing the inverse of grid spacing (one in each direction) that were used for the binning
 
 Normal use with default values creates classical superobservations
 
