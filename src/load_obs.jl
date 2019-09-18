@@ -56,12 +56,7 @@ function chararray2strings(obsids::Matrix{Char})
         id = view(obsids,:,i)
         index = findfirst(c -> c == '\0',id)
 
-        hasnonull =
-            @static if VERSION >= v"0.7.0-beta.0"
-                index == nothing
-            else
-                index == 0
-            end
+        hasnonull = index == nothing
 
         obsid[i] =
             if hasnonull
@@ -82,12 +77,7 @@ function array2strings(obsids::Matrix{UInt8})
         id = view(obsids,:,i)
         index = findfirst(c -> c == 0,id)
 
-        hasnonull =
-            @static if VERSION >= v"0.7.0-beta.0"
-                index == nothing
-            else
-                index == 0
-            end
+        hasnonull = index == nothing
 
         obsid[i] =
             if hasnonull

@@ -36,18 +36,12 @@ function DIVAnd_filter3(A::AbstractArray,fillvalue,ntimes=1)
             # Define out[indI] fillvalue
             out[indI] = fillvalue
             if !isequal(B[indI],fillvalue)
-                RJ =
-                    @static if VERSION >= v"0.7.0-beta.0"
-                        # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
-                        # let block work-around
-
-                        let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
+                # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
+                # let block work-around
+                RJ = let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
                             CartesianIndices(ntuple(
                                 i-> max(I1[i], indI[i]-stencil[i]):min(Iend[i], indI[i]+stencil[i]),nd))
-                        end
-                    else
-                        CartesianRange(max(I1, indI-stencil), min(Iend, indI+stencil))
-                    end
+                     end
 
                 for indJ in RJ
                     if !isequal(B[indJ],fillvalue)

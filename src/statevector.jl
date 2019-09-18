@@ -115,13 +115,7 @@ function packens(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Arra
 
     for i=1:sv.nvar
         tmp = reshape(vars[i],sv.numels_all[i],k)
-        ind =
-            @static if VERSION >= v"0.7.0-beta.0"
-                (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
-            else
-                find(sv.mask[i])
-            end
-
+        ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
         x[sv.ind[i]+1:sv.ind[i+1],:] = tmp[ind,:]
     end
 
@@ -174,26 +168,15 @@ function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {
                  v = Array{T,N+1}(undef,(sv.size[i]...,k));
                  v[:] .= fillvalue
 
-                 ind =
-                   @static if VERSION >= v"0.7.0-beta.0"
-                     (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
-                   else
-                     find(sv.mask[i])
-                   end
+                 ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
 
-                tmp = reshape(v,sv.numels_all[i],k)
-                tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
+                 tmp = reshape(v,sv.numels_all[i],k)
+                 tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
 
-                return v
-                end,Val(nvar_))::NTuple{nvar_,Array{T,N+1}}
+                 return v
+                 end,Val(nvar_))::NTuple{nvar_,Array{T,N+1}}
 
     return out
-end
-
-if VERSION < v"1.0.0"
-    import Base: ind2sub, sub2ind
-    #Base.ind2sub(sv::statevector,index::Integer) = ind2sub(sv,index)
-    #Base.sub2ind(sv::statevector,subscripts::Tuple) = sub2ind(sv,subscripts)
 end
 
 
@@ -212,12 +195,7 @@ function ind2sub(sv::statevector,index::Integer)
     vind = index - sv.ind[ivar]
 
     # spatial subscript
-    subscript =
-        @static if VERSION >= v"0.7.0-beta.0"
-            Tuple(CartesianIndices(sv.size[ivar])[sv.packed2unpacked[ivar][vind]])
-        else
-            ind2sub(sv.size[ivar],sv.packed2unpacked[ivar][vind])
-        end
+    subscript = Tuple(CartesianIndices(sv.size[ivar])[sv.packed2unpacked[ivar][vind]])
 
     return (ivar,subscript...)
 

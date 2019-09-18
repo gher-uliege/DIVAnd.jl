@@ -50,14 +50,11 @@ function ufill(c::Array{T,3},valex::Number) where T
 
     cfilled = copy(c)
 
-    @static if VERSION >= v"0.7.0-beta.0"
-        if any(sum(c .!= valex,dims = [1,2]) .== 0)
-
-            minval,minindex = findmin(sum(c .!= valex,dims = [1,2])[:])
-            @show valex
-            @show size(c)
-            error("some slices completely masked: k = $(minindex) of array $(size(c))")
-        end
+    if any(sum(c .!= valex,dims = [1,2]) .== 0)
+        minval,minindex = findmin(sum(c .!= valex,dims = [1,2])[:])
+        @show valex
+        @show size(c)
+        error("some slices completely masked: k = $(minindex) of array $(size(c))")
     end
     ufill!(cfilled,valex,work,work2,iwork,iwork2)
 
@@ -82,12 +79,6 @@ function ufill(c::Array{T,N},mask::AbstractArray{Bool}) where N where T
     c2[.!mask] .= valex
 
     return ufill(c2,valex)
-end
-
-@static if VERSION < v"0.7.0"
-    @static if isdefined(:DataArrays)
-        ufill(c::DataArray) = ufill(c.data,.!ismissing.(c))
-    end
 end
 
 function ufill!(c,valexc,work,work2,iwork::Array{Int8,3},iwork2::Array{Int8,3})
@@ -277,12 +268,7 @@ function floodfillpoint(mask,I = findfirst(mask),directions = vonNeumannNeighbor
 
     anyflip = true
 
-    CI =
-        @static if VERSION >= v"0.7"
-            CartesianIndices(size(m))
-        else
-            CartesianRange(size(m))
-        end
+    CI = CartesianIndices(size(m))
 
     while anyflip
         anyflip = false
@@ -400,12 +386,7 @@ function cgradient(pmn,h::Array{T,N}, dim) where N where T
 
     sz = size(h)
 
-    cranges =
-        @static if VERSION >= v"0.7.0-beta.0"
-            CartesianIndices(ntuple(i -> 1:size(h,i),N))
-        else
-            CartesianRange(sz)
-        end
+    cranges = CartesianIndices(ntuple(i -> 1:size(h,i),N))
 
     # loop over the domain
     for ind in cranges
@@ -562,14 +543,9 @@ function random(mask,pmn::NTuple{N,Array{T,N}},len,Nens;
     n = size(s.iB,1)::Int
     z = randn(n,Nens);
 
-    F_UP =
-        @static if VERSION >= v"0.7.0-beta.0"
-            F = cholesky(s.iB::SparseMatrixCSC{T,Int})
-            F.UP
-        else
-            F = cholfact(s.iB::SparseMatrixCSC{T,Int})
-            F[:UP]
-        end
+    F = cholesky(s.iB::SparseMatrixCSC{T,Int})
+    F_UP = F.UP
+
     # P pivoting matrix
     # s.iB == P'*L*L'*P
     # F[:UP] ==  L'*P
@@ -592,13 +568,9 @@ function interp!(xi::NTuple{N,Vector{T}},
                  fi::Array{T,N},
                  x::NTuple{N,Array{T,Nf}},
                  f::Array{T,Nf}) where {T,N,Nf}
-    itp =
-        @static if VERSION >= v"0.7"
-            # https://github.com/JuliaMath/Interpolations.jl/issues/237
-            extrapolate(interpolate(xi,fi,Gridded(Linear())), Line())
-        else
-            interpolate(xi,fi,Gridded(Linear()))
-        end
+
+    # https://github.com/JuliaMath/Interpolations.jl/issues/237
+    itp = extrapolate(interpolate(xi,fi,Gridded(Linear())), Line())
 
     xpos = zeros(N)
     for i in eachindex(f)
@@ -782,12 +754,7 @@ function hmerge(f,L)
 
     weight = weight.^2;
 
-    f2 =
-        if VERSION >= v"0.7.0-beta.0"
-            (sum(weight .* f, dims = 3) ./ sum(weight, dims = 3))[:,:,1]
-        else
-            (sum(weight .* f, 3) ./ sum(weight, 3))[:,:,1]
-        end
+    f2 = (sum(weight .* f, dims = 3) ./ sum(weight, dims = 3))[:,:,1]
 
     return f2
 end

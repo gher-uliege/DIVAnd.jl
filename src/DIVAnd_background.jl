@@ -124,11 +124,7 @@ function DIVAnd_background(operatortype,mask,pmn,Labs,alpha,moddim,scale_len = t
 	for i=1:n
 		S = sparse_stagger(sz,i,iscyclic[i])
 		ma = (S * mask[:]) .== 1
-        d = @static if VERSION >= v"0.7.0-beta.0"
-		    sparse_pack(ma) * (prod(S * pmnv,dims=2)[:,1])
-        else
-		    sparse_pack(ma) * (prod(S * pmnv,2)[:,1])
-        end
+        d = sparse_pack(ma) * (prod(S * pmnv,dims=2)[:,1])
 		d = 1 ./ d
 		s.WEs[i] = oper_diag(operatortype,sqrt.(d))
 	end
