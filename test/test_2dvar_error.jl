@@ -1,10 +1,6 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
 # grid of background field (its size should be odd)
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
@@ -47,17 +43,8 @@ for errormethod in errormethods
 
     errmin,minloc = findmin(err)
 
-    if VERSION >= v"0.7.0-beta.0"
-        for i = 1:ndims(mask)
-            @test minloc[i] == (size(xi,i)+1) ÷ 2
-        end
-    else
-        # should be the middle of the domain
-        minsub = ind2sub(size(mask),minloc)
-
-        for i = 1:ndims(mask)
-            @test minsub[i] == (size(xi,i)+1) ÷ 2
-        end
+    for i = 1:ndims(mask)
+        @test minloc[i] == (size(xi,i)+1) ÷ 2
     end
 end
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>

@@ -1,20 +1,12 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
 # true error variance of observation
 epsilon2_true = 1.
 
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(1234)
-else
-   srand(1234)
-end
+Random.seed!(1234)
 # observations
 nobs = 99
 x = rand(nobs);
@@ -41,11 +33,7 @@ epsilon2 = 2.
 for imeth = 0:3
     bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = DIVAnd_cv(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,2,3,imeth;alphabc=0);
 
-    if VERSION >= v"0.7.0-beta.0"
-        @test 0.5 < bestfactore*epsilon2/epsilon2_true <= 2
-    else
-        @test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
-    end
+    @test 0.5 < bestfactore*epsilon2/epsilon2_true <= 2
     @test 0.3 < bestfactorl*len/len_true < 3
 
     #@show bestfactore*epsilon2
@@ -67,11 +55,7 @@ for imeth = 0:3
     #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     #@test 0.3 < bestfactorl*len/len_true < 3
 
-    if VERSION >= v"0.7.0-beta.0"
-        @test 1.5 < bestfactor < 1.8
-    else
-        @test 1.6 < bestfactor < 1.8
-    end
+    @test 1.5 < bestfactor < 1.8
 
     #@show bestfactor
     #@show bestfactore*epsilon2
@@ -79,21 +63,11 @@ for imeth = 0:3
 end
 
 for imeth = 0:3
-    bestfactor,cvvalues =
-        @static if VERSION >= v"0.7.0"
-            @test_logs (:warn,r".*no parameter optimisation.*") match_mode=:any DIVAnd_cv(
+    bestfactor,cvvalues = @test_logs (:warn,r".*no parameter optimisation.*") match_mode=:any DIVAnd_cv(
                 mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
-        else
-            @test_warn r".*no parameter optimisation.*" DIVAnd_cv(
-                mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,0,0,imeth;alphabc=0);
-        end
 
     #@show bestfactor
-    if VERSION >= v"0.7.0-beta.0"
-        @test 0.8 < bestfactor < 1.1
-    else
-        @test 0.8 < bestfactor < 1.
-    end
+    @test 0.8 < bestfactor < 1.1
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
 end

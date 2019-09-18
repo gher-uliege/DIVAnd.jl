@@ -1,18 +1,12 @@
 using DIVAnd
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Random
-    using LinearAlgebra
-    using Dates
-    using Printf
-    using Statistics
-    using DelimitedFiles
-else
-    using Base.Test
-    import Base.LinAlg.BLAS
-    using Compat: range
-end
+using Test
+using Random
+using LinearAlgebra
+using Dates
+using Printf
+using Statistics
+using DelimitedFiles
 using Compat
 using SpecialFunctions
 
@@ -79,7 +73,6 @@ include("gen_example_file.jl")
 
     include("test_DIVAndgo.jl")
 
-    #if VERSION < v"0.7.0-beta.0"
     # test kernel
     include("test_kernel.jl")
 

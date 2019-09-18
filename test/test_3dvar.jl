@@ -1,10 +1,6 @@
 # Testing DIVAnd in 3 dimensions.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
 # function to interpolate
 fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)

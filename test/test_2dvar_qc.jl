@@ -1,20 +1,13 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using DIVAnd
 
 
 # observations
 # same random set used as sometimes qc flags vary depending on actual noise
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(11)
-else
-   srand(11)
-end
+Random.seed!(11)
+
 x = rand(150);
 y = rand(150);
 
@@ -68,12 +61,7 @@ for method in [0, 1, 3, 4]
     @test sum(sp)==3
 end
 
-qcval_2 =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:warn,r".*not defined.*") match_mode=:any DIVAnd_qc(fi,s,2)
-    else
-        @test_warn r".*not defined.*" DIVAnd_qc(fi,s,2)
-    end
+qcval_2 = @test_logs (:warn,r".*not defined.*") match_mode=:any DIVAnd_qc(fi,s,2)
 
 @test all(qcval_2 .== 0)
 
