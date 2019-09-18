@@ -1,5 +1,5 @@
 """
-   s = DIVAnd_addc(s,c)
+    s = DIVAnd_addc(s,c)
 
 Add a constraint `c` to the cost function defined by `s`.
 The structure `s` is typically created by DIVAnd_background and the contrain `c`

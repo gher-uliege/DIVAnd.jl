@@ -1,7 +1,7 @@
 """
 Create the laplacian operator.
 
-Lap = DIVAnd_laplacian(mask,pmn,nu,iscyclic)
+    Lap = DIVAnd_laplacian(mask,pmn,nu,iscyclic)
 
 Form a Laplacian using finite differences
 assumes that gradient is zero at "coastline"

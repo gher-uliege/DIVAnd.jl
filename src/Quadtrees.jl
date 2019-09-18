@@ -56,6 +56,11 @@ function QT(points::AbstractArray{T,2}, min::Vector{T}, max::Vector{T}, attribs:
 end
 
 """
+    inside(x0,x1,y)
+
+Returns true of the point `y` is inside the rectange defined by `x0` and `x1`.
+
+```
              x1
   +----------+
   |          |
@@ -63,7 +68,7 @@ end
   |   y      |
   +----------+
  x0
-
+```
 """
 @inline function inside(x0,x1,y)
     insd = true
@@ -82,6 +87,8 @@ bitget(a,n) = Bool((a & (1 << (n-1))) >> (n-1))
 
 """
 Test if the rectanges defined by x0,x1 and y0,y1 intersects/overlap
+
+```
              x1
   +----------+
   |          |
@@ -92,6 +99,7 @@ Test if the rectanges defined by x0,x1 and y0,y1 intersects/overlap
       |          |
       +----------+
      y0
+```
 """
 function intersect(x0,x1,y0,y1)
     n = size(x0,1)

@@ -1,9 +1,10 @@
 """
+    diagonalterms = DIVAnd_diagHKobs(s)
+
 Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time
 
 This version only uses the real data (not those related to additional constraints)
 
-diagonalterms = DIVAnd_diagHKobs(s);
 
 """
 function DIVAnd_diagHKobs(s,indexlist=[])

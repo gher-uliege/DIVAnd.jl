@@ -281,7 +281,7 @@ end
 """
     p = listSDNparam(ODVData)
 
-    Return a list of SeaDataNet P01 parameters in a ODV spreadsheet `ODVData`.
+Return a list of SeaDataNet P01 parameters in a ODV spreadsheet `ODVData`.
 """
 function listSDNparams(ODVData)
     return [d["object"] for (k,d) in ODVData.SDN_parameter_mapping]

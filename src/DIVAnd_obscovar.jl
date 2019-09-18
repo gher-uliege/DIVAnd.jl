@@ -1,5 +1,5 @@
 """
-R = DIVAnd_obscovar(epsilon2,m)
+    R = DIVAnd_obscovar(epsilon2,m)
 
 Create a matrix representing the observation error covariance R of size m x m.
 

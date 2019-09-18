@@ -1,10 +1,8 @@
 """
+    Kii = DIVAnd_GCVKiiobs(s)
+
 Computes an estimate of the mean value of the diagonal of HK using GCV and the already solved analysis and it structure s
-
-Only using real data locations
-
-
-Kii = DIVAnd_GCVKiiobs(s);
+Only using real data locations.
 
 """
 function DIVAnd_GCVKiiobs(s,nr=30;FIELD=())

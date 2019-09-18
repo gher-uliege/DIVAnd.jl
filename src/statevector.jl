@@ -22,9 +22,7 @@ end
 
 
 """
-Initialize structure for packing and unpacking given their mask.
-
-sv = statevector_init((mask1, mask2, ...))
+    sv = statevector_init((mask1, mask2, ...))
 
 Initialize structure for packing and unpacking
 multiple variables given their corresponding land-sea mask.
@@ -74,11 +72,10 @@ function statevector(masks::NTuple{nvar_,Array{Bool,N}}) where nvar_ where N
 end
 
 """
-Pack a series of variables into a vector under the control of a mask.
+    x = pack(sv,(var1, var2, ...))
 
-x = pack(sv,(var1, var2, ...))
-
-Pack the different variables var1, var2, ... into the vector x where `sv` is a `statevector`.
+Pack the different variables var1, var2, ... into the vector x where `sv` is a `statevector`
+under the control of a mask.
 Only sea grid points are retained.
 
 Input:
@@ -138,10 +135,8 @@ end
 
 
 """
-Unpack a vector into different variables under the control of a mask.
-
-var1, var2, ... = unpack(sv,x)
-var1, var2, ... = unpack(sv,x,fillvalue)
+    var1, var2, ... = unpack(sv,x)
+    var1, var2, ... = unpack(sv,x,fillvalue)
 
 Unpack the vector x into the different variables var1, var2, ...
 where `sv` is a `statevector`.

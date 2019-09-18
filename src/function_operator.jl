@@ -36,7 +36,7 @@ end
 """
 Operator for differentiation.
 
-diffx = matfun_diff(sz1,m,cyclic)
+    diffx = matfun_diff(sz1,m,cyclic)
 
 Operator for differentiation along dimension m for "collapsed" matrix
 of the size sz1.
@@ -89,7 +89,7 @@ end
 """
 Operator shifting a field in a given dimension.
 
-function S = matfun_shift(sz1,m,cyclic)
+    function S = matfun_shift(sz1,m,cyclic)
 
 Operator shifting a field in the dimension m. The field is a
 "collapsed" matrix of the size sz1.
@@ -106,7 +106,7 @@ function matfun_shift(sz1,m,cyclic = false)
     sz2 = ntuple(i -> (i == m && !cyclic ? sz1[i]-1 : sz1[i]), length(sz1))
 
     function fun(x)
-        x = reshape(x,sz1)
+       x = reshape(x,sz1)
 
         if !cyclic
             ind = [ (i == m ? (2:sz1[i]) : (1:sz1[i])) for i = 1:length(sz1)]
@@ -134,7 +134,7 @@ function matfun_shift(sz1,m,cyclic = false)
 end
 
 """
-S = matfun_stagger(sz1,m,cyclic)
+    S = matfun_stagger(sz1,m,cyclic)
 
 Create an operator for staggering a field in dimension m.
 The field is a "collapsed" matrix of the size sz1.
