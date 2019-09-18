@@ -26,7 +26,7 @@ function DIVAnd_adaptedeps2(s,fi);
     nrealdata = 0
 
     for i = 1:length(s.yo)
-        if !s.obsout[i]
+        if (!s.obsout[i]) && (!isinf(diagR[i]))
             d0d +=  s.yo[i]^2
             d0dmd1d +=  s.yo[i] * residual[i]
             eps2 += diagR[i]

@@ -502,6 +502,14 @@ include("scaleseparation.jl")
 
 include("binning.jl")
 
+include("DIVAnd_heatmap.jl")
+
+include("DIVAnd_scaleL.jl")
+
+include("DIVAnd_integral.jl")
+
+include("DIVAnd_superobs.jl")
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
@@ -516,6 +524,7 @@ DIVAnd_cvestimator, DIVAnd_erroratdatapoints, DIVAnd_cv, DIVAnd_qc, DIVAnd_adapt
 
 export checkobs
 
+export DIVAnd_heatmap,DIVAnd_integral,DIVAnd_scaleL,DIVAnd_superobs
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient
