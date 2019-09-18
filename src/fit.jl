@@ -678,11 +678,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, iseed = 
     x0 = zeros(ndims)
     x1 = zeros(ndims)
 
-    if VERSION >= v"0.7.0-beta.0"
-        Random.seed!(iseed)
-    else
-        srand(iseed)
-    end
+    Random.seed!(iseed)
 
     for (i,j) in iter
         # compute the distance

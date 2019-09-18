@@ -1,10 +1,6 @@
 module ODVspreadsheet
 
-if VERSION >= v"0.7.0-beta.0"
-    using Dates
-else
-    using Compat: @info, @warn, @debug
-end
+using Dates
 using Compat
 
 #using StringEncodings
