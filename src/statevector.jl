@@ -98,12 +98,7 @@ function pack(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T
 
     for i=1:sv.nvar
         tmp = reshape(vars[i],sv.numels_all[i],k)
-        ind =
-            @static if VERSION >= v"0.7.0-beta.0"
-                (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
-            else
-                find(sv.mask[i])
-            end
+        ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
         x[sv.ind[i]+1:sv.ind[i+1]] = tmp[ind]
     end
 

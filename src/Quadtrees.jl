@@ -1,10 +1,6 @@
 module Quadtrees
 
-if VERSION >= v"0.7.0-beta.0"
-    using Dates
-else
-    using Compat: @debug
-end
+using Dates
 using Compat
 import Base.length
 
@@ -32,19 +28,11 @@ QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
 """create a quadtree
 """
 QT(points::AbstractArray{T,2},attribs::AbstractVector{TA}) where {T,TA} =
-    if VERSION >= v"0.7.0-beta.0"
         QT(QT{T,TA,size(points,1)}[],
            points,
            minimum(points,dims = 2)[:],
            maximum(points,dims = 2)[:],
            attribs)
-    else
-        QT(QT{T,TA,size(points,1)}[],
-           points,
-           minimum(points,2)[:],
-           maximum(points,2)[:],
-           attribs)
-    end
 
 function QT(points::AbstractArray{T,2}, min::Vector{T}, max::Vector{T}, attribs::AbstractVector{TA}) where {T,TA}
 

@@ -145,12 +145,7 @@ function readODVspreadsheet(datafile)
 
         goodcols = setdiff(columnLabels, column2discard);
         # Get indices of the good columns
-        index2keep =
-            @static if VERSION >= v"0.7.0-beta2.188"
-                findall((in)(goodcols,), columnLabels)
-            else
-                findin(columnLabels, goodcols)
-            end
+        index2keep = findall((in)(goodcols,), columnLabels)
 
         ncols2 = length(index2keep);
         # @info "No. of columns after selection: $ncols2"
@@ -323,11 +318,10 @@ Return the column number `cn` of the first column with the local name
 """
 function colnumber(sheet,localname)::Int
     ind = findfirst(localnames(sheet) .== localname)
-    @static if VERSION >= v"0.7.0-beta.0"
-        if ind == nothing
-            return 0
-        end
+    if ind == nothing
+        return 0
     end
+
     return ind
 end
 
