@@ -8,12 +8,7 @@ the Cholesky decomposition of iB. The matrices H and R are not used.
 M2 is the transpose of M1 for this preconditioner.
 """
 function DIVAnd_pc_sqrtiB(iB,H,R)
-    F =
-        @static if VERSION >= v"0.7.0-beta.0"
-            cholesky(iB);
-        else
-            cholfact(iB);
-        end
+    F = cholesky(iB)
 
     function fun!(x,fx)
         fx[:] = F \ x

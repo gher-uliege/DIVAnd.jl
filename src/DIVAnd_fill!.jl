@@ -26,18 +26,12 @@ function DIVAnd_fill!(A::AbstractArray,B::AbstractArray,fillvalue)
             B[indI] = A[indI]
             if isequal(A[indI],fillvalue)
 
-                RJ =
-                    @static if VERSION >= v"0.7.0-beta.0"
-                        # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
-                        # let block work-around
-
-                        let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
-                            CartesianIndices(ntuple(
-                                i-> max(I1[i], indI[i]-stencil[i]):min(Iend[i], indI[i]+stencil[i]),nd))
-                        end
-                    else
-                        CartesianRange(max(I1, indI-stencil), min(Iend, indI+stencil))
-                    end
+                # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
+                # let block work-around
+                RJ = let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
+                        CartesianIndices(ntuple(
+                            i-> max(I1[i], indI[i]-stencil[i]):min(Iend[i], indI[i]+stencil[i]),nd))
+                     end
 
                 for indJ in RJ
 

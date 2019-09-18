@@ -20,15 +20,10 @@ function DIVAnd_diagHK(s)
     #    ItHKI =   (H * (P * (H' * (R \ I))));
     #    diagHKb = diag(ItHKI);
 
-    diagHK =
-        @static if VERSION >= v"0.7.0-beta.0"
-            # workaround for bug
-            # https://github.com/JuliaLang/julia/issues/27860
-            diagLtCM(copy(H'),P,(H' * (R \ I)))
-        else
-            # copy should not be needed
-            diagLtCM(H',P,(copy(H') * (R \ I)))
-        end
+    # workaround for bug
+    # https://github.com/JuliaLang/julia/issues/27860
+    diagHK = diagLtCM(copy(H'),P,(H' * (R \ I)))
+
     #    if (norm(diagHKb-diagHK)> norm(diagHK)*1E-7)
     #     @warn "WTF"
     #    end
