@@ -23,6 +23,7 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
 				   topographyforfluxes = (),
 				   fluxes = (),
 				   epsfluxes = 0,
+				   epsilon2forfractions=0,
 				   RTIMESONESCALES=(),
 				   QCMETHOD=(),
                    coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
@@ -85,6 +86,12 @@ function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,
 		s = DIVAnd_addc(s,fluxcon);
     end
 
+	if epsilon2forfractions>0
+        #@info "Adding constraints on fractions"
+        fluxcon = DIVAnd_constr_fractions(s,epsilon2forfractions)
+		s = DIVAnd_addc(s,fluxcon);
+    end
+	
     # add all additional constrains
     for i=1:length(constraints)
         #@info "Adding additional constrain - $(i)"
