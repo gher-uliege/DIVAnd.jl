@@ -1,10 +1,5 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using DelimitedFiles
-else
-    using Base.Test
-    using Compat: range
-end
+using Test
+using DelimitedFiles
 import DIVAnd
 
 # test data for basic statistics
@@ -39,11 +34,7 @@ Nens = 1
 distbin = 0:0.02:0.3
 mincount = 100
 
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(1234)
-else
-   srand(1234)
-end
+Random.seed!(1234)
 field = DIVAnd.random(mask,(pm,pn),(lenx,leny),Nens)
 
 
@@ -109,18 +100,10 @@ varbak,RL,dbinfo = DIVAnd.fitlen((x,y),d,weight,nsamp)
 # fluctuations are large for different seeds
 
 
-if VERSION >= v"0.7.0-beta.0"
-    @test 1.233239751232584   ≈ RL             rtol=0.1
-    @test 2.8684064643392313  ≈ dbinfo[:sn]    rtol=0.1
-    @test 30.67060450819036   ≈ varbak         rtol=0.1
-    @test 0.7779495857989941  ≈ dbinfo[:rqual] rtol=0.1
-else
-    @test 2.6803941824646085  ≈ RL             rtol=0.1
-    @test 0.8076378487032164  ≈ dbinfo[:sn]    rtol=0.1
-    @test 18.48072398826336   ≈ varbak         rtol=0.1
-    @test 0.7338792203547216  ≈ dbinfo[:rqual] rtol=0.1
-end
-
+@test 1.233239751232584   ≈ RL             rtol=0.1
+@test 2.8684064643392313  ≈ dbinfo[:sn]    rtol=0.1
+@test 30.67060450819036   ≈ varbak         rtol=0.1
+@test 0.7779495857989941  ≈ dbinfo[:rqual] rtol=0.1
 
 
 #=
@@ -157,12 +140,7 @@ x = (xi[s],yi[s],zi[s])
 v = field[s]
 epsilon2 = ones(length(x[3])) + x[3][:].^2
 
-fitlenxy,dbinfo =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fithorzlen(x,v,z; epsilon2 = epsilon2);
-    else
-        @test_warn r".at.*" DIVAnd.fithorzlen(x,v,z; epsilon2 = epsilon2);
-    end
+fitlenxy,dbinfo = @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fithorzlen(x,v,z; epsilon2 = epsilon2);
 
 @test median(fitlenxy)  ≈ lenx             rtol=0.3
 
@@ -171,10 +149,5 @@ x = (xi[s],yi[s],zi[s])
 v = field[s]
 epsilon2 = ones(length(x[3])) + x[3][:].^2
 
-fitlenz,dbinfo = 
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fitvertlen(x,v,z; epsilon2 = epsilon2);
-    else
-        @test_warn r".at.*" DIVAnd.fitvertlen(x,v,z; epsilon2 = epsilon2);
-    end
+fitlenz,dbinfo =  @test_logs (:info,r".*at*") match_mode=:any DIVAnd.fitvertlen(x,v,z; epsilon2 = epsilon2);
 @test median(fitlenz)  ≈ lenz             rtol=0.5

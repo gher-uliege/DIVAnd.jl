@@ -1,11 +1,7 @@
 # Testing DIVAnd in 2 dimensions
 # DIVAndrun should not fail if all grid points are masked
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using DIVAnd
 using Compat
 
@@ -31,14 +27,9 @@ leny = .15;
 
 epsilon2 = 0.05;
 
-va,s =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:warn,r".*No sea point.*") match_mode=:any DIVAndrun(
+va,s = @test_logs (:warn,r".*No sea point.*") match_mode=:any DIVAndrun(
             mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
-    else
-        @test_warn r".*No sea point.*" DIVAndrun(
-            mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
-    end
+
 @test s.sv.size[1] == size(xi)
 
 

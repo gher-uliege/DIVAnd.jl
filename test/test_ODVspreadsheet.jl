@@ -1,21 +1,12 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Dates
-else
-    using Base.Test
-end
+using Test
+using Dates
 import DIVAnd
 ODV = DIVAnd.ODVspreadsheet
 
 
 fname = joinpath(dirname(@__FILE__),"..","data","sample_ODV.txt")
 
-odv =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*file: 1.*") match_mode=:any ODV.readODVspreadsheet(fname)
-    else
-        @test_warn r".*file: 1.*" ODV.readODVspreadsheet(fname)
-    end
+odv = @test_logs (:info,r".*file: 1.*") match_mode=:any ODV.readODVspreadsheet(fname)
 T = Float64
 value,value_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID = ODV.loadprofile(T,odv,1,"SDN:P01::PSSTTS01")
 
@@ -29,12 +20,7 @@ value,value_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID = ODV.loadp
 fnames = [joinpath(dirname(@__FILE__),"..","data",n) for n in ["sample_ODV.txt","sample_ODV2.txt"]]
 
 P01names = ["SDN:P01::ODSDM021"]
-profiles,lons,lats,depths,times,ids =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*file: 1.*") match_mode=:any ODV.load(T,fnames,P01names)
-    else
-        @test_warn r".*file: 1.*" ODV.load(T,fnames,P01names)
-    end
+profiles,lons,lats,depths,times,ids = @test_logs (:info,r".*file: 1.*") match_mode=:any ODV.load(T,fnames,P01names)
 
 @test 30 in profiles
 @test 31 in profiles
@@ -42,25 +28,14 @@ profiles,lons,lats,depths,times,ids =
 fname = joinpath(dirname(@__FILE__),"..","data","sample_ODV_aggregated.txt")
 datanames = ["Water body salinity"]
 
-profiles,lons,lats,depths,times,ids =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*file: 2.*") match_mode=:any ODV.load(T,[fname],datanames,nametype = :localname)
-    else
-        @test_warn r".*file: 2.*" ODV.load(T,[fname],datanames,nametype = :localname)
-    end
+profiles,lons,lats,depths,times,ids = @test_logs (:info,r".*file: 2.*") match_mode=:any ODV.load(T,[fname],datanames,nametype = :localname)
 @test length(profiles) > 0
 
 # test if data with bad depth information are discarded
 
 fname_qv = joinpath(dirname(@__FILE__),"..","data","sample_ODV_qv.txt")
-profiles,lons,lats,depths,times,ids =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*file: 2.*") match_mode=:any ODV.load(
+profiles,lons,lats,depths,times,ids = @test_logs (:info,r".*file: 2.*") match_mode=:any ODV.load(
             T,[fname_qv],["SDN:P01::SLCAAAZX"])
-    else
-        @test_warn r".*file: 2.*" ODV.load(
-            T,[fname_qv],["SDN:P01::SLCAAAZX"])
-    end
 
 @test 4. in depths # quality flag "good - 1"
 @test !(3. in depths) # quality flag "missing value - 9"

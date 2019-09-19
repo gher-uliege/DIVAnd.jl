@@ -1,8 +1,6 @@
 using NCDatasets
-if VERSION >= v"0.7"
-    using Random
-    using Dates
-end
+using Random
+using Dates
 
 nobs = 1000;
 

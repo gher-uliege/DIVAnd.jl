@@ -27,13 +27,7 @@ end
 sparse_diag(d) = sparse(1:length(d),1:length(d),d)
 
 function sparse_pack(mask)
-    j =
-        if VERSION >= v"0.7.0-beta.0"
-            LinearIndices(mask)[findall(mask)]
-        else
-            find(mask)
-        end
-
+    j = LinearIndices(mask)[findall(mask)]
     m = length(j)
     i = collect(1:m)
     s = ones(m)

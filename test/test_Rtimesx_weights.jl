@@ -1,10 +1,6 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Random
-    using Statistics
-else
-    using Base.Test
-end
+using Test
+using Random
+using Statistics
 using DIVAnd
 
 using LibSpatialIndex
@@ -148,11 +144,7 @@ Rtimesx3!(coord,LS,x,Rx)
 @test Rx1 ≈ Rx rtol=1e-4
 
 # fix seed of random number generator
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(12345)
-else
-   srand(12345)
-end
+Random.seed!(12345)
 
 # observations
 # uniformly distributed data with a cluster at (0.2,0.3)

@@ -1,10 +1,6 @@
 # Testing DIVAnd in 2 dimensions with advection.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using Compat
 import DIVAnd
 

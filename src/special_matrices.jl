@@ -1,14 +1,7 @@
 
-@static if VERSION >= v"0.7.0-beta.0"
-    mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
-        IS:: TA
-        factors:: Union{SuiteSparse.CHOLMOD.Factor{T},Nothing}
-    end
-else
-    mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
-        IS:: TA
-        factors:: Union{SparseArrays.CHOLMOD.Factor{T},Nothing}
-    end
+mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
+    IS:: TA
+    factors:: Union{SuiteSparse.CHOLMOD.Factor{T},Nothing}
 end
 
 function CovarIS(IS::TA) where TA <: AbstractMatrix
@@ -41,7 +34,6 @@ function A_mul_B(C::CovarIS, M::TM)::TM where TM <: AbstractMatrix{Float64}
 end
 
 
-@static if VERSION >= v"0.7.0-beta.0"
 # workaround
 # https://github.com/JuliaLang/julia/issues/27860
 function Base.:\(
@@ -55,28 +47,16 @@ function Base.:\(A::SuiteSparse.CHOLMOD.FactorComponent{Float64,:PtL},
                  B::LinearAlgebra.Adjoint{Float64,SparseArrays.SparseMatrixCSC{Float64,Int}})
     return A \ copy(B)
 end
-end
+
 
 # end workaround for julia 0.7.0
 
 # call to C * M
 Base.:*(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 
-@static if VERSION >= v"0.7.0-beta.0"
 # another workaround for julia 0.7.0
 # https://github.com/JuliaLang/julia/issues/28363
 Base.:*(C::CovarIS, M::Adjoint{Float64,SparseMatrixCSC{Float64,Int}}) = A_mul_B(C,copy(M))
-end
-
-@static if VERSION < v"0.7.0"
-    # The following two definitions are necessary; otherwise the full C matrix will be formed when
-    # calculating C * M' or C * M.'
-
-    # call to C * M' (conjugate transpose: C Mᴴ)
-    Base.A_mul_Bc(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
-    # call to C * M.' (transpose: C Mᵀ)
-    Base.A_mul_Bt(C::CovarIS, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
-end
 
 
 function Base.getindex(C::CovarIS, i::Int,j::Int)
@@ -90,29 +70,14 @@ end
 Base.:\(C::CovarIS, M::AbstractArray{Float64,2}) = C.IS * M
 
 function factorize!(C::CovarIS)
-    if VERSION >= v"0.7.0-beta.0"
-        C.factors = cholesky(Symmetric(C.IS))
-    else
-        C.factors = cholfact(Symmetric(C.IS))
-    end
+    C.factors = cholesky(Symmetric(C.IS))
 end
 
 
 function diagMtCM(C::CovarIS, M::AbstractMatrix{Float64})
     if C.factors != nothing
-
-        PtL =
-            if VERSION >= v"0.7.0-beta.0"
-                C.factors.PtL
-            else
-                C.factors[:PtL]
-            end
-
-        @static if VERSION >= v"0.7.0-beta.0"
-            return sum((abs.(PtL \ M)).^2,dims = 1)[1,:]
-        else
-            return sum((abs.(PtL \ M)).^2,1)[1,:]
-        end
+        PtL = C.factors.PtL
+        return sum((abs.(PtL \ M)).^2,dims = 1)[1,:]
     else
         return diag(M'*(C.IS \ M))
     end
@@ -121,20 +86,11 @@ end
 function diagLtCM(L::AbstractMatrix{Float64}, C::CovarIS, M::AbstractMatrix{Float64})
     if C.factors != nothing
 
-        PtL =
-            @static if VERSION >= v"0.7.0-beta.0"
-                C.factors.PtL
-            else
-                C.factors[:PtL]
-            end
+        PtL = C.factors.PtL
 
-        @static if VERSION >= v"0.7.0-beta.0"
-            # workaround for issue
-            # https://github.com/JuliaLang/julia/issues/27860
-            return sum((PtL \ M).*(PtL \ copy(L)),dims = 1)[1,:]
-        else
-            return sum((PtL \ M).*(PtL \ L),1)[1,:]
-        end
+        # workaround for issue
+        # https://github.com/JuliaLang/julia/issues/27860
+        return sum((PtL \ M).*(PtL \ copy(L)),dims = 1)[1,:]
     else
         return diag(L'*(C.IS \ M))
     end
@@ -174,9 +130,6 @@ end
 
 Base.:*(MF1::MatFun, MF2::MatFun) = A_mul_B(MF1,MF2)
 Base.:*(MF::MatFun, S::AbstractSparseMatrix) = MF * MatFun(S)
-if VERSION < v"0.7.0"
-    Base.:A_mul_Bc(S::AbstractSparseMatrix, MF::MatFun) = MatFun(S) * MF
-end
 Base.:*(S::AbstractSparseMatrix,MF::MatFun) = MatFun(S) * MF
 
 for op in [:/, :*]; @eval begin
@@ -196,15 +149,8 @@ function Base.:^(MF::MatFun,n::Int)
 end
 
 Base.:transpose(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
-if VERSION >= v"0.7.0-beta.0"
-    Base.:adjoint(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
-end
+Base.:adjoint(MF:: MatFun) = MatFun((MF.sz[2],MF.sz[1]),MF.funt,MF.fun)
 
-if VERSION < v"0.7.0"
-    Base.Ac_mul_B(MF:: MatFun, x::AbstractVector) = MF.funt(x)
-    Base.Ac_mul_B(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1',MF2)
-    Base.A_mul_Bc(MF1:: MatFun, MF2:: MatFun) = A_mul_B(MF1,MF2')
-end
 
 MatFun(S::AbstractSparseMatrix) = MatFun(size(S), x -> S*x, x -> S'*x)
 
@@ -236,14 +182,6 @@ Base.:*(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M)
 
 # The following two definitions are necessary; otherwise the full C matrix will be formed when
 # calculating C * M' or C * transpose(M)
-
-if VERSION < v"0.7.0"
-    # call to C * M' (conjugate transpose: C Mᴴ)
-    Base.A_mul_Bc(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,M')
-    # call to C * transpose(M) (transpose: C Mᵀ)
-    Base.A_mul_Bt(C::CovarHPHt, M::AbstractMatrix{Float64}) = A_mul_B(C,transpose(M))
-end
-
 
 function Base.getindex(C::CovarHPHt, i::Int,j::Int)
     ei = zeros(eltype(C),size(C,1)); ei[i] = 1

@@ -1,11 +1,6 @@
 import DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using DelimitedFiles
-else
-    using Base.Test
-    using Compat
-end
+using Test
+using DelimitedFiles
 using DataStructures
 using Missings
 using NCDatasets
@@ -165,8 +160,7 @@ if isfile(filename)
    rm(filename) # delete the previous analysis
 end
 
-dbinfo = @static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*netCDF*") match_mode=:any DIVAnd.diva3d(
+dbinfo = @test_logs (:info,r".*netCDF*") match_mode=:any DIVAnd.diva3d(
         (lonr,latr,depthr,TS),
         (obslon,obslat,obsdepth,obstime),
         obsvalue,
@@ -180,22 +174,6 @@ dbinfo = @static if VERSION >= v"0.7.0"
         mask = mask,
         surfextend = surfextend,
     )
-else
-    @test_warn r".netCDF.*" DIVAnd.diva3d(
-        (lonr,latr,depthr,TS),
-        (obslon,obslat,obsdepth,obstime),
-        obsvalue,
-        (lenx,leny,lenz),
-        epsilon2,
-        filename,varname,
-        bathname = bathname,
-        bathisglobal = bathisglobal,
-        ncvarattrib = ncvarattrib,
-        ncglobalattrib = ncglobalattrib,
-        mask = mask,
-        surfextend = surfextend,
-    )
-end
 
 obsused = dbinfo[:used]
 #DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
@@ -212,19 +190,11 @@ additionalcontacts = [
     DIVAnd.getedmoinfo(4630,"originator"),
 ]
 
-@static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*") match_mode=:any DIVAnd.divadoxml(
-        filename,varname,project,cdilist,xmlfilename,
-        ignore_errors = ignore_errors,
-        additionalcontacts = additionalcontacts
-    )
-else
-    @test_warn r".*" DIVAnd.divadoxml(
-        filename,varname,project,cdilist,xmlfilename,
-        ignore_errors = ignore_errors,
-        additionalcontacts = additionalcontacts
-    )
-end
+@test_logs (:info,r".*") match_mode=:any DIVAnd.divadoxml(
+    filename,varname,project,cdilist,xmlfilename,
+    ignore_errors = ignore_errors,
+    additionalcontacts = additionalcontacts
+)
 
 errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
 
@@ -252,9 +222,7 @@ if isfile(filename2)
 end
 
 
-dbinfo =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*") (:warn,r".*Be patient.*") match_mode=:any DIVAnd.diva3d(
+dbinfo = @test_logs (:info,r".*") (:warn,r".*Be patient.*") match_mode=:any DIVAnd.diva3d(
             (lonr,latr,depthr,TS),
             (obslon,obslat,obsdepth,obstime),
             obsvalue,
@@ -280,33 +248,6 @@ dbinfo =
             QCMETHOD = 0,
             surfextend = surfextend,
         )
-    else
-        @test_warn r".*Be patient.*" DIVAnd.diva3d(
-            (lonr,latr,depthr,TS),
-            (obslon,obslat,obsdepth,obstime),
-            obsvalue,
-            (),
-            epsilon2,
-            filename2,varname,
-            bathname = bathname,
-            bathisglobal = bathisglobal,
-            ncvarattrib = ncvarattrib,
-            ncglobalattrib = ncglobalattrib,
-            background = DIVAnd.backgroundfile(filename,varname),
-            fitcorrlen = true,
-            background_len = (lenx,leny,lenz),
-            fithorz_param = Dict(
-                :maxnsamp => 500,
-            ),
-            fitvert_param = Dict(
-                :maxnsamp => 100,
-            ),
-            mask = mask,
-            niter_e = 2,
-            QCMETHOD = 0,
-            surfextend = surfextend,
-        )
-    end
 
 qcvalue = dbinfo[:qcvalues]
 used = dbinfo[:used]

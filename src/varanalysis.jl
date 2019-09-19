@@ -178,19 +178,11 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
         # Htmpx = H * SB^½ W^½ x
         mul!(Htmpx,H,tmpx)
 
-        @static if VERSION >= v"0.7.0-beta.0"
-             # Htmpx = R \ (H * SB^½ W^½ x)
-             ldiv!(R,Htmpx)
+        # Htmpx = R \ (H * SB^½ W^½ x)
+        ldiv!(R,Htmpx)
 
-            # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
-            mul!(HRHtmpx,H',Htmpx)
-        else
-            # Htmpx = R \ (H * SB^½ W^½ x)
-            A_ldiv_B!(R,Htmpx)
-
-            # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
-            At_mul_B!(HRHtmpx,H,Htmpx)
-        end
+        # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
+        mul!(HRHtmpx,H',Htmpx)
 
         # tmpx = SB^½ * H' * (R \ (H * SB^½ W^½ x ))
         decompB!(s.sv,β,ivol,nus,nmax,α,HRHtmpx,work1,work2,tmpx)

@@ -14,19 +14,11 @@ function DIVAnd_GCVKii(s,nr=5)
 
 
     #if optimisation is to be used, make sure to use the same reference random points
-    if VERSION >= v"0.7.0-beta.0"
-        Random.seed!(nr)
-    else
-        srand(nr)
-    end
+    Random.seed!(nr)
 
-    Z=randn(size(R)[1],nr);
+    Z = randn(size(R)[1],nr);
 
-    if VERSION >= v"0.7.0-beta.0"
-        Random.seed!()
-    else
-        srand()
-    end
+    Random.seed!()
 
     P = s.P;
     WW=P * (H'* (R \ Z));

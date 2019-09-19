@@ -1,10 +1,6 @@
 # Testing DIVAnd in 2 dimensions with advection.
 using DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
 # grid of background field
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
@@ -48,11 +44,7 @@ fi_coast = fi2[mi0-1:mi1+1,mj0-1:mj1+1][mask[mi0-1:mi1+1,mj0-1:mj1+1]]
 
 # more complex example
 
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(1234)
-else
-   srand(1234)
-end
+Random.seed!(1234)
 mask0,(pm,pn),(xi,yi) = DIVAnd_squaredom(
     2,range(0, stop = 1, length = 100))
 mask = DIVAnd.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5

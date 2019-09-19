@@ -1,12 +1,8 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 
 import DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Statistics
-else
-    using Base.Test
-end
+using Test
+using Statistics
 
 # grid of background field (its size should be odd)
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(

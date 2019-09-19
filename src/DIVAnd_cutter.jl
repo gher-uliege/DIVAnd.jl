@@ -110,12 +110,7 @@ function DIVAnd_cutter(Lpmnrange,gridsize::NTuple{n,Int},moddim,MEMTOFIT; solver
     windowlist = Vector{NTuple{6,Vector{Int}}}(undef,ntiles)
 
     iw=0
-    for cr in (@static if VERSION >= v"0.7.0-beta.0"
-                  CartesianIndices(NTuple{n,UnitRange{Int}}(subrange))
-               else
-                  CartesianRange(NTuple{n,Int}(subsz))
-               end)
-
+    for cr in CartesianIndices(NTuple{n,UnitRange{Int}}(subrange))
         for i = 1:n
             ij[i] = (cr[i]-1)*stepsize[i]+1
         end

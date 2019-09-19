@@ -4,26 +4,11 @@ using Base
 using Compat
 using EzXML
 import HTTP
-if VERSION < v"0.7.0"
-    import Base.find
-    using Compat: @info, @warn, @debug
-end
 import Base.findfirst
 import Base.repr
 
-if VERSION >= v"0.7.0-beta.0"
-    using Dates
-end
+using Dates
 
-# API changes in EzXML not available in Julia 0.6
-# https://github.com/bicycle1885/EzXML.jl/issues/51
-# @static if VERSION < v"0.7.0"
-#     import Compat: findall
-#     import Base: findfirst
-#     findall(xpath::AbstractString, doc::EzXML.Document) = EzXML.find(doc,xpath)
-#     findall(xpath::AbstractString, node::EzXML.Node, ns=EzXML.namespaces(node)) = EzXML.find(node,xpath,ns)
-#     findfirst(xpath::AbstractString, node::EzXML.Node, ns=EzXML.namespaces(node)) = EzXML.findfirst(node,xpath,ns)
-# end
 
 const namespaces = Dict(
     "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",

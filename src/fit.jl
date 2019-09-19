@@ -432,11 +432,7 @@ function fit(x,v,distbin,mincount;
         local distx, covar, corr, varx, count, stdcovar, fitcovar
 
         # fix seed to get the same observations
-        if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(seed)
-else
-   srand(seed)
-end
+        Random.seed!(seed)
 
         distx,covar,corr,varx,count,stdcovar =
             empiriccovarmean(
@@ -509,39 +505,19 @@ mutable struct AllCoupels
     n:: Int
 end
 
-if VERSION >= v"0.7.0"
-    function Base.iterate(iter::AllCoupels, state = (1,1))
-        i,j = state
-        if (i == iter.n-1) && (j == iter.n)
-            return nothing
-        end
-
-        if j < iter.n
-            nextstate = (i,j+1)
-        else
-            nextstate = (i+1,i+2)
-        end
-
-        return (nextstate,nextstate)
-    end
-else
-    Base.start(iter::AllCoupels) = (1,1)
-
-    function Base.next(iter::AllCoupels,state)
-        i,j = state
-        if j < iter.n
-            nextstate = (i,j+1)
-        else
-            nextstate = (i+1,i+2)
-        end
-
-        return (nextstate,nextstate)
+function Base.iterate(iter::AllCoupels, state = (1,1))
+    i,j = state
+    if (i == iter.n-1) && (j == iter.n)
+        return nothing
     end
 
-    function Base.done(iter::AllCoupels,state)
-        i,j = state
-        return (i == iter.n-1) && (j == iter.n)
+    if j < iter.n
+        nextstate = (i,j+1)
+    else
+        nextstate = (i+1,i+2)
     end
+
+    return (nextstate,nextstate)
 end
 
 mutable struct RandomCoupels
@@ -549,34 +525,19 @@ mutable struct RandomCoupels
     count::Int
 end
 
-if VERSION >= v"0.7.0"
-    function Base.iterate(iter::RandomCoupels, state = 0)
-        if state == iter.count
-            return nothing
-        end
-
-        # pick two random points
-        j = rand(1:iter.n)
-        i = j
-        while (i == j)
-            i = rand(1:iter.n)
-        end
-
-        return ((i,j),state+1)
+function Base.iterate(iter::RandomCoupels, state = 0)
+    if state == iter.count
+        return nothing
     end
-else
-    Base.start(iter::RandomCoupels) = 0
 
-    function Base.next(iter::RandomCoupels,state)
-        # pick two random points
-        j = rand(1:iter.n)
-        i = j
-        while (i == j)
-            i = rand(1:iter.n)
-        end
-        return ((i,j),state+1)
+    # pick two random points
+    j = rand(1:iter.n)
+    i = j
+    while (i == j)
+        i = rand(1:iter.n)
     end
-    Base.done(iter::RandomCoupels,state) = state == iter.count
+
+    return ((i,j),state+1)
 end
 
 
@@ -632,14 +593,8 @@ function _next(iter::VertRandomCoupels,state)
     return ((j,jindex),state+1)
 end
 
-if VERSION >= v"0.7.0"
-    Base.iterate(iter::VertRandomCoupels, state = 0) = (
-        state == iter.count ? nothing : _next(iter,state))
-else
-    Base.start(iter::VertRandomCoupels) = 0
-    Base.next(iter::VertRandomCoupels,state) = _next(iter,state)
-    Base.done(iter::VertRandomCoupels,state) = state == iter.count
-end
+Base.iterate(iter::VertRandomCoupels, state = 0) = (
+    state == iter.count ? nothing : _next(iter,state))
 
 
 
@@ -723,11 +678,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, iseed = 
     x0 = zeros(ndims)
     x1 = zeros(ndims)
 
-    if VERSION >= v"0.7.0-beta.0"
-        Random.seed!(iseed)
-    else
-        srand(iseed)
-    end
+    Random.seed!(iseed)
 
     for (i,j) in iter
         # compute the distance
@@ -789,11 +740,7 @@ function fitlen(x::Tuple,d,weight,nsamp,iter; distfun = distfun_euclid, iseed = 
 
     covarweight = zeros(nbmax)
 
-    if VERSION >= v"0.7.0-beta.0"
-        Random.seed!(n)
-    else
-        srand(n)
-    end
+    Random.seed!(n)
 
     for (i,j) in iter
         # compute the distance

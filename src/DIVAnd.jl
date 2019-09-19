@@ -1,6 +1,3 @@
-VERSION < v"0.7.0-beta2.199" && __precompile__()
-
-
 module DIVAnd
 
 using Interpolations
@@ -15,40 +12,29 @@ using Missings
 using StatsBase
 #import JLD2, FileIO
 
-if VERSION >= v"0.7.0-beta.0"
-    using Printf
-    using LinearAlgebra
-    using SparseArrays
-    using SuiteSparse
-    using Distributed
-    using Random
-    using Statistics
-    using SharedArrays
-    using UUIDs
-    using Dates
-    using DelimitedFiles
-    using Test
+using Printf
+using LinearAlgebra
+using SparseArrays
+using SuiteSparse
+using Distributed
+using Random
+using Statistics
+using SharedArrays
+using UUIDs
+using Dates
+using DelimitedFiles
+using Test
 
+if v"1.0" <= VERSION < v"1.3"
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
     import Base: *
     Base.:*(A::SparseArrays.SparseMatrixCSC,B::BitArray) = A*Int8.(B)
+end
 
-    # surpress any logging info for testing
-    macro nologs(expr)
-        return :( @test_logs (:info,r".*") (:warn,r".*") match_mode=:any $expr )
-    end
-else
-    using Base.Test
-    const uuid1 = Base.Random.uuid1
-    const mul! = A_mul_B!
-
-    using Compat: @info, @warn, @debug
-    using Compat: stdout, range, cat
-
-    macro distributed(expr)
-        return :( @parallel $(esc(expr)) )
-    end
+# surpress any logging info for testing
+macro nologs(expr)
+    return :( @test_logs (:info,r".*") (:warn,r".*") match_mode=:any $expr )
 end
 
 if (v"1.0" <= VERSION) && (VERSION < v"1.1")

@@ -1,8 +1,4 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 import DIVAnd
 
 nobs = 100
@@ -14,11 +10,7 @@ v[1] = NaN
 v[2] = Inf
 
 buf = IOBuffer()
-@static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*Checking.*") match_mode=:any DIVAnd.checkobs(buf,x,v,ids)
-else
-    @test_warn r".*Checking.*" DIVAnd.checkobs(buf,x,v,ids)
-end
+@test_logs (:info,r".*Checking.*") match_mode=:any DIVAnd.checkobs(buf,x,v,ids)
 output = lowercase(String(take!(buf)))
 
 @test occursin("nan",output)

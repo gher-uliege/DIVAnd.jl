@@ -1,8 +1,4 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
 mask = rand(10,10) .> .5;
 mask_u = rand(9,10) .> .5;

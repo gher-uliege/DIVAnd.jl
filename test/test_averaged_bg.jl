@@ -1,17 +1,10 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using DIVAnd
 
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(1)
-else
-   srand(1)
-end
+Random.seed!(1)
+
 x = randn(100)
 y = randn(100)
 z = randn(100)
@@ -40,16 +33,10 @@ fi,fanom = DIVAnd_averaged_bg(
 @test -0.15 < fi[1,1,1,1] < 0
 
 
-fi,fanom =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:warn,r".*no averaging.*") match_mode=:any DIVAnd_averaged_bg(
+fi,fanom = @test_logs (:warn,r".*no averaging.*") match_mode=:any DIVAnd_averaged_bg(
             mask,(pm,pn,po,pq),
             (xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
-    else
-        @test_warn r".*no averaging.*" DIVAnd_averaged_bg(
-            mask,(pm,pn,po,pq),
-            (xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2,[false false false false]);
-    end
+
 @test -1.2 < fi[1,1,1,1] < -1.1
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
