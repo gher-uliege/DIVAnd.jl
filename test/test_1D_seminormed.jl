@@ -43,7 +43,7 @@ m = Int(ceil(1+1/2))
 alpha = [binomial(m,k) for k = 0:m];
 # fi is the interpolated field
 
-firef,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;);
+firef,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
 
 alpha = [binomial(m,k) for k = 0:m];
 alpha = 2 * alpha
