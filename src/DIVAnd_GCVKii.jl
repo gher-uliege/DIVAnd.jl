@@ -4,36 +4,36 @@ Computes an estimate of the mean value of the diagonal of HK using GCV and the a
 Kii = DIVAnd_GCVKii(s);
 
 """
-function DIVAnd_GCVKii(s,nr=5)
+function DIVAnd_GCVKii(s, nr = 5)
 
     #the second, optional argument is the number of random vectors nr used for the estimate
 
 
-    H = s.H;
-    R = s.R;
+    H = s.H
+    R = s.R
 
 
     #if optimisation is to be used, make sure to use the same reference random points
     Random.seed!(nr)
 
-    Z = randn(size(R)[1],nr);
+    Z = randn(size(R)[1], nr)
 
     Random.seed!()
 
-    P = s.P;
-    WW=P * (H'* (R \ Z));
-    ZtHKZ=  Z'*(H*WW);
-    ZtZ  =  Z'*Z;
+    P = s.P
+    WW = P * (H' * (R \ Z))
+    ZtHKZ = Z' * (H * WW)
+    ZtZ = Z' * Z
 
     # correction for points out of the domain:
-    nrealdata=sum(1 .- s.obsout);
-    ndata=size(s.obsout)[1];
-    if nrealdata==0
-        Kii=0.0;
+    nrealdata = sum(1 .- s.obsout)
+    ndata = size(s.obsout)[1]
+    if nrealdata == 0
+        Kii = 0.0
     else
-        factorc=ndata/nrealdata;
+        factorc = ndata / nrealdata
         # Now take average of the nr different estimates,
-        Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
+        Kii = factorc * mean(diag(ZtHKZ) ./ diag(ZtZ))
     end
     return Kii
 

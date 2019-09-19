@@ -12,7 +12,7 @@ function localresolution(coord)
     end
 
     for i = 2:length(coord)-1
-        Δcoord[i] = (coord[i+1] - coord[i-1])/2
+        Δcoord[i] = (coord[i+1] - coord[i-1]) / 2
     end
     Δcoord[1] = coord[2] - coord[1]
     Δcoord[end] = coord[end] - coord[end-1]
@@ -32,8 +32,8 @@ the mask `mask`, the coordinates `(xi,yi,...)` and the metrics `(pm,pn...)`.
 
 mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0,stop=1,length=50))
 """
-function DIVAnd_squaredom(n,coord)
-    coords = ntuple(i-> coord,n)
+function DIVAnd_squaredom(n, coord)
+    coords = ntuple(i -> coord, n)
     return DIVAnd_rectdom(coords...)
 end
 
@@ -61,7 +61,7 @@ function DIVAnd_rectdom(coords...)
     # metric (inverse of the resolution)
     pmn = ndgrid([1 ./ localresolution(coords[i]) for i = 1:length(coords)]...)
 
-    return mask,pmn,xyi
+    return mask, pmn, xyi
 end
 
 
@@ -72,14 +72,14 @@ end
 Generate a 2D geospatial domain based on the topography from the netCDF file
 `bathname`.
 """
-function domain(bathname,bathisglobal,lonr,latr)
-    mask,(pm,pn),(xi,yi) = DIVAnd.DIVAnd_rectdom(lonr,latr)
+function domain(bathname, bathisglobal, lonr, latr)
+    mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_rectdom(lonr, latr)
 
-    mxi,myi,mask = DIVAnd.load_mask(bathname,bathisglobal,lonr,latr,0.)
+    mxi, myi, mask = DIVAnd.load_mask(bathname, bathisglobal, lonr, latr, 0.)
 
-    pm,pn = DIVAnd.DIVAnd_metric(xi,yi)
+    pm, pn = DIVAnd.DIVAnd_metric(xi, yi)
 
-    return mask,(pm,pn),(xi,yi)
+    return mask, (pm, pn), (xi, yi)
 end
 
 """
@@ -90,30 +90,36 @@ Generate a 3D geospatial domain based on the topography from the netCDF file
 positive in water (positive is down). If `zlevel` is `:floor`, then `depthr` is
 zero for the sea floor and positive in water (positive is up)
 """
-function domain(bathname,bathisglobal,lonr,latr,depthr; zlevel = :surface)
+function domain(bathname, bathisglobal, lonr, latr, depthr; zlevel = :surface)
 
-    mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.DIVAnd_rectdom(lonr,latr,depthr)
+    mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.DIVAnd_rectdom(lonr, latr, depthr)
 
-    pm[:,:,1],pn[:,:,1] = DIVAnd.DIVAnd_metric(xi[:,:,1,1],yi[:,:,1,1])
-    for k = 1:size(pm,3)
-        pm[:,:,k] = pm[:,:,1]
-        pn[:,:,k] = pn[:,:,1]
+    pm[:, :, 1], pn[:, :, 1] = DIVAnd.DIVAnd_metric(xi[:, :, 1, 1], yi[:, :, 1, 1])
+    for k = 1:size(pm, 3)
+        pm[:, :, k] = pm[:, :, 1]
+        pn[:, :, k] = pn[:, :, 1]
     end
 
     dx = lonr[2] - lonr[1]
     dy = latr[2] - latr[1]
 
     if zlevel == :surface
-        mxi,myi,mask[:,:,:] = DIVAnd.load_mask(bathname,bathisglobal,lonr,latr,depthr)
+        mxi, myi, mask[:, :, :] = DIVAnd.load_mask(
+            bathname,
+            bathisglobal,
+            lonr,
+            latr,
+            depthr,
+        )
     else
-        bxi,byi,bi = load_bath(bathname,bathisglobal,lonr,latr)
+        bxi, byi, bi = load_bath(bathname, bathisglobal, lonr, latr)
 
-        for k = 1:size(mask,3)
-            mask[:,:,k] = depthr[k] .< bi
+        for k = 1:size(mask, 3)
+            mask[:, :, k] = depthr[k] .< bi
         end
     end
 
-    return mask,(pm,pn,po),(xi,yi,zi)
+    return mask, (pm, pn, po), (xi, yi, zi)
 end
 
 
@@ -123,15 +129,20 @@ end
 Generate a geospatial domain based on the topography from the netCDF file
 `bathname`.
 """
-function domain(bathname,bathisglobal,lonr,latr,depthr,timer)
+function domain(bathname, bathisglobal, lonr, latr, depthr, timer)
 
-    mask,(pm,pn,po,pp),(xi,yi,zi,ti) = DIVAnd.DIVAnd_rectdom(lonr,latr,depthr,timer)
+    mask, (pm, pn, po, pp), (xi, yi, zi, ti) = DIVAnd.DIVAnd_rectdom(
+        lonr,
+        latr,
+        depthr,
+        timer,
+    )
 
-    pm[:,:,1,1],pn[:,:,1,1] = DIVAnd.DIVAnd_metric(xi[:,:,1,1],yi[:,:,1,1])
-    for n = 1:size(pn,4)
-        for k = 1:size(pm,3)
-            pm[:,:,k,n] = pm[:,:,1,1]
-            pn[:,:,k,n] = pn[:,:,1,1]
+    pm[:, :, 1, 1], pn[:, :, 1, 1] = DIVAnd.DIVAnd_metric(xi[:, :, 1, 1], yi[:, :, 1, 1])
+    for n = 1:size(pn, 4)
+        for k = 1:size(pm, 3)
+            pm[:, :, k, n] = pm[:, :, 1, 1]
+            pn[:, :, k, n] = pn[:, :, 1, 1]
         end
     end
     #pm[:] = 4.15379e-5
@@ -140,9 +151,9 @@ function domain(bathname,bathisglobal,lonr,latr,depthr,timer)
     dx = lonr[2] - lonr[1]
     dy = latr[2] - latr[1]
 
-    mxi,myi,mask2 = DIVAnd.load_mask(bathname,bathisglobal,lonr,latr,depthr)
+    mxi, myi, mask2 = DIVAnd.load_mask(bathname, bathisglobal, lonr, latr, depthr)
 
-    mask3 = repeat(mask2,inner = (1,1,1,length(timer)))
+    mask3 = repeat(mask2, inner = (1, 1, 1, length(timer)))
 
-    return mask3,(pm,pn,po,pp),(xi,yi,zi,ti)
+    return mask3, (pm, pn, po, pp), (xi, yi, zi, ti)
 end

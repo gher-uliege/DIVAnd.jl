@@ -14,35 +14,35 @@
 
 function DIVAnd_factorize!(s)
 
-    R = s.R;
-    iB = s.iB;
-    H = s.H;
+    R = s.R
+    iB = s.iB
+    H = s.H
 
     if s.primal
         if s.inversion == :chol
-            if isa(R,Diagonal)
+            if isa(R, Diagonal)
                 # R \ H is still sparse
                 iR = Diagonal(1 ./ diag(R))
-                iP = iB + H'*(iR * H);
+                iP = iB + H' * (iR * H)
             else
                 # warning: R \ H will be a full matrix (unless R is a Diagonal matrix)
-                iP = iB + H'*(R \ full(H));
+                iP = iB + H' * (R \ full(H))
             end
 
-            P = CovarIS(iP);
+            P = CovarIS(iP)
 
             # Cholesky factor of the inverse of a posteriori
             # error covariance iP
             if s.factorize
-                factorize!(P);
+                factorize!(P)
             end
 
-            s.P = P;
+            s.P = P
         else
-            s.preconditioner = s.compPC(iB,H,R);
+            s.preconditioner = s.compPC(iB, H, R)
         end
     else # dual
-        s.preconditioner = s.compPC(iB,H,R);
+        s.preconditioner = s.compPC(iB, H, R)
 
         # #C = H * (iB \ H') + R;
         # s.B = CovarIS(iB);

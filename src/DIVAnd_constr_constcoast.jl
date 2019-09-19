@@ -34,23 +34,23 @@ of the grid cell denoted by * is a land point.
 
 function boundaryu(mask)
 
-    bu = falses(size(mask,1)-1,size(mask,2))
+    bu = falses(size(mask, 1) - 1, size(mask, 2))
 
-    for j = 1:size(bu,2)
-        for i = 1:size(bu,1)
+    for j = 1:size(bu, 2)
+        for i = 1:size(bu, 1)
             # check if i+½,j is a see point
 
-            if mask[i,j] && mask[i+1,j]
+            if mask[i, j] && mask[i+1, j]
 
                 if j > 1
-                    if !mask[i,j-1] || !mask[i+1,j-1]
-                        bu[i,j] = true
+                    if !mask[i, j-1] || !mask[i+1, j-1]
+                        bu[i, j] = true
                     end
                 end
 
-                if j < size(bu,2)
-                    if !mask[i,j+1] || !mask[i+1,j+1]
-                        bu[i,j] = true
+                if j < size(bu, 2)
+                    if !mask[i, j+1] || !mask[i+1, j+1]
+                        bu[i, j] = true
                     end
                 end
             end
@@ -63,13 +63,13 @@ end
 boundaryv(mask) = boundaryu(mask')'
 
 
-function gradcoast(mask,fip)
+function gradcoast(mask, fip)
     fi = zeros(size(mask))
     fi[mask] = fip
     bu = boundaryu(mask)
     bv = boundaryv(mask)
-    Dxfi = fi[2:end,:] - fi[1:end-1,:]
-    Dyfi = fi[:,2:end] - fi[:,1:end-1]
+    Dxfi = fi[2:end, :] - fi[1:end-1, :]
+    Dyfi = fi[:, 2:end] - fi[:, 1:end-1]
 
     return [Dxfi[bu]; Dyfi[bv]]
 end
@@ -89,11 +89,13 @@ function sparse_gradcoast(mask)
     bu = boundaryu(mask)
     bv = boundaryv(mask)
 
-    diffx = sparse_diff(sz,1)
-    diffy = sparse_diff(sz,2)
+    diffx = sparse_diff(sz, 1)
+    diffy = sparse_diff(sz, 2)
 
-    H = [sparse_pack(bu) * diffx * Hunpack;
-         sparse_pack(bv) * diffy * Hunpack]
+    H = [
+        sparse_pack(bu) * diffx * Hunpack;
+        sparse_pack(bv) * diffy * Hunpack
+    ]
 
     return H
 end
@@ -108,11 +110,11 @@ represents the scaled error variance on the gradients.
 This constrain is useful to indirectly impose that a stream function
 does not have a current component perpendicular to the coastline.
 """
-function DIVAnd_constr_constcoast(mask,eps2)
+function DIVAnd_constr_constcoast(mask, eps2)
     H = sparse_gradcoast(mask)
-    m = size(H,1)
+    m = size(H, 1)
     yo = zeros(m)
-    R = Diagonal(fill(eps2,(m,)))
+    R = Diagonal(fill(eps2, (m,)))
 
-    return DIVAnd_constrain(yo,R,H)
+    return DIVAnd_constrain(yo, R, H)
 end

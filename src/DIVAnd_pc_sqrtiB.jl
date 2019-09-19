@@ -7,10 +7,10 @@ Compute preconditioner matrices M1 and M2 based on
 the Cholesky decomposition of iB. The matrices H and R are not used.
 M2 is the transpose of M1 for this preconditioner.
 """
-function DIVAnd_pc_sqrtiB(iB,H,R)
+function DIVAnd_pc_sqrtiB(iB, H, R)
     F = cholesky(iB)
 
-    function fun!(x,fx)
+    function fun!(x, fx)
         fx[:] = F \ x
     end
     return fun!

@@ -14,27 +14,27 @@ DIVAnd_integral(mask,pmn,fieldin)
 
 
 """
-function DIVAnd_integral(mask,pmn,fieldin)
+function DIVAnd_integral(mask, pmn, fieldin)
     # Dimensions but not checked for consistency
-    NDIM=ndims(mask)
-    dim=size(mask)
+    NDIM = ndims(mask)
+    dim = size(mask)
     # Utility array holding volume based on metrics
-    volume=zeros(Float64,dim)
+    volume = zeros(Float64, dim)
     volume[mask] .= 1.0
-    for i=1:NDIM
+    for i = 1:NDIM
         volume .= volume ./ pmn[i]
     end
-    
+
     # Avoiding NaN problems and so on putting field not on the grid to zero
-    field=fieldin
-    field[.!mask].= 0.
-    
-    
-    
+    field = fieldin
+    field[.!mask] .= 0.
+
+
+
     #@show volume,sum(volume)
     # Return simple integral estimate
-    integratedfield= sum(field .* volume)
-	return integratedfield
+    integratedfield = sum(field .* volume)
+    return integratedfield
 end
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>

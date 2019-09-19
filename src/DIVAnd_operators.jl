@@ -21,11 +21,18 @@
 #     of a grid cell
 
 
-function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscyclic,mapindex,Labs;
-                          coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
-                          ) where n
+function DIVAnd_operators(
+    operatortype,
+    mask::AbstractArray{Bool,n},
+    pmn,
+    nu,
+    iscyclic,
+    mapindex,
+    Labs;
+    coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
+) where {n}
 
-    s = DIVAnd_struct(operatortype,mask)
+    s = DIVAnd_struct(operatortype, mask)
 
     sz = size(mask)
 
@@ -36,31 +43,38 @@ function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscycl
 
         # range of packed indices
         # land point map to 1, but those points are remove by statevector_pack
-        i2, = statevector_unpack(sv,collect(1:sv.n),1)
-        s.mapindex_packed = statevector_pack(sv,(i2[mapindex],))
+        i2, = statevector_unpack(sv, collect(1:sv.n), 1)
+        s.mapindex_packed = statevector_pack(sv, (i2[mapindex],))
 
         # applybc*x applies the boundary conditions to x
         ind = 1:sv.n
-        applybc = sparse(collect(ind),s.mapindex_packed[ind],ones(sv.n),sv.n,sv.n)
+        applybc = sparse(collect(ind), s.mapindex_packed[ind], ones(sv.n), sv.n, sv.n)
 
         # a halo point is points which maps to a (different) interior point
         # a interior point maps to itself
         s.isinterior = ind .== s.mapindex_packed[ind]
-        s.isinterior_unpacked = statevector_unpack(sv,s.isinterior)
+        s.isinterior_unpacked = statevector_unpack(sv, s.isinterior)
     end
 
-    D = DIVAnd_laplacian(operatortype,mask,pmn,nu,iscyclic;
-                         coeff_laplacian = coeff_laplacian)
+    D = DIVAnd_laplacian(
+        operatortype,
+        mask,
+        pmn,
+        nu,
+        iscyclic;
+        coeff_laplacian = coeff_laplacian,
+    )
 
-    s.Dx = DIVAnd_gradient(operatortype,mask,pmn,iscyclic)
+    s.Dx = DIVAnd_gradient(operatortype, mask, pmn, iscyclic)
 
     if !isempty(mapindex)
         D = applybc * D * applybc
-        s.WE = oper_diag(operatortype,s.isinterior) * s.WE
+        s.WE = oper_diag(operatortype, s.isinterior) * s.WE
 
-        for i=1:n
-            S = sparse_stagger(sz,i,iscyclic[i])
-            s.isinterior_stag[i] =  oper_pack(operatortype,s.mask_stag[i]) * S * s.isinterior_unpacked[:]
+        for i = 1:n
+            S = sparse_stagger(sz, i, iscyclic[i])
+            s.isinterior_stag[i] = oper_pack(operatortype, s.mask_stag[i]) * S *
+                                   s.isinterior_unpacked[:]
 
             # the results of 's.Dx[i] * field' satisfies the bc is field does
             # there is need to reapply the bc on the result
@@ -75,7 +89,7 @@ function DIVAnd_operators(operatortype,mask::AbstractArray{Bool,n},pmn,nu,iscycl
     s.mask = mask
     s.n = n
 
-    return s,D
+    return s, D
 
 end
 # Copyright (C) 2014,2016,2017 Alexander Barth <a.barth@ulg.ac.be>

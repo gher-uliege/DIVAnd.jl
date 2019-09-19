@@ -5,59 +5,59 @@ Computes an estimate of the mean value of the diagonal of HK using GCV and the a
 Only using real data locations.
 
 """
-function DIVAnd_GCVKiiobs(s,nr=30;FIELD=())
+function DIVAnd_GCVKiiobs(s, nr = 30; FIELD = ())
 
     #the second, optional argument is the number of random vectors nr used for the estimate
 
 
-    H = s.obsconstrain.H;
-    R = s.obsconstrain.R;
+    H = s.obsconstrain.H
+    R = s.obsconstrain.R
 
-	# if nr <0 use the data and analysis itself as random vector and KZ. Allows to use the function when s.P is not available
-	#
+     # if nr <0 use the data and analysis itself as random vector and KZ. Allows to use the function when s.P is not available
+     #
 
-	if nr<0
-	nrealdata=sum(1 .- s.obsout);
-    ndata=size(s.obsout)[1];
+    if nr < 0
+        nrealdata = sum(1 .- s.obsout)
+        ndata = size(s.obsout)[1]
 
-	#@show nrealdata,ndata,size(s.obsconstrain.yo)
+     #@show nrealdata,ndata,size(s.obsconstrain.yo)
 
-	#@show size(s.yo),size(((s.H)*statevector_pack(s.sv,(FIELD,))))
-	Kii=s.yo'*((s.H)*statevector_pack(s.sv,(FIELD,)))/(s.yo'*s.yo)
+     #@show size(s.yo),size(((s.H)*statevector_pack(s.sv,(FIELD,))))
+        Kii = s.yo' * ((s.H) * statevector_pack(s.sv, (FIELD,))) / (s.yo' * s.yo)
 
-    if nrealdata==0
-        Kii=0.0;
-    else
-        factorc=ndata/nrealdata;
+        if nrealdata == 0
+            Kii = 0.0
+        else
+            factorc = ndata / nrealdata
         # Now take average of the nr different estimates,
-        Kii=factorc*Kii;
-    end
-	return Kii
+            Kii = factorc * Kii
+        end
+        return Kii
 
-	end
+    end
 
 
     #if optimisation is to be used, make sure to use the same reference random points
     Random.seed!(nr)
 
-    Z=randn(size(R)[1],nr);
+    Z = randn(size(R)[1], nr)
 
     Random.seed!()
 
-    P = s.P;
-    WW=P * (H'* (R \ Z));
-    ZtHKZ=  Z'*(H*WW);
-    ZtZ  =  Z'*Z;
+    P = s.P
+    WW = P * (H' * (R \ Z))
+    ZtHKZ = Z' * (H * WW)
+    ZtZ = Z' * Z
 
     # correction for points out of the domain:
-    nrealdata=sum(1 .- s.obsout);
-    ndata=size(s.obsout)[1];
-    if nrealdata==0
-        Kii=0.0;
+    nrealdata = sum(1 .- s.obsout)
+    ndata = size(s.obsout)[1]
+    if nrealdata == 0
+        Kii = 0.0
     else
-        factorc=ndata/nrealdata;
+        factorc = ndata / nrealdata
         # Now take average of the nr different estimates,
-        Kii=factorc*mean(diag(ZtHKZ)./diag(ZtZ));
+        Kii = factorc * mean(diag(ZtHKZ) ./ diag(ZtZ))
     end
     return Kii
 

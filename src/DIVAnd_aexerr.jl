@@ -40,24 +40,24 @@
 Compute a variational analysis of arbitrarily located observations to calculate the almost exact error
 
 """
-function DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
+function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
 
 
 
     # Hardwired value:
-    finesse=1.7
+    finesse = 1.7
 
     # No need to make an approximation if it is close to cost of direct calculation
-    upperlimit=0.4
+    upperlimit = 0.4
 
 
 
 
-    oriR=DIVAnd_obscovar(epsilon2,size(f)[1]);
+    oriR = DIVAnd_obscovar(epsilon2, size(f)[1])
 
-    epsilonref=mean(diag(oriR));
+    epsilonref = mean(diag(oriR))
 
-    epsilonslarge=maximum([1E6,epsilonref*1E6]);
+    epsilonslarge = maximum([1E6, epsilonref * 1E6])
 
 
 
@@ -66,103 +66,122 @@ function DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
     #
     n = ndims(mask)
-    nsamp=ones(n);
-    npgrid=1;
-    npneeded=1;
-    Labspmnmin=zeros(n)
+    nsamp = ones(n)
+    npgrid = 1
+    npneeded = 1
+    Labspmnmin = zeros(n)
 
-    for i=1:n
-        if isa(len,Number)
-            Labspmnmin[i] = len*minimum(pmn[i]);
-        elseif isa(len,Tuple)
+    for i = 1:n
+        if isa(len, Number)
+            Labspmnmin[i] = len * minimum(pmn[i])
+        elseif isa(len, Tuple)
 
-            if isa(len[1],Number)
-                Labspmnmin[i] = len[i]*minimum(pmn[i]);
+            if isa(len[1], Number)
+                Labspmnmin[i] = len[i] * minimum(pmn[i])
 
             else
-                Labspmnmin[i] = minimum(len[i].*pmn[i])
+                Labspmnmin[i] = minimum(len[i] .* pmn[i])
 
             end
 
         end
-        npgrid=npgrid*size(mask)[i];
-        nsamp[i]=Labspmnmin[i]/finesse;
-        npneeded=npneeded*size(mask)[i]/nsamp[i];
+        npgrid = npgrid * size(mask)[i]
+        nsamp[i] = Labspmnmin[i] / finesse
+        npneeded = npneeded * size(mask)[i] / nsamp[i]
 
     end
 
 
-    ndata=size(f)[1];
+    ndata = size(f)[1]
 
 
-    if npneeded>upperlimit*npgrid
+    if npneeded > upperlimit * npgrid
         # No need to make an approximation if it is close to cost of direct calculation
-        return 0,0,0,0
+        return 0, 0, 0, 0
         # Need to catch this event outside and use direct error calculation instead
     end
 
 
-    npongrid=Int(ceil(maximum([npgrid/10^n,npneeded-ndata])));
+    npongrid = Int(ceil(maximum([npgrid / 10^n, npneeded - ndata])))
 
-    randindexes=ones(Int,npongrid);
+    randindexes = ones(Int, npongrid)
 
-    nsa=Int(ceil(npgrid/npongrid));
+    nsa = Int(ceil(npgrid / npongrid))
 
-    randindexes=collect(1:nsa:npgrid);
+    randindexes = collect(1:nsa:npgrid)
 
-    ncv=size(randindexes)[1];
+    ncv = size(randindexes)[1]
 
     # add npongrind fake points onto the grid with zero value and very high R value
 
-    ffake=deepcopy(f);
+    ffake = deepcopy(f)
 
-    ffake=append!(ffake, 0. * xi[1][randindexes]);
-    Rfake=blkdiag(oriR,DIVAnd_obscovar(epsilonslarge,ncv));
-    xfake=tuple([append!(copy(x[i]), xi[i][randindexes]) for i=1:n]...)
+    ffake = append!(ffake, 0. * xi[1][randindexes])
+    Rfake = blkdiag(oriR, DIVAnd_obscovar(epsilonslarge, ncv))
+    xfake = tuple([append!(copy(x[i]), xi[i][randindexes]) for i = 1:n]...)
 
     # Make an analysis with those fake points and very low snr to get B at those locations
 
 
-    epsilon2fake=10_000.
-    f1,s1=DIVAndrun(mask,pmn,xi,xfake,ffake,len,epsilon2fake; otherargs...);
+    epsilon2fake = 10_000.
+    f1, s1 = DIVAndrun(mask, pmn, xi, xfake, ffake, len, epsilon2fake; otherargs...)
 
 
     # Interpolate B on the final grid with high snr
 
     # First get B, the error of the previous analysis with bad data at the data locations
-    Batdatapoints=DIVAnd_erroratdatapoints(s1);
+    Batdatapoints = DIVAnd_erroratdatapoints(s1)
 
     # Now use semi norm here ...
-    m = Int(ceil(1+n/2))
-    alpha = [binomial(m,k) for k = 0:m];
-    alpha[1]=0;
+    m = Int(ceil(1 + n / 2))
+    alpha = [binomial(m, k) for k = 0:m]
+    alpha[1] = 0
 
 
     # Analyse with semi-norm and larger length scales
-    Bjmb,s1=DIVAndrun(mask,pmn,xi,xfake,Batdatapoints,len*2,1/20; alpha=alpha, otherargs...)
+    Bjmb, s1 = DIVAndrun(
+        mask,
+        pmn,
+        xi,
+        xfake,
+        Batdatapoints,
+        len * 2,
+        1 / 20;
+        alpha = alpha,
+        otherargs...,
+    )
 
-    Bjmb=max.(Bjmb,0)
+    Bjmb = max.(Bjmb, 0)
 
     # Now do the same with normal snr to get real error at the "data" points
     # incidentally fa and sa are almost the real analysis
     # @show typeof(Rfake)
     # @show issubtype(typeof(Rfake),Union{AbstractArray{Float64,1},AbstractArray{Float64,2}})
 
-    fa,sa=DIVAndrun(mask,pmn,xi,xfake,ffake,len,Rfake; otherargs...);
-    Errdatapoints=DIVAnd_erroratdatapoints(sa);
+    fa, sa = DIVAndrun(mask, pmn, xi, xfake, ffake, len, Rfake; otherargs...)
+    Errdatapoints = DIVAnd_erroratdatapoints(sa)
 
 
     # Now get error reduction terms
-    ffake=Batdatapoints-Errdatapoints;
+    ffake = Batdatapoints - Errdatapoints
 
     # Interpolate error reduction term
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
     # Could be a small improvement. Also used in DIVAnd_cpme
 
-    f1,s1=DIVAndrun(mask,pmn,xi,xfake,ffake,len./1.70766,1.0/100.0; otherargs...);
+    f1, s1 = DIVAndrun(
+        mask,
+        pmn,
+        xi,
+        xfake,
+        ffake,
+        len ./ 1.70766,
+        1.0 / 100.0;
+        otherargs...,
+    )
 
     # Calculate final error
-    aexerr=max.(Bjmb-f1,0);
+    aexerr = max.(Bjmb - f1, 0)
 
 
 
@@ -170,7 +189,7 @@ function DIVAnd_aexerr(mask,pmn,xi,x,f,len,epsilon2; otherargs...)
 
     # Provides the almost error field aexerr, the background field Bjmb for additional scaling and the analysis fa itself with its strucure sa
 
-    return aexerr,Bjmb,fa,sa
+    return aexerr, Bjmb, fa, sa
 
 
 

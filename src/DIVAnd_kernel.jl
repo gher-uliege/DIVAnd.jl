@@ -9,7 +9,7 @@ coefficients `alpha` and normalization factor `mu`.
 `K(r)` is the kernel function (function of the normalized distance `r`),
 `len_scale` is the distance at which `K(len_scale)` = 0.6019072301972346 (which is besselk(1,1))
 """
-function DIVAnd_kernel(n,alpha)
+function DIVAnd_kernel(n, alpha)
     # precision on len_scale
     eps = 1e-8
 
@@ -17,11 +17,11 @@ function DIVAnd_kernel(n,alpha)
     ind = findlast(alpha .!= 0)
     alpha = alpha[1:ind]
 
-    m = length(alpha)-1;
+    m = length(alpha) - 1
 
-    alpha_binomial = [binomial(m,k) for k = 0:m]
+    alpha_binomial = [binomial(m, k) for k = 0:m]
 
-    mu,K = DIVAnd_kernel_binom(n,m);
+    mu, K = DIVAnd_kernel_binom(n, m)
 
     if alpha_binomial == alpha
         # alpha are binomial coefficients
@@ -33,10 +33,10 @@ function DIVAnd_kernel(n,alpha)
 
             #   correction for missing term CHECK IF NOT THE INVERSE
             #  Added fudge factor 2 to mimic same behaviour in test case
-            jmscale=(1.0/2^(m))*sum(alpha[:])/2
+            jmscale = (1.0 / 2^(m)) * sum(alpha[:]) / 2
 
 
-            mu = mu*jmscale;
+            mu = mu * jmscale
 
         else
             # unsupported sequence of alpha
@@ -44,40 +44,40 @@ function DIVAnd_kernel(n,alpha)
             #@warn "Unsupported norm used, check scaling $alpha"
             #   Scaling is correct if all alphas are binomials times a common factor
 
-            jmscale=(1.0/2^(m))*sum(alpha[:])
+            jmscale = (1.0 / 2^(m)) * sum(alpha[:])
 
-            mu = mu*jmscale;
+            mu = mu * jmscale
         end
     end
 
-    len_scale,maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1,1),0.,100.,eps)
+    len_scale, maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1, 1), 0., 100., eps)
 
-    return mu,K,len_scale
+    return mu, K, len_scale
 end
 
 
 
-function DIVAnd_kernel_binom(n,m)
-    nu = m-n/2
-    mu = (4*pi)^(n/2) * gamma(m) / gamma(nu)
-    K(x) = DIVAnd_rbesselk(nu,x)
+function DIVAnd_kernel_binom(n, m)
+    nu = m - n / 2
+    mu = (4 * pi)^(n / 2) * gamma(m) / gamma(nu)
+    K(x) = DIVAnd_rbesselk(nu, x)
 
     if nu <= 0
-        @warn "DIVAnd:nonorm ","No normalization possible. Extend parameter alpha."
+        @warn "DIVAnd:nonorm ", "No normalization possible. Extend parameter alpha."
         mu = 1.
     end
 
-    return mu,K
+    return mu, K
 end
 
 
-function DIVAnd_rbesselk(nu,r)
-    r = abs(r);
+function DIVAnd_rbesselk(nu, r)
+    r = abs(r)
 
     if r == 0
         K = 1.
     else
-        K = 2/gamma(nu) * ((r/2).^nu .* SpecialFunctions.besselk.(nu,r));
+        K = 2 / gamma(nu) * ((r / 2).^nu .* SpecialFunctions.besselk.(nu, r))
     end
 
     return K
@@ -88,24 +88,24 @@ end
 fzero(f,x0,x1,eps; maxiter = Inf)
 find the zero of the function f between x0 and x1 assuming x0 < x1 at a precision eps.
 """
-function fzero(f,x0,x1,eps; maxiter = 1000)
+function fzero(f, x0, x1, eps; maxiter = 1000)
 
     if x0 > x1
-        x0,x1 = x1,x0
+        x0, x1 = x1, x0
     end
 
-    fx0 = f(x0);
-    fx1 = f(x1);
-    xc = (x0+x1)/2.;
-    fxc = f(xc);
+    fx0 = f(x0)
+    fx1 = f(x1)
+    xc = (x0 + x1) / 2.
+    fxc = f(xc)
     niter = 0
 
-    if fx0*fx1 > 0
+    if fx0 * fx1 > 0
         error("function at x0 (f($x0)=$(fx0)) and x1 (f($x1)=$(fx1)) should have a different sign")
     end
 
-    while (x1-x0 > eps) && fxc != 0 && niter < maxiter
-        if fx0*fxc > 0
+    while (x1 - x0 > eps) && fxc != 0 && niter < maxiter
+        if fx0 * fxc > 0
             x0 = xc
             fx0 = fxc
         else
@@ -113,12 +113,12 @@ function fzero(f,x0,x1,eps; maxiter = 1000)
             fx1 = fxc
         end
 
-        xc = (x0+x1)/2.
+        xc = (x0 + x1) / 2.
         fxc = f(xc)
         niter += 1
     end
 
-    return xc,niter
+    return xc, niter
 end
 
 # Copyright (C) 2014, 2019 Alexander Barth <a.barth@ulg.ac.be>

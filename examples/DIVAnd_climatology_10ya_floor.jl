@@ -124,7 +124,7 @@ function plotres(timeindex,sel,fit,erri)
     pcolor(lonr,latr,tmp[:,:,1]';
            cmap = "jet", vmin = vmin, vmax = vmax)
     colorbar()
-    
+
     figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => @sprintf("_%04d.png",timeindex))));
     savefig(figname)
     @info "Saved figure as " * figname

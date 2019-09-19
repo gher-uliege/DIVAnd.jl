@@ -60,8 +60,8 @@ rfluxes=1
 # plotting of results
 
 
- 
-figure() 
+
+figure()
 
 pcolor(xi,yi,fi);
 colorbar()
@@ -105,7 +105,7 @@ for i=1:size(h)[1]
 	end
  end
 end
- 
+
 @show var(fluxes2+fluxesafter)
 @show var(fluxes2)
 
@@ -116,7 +116,7 @@ end
 
 # plotting of results
 
- 
+
 figure()
 pcolor(xi,yi,fi);
 colorbar()
@@ -149,7 +149,7 @@ for i=1:size(h)[1]
 	end
  end
 end
- 
+
 @show var(fluxes2+fluxesafter)
 @show var(fluxes2)
 

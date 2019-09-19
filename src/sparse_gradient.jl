@@ -1,4 +1,4 @@
-for OT in [:sparse,:MatFun]
+for OT in [:sparse, :MatFun]
     ot = Val{Symbol(OT)}
 
     @eval begin
@@ -12,24 +12,31 @@ For oceanographic application, this is the land-sea mask.
 The output `Dx1,Dx2,...,Dxn` are sparse matrices represeting a gradient along
 different dimensions.
 """
-        function DIVAnd_gradient(::Type{$ot},mask::AbstractArray{Bool,N},pmn::NTuple{N,AbstractArray{T,N}},iscyclic = falses(ndims(mask))) where {N,T}
+        function DIVAnd_gradient(
+            ::Type{$ot},
+            mask::AbstractArray{Bool,N},
+            pmn::NTuple{N,AbstractArray{T,N}},
+            iscyclic = falses(ndims(mask)),
+        ) where {N,T}
 
-            H = oper_pack($ot,mask)
+            H = oper_pack($ot, mask)
             sz = size(mask)
 
-            out = ntuple(i ->
-                         begin
+            out = ntuple(
+                i -> begin
                          # staggering operator
-                         S = oper_stagger($ot,sz,i,iscyclic[i])
+                    S = oper_stagger($ot, sz, i, iscyclic[i])
 
                          # mask for staggered variable
-                         m = (S * mask[:]) .== 1
+                    m = (S * mask[:]) .== 1
 
-                         d = m .* (S * pmn[i][:])
+                    d = m .* (S * pmn[i][:])
 
-                         return oper_pack($ot,m) * oper_diag($ot,d) * oper_diff($ot,sz,i,iscyclic[i]) * H'
-                         end,
-                         Val(N))
+                    return oper_pack($ot, m) * oper_diag($ot, d) *
+                           oper_diff($ot, sz, i, iscyclic[i]) * H'
+                end,
+                Val(N),
+            )
             return out
         end
     end

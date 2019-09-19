@@ -129,39 +129,39 @@ include("gen_example_file.jl")
 
     include("test_binning.jl")
 
-	# Heatmap
-	include("test_heatmap.jl")
+     # Heatmap
+    include("test_heatmap.jl")
 
     # test DIVAnd_filter3
-    A = zeros(5,5,5,5,5)
-    A[3,3,3,3,3] = 1
-    z = DIVAnd_filter3(A,9999,1)
+    A = zeros(5, 5, 5, 5, 5)
+    A[3, 3, 3, 3, 3] = 1
+    z = DIVAnd_filter3(A, 9999, 1)
 
     @test maximum(z) ≈ 0.00411522633744856
 
     # distance
-    @test distance(0,0,1,0) ≈ 1
-    @test distance(0,0,90,0) ≈ 90
-    @test distance(0,0,0,180) ≈ 180
-    @test distance(0,0,0,270) ≈ 90
-    @test distance(1,2,3,4) ≈ 2.82749366820155
+    @test distance(0, 0, 1, 0) ≈ 1
+    @test distance(0, 0, 90, 0) ≈ 90
+    @test distance(0, 0, 0, 180) ≈ 180
+    @test distance(0, 0, 0, 270) ≈ 90
+    @test distance(1, 2, 3, 4) ≈ 2.82749366820155
 
     # test DIVAnd_metric
-    lon,lat = ndgrid([0:10;],[0:5;])
-    pm,pn = DIVAnd_metric(lon,lat)
+    lon, lat = ndgrid([0:10;], [0:5;])
+    pm, pn = DIVAnd_metric(lon, lat)
     @test 111e3 < mean(1 ./ pm) < 112e3
     @test 111e3 < mean(1 ./ pn) < 112e3
 
 
     # test DIVAnd_kernel
-    mu,K,len_scale = DIVAnd_kernel(2,[1,2,1])
+    mu, K, len_scale = DIVAnd_kernel(2, [1, 2, 1])
     @test mu ≈ 4π
     @test K(0) ≈ 1
-    @test K(1) ≈ SpecialFunctions.besselk(1,1)
-    @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
+    @test K(1) ≈ SpecialFunctions.besselk(1, 1)
+    @test K(len_scale) ≈ SpecialFunctions.besselk(1, 1) atol = 1e-6
 
-    mu,K,len_scale = DIVAnd_kernel(2,[1,3,3,1])
-    @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
-    mu,K,len_scale = DIVAnd_kernel(2,[0,3,3,1])
-    @test K(len_scale) ≈ SpecialFunctions.besselk(1,1) atol=1e-6
+    mu, K, len_scale = DIVAnd_kernel(2, [1, 3, 3, 1])
+    @test K(len_scale) ≈ SpecialFunctions.besselk(1, 1) atol = 1e-6
+    mu, K, len_scale = DIVAnd_kernel(2, [0, 3, 3, 1])
+    @test K(len_scale) ≈ SpecialFunctions.besselk(1, 1) atol = 1e-6
 end

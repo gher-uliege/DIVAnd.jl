@@ -1,7 +1,7 @@
 using JSON
 
 
-ndim = parse(Int,ARGS[1])
+ndim = parse(Int, ARGS[1])
 method = ARGS[2]
 
 
@@ -39,5 +39,9 @@ for i = 1:length(sizes)
     else
         cmd = "using DIVAnd; using JSON; include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),5; inversion=:pcg, operatortype=Val{:MatFun}, tol=1e-3, maxit = 100000)))"
     end
-    run(pipeline(`/usr/bin/time -v $(juliaexec) --eval $(cmd)`, stdout=fileout, stderr=fileerr))
+    run(pipeline(
+        `/usr/bin/time -v $(juliaexec) --eval $(cmd)`,
+        stdout = fileout,
+        stderr = fileerr,
+    ))
 end

@@ -3,8 +3,7 @@ using DIVAnd
 using Test
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,range(-1, stop = 1, length = 30))
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
 
 # island at these location
 mi0 = 12
@@ -13,49 +12,55 @@ mi1 = 13
 mj0 = 12
 mj1 = 13
 
-mask[mi0:mi1,mj0:mj1] .= false
+mask[mi0:mi1, mj0:mj1] .= false
 
 x = [0.]
 y = [0.]
 f = [1.]
 
-epsilon2 = 1/200
+epsilon2 = 1 / 200
 len = 0.3
 
-fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+fi, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2);
 
 eps2 = 1e-7
 
-c = DIVAnd_constr_constcoast(mask,eps2)
+c = DIVAnd_constr_constcoast(mask, eps2)
 
-@test DIVAnd.gradcoast(mask,fi[mask]) ≈ DIVAnd.sparse_gradcoast(mask) * fi[mask]
+@test DIVAnd.gradcoast(mask, fi[mask]) ≈ DIVAnd.sparse_gradcoast(mask) * fi[mask]
 
 
-fi2,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
-                  constraints = [c]);
+fi2, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; constraints = [c]);
 
 
 # extract boundary values around the island and check
 # if the standard deviation is small
 
-fi_coast = fi2[mi0-1:mi1+1,mj0-1:mj1+1][mask[mi0-1:mi1+1,mj0-1:mj1+1]]
-@test fi_coast ≈ fill(fi_coast[1],size(fi_coast)) atol=1e-5
+fi_coast = fi2[mi0-1:mi1+1, mj0-1:mj1+1][mask[mi0-1:mi1+1, mj0-1:mj1+1]]
+@test fi_coast ≈ fill(fi_coast[1], size(fi_coast)) atol = 1e-5
 
 
 # more complex example
 
 Random.seed!(1234)
-mask0,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,range(0, stop = 1, length = 100))
-mask = DIVAnd.random(mask0,(pm,pn),0.1,1)[:,:,1] .> 0.5
-x = rand(Float64,100)
-y = rand(Float64,size(x))
-f = sin.(2*π*x) .* sin.(2*π*y)
+mask0, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 100))
+mask = DIVAnd.random(mask0, (pm, pn), 0.1, 1)[:, :, 1] .> 0.5
+x = rand(Float64, 100)
+y = rand(Float64, size(x))
+f = sin.(2 * π * x) .* sin.(2 * π * y)
 
 len = 0.1
 
-fi3,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;
-                  constraints = [DIVAnd_constr_constcoast(mask,eps2)]);
+fi3, s = DIVAndrun(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    f,
+    len,
+    epsilon2;
+    constraints = [DIVAnd_constr_constcoast(mask, eps2)],
+);
 
 
 nothing

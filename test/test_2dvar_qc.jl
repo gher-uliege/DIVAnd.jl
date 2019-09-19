@@ -13,30 +13,30 @@ y = rand(150);
 
 # Put two points in specific locations
 
-x[1]=0.25
-y[1]=0.75
+x[1] = 0.25
+y[1] = 0.75
 
-x[2]=0.75
-y[2]=0.25
-
-
-f = sin.(x*2*pi) .* sin.(y*2*pi);
+x[2] = 0.75
+y[2] = 0.25
 
 
-f=f+0.25*randn(150);
+f = sin.(x * 2 * pi) .* sin.(y * 2 * pi);
+
+
+f = f + 0.25 * randn(150);
 
 # Now fake some mix up in  two points coordinates
 
-x[2]=0.25
-y[1]=0.75
+x[2] = 0.25
+y[1] = 0.75
 
-x[1]=0.75
-y[2]=0.25
+x[1] = 0.75
+y[2] = 0.25
 
 
 
 # final grid
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0,stop=1,length=20))
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 20))
 
 # correlation length
 len = 0.1;
@@ -45,23 +45,23 @@ len = 0.1;
 epsilon2 = 1.;
 
 # fi is the interpolated field
-fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
+fi, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; alphabc = 0);
 
 
 for method in [0, 1, 3, 4]
-    qcval = DIVAnd_qc(fi,s,method)
+    qcval = DIVAnd_qc(fi, s, method)
 
-    if method==4
+    if method == 4
         # Provide fake THETA value
-        qcval=qcval*4
+        qcval = qcval * 4
     end
 
     # Find suspect points
-    sp=findall(x-> x.>9,qcval)
-    @test sum(sp)==3
+    sp = findall(x -> x .> 9, qcval)
+    @test sum(sp) == 3
 end
 
-qcval_2 = @test_logs (:warn,r".*not defined.*") match_mode=:any DIVAnd_qc(fi,s,2)
+qcval_2 = @test_logs (:warn, r".*not defined.*") match_mode = :any DIVAnd_qc(fi, s, 2)
 
 @test all(qcval_2 .== 0)
 

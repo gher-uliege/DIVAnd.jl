@@ -11,10 +11,10 @@ struct statevector
     unpacked2packed
 end
 
-function unpack(v,mask)
-    tmp = zeros(eltype(v),mask);
-    tmp[mask] = v;
-    return tmp;
+function unpack(v, mask)
+    tmp = zeros(eltype(v), mask)
+    tmp[mask] = v
+    return tmp
 end
 
 
@@ -41,28 +41,28 @@ License: GPL 2 or later
 """
 function statevector_init(masks)
 
-numels = [sum(mask)    for mask in masks]
-ind = [0 cumsum(numels)...]
+    numels = [sum(mask) for mask in masks]
+    ind = [0 cumsum(numels)...]
 
 # vector mapping packed indices to unpacked indices
-packed2unpacked = [(1:length(mask))[mask] for mask in masks]
+    packed2unpacked = [(1:length(mask))[mask] for mask in masks]
 
 # vector mapping unpacked indices packed indices
-unpacked2packed = [unpack(1:sum(mask),mask) for mask in masks]
+    unpacked2packed = [unpack(1:sum(mask), mask) for mask in masks]
 
-s = statevector(
-     [mask for mask in masks],
-     length(masks),
-     numels,
-     [length(mask) for mask in masks],
-     [size(mask) for mask in masks],
-     ind,
-     ind[end],
-     packed2unpacked,
-     unpacked2packed
-)
+    s = statevector(
+        [mask for mask in masks],
+        length(masks),
+        numels,
+        [length(mask) for mask in masks],
+        [size(mask) for mask in masks],
+        ind,
+        ind[end],
+        packed2unpacked,
+        unpacked2packed,
+    )
 
-return s
+    return s
 end
 
 # Copyright (C) 2009,2017 Alexander Barth <a.barth@ulg.ac.be>

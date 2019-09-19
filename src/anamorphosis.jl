@@ -10,7 +10,7 @@ function notransform()
         return y
     end
 
-    return trans,invtrans
+    return trans, invtrans
 end
 
 """
@@ -38,7 +38,7 @@ function loglin(t; epsilon = 0.)
             # linear extension
             # a + b (x-t)
 
-            return log(t + epsilon) + (x-t) / (t+epsilon)
+            return log(t + epsilon) + (x - t) / (t + epsilon)
         end
     end
 
@@ -51,11 +51,11 @@ function loglin(t; epsilon = 0.)
             # y = log(t + epsilon) + (x-t) / (t+epsilon)
             # (y - log(t + epsilon)) * (t+epsilon)  = x-t
 
-            return (y - log(t + epsilon)) * (t+epsilon) + t
+            return (y - log(t + epsilon)) * (t + epsilon) + t
         end
     end
 
-    return trans,invtrans
+    return trans, invtrans
 end
 
 
@@ -70,18 +70,18 @@ The use safety-margin might be necessary.
 function logit(; min = 0., max = 1.)
 
     function trans(x; position = ())
-        xs = (x-min) / (max-min)
-        y = log(xs/(1-xs))
+        xs = (x - min) / (max - min)
+        y = log(xs / (1 - xs))
         return y
     end
 
     function invtrans(y; position = ())
-        xs = 1/(1+exp(-y))
-        x = min + xs * (max-min)
+        xs = 1 / (1 + exp(-y))
+        x = min + xs * (max - min)
         return x
     end
 
-    return trans,invtrans
+    return trans, invtrans
 end
 
 

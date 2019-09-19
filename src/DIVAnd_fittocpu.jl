@@ -1,6 +1,6 @@
 """
 
-	stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
+     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps `csteps` for the preconditionners
@@ -19,46 +19,46 @@
 * `isdirect`: true is the direct solver is activated
 
 """
-function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
+function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     #################################################################################
     # Number of dimensions
 
-    n = size(Lpmnrange,1)
-    fudgefac=MEMTOFIT/16.
+    n = size(Lpmnrange, 1)
+    fudgefac = MEMTOFIT / 16.
 
-    if moddim==[]
-        moddim=zeros(n)
+    if moddim == []
+        moddim = zeros(n)
     end
 
     # Some tweaking parameters #####
 
     # Fraction of domain size at which windowing is attempted if len is smaller
-    lfactor=0.2
+    lfactor = 0.2
 
     # How wide is the overlap in terms of number of length scales
-    factoroverlap=3.3
+    factoroverlap = 3.3
 
-    biggestproblemitern=[500*500 500*500 50*50*50 170*170*6*12]*fudgefac
-    biggestproblemdirectn=[200*200 200*200 50*50*40 50*50*10]*fudgefac
+    biggestproblemitern = [500 * 500 500 * 500 50 * 50 * 50 170 * 170 * 6 * 12] * fudgefac
+    biggestproblemdirectn = [200 * 200 200 * 200 50 * 50 * 40 50 * 50 * 10] * fudgefac
 
-    biggestproblemiter=biggestproblemitern[min(n,4)]
-    biggestproblemdirect=biggestproblemdirectn[min(n,4)]
+    biggestproblemiter = biggestproblemitern[min(n, 4)]
+    biggestproblemdirect = biggestproblemdirectn[min(n, 4)]
 
     @debug "biggestproblemdirectn $biggestproblemdirectn"
 
     # Default
-    stepsize=collect(gridsize)
-    overlapping=zeros(Int,n)
+    stepsize = collect(gridsize)
+    overlapping = zeros(Int, n)
 
     # Test if cutting is necessary:
-    problemcut = prod(2*overlapping+stepsize)
+    problemcut = prod(2 * overlapping + stepsize)
     isdirect = problemcut < biggestproblemdirect
 
     @debug "problemcut: $problemcut"
     @debug "biggestproblemdirect: $biggestproblemdirect"
 
     if isdirect
-        return stepsize,overlapping,isdirect
+        return stepsize, overlapping, isdirect
     end
 
 
@@ -71,43 +71,43 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
 
     # For time: no windowing for the moment neither
 
-    biggestproblem= biggestproblemiter
+    biggestproblem = biggestproblemiter
 
-    higherdims=1
+    higherdims = 1
 
     if n == 3
-        stepsize[3]=10;
-        overlapping[3]=2;
-        higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
+        stepsize[3] = 10
+        overlapping[3] = 2
+        higherdims = prod(stepsize[3:end] + 2 * overlapping[3:end])
     elseif n > 3
-        stepsize[3]=2;
-        overlapping[3]=2;
-        higherdims=prod(stepsize[3:end]+2*overlapping[3:end])
+        stepsize[3] = 2
+        overlapping[3] = 2
+        higherdims = prod(stepsize[3:end] + 2 * overlapping[3:end])
     end
 
-    biggestproblem=biggestproblem/higherdims
+    biggestproblem = biggestproblem / higherdims
 
 
     # problemsize is the number additional grid point appended to
     # a subdomain to make the domains overlap
-    problemsize=1
+    problemsize = 1
 
     # nwd calculates the number of dimensions on which tiling/windowing is done
-    nwd=0
-    for i=1:min(n,2)
+    nwd = 0
+    for i = 1:min(n, 2)
         # if length scale is small compared to domain size
-        if Lpmnrange[i][2]<   lfactor*gridsize[i]
-            if moddim[i]==0
-                overlapping[i]=Int(ceil( factoroverlap*Lpmnrange[i][2]   ))
-                problemsize=problemsize*overlapping[i]
+        if Lpmnrange[i][2] < lfactor * gridsize[i]
+            if moddim[i] == 0
+                overlapping[i] = Int(ceil(factoroverlap * Lpmnrange[i][2]))
+                problemsize = problemsize * overlapping[i]
 
 
-                nwd=nwd+1
+                nwd = nwd + 1
             else
-                problemsize=problemsize*gridsize[i]
+                problemsize = problemsize * gridsize[i]
             end
         else
-            problemsize=problemsize*gridsize[i]
+            problemsize = problemsize * gridsize[i]
         end
 
         #
@@ -116,42 +116,42 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     #problemsize=problemsize/prod(latercsteps[1:2])
 
     # Take into account overhead due to multiple storage
-    problemsize=problemsize/sqrt(prod(latercsteps[1:2]))
+    problemsize = problemsize / sqrt(prod(latercsteps[1:2]))
     epsilon = 1E-6
 
     # tries to get the maximum multiplication factor with respect to the overlapping which can be applied
     # to get the actual useful window size excluding the overlapping.
-    if nwd>0
-        epsilon=(float(biggestproblem)/float(problemsize))^(1.0/nwd)-2.0
+    if nwd > 0
+        epsilon = (float(biggestproblem) / float(problemsize))^(1.0 / nwd) - 2.0
     end
 
-    if epsilon<=0
-	if nwd>0
-        @warn "Problem size probably too big for the memory defined " *
-            "(epsilon_fittocpu = $epsilon, problemsize = $problemsize, nwd = $nwd" *
-            "overlapping = $overlapping). Will try to continue anyway. " *
-            "Consider to increase MEMTOFIT."
-	end
-        epsilon=1E-6
+    if epsilon <= 0
+        if nwd > 0
+            @warn "Problem size probably too big for the memory defined " *
+                  "(epsilon_fittocpu = $epsilon, problemsize = $problemsize, nwd = $nwd" *
+                  "overlapping = $overlapping). Will try to continue anyway. " *
+                  "Consider to increase MEMTOFIT."
+        end
+        epsilon = 1E-6
     end
 
-    for i=1:min(n,2)
+    for i = 1:min(n, 2)
         # if length scale is small compared to domain size
-        if Lpmnrange[i][2]<   lfactor*gridsize[i]
-            if moddim[i]==0
-                stepsize[i]=Int(ceil( epsilon*factoroverlap*Lpmnrange[i][2]))
+        if Lpmnrange[i][2] < lfactor * gridsize[i]
+            if moddim[i] == 0
+                stepsize[i] = Int(ceil(epsilon * factoroverlap * Lpmnrange[i][2]))
                 # Limit stepsize, if limited force zero overlap
-                stepsize[i] = min(stepsize[i],gridsize[i])
-		if gridsize[i]==stepsize[i]
-			overlapping[i]=0
-		end
+                stepsize[i] = min(stepsize[i], gridsize[i])
+                if gridsize[i] == stepsize[i]
+                    overlapping[i] = 0
+                end
 
             end
         end
     end
 
     # Limit window size to gridsize
-    winsize = min.(2*overlapping+stepsize,gridsize)
+    winsize = min.(2 * overlapping + stepsize, gridsize)
     @debug "winsize: $winsize"
 
     doesitfit = prod(winsize) < biggestproblemiter
@@ -163,7 +163,7 @@ function DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT)
     #Force direct solver if you want by uncommenting next line
     # isdirect = true
 
-    return stepsize,overlapping,isdirect
+    return stepsize, overlapping, isdirect
 end
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>

@@ -5,11 +5,11 @@ Computes the cross validation estimator
 ``(d-\\hat{d})^T \\mathbf R^{-1} (d-\\hat{d}) / ( \\mathbf 1^T \\mathbf R^{-1} \\mathbf 1)``
 where the ``\\hat{d}`` is the analysis not using a data point.
 """
-function DIVAnd_cvestimator(s,residual)
+function DIVAnd_cvestimator(s, residual)
     # Corrected to take into account only points in domain
 
-    v1 = (1 .- s.obsout).*(s.obsconstrain.R \ residual)
-    v2 = (1 .- s.obsout).*(s.obsconstrain.R \ ones(size(residual)))
+    v1 = (1 .- s.obsout) .* (s.obsconstrain.R \ residual)
+    v2 = (1 .- s.obsout) .* (s.obsconstrain.R \ ones(size(residual)))
 
     # operator a⋅b returns a scalar in julia version 0.5.0, 0.5.1 and 0.6-dev
     # unlike a'*b

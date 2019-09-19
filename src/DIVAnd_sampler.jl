@@ -20,34 +20,34 @@ one to resolve the provided lengthscales
 * `samplesteps`: vector of integers with steps in subsampling [1 2 4 1] means every grid point in x direction, every fifth in y etc
 
 """
-function DIVAnd_sampler(pmn,len)
+function DIVAnd_sampler(pmn, len)
 
     # TO DO: in a single sweep compute both minimum and maximum with function extrema
     # Usefull for DIVAndgo and DIVAndjog
 
 
     n = ndims(pmn[1])
-    samplesteps=ones(Int,n);
-    Labspmnmin=zeros(n)
+    samplesteps = ones(Int, n)
+    Labspmnmin = zeros(n)
 
-    for i=1:n
-        if isa(len,Number)
-            Labspmnmin[i] = len*minimum(pmn[i]);
-        elseif isa(len,Tuple)
+    for i = 1:n
+        if isa(len, Number)
+            Labspmnmin[i] = len * minimum(pmn[i])
+        elseif isa(len, Tuple)
 
-            if isa(len[1],Number)
-                Labspmnmin[i] = len[i]*minimum(pmn[i]);
+            if isa(len[1], Number)
+                Labspmnmin[i] = len[i] * minimum(pmn[i])
 
             else
-                Labspmnmin[i] = minimum(len[i].*pmn[i])
+                Labspmnmin[i] = minimum(len[i] .* pmn[i])
 
             end
 
         end
 
-        nsamp=Int(floor(Labspmnmin[i]/3));
-        if nsamp>1
-            samplesteps[i]=nsamp
+        nsamp = Int(floor(Labspmnmin[i] / 3))
+        if nsamp > 1
+            samplesteps[i] = nsamp
         end
     end
 

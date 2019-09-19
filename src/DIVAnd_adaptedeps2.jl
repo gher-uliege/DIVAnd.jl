@@ -15,29 +15,29 @@ estimate of the R matrix. If you cannot use `DIVAndrun` but use `DIVAndgo`, the 
 
 
 """
-function DIVAnd_adaptedeps2(s,fi);
+function DIVAnd_adaptedeps2(s, fi)
 
-    residual = DIVAnd_residualobs(s,fi);
+    residual = DIVAnd_residualobs(s, fi)
 
     d0d = zero(eltype(fi))     # yo ⋅ yo
     d0dmd1d = zero(eltype(fi)) # (yo - Hxa) ⋅ yo
-    diagR = diag(s.obsconstrain.R) :: Vector{Float64}
+    diagR = diag(s.obsconstrain.R)::Vector{Float64}
     eps2 = zero(eltype(fi))    # mean of diagonal of R
     nrealdata = 0
 
     for i = 1:length(s.yo)
         if (!s.obsout[i]) && (!isinf(diagR[i]))
-            d0d +=  s.yo[i]^2
-            d0dmd1d +=  s.yo[i] * residual[i]
+            d0d += s.yo[i]^2
+            d0dmd1d += s.yo[i] * residual[i]
             eps2 += diagR[i]
             nrealdata += 1
         end
     end
     eps2 /= nrealdata
 
-    ll1 = d0d/(d0dmd1d)-1;
-    eps1 = 1/ll1;
-    factor = eps1/eps2;
+    ll1 = d0d / (d0dmd1d) - 1
+    eps1 = 1 / ll1
+    factor = eps1 / eps2
     return factor
 end
 

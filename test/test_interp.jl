@@ -13,7 +13,7 @@ lat = nomissing(ds["lat"][:])
 depth = nomissing(ds["depth"][:])
 time = nomissing(ds["time"][:])
 
-v = ds["Salinity"][:,:,:,:]
+v = ds["Salinity"][:, :, :, :]
 close(ds)
 
 i = 3
@@ -22,30 +22,30 @@ k = 2
 n = 2
 
 loni = [lon[i]]
-lati = [lat[j] ]
+lati = [lat[j]]
 depthi = [10.]
 timei = [time[n]]
 
 
-x = (lon,lat,depth)
-xi = (loni,lati,depthi)
+x = (lon, lat, depth)
+xi = (loni, lati, depthi)
 
-vn = zeros(size(v[:,:,:,n]))
-vn[:] = map((x -> ismissing(x) ? NaN : x), v[:,:,:,n]);
+vn = zeros(size(v[:, :, :, n]))
+vn[:] = map((x -> ismissing(x) ? NaN : x), v[:, :, :, n]);
 
-fi = DIVAnd.interp(x,vn,xi)
+fi = DIVAnd.interp(x, vn, xi)
 
 
-firef = [(v[i,j,1,n] + v[i,j,2,n])/2]
+firef = [(v[i, j, 1, n] + v[i, j, 2, n]) / 2]
 @test fi ≈ firef
 
 
 
 
 
-background = DIVAnd.backgroundfile(fname,varname)
-vn2,fi = background(xi,n,firef,DIVAnd.Anam.notransform()[1])
+background = DIVAnd.backgroundfile(fname, varname)
+vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 
-@test fi ≈ [0] atol=1e-5
+@test fi ≈ [0] atol = 1e-5
 
 

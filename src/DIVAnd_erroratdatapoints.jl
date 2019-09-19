@@ -6,7 +6,7 @@ Computes the error at the real data locations using the analysis structure s
 
 """
 function DIVAnd_erroratdatapoints(s)
-    return diagMtCM(s.P,s.obsconstrain.H')
+    return diagMtCM(s.P, s.obsconstrain.H')
 end
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>

@@ -6,20 +6,21 @@ using DIVAnd
 using Compat
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,range(0, stop = 1, length = 30))
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 30))
 
 mask .= false
 
 epsilon = 1e-10;
 
 # grid of observations
-x,y = DIVAnd.ndgrid(
-    range(epsilon, stop = 1-epsilon, length = 20),
-    range(epsilon, stop = 1-epsilon, length = 20))
+x, y = DIVAnd.ndgrid(
+    range(epsilon, stop = 1 - epsilon, length = 20),
+    range(epsilon, stop = 1 - epsilon, length = 20),
+)
 
 x = x[:]
 y = y[:]
-v = sin.(x*6) .* cos.(y*6)
+v = sin.(x * 6) .* cos.(y * 6)
 
 
 lenx = .15;
@@ -27,8 +28,16 @@ leny = .15;
 
 epsilon2 = 0.05;
 
-va,s = @test_logs (:warn,r".*No sea point.*") match_mode=:any DIVAndrun(
-            mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+va, s = @test_logs (:warn, r".*No sea point.*") match_mode = :any DIVAndrun(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    v,
+    (lenx, leny),
+    epsilon2,
+    primal = true,
+)
 
 @test s.sv.size[1] == size(xi)
 

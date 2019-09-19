@@ -18,7 +18,8 @@ the grid defined by `x`.
 function localize_separable_grid(
     xi::NTuple{n,AbstractArray},
     mask::AbstractArray{Bool,n},
-    x::NTuple{n,AbstractArray{T,n}}) where n where T
+    x::NTuple{n,AbstractArray{T,n}},
+) where {n} where {T}
 
     # m is the number of arbitrarily distributed observations
     mi = prod(size(xi[1]))
@@ -26,26 +27,26 @@ function localize_separable_grid(
     # sz is the size of the grid
     sz = size(x[1])
 
-    I = zeros(n,mi)
-    X = ntuple(i -> Vector{T}(undef,sz[i]),Val(n))
-    vi = ntuple(i -> 1:sz[i],Val(n))
+    I = zeros(n, mi)
+    X = ntuple(i -> Vector{T}(undef, sz[i]), Val(n))
+    vi = ntuple(i -> 1:sz[i], Val(n))
 
-    for i=1:n
+    for i = 1:n
         for j = 1:sz[i]
-            X[i][j] = x[i][(j-1)*stride(x[i],i) + 1]
+            X[i][j] = x[i][(j-1)*stride(x[i], i)+1]
         end
     end
 
-    IJ = ndgrid(vi...) :: NTuple{n,Array{Int,n}}
+    IJ = ndgrid(vi...)::NTuple{n,Array{Int,n}}
 
-    for i=1:n
+    for i = 1:n
         # https://github.com/JuliaMath/Interpolations.jl/issues/237
-        itp = extrapolate(interpolate(X,IJ[i],Gridded(Linear())), -1.)
+        itp = extrapolate(interpolate(X, IJ[i], Gridded(Linear())), -1.)
 
         # loop over all point
         for j = 1:mi
-            ind = NTuple{n,T}(getindex.(xi,j))
-            I[i,j] = itp(ind...)
+            ind = NTuple{n,T}(getindex.(xi, j))
+            I[i, j] = itp(ind...)
         end
     end
 
@@ -56,16 +57,16 @@ function localize_separable_grid(
 
     # handle rounding errors
     # snap to domain bounding box if difference does not exceeds tol
-    tol = 50*eps(1.)
+    tol = 50 * eps(1.)
 
-    for i=1:n
+    for i = 1:n
         # upper bound
-        ind = sz[i] .< I[i,:] .<= sz[i] + tol
-        I[i,ind] .= sz[i]
+        ind = sz[i] .< I[i, :] .<= sz[i] + tol
+        I[i, ind] .= sz[i]
 
         # lower bound
-        ind = 1 .< I[i,:] .<= 1 + tol
-        I[i,ind] .= 1
+        ind = 1 .< I[i, :] .<= 1 + tol
+        I[i, ind] .= 1
     end
 
     return I

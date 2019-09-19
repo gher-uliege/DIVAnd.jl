@@ -2,23 +2,23 @@ using DIVAnd
 # Testing DIVAnd in 1 dimension.
 
 # grid of background field
-xi = collect(range(0,stop=1,length=21))
+xi = collect(range(0, stop = 1, length = 21))
 
 x = [.4; .6];
 f = [.4; .6];
 
 mask = trues(size(xi));
-mask[[1,end]] .= false;
+mask[[1, end]] .= false;
 
-pm = ones(size(xi)) / (xi[2]-xi[1]);
+pm = ones(size(xi)) / (xi[2] - xi[1]);
 
 len = 0.1
 epsilon2 = 0.5
 
-fi,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2);
+fi, s = DIVAndrun(mask, (pm,), (xi,), (x,), f, len, epsilon2);
 
 fimax = maximum(fi[2:end-1])
-@test xi[fi .== fimax][1] ≈ x[2]
+@test xi[fi.==fimax][1] ≈ x[2]
 
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

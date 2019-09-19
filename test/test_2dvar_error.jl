@@ -3,8 +3,7 @@
 using Test
 
 # grid of background field (its size should be odd)
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,range(0, stop = 1, length = 9))
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 9))
 
 # grid of observations
 x = [0.5]
@@ -18,33 +17,33 @@ len = 0.6
 epsilon2 = 1.;
 
 function DIVAnd_error(args...)
-    f,s = DIVAndrun(args...)
-    return statevector_unpack(s.sv,diag(s.P))[1]
+    f, s = DIVAndrun(args...)
+    return statevector_unpack(s.sv, diag(s.P))[1]
 end
 
 function DIVAnd_almostexacterror(args...)
-    err,bjmb,fa,sa = DIVAnd_aexerr(args...)
+    err, bjmb, fa, sa = DIVAnd_aexerr(args...)
     return err
 end
 
 errormethods = [
                 # consistent error (expensive)
-                DIVAnd_error,
+    DIVAnd_error,
                 # clever poor man's error
-                DIVAnd_cpme,
+    DIVAnd_cpme,
                 # almost exact error
-                DIVAnd_almostexacterror
-                ]
+    DIVAnd_almostexacterror,
+]
 
 
 for errormethod in errormethods
     #@show errormethod
-    err = errormethod(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2);
+    err = errormethod(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2)
 
-    errmin,minloc = findmin(err)
+    errmin, minloc = findmin(err)
 
     for i = 1:ndims(mask)
-        @test minloc[i] == (size(xi,i)+1) ÷ 2
+        @test minloc[i] == (size(xi, i) + 1) ÷ 2
     end
 end
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>

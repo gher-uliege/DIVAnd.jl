@@ -5,12 +5,12 @@ using DIVAnd
 using Test
 
 # final grid
-gridsize = (101,101)
+gridsize = (101, 101)
 
 n = length(gridsize)
 
 # observations
-xy = ntuple(i -> [0.],n)
+xy = ntuple(i -> [0.], n)
 f = [2.]
 
 
@@ -18,13 +18,13 @@ f = [2.]
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension,...
 
-mask,pmn,xyi = DIVAnd_rectdom([range(-1,stop=1,length=s) for s in gridsize]...)
+mask, pmn, xyi = DIVAnd_rectdom([range(-1, stop = 1, length = s) for s in gridsize]...)
 
 
 sv = statevector((mask,))
 
 # correlation length
-len = ntuple(i -> 0.2,n)
+len = ntuple(i -> 0.2, n)
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
@@ -33,50 +33,78 @@ coeff_laplacian = zeros(ndims(mask))
 coeff_derivative2 = ones(ndims(mask))
 
 
-alpha = [1,2,1]
+alpha = [1, 2, 1]
 
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
-
-
-
-fi2,s2 = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha,
-                   coeff_laplacian = coeff_laplacian,
-                   coeff_derivative2 = coeff_derivative2
-                   )
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2, alpha = alpha)
 
 
-@test fi ≈ fi2 rtol=0.3
+
+fi2, s2 = DIVAndrun(
+    mask,
+    pmn,
+    xyi,
+    xy,
+    f,
+    len,
+    epsilon2,
+    alpha = alpha,
+    coeff_laplacian = coeff_laplacian,
+    coeff_derivative2 = coeff_derivative2,
+)
+
+
+@test fi ≈ fi2 rtol = 0.3
 
 btrunc = []
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha, btrunc = btrunc)
-x = pack(s.sv,(fi,))
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2, alpha = alpha, btrunc = btrunc)
+x = pack(s.sv, (fi,))
 iBx1 = s.iB * x
 
 btrunc = 2
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha, btrunc = btrunc)
-iBx2 = DIVAnd.jmBix(s,x,btrunc=btrunc)
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2, alpha = alpha, btrunc = btrunc)
+iBx2 = DIVAnd.jmBix(s, x, btrunc = btrunc)
 
 
-@test iBx2 ≈ iBx1 atol=1e-7
+@test iBx2 ≈ iBx1 atol = 1e-7
 
 
 #------------
 
 btrunc = []
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha, btrunc = btrunc,
-                 coeff_laplacian = coeff_laplacian,
-                 coeff_derivative2 = coeff_derivative2)
-x = pack(s.sv,(fi,))
+fi, s = DIVAndrun(
+    mask,
+    pmn,
+    xyi,
+    xy,
+    f,
+    len,
+    epsilon2,
+    alpha = alpha,
+    btrunc = btrunc,
+    coeff_laplacian = coeff_laplacian,
+    coeff_derivative2 = coeff_derivative2,
+)
+x = pack(s.sv, (fi,))
 iBx1 = s.iB * x
 
 btrunc = 2
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha, btrunc = btrunc,
-                 coeff_laplacian = coeff_laplacian,
-                 coeff_derivative2 = coeff_derivative2)
+fi, s = DIVAndrun(
+    mask,
+    pmn,
+    xyi,
+    xy,
+    f,
+    len,
+    epsilon2,
+    alpha = alpha,
+    btrunc = btrunc,
+    coeff_laplacian = coeff_laplacian,
+    coeff_derivative2 = coeff_derivative2,
+)
 
-iBx2 = DIVAnd.jmBix(s,x,btrunc=btrunc)
+iBx2 = DIVAnd.jmBix(s, x, btrunc = btrunc)
 
-@test iBx2 ≈ iBx1 atol=1e-7
+@test iBx2 ≈ iBx1 atol = 1e-7
 
 
 # Copyright (C) 2014, 2019 Alexander Barth <a.barth@ulg.ac.be>

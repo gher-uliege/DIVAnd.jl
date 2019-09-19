@@ -12,38 +12,37 @@
 #     default value
 
 
-function sparse_shift(sz1,m,cyclic = false)
+function sparse_shift(sz1, m, cyclic = false)
     n1 = prod(sz1)
 
-    sz2 =
-        if cyclic
-            sz1
-        else
-            ntuple(i -> (i == m ? sz1[i]-1 : sz1[i] ),length(sz1))
-        end
+    sz2 = if cyclic
+        sz1
+    else
+        ntuple(i -> (i == m ? sz1[i] - 1 : sz1[i]), length(sz1))
+    end
 
     n2 = prod(sz2)
     n = length(sz1)
 
-    L2 = zeros(Int,n2)
+    L2 = zeros(Int, n2)
     L1 = 1:n2
     v = ones(n2)
 
-    tmp = zeros(Int,n)
+    tmp = zeros(Int, n)
 
     for i = 1:n2
-        lin2sub!(sz2,i,tmp)
+        lin2sub!(sz2, i, tmp)
 
         tmp[m] += 1
         if cyclic
-            tmp[m] = mod(tmp[m] - 1,sz1[m]) + 1
+            tmp[m] = mod(tmp[m] - 1, sz1[m]) + 1
         end
 
-        L2[i] = sub2lin(sz1,tmp)
+        L2[i] = sub2lin(sz1, tmp)
     end
 
 
-    S = sparse(L1,L2,v, n2 , n1)
+    S = sparse(L1, L2, v, n2, n1)
 
     return S
 end

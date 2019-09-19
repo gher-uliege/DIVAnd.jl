@@ -19,18 +19,18 @@
 * `Lpmnrange`: Array of range tuples (minimum and maximum of L times metric)
 
 """
-function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}},len) where {N,T}
-    Lpmnrange = Vector{NTuple{2,T}}(undef,N)
+function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}}, len) where {N,T}
+    Lpmnrange = Vector{NTuple{2,T}}(undef, N)
 
-    for i=1:N
-        if isa(len,Number)
-            Lpmnrange[i] = extrema(len*pmn[i]);
-        elseif isa(len,Tuple)
+    for i = 1:N
+        if isa(len, Number)
+            Lpmnrange[i] = extrema(len * pmn[i])
+        elseif isa(len, Tuple)
 
-            if isa(len[1],Number)
-                Lpmnrange[i] = extrema(len[i]*pmn[i]);
+            if isa(len[1], Number)
+                Lpmnrange[i] = extrema(len[i] * pmn[i])
             else
-                Lpmnrange[i] = extrema(len[i].*pmn[i])
+                Lpmnrange[i] = extrema(len[i] .* pmn[i])
             end
 
         end

@@ -27,16 +27,16 @@ If you cannot run `DIVAndrun` but use `DIVAndgo` (which does not provide a struc
 the latter provides `qcvalues` if you call `DIVAndgo` with a keyword parameter `QCMETHOD=`
 
 """
-function DIVAnd_qc(fi, s, method=0)
+function DIVAnd_qc(fi, s, method = 0)
 
     # @info "Applying quality check based on the analysis"
     # For the moment, hardwired values
     # Make sure to work only with real observations
-    switchvalue1=130;
+    switchvalue1 = 130
 
-    H = s.obsconstrain.H;
-    R = s.obsconstrain.R;
-    yo = s.yo;
+    H = s.obsconstrain.H
+    R = s.obsconstrain.R
+    yo = s.yo
 
     obsin = .!s.obsout
 
@@ -45,17 +45,17 @@ function DIVAnd_qc(fi, s, method=0)
 
     d0d = s.yo[obsin] ⋅ s.yo[obsin]
     nrealdata = sum(obsin)
-    meaneps2 = (d0d/nrealdata) * invlam/(1+invlam);
+    meaneps2 = (d0d / nrealdata) * invlam / (1 + invlam)
 
     @debug "meaneps2: meaneps2"
 
-    qcval = zeros(nd);
+    qcval = zeros(nd)
 
-    residual = DIVAnd_residualobs(s,fi);
+    residual = DIVAnd_residualobs(s, fi)
     residual[s.obsout] .= 0
 
-    if method==0
-        mymethod=3
+    if method == 0
+        mymethod = 3
         if nrealdata < switchvalue1
             mymethod = 1
         end
@@ -66,14 +66,19 @@ function DIVAnd_qc(fi, s, method=0)
     @debug "QC method: $mymethod"
 
     if mymethod == 1
-        qcval .= residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1 .- DIVAnd_diagHKobs(s)));
+        qcval .= residual.^2 ./
+                 (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_diagHKobs(s)))
     elseif mymethod == 3
-        qcval .= residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1 .- DIVAnd_GCVKiiobs(s)));
+        qcval .= residual.^2 ./
+                 (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)))
     elseif mymethod == 4
         cvval = 1
-        qcval .= residual.^2 ./ (cvval*(diag(R)/invlam).*(1 .- DIVAnd_GCVKiiobs(s)).^2);
+        qcval .= residual.^2 ./
+                 (cvval * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)).^2)
     elseif mymethod == 5
-        qcval .= residual.^2 ./ (meaneps2*(diag(R)/invlam).*(1 .- DIVAnd_GCVKiiobs(s,-1;FIELD=fi)));
+        qcval .= residual.^2 ./
+                 (meaneps2 * (diag(R) / invlam) .*
+                  (1 .- DIVAnd_GCVKiiobs(s, -1; FIELD = fi)))
     else
         @warn "DIVAnd_qc not defined for method  $method"
     end

@@ -4,29 +4,29 @@
 
 Dummy call-back function when no preconditioner is used. `fx` will be equal to `x`.
 """
-function pc_none!(x,fx)
-  fx[:] = x
+function pc_none!(x, fx)
+    fx[:] = x
 end
 
 """
     xAy, yATx = checksym(n,fun!)
 
-Check if the the function `fun!` represents a symmetric matrix when applied on 
-random vectors of size `n`. 
+Check if the the function `fun!` represents a symmetric matrix when applied on
+random vectors of size `n`.
 """
-function checksym(n,fun!)
+function checksym(n, fun!)
     x = randn(n)
     y = randn(n)
     Ax = zeros(n)
     Ay = zeros(n)
 
-    fun!(x,Ax)
-    fun!(y,Ay)
+    fun!(x, Ax)
+    fun!(y, Ay)
 
-    return (y ⋅ Ax),(x ⋅ Ay)
+    return (y ⋅ Ax), (x ⋅ Ay)
 end
 
-function cgprogress(iter,x,r,tol2,fun!,b)
+function cgprogress(iter, x, r, tol2, fun!, b)
     if iter == 1
         print("|  Iteration | Cost function | Norm of residual/√n | max. norm/√n |\n")
         print("|------------|---------------|---------------------|--------------|\n")
@@ -35,13 +35,13 @@ function cgprogress(iter,x,r,tol2,fun!,b)
     # this is the same
     # Ax = zeros(size(x))
     # fun!(x,Ax)
-    
-    Ax = b-r
-    J = (x ⋅ Ax)/2 - (b ⋅ x)
+
+    Ax = b - r
+    J = (x ⋅ Ax) / 2 - (b ⋅ x)
     n = length(r)
 
     print("|")
-    printstyled("$(@sprintf("%11d",iter))", bold=true)
+    printstyled("$(@sprintf("%11d",iter))", bold = true)
     print(" |")
     printstyled("$(@sprintf("%14.3f",J))", color = :light_magenta)
     print(" |")
@@ -57,8 +57,8 @@ end
 
 Solve a linear system with the preconditioned conjugated-gradient method:
 A x = b
-where `A` is a symmetric positive defined matrix and `b` is a vector. 
-Equivalently the solution `x` minimizes the cost function 
+where `A` is a symmetric positive defined matrix and `b` is a vector.
+Equivalently the solution `x` minimizes the cost function
 J(x) = ½ xᵀ A x - bᵀ x.
 
 The function `fun!(x,fx)` computes fx which is equal to  `A*x`.
@@ -90,14 +90,16 @@ The function `fun!` works in-place to reduce the amount of memory allocations.
 * `cgsuccess`: true if the interation converged (otherwise false)
 * `niter`: the number of iterations
 """
-function conjugategradient(fun!, b::Vector{T};
-                           x0::Vector{T} = zeros(size(b)),
-                           tol::T = 1e-6,
-                           maxit::Int = min(size(b,1),100000),
-                           minit::Int = 0,
-                           pc! = pc_none!,
-                           progress = (iter,x,r,tol2,fun!,b) -> nothing,
-                           ) where T
+function conjugategradient(
+    fun!,
+    b::Vector{T};
+    x0::Vector{T} = zeros(size(b)),
+    tol::T = 1e-6,
+    maxit::Int = min(size(b, 1), 100000),
+    minit::Int = 0,
+    pc! = pc_none!,
+    progress = (iter, x, r, tol2, fun!, b) -> nothing,
+) where {T}
 
     success = false
     n = length(b)
@@ -106,7 +108,7 @@ function conjugategradient(fun!, b::Vector{T};
 
     if bb == 0
         GC.enable(true)
-        return zeros(size(b)),true,0
+        return zeros(size(b)), true, 0
     end
 
     # relative tolerance
@@ -123,17 +125,17 @@ function conjugategradient(fun!, b::Vector{T};
     z = similar(x)
 
     # gradient at initial guess
-    fun!(x,Ap)
+    fun!(x, Ap)
     r = b - Ap
 
     # quick exit
-    if r⋅r < tol2
+    if r ⋅ r < tol2
         GC.enable(true)
-        return x,true,0
+        return x, true, 0
     end
 
     # apply preconditioner
-    pc!(r,z)
+    pc!(r, z)
 
     # first search direction == gradient
     p = copy(z)
@@ -144,15 +146,15 @@ function conjugategradient(fun!, b::Vector{T};
     # ⋅ is the dot vector product and returns a scalar
     zr_old = r ⋅ z
 
-    alpha = zeros(T,maxit)
-    beta = zeros(T,maxit+1)
+    alpha = zeros(T, maxit)
+    beta = zeros(T, maxit + 1)
 
     kfinal = maxit
     #gc()
     for k = 1:maxit
         # compute A*p
-		#@show k
-        fun!(p,Ap)
+          #@show k
+        fun!(p, Ap)
 
         # how far do we need to go in direction p?
         # alpha is determined by linesearch
@@ -160,15 +162,15 @@ function conjugategradient(fun!, b::Vector{T};
 
         # get new estimate of x
         # x = x + alpha[k]*p
-        x=BLAS.axpy!(alpha[k],p,x)
+        x = BLAS.axpy!(alpha[k], p, x)
 
         # recompute gradient at new x. Could be done by
         # r = b-fun(x)
         # but this does require an new call to fun
         # r = r - alpha[k]*Ap
-        r = BLAS.axpy!(-alpha[k],Ap,r)
+        r = BLAS.axpy!(-alpha[k], Ap, r)
 
-        progress(k,x,r,tol2,fun!,b)
+        progress(k, x, r, tol2, fun!, b)
 
         #if mod(k,20)==1
         #    @show k, r ⋅ r,tol2,size(r)
@@ -183,7 +185,7 @@ function conjugategradient(fun!, b::Vector{T};
 
         # apply pre-conditionner
 
-        pc!(r,z)
+        pc!(r, z)
 
         zr_new = r ⋅ z
 
@@ -197,7 +199,7 @@ function conjugategradient(fun!, b::Vector{T};
 
         # p = z + beta[k+1]*p
         for i = 1:n
-            p[i] = z[i] + beta[k+1]*p[i]
+            p[i] = z[i] + beta[k+1] * p[i]
         end
 
         zr_old = zr_new
@@ -205,12 +207,12 @@ function conjugategradient(fun!, b::Vector{T};
 
     GC.enable(true)
 
-    return x,success,kfinal
+    return x, success, kfinal
 
 end
 
-# Copyright (C) 2004,2017  Alexander Barth 		<a.barth@ulg.ac.be>
-#                          Jean-Marie Beckers		<jm.beckers@ulg.ac.be>
+# Copyright (C) 2004,2017  Alexander Barth           <a.barth@ulg.ac.be>
+#                          Jean-Marie Beckers          <jm.beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

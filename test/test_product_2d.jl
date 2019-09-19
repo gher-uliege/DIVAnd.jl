@@ -9,14 +9,27 @@ varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
 
-bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
-                    "Global","Bathymetry","gebco_30sec_16.nc")
+bathname = joinpath(
+    dirname(@__FILE__),
+    "..",
+    "..",
+    "DIVAnd-example-data",
+    "Global",
+    "Bathymetry",
+    "gebco_30sec_16.nc",
+)
 bathisglobal = true
 
-obsname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
-                    "Provencal","WOD-Salinity.nc")
+obsname = joinpath(
+    dirname(@__FILE__),
+    "..",
+    "..",
+    "DIVAnd-example-data",
+    "Provencal",
+    "WOD-Salinity.nc",
+)
 
-cdilist = joinpath(dirname(@__FILE__),"..","data","CDI-list-export.csv")
+cdilist = joinpath(dirname(@__FILE__), "..", "data", "CDI-list-export.csv")
 
 
 if !isfile(bathname)
@@ -29,9 +42,13 @@ if !isfile(obsname)
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
-obsname = joinpath(dirname(@__FILE__),"..","data","sample-file.nc")
+obsname = joinpath(dirname(@__FILE__), "..", "data", "sample-file.nc")
 
-obsvalue,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.loadobs(Float64,obsname,"Salinity")
+obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
+    Float64,
+    obsname,
+    "Salinity",
+)
 
 sel = obsdepth .< 10
 
@@ -41,10 +58,10 @@ latr = 42.0:dy:44.0
 epsilon2 = 0.01
 
 
-sz = (length(lonr),length(latr))
+sz = (length(lonr), length(latr))
 
-lenx = fill(200_000,sz)
-leny = fill(200_000,sz)
+lenx = fill(200_000, sz)
+leny = fill(200_000, sz)
 
 years = 1993:1993
 
@@ -55,15 +72,10 @@ year_window = 10
 # summer: July-September   7,8,9
 # autumn: October-December 10,11,12
 
-monthlists = [
-    [1,2,3],
-    [4,5,6],
-    [7,8,9],
-    [10,11,12]
-];
+monthlists = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
 
 
-TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
+TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 varname = "Salinity"
 
@@ -129,17 +141,19 @@ metadata = OrderedDict(
     "acknowledgment" => "...",
 
     # Digital Object Identifier of the data product
-    "doi" => "...")
+    "doi" => "...",
+)
 
 
-@test_logs (:info,r".*") match_mode=:any DIVAnd.diva3d(
-    (lonr,latr,TS),
-    (obslon[sel],obslat[sel],obstime[sel]),
+@test_logs (:info, r".*") match_mode = :any DIVAnd.diva3d(
+    (lonr, latr, TS),
+    (obslon[sel], obslat[sel], obstime[sel]),
     obsvalue[sel],
-    (lenx,leny),
+    (lenx, leny),
     epsilon2,
-    filename,varname,
+    filename,
+    varname,
     bathname = bathname,
     bathisglobal = bathisglobal,
-    background_len = (lenx,leny),
+    background_len = (lenx, leny),
 )

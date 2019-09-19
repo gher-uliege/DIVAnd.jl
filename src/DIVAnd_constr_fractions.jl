@@ -5,9 +5,9 @@ Creates integral constraints so that fractions sum up to zero. It is assumed tha
 
 Input:
   s: structure
-  
-  epsfraction: error variance on constraint. 
-  
+
+  epsfraction: error variance on constraint.
+
 
 
 Output:
@@ -15,42 +15,42 @@ Output:
     covariance matrix), H (extraction operator) and yo (specified value for
     the constrain).
 """
-function DIVAnd_constr_fractions(s,epsfractions)
-
-   
-
-   
-    
-
-    sz = size(s.mask);
-	
-	nwithoutfractions=Int(floor((s.sv.n)/sz[end]))
-	
-	if mod(s.sv.n,sz[end])>0
-	
-	 warn("Problem in constraint for fractions, mask does seem to vary for the different fractions")
-	
-	end
-	 
+function DIVAnd_constr_fractions(s, epsfractions)
 
 
 
 
-     A = spzeros(nwithoutfractions,s.sv.n)
-	 l = size(A,1);
-	 #yo = ones(Float64,l)
-	 yo = zeros(Float64,l)
-	 R = Diagonal(epsfractions.*ones(l))
 
 
-     for i=1:nwithoutfractions
-	   for j=1:sz[end]
-	   A[i,i+(j-1)*nwithoutfractions]=1.0
-	   end
-	 end
-	   
+    sz = size(s.mask)
 
-    return DIVAnd_constrain(yo,R,A)
+    nwithoutfractions = Int(floor((s.sv.n) / sz[end]))
+
+    if mod(s.sv.n, sz[end]) > 0
+
+        warn("Problem in constraint for fractions, mask does seem to vary for the different fractions")
+
+    end
+
+
+
+
+
+    A = spzeros(nwithoutfractions, s.sv.n)
+    l = size(A, 1)
+      #yo = ones(Float64,l)
+    yo = zeros(Float64, l)
+    R = Diagonal(epsfractions .* ones(l))
+
+
+    for i = 1:nwithoutfractions
+        for j = 1:sz[end]
+            A[i, i+(j-1)*nwithoutfractions] = 1.0
+        end
+    end
+
+
+    return DIVAnd_constrain(yo, R, A)
 
 end
 

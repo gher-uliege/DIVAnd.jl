@@ -18,16 +18,16 @@ Output:
 
 Note: make sure not to mix Float32 and Float64 for DIVAnd_constrain.
 """
-function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
+function DIVAnd_obs(s, xi, x, yo::Vector{T}, R, I = zeros(T, 0, 0)) where {T}
     mask = s.mask
     iscyclic = s.iscyclic
     moddim = s.moddim
 
     if isempty(I)
-        I = localize_separable_grid(x,mask,xi) :: Matrix{T}
+        I = localize_separable_grid(x, mask, xi)::Matrix{T}
     end
 
-    H,out,outbbox = sparse_interp(mask,I,iscyclic)
+    H, out, outbbox = sparse_interp(mask, I, iscyclic)
 
     nout = sum(out)
     if nout != 0
@@ -49,7 +49,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
 
     s.obsout = out
 
-    if isa(R,Diagonal)
+    if isa(R, Diagonal)
         diagR = Float64.(diag(R))
         diagR[out] .= Inf
         R = Diagonal(diagR)
@@ -57,7 +57,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
         error("all observation must be inside the domain for non-diagonal error observation covariance matrix")
     end
 
-    constrain = DIVAnd_constrain(yo,R,H)
+    constrain = DIVAnd_constrain(yo, R, H)
 
     s.obsconstrain = constrain
 
