@@ -3,7 +3,7 @@ uuid = "efc8151c-67de-5a8f-9a35-d8f54746ae9d"
 keywords = ["interpolation","data analysis","spatial data analysis","oceanography"]
 desc = "DIVAnd performs an n-dimensional variational analysis of arbitrarily located observations"
 license = "GPL2+"
-version = "2.4.0"
+version = "2.5.0"
 
 [deps]
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
