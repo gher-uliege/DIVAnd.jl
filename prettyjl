@@ -1,0 +1,3 @@
+# execute from root of project, e.g. $HOME/Julia/DIVAnd.jl
+perl -pi -e  's/\t/     /g' src/*jl test/*jl
+julia --eval 'using JuliaFormatter; format(["src","test"])'
