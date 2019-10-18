@@ -31,7 +31,7 @@ const PROJECTS = Dict(
     ),
 )
 
-const OriginatorEDMO_URL = "http://emodnet-chemistry.maris2.nl/download/export.zip"
+const OriginatorEDMO_URL = "https://emodnet-chemistry.maris.nl/download/export.zip"
 
 
 const layersep = "*"
@@ -187,7 +187,7 @@ function getedmoinfo(edmo_code, role)
 
     contact = Dict{String,String}(
         "EDMO_CODE" => string(edmo_code),
-        "EDMO_URL" => "http://seadatanet.maris2.nl/v_edmo/print.asp?n_code=$(edmo_code)",
+        "EDMO_URL" => "https://cdi.seadatanet.org/report/$(edmo_code)",
         "name" => DIVAnd.Vocab.name(entry),
         "phone" => DIVAnd.Vocab.phone(entry),
         "fax" => DIVAnd.Vocab.fax(entry),
@@ -1063,12 +1063,7 @@ This works only in IJulia.
 """
 function SDNObsMetadata(id)
     edmo, local_CDI_ID = split(id, '-')
-    url = "http://seadatanet.maris2.nl/v_cdi_v3/print_wfs.asp" *
-          string(HTTP.URI(;
-        query = OrderedDict("popup" => "yes", "edmo" => edmo, "identifier" => local_CDI_ID)))
-
-    # work-around bug in HTTP
-    url = replace(url, "/print_wfs.asp:?" => "/print_wfs.asp?")
+    url = "https://cdi.seadatanet.org/report/edmo/$(edmo)/$(local_CDI_ID)"
 
     display(
         "text/html",
