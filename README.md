@@ -40,11 +40,6 @@ using Pkg
 Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
 ```
 
-For Julia 0.6, you can use the following:
-```julia
-Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl") # only for Julia 0.6
-```
-
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
 
 
