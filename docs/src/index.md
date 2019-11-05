@@ -608,22 +608,6 @@ You can check the current working directory with:
 pwd()
 ```
 
-### METADATA cannot be updated in Julia 0.6
-
-`Pkg.update` fails with the error message `METADATA cannot be updated`.
-
-If you have git installed, you can issue the command:
-
-```bash
-cd ~/.julia/v0.6/METADATA
-git reset --hard
-```
-
-and then in Julia run `Pkg.update()` again.
-
-If this does not work, then, you can also delete `~/.julia` (<https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521>) and in Julia enter `Pkg.init(); Pkg.update()`.
-
-
 ### Convert error in `DIVAnd_obs`
 
 The full error message:
