@@ -143,7 +143,7 @@ Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulg/D
 
 ## Note about the error fields
 
-`DIVAnd` allows the calculation of the analysis error variance, scaled by the background error variance. Though it can be calculated "exactly" using the diagonal of the error covariance matrix s.P, it is too costly and approximations are provided. Two version are recommended, `DIVAnd_cpme` for a quick estimate and `DIVAnd_aexerr` for a version closer the theoretical estimate (see [Beckers et al]  (doi:10.1175/JTECH-D-13-00130.1))
+`DIVAnd` allows the calculation of the analysis error variance, scaled by the background error variance. Though it can be calculated "exactly" using the diagonal of the error covariance matrix s.P, it is too costly and approximations are provided. Two version are recommended, `DIVAnd_cpme` for a quick estimate and `DIVAnd_aexerr` for a version closer the theoretical estimate (see [Beckers et al](doi:10.1175/JTECH-D-13-00130.1) )
 
 ## Advanced usage
 
