@@ -2,21 +2,17 @@
 # with observations from an analytical function.
 
 import DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 #using PyPlot
 
 # final grid
-gridsize = (101,101)
+gridsize = (101, 101)
 #gridsize = (101,101,101)
 
 n = length(gridsize)
 
 # observations
-xy = ntuple(i -> [0.5],n)
+xy = ntuple(i -> [0.5], n)
 f = [1.]
 
 
@@ -25,14 +21,14 @@ f = [1.]
 # pm is the inverse of the resolution along the 1st dimension,...
 
 
-mask,pmn,xyi = DIVAnd.DIVAnd_rectdom([range(0,stop=1,length=s) for s in gridsize]...)
+mask, pmn, xyi = DIVAnd.DIVAnd_rectdom([range(0, stop = 1, length = s) for s in gridsize]...)
 
 
 sv = DIVAnd.statevector((mask,))
 
 # correlation length
 #lenxy = ntuple(i -> 1.,n)
-lenxy = ntuple(i -> .1,n)
+lenxy = ntuple(i -> .1, n)
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
@@ -44,9 +40,9 @@ tol = 1e-5
 
 
 
-xa,s = DIVAnd.varanalysis(mask,pmn,xyi,xy,f,lenxy,epsilon2; tol = tol)
+xa, s = DIVAnd.varanalysis(mask, pmn, xyi, xy, f, lenxy, epsilon2; tol = tol)
 
-@test maximum(xa) ≈ 0.5 atol=1e-3
+@test maximum(xa) ≈ 0.5 atol = 1e-3
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers <JM.Beckers@ulg.ac.be>

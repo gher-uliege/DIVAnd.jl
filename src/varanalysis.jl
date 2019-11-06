@@ -1,10 +1,10 @@
 
-function diffusion!(ivol,nus,α,nmax,x0,x)
+function diffusion!(ivol, nus, α, nmax, x0, x)
     work1 = similar(x)
     x[:] = x0
 
     for niter = 1:nmax
-        DIVAnd_laplacian_apply!(ivol,nus,x,work1)
+        DIVAnd_laplacian_apply!(ivol, nus, x, work1)
         x[:] = x + α * work1
     end
 
@@ -21,7 +21,18 @@ SB = √(β) (1 + α L)^(nmax / 2) W^{-1}
 where W is the volumne of the corresponding grid cell.
 The background error covariance matrix B is SB W SB
 """
-function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) where T
+function decompB!(
+    sv,
+    β,
+    ivol,
+    nus,
+    nmax,
+    α,
+    x::Array{T,1},
+    work1,
+    work2,
+    decompBx,
+) where {T}
     # does not work is some points are masked
     # for i in eachindex(work2)
     #     if sv.mask[1][i]
@@ -35,17 +46,17 @@ function decompB!(sv,β,ivol,nus,nmax,α,x::Array{T,1},work1,work2,decompBx) whe
     work2[sv.mask[1]] = x
     work2[:] = work2[:] .* ivol[:]
 
-    for niter = 1:(nmax ÷ 2)
-        DIVAnd_laplacian_apply!(ivol,nus,work2,work1)
+    for niter = 1:(nmax÷2)
+        DIVAnd_laplacian_apply!(ivol, nus, work2, work1)
         #work2 += α * work1
-        BLAS.axpy!(α,work1,work2)
+        BLAS.axpy!(α, work1, work2)
     end
 
     for i in eachindex(work2)
         work2[i] = β * work2[i]
     end
 
-    decompBx[:] = pack(sv,(work2,))
+    decompBx[:] = pack(sv, (work2,))
 end
 
 #function A_ldiv_B!(
@@ -79,26 +90,33 @@ G(x,x',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x')ᵀ D⁻¹ (x -x')ᵀ / (
 http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 
 """
-function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
-                     f::AbstractVector{T},len,epsilon2;
-                     tol::T = 1e-5,
-                     maxit::Int = 100000,
-                     progress = (iter,x,r,tol2,fun!,b) -> nothing,
-                     kwargs...) where N where T
+function varanalysis(
+    mask::AbstractArray{Bool,N},
+    pmn,
+    xi,
+    x,
+    f::AbstractVector{T},
+    len,
+    epsilon2;
+    tol::T = 1e-5,
+    maxit::Int = 100000,
+    progress = (iter, x, r, tol2, fun!, b) -> nothing,
+    kwargs...,
+) where {N} where {T}
 
     # all keyword agruments as a dictionary
     kw = Dict(kwargs)
 
     n = ndims(mask)
 
-    len = len_harmonize(len,mask)
+    len = len_harmonize(len, mask)
 
-    R = DIVAnd.DIVAnd_obscovar(epsilon2,length(f));
+    R = DIVAnd.DIVAnd_obscovar(epsilon2, length(f))
 
     s = DIVAnd.DIVAnd_struct(mask)
 
     # observation constrain
-    constrain = DIVAnd.DIVAnd_obs(s,xi,x,f,R)
+    constrain = DIVAnd.DIVAnd_obs(s, xi, x, f, R)
     yo = constrain.yo
     H = constrain.H
 
@@ -116,13 +134,13 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     # ok
 
     #@show [maximum(pmn[i].^2 .* nu[i]) for i in 1:n]
-    α0 = 1/(2 * sum([maximum(pmn[i].^2 .* nu[i]) for i in 1:n])) :: T
+    α0 = 1 / (2 * sum([maximum(pmn[i].^2 .* nu[i]) for i = 1:n]))::T
 
     # 10% safety margin
     α = α0 / 1.1
 
     # number of iterations 1/(2*α) (round to the closest be even number)
-    nmax = 2*round(Int,1/(4*α))
+    nmax = 2 * round(Int, 1 / (4 * α))
     #@show nmax
 
     # Green's functions
@@ -148,7 +166,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     # W is the norm
     # xᵀ W y correspond to the integral ∫ f g dx
 
-    ivol,nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
+    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(mask, pmn, nu)
 
     vol = 1.0 ./ ivol
 
@@ -157,7 +175,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     #W = Diagonal(vol)
 
     #@show Ld
-    β = ((4π * α * nmax)^(n/4) * sqrt(prod(Ld)))
+    β = ((4π * α * nmax)^(n / 4) * sqrt(prod(Ld)))
 
     #H = H * Diagonal(sqrt.(ivol[mask]))
 
@@ -171,39 +189,31 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
     b = zeros(s.sv.n)
 
     # x + W^½ * SB^½ * H' * (R \ (H * SB^½ * W^½ * x ))
-    function fun!(x,fx)
+    function fun!(x, fx)
         # tmpx = SB^½ W^½ x
-        decompB!(s.sv,β,ivol,nus,nmax,α,sW * x,work1,work2,tmpx)
+        decompB!(s.sv, β, ivol, nus, nmax, α, sW * x, work1, work2, tmpx)
 
         # Htmpx = H * SB^½ W^½ x
-        mul!(Htmpx,H,tmpx)
+        mul!(Htmpx, H, tmpx)
 
-        @static if VERSION >= v"0.7.0-beta.0"
-             # Htmpx = R \ (H * SB^½ W^½ x)
-             ldiv!(R,Htmpx)
+        # Htmpx = R \ (H * SB^½ W^½ x)
+        ldiv!(R, Htmpx)
 
-            # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
-            mul!(HRHtmpx,H',Htmpx)
-        else
-            # Htmpx = R \ (H * SB^½ W^½ x)
-            A_ldiv_B!(R,Htmpx)
-
-            # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
-            At_mul_B!(HRHtmpx,H,Htmpx)
-        end
+        # HRHtmpx = H' * (R \ (H * SB^½ W^½ x))
+        mul!(HRHtmpx, H', Htmpx)
 
         # tmpx = SB^½ * H' * (R \ (H * SB^½ W^½ x ))
-        decompB!(s.sv,β,ivol,nus,nmax,α,HRHtmpx,work1,work2,tmpx)
+        decompB!(s.sv, β, ivol, nus, nmax, α, HRHtmpx, work1, work2, tmpx)
 
         # fx = x + W^½ SB^½ * H' * (R \ (H * SB^½ x ))
-        mul!(fx,sW,tmpx)
-        for i in 1:length(fx)
+        mul!(fx, sW, tmpx)
+        for i = 1:length(fx)
             fx[i] += x[i]
         end
     end
 
     # b = W^½ SB^{½} * H' * (R \ yo)
-    decompB!(s.sv,β,ivol,nus,nmax,α,(H' * (R \ yo)),work1,work2,b)
+    decompB!(s.sv, β, ivol, nus, nmax, α, (H' * (R \ yo)), work1, work2, b)
     b = sW * b
 
     #@code_warntype decompB(n,s.sv,β,ivol,nus,nmax,α,H' * (R \ yo),work1,work2)
@@ -215,12 +225,16 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
 
     #@show DIVAnd.checksym(s.sv.n,fun!)
 
-    xp,success,s.niter = DIVAnd.conjugategradient(
-        fun!,b; tol = tol, maxit = maxit,
-        progress = progress);
+    xp, success, s.niter = DIVAnd.conjugategradient(
+        fun!,
+        b;
+        tol = tol,
+        maxit = maxit,
+        progress = progress,
+    )
 
     # tmpx = SB^½ * W^½ * xp
-    decompB!(s.sv,β,ivol,nus,nmax,α,sW * xp,work1,work2,tmpx)
+    decompB!(s.sv, β, ivol, nus, nmax, α, sW * xp, work1, work2, tmpx)
 
     #@show mean(β),nmax,α
 
@@ -230,7 +244,7 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
         #@show mean(β),nmax,α
 
         decompBx = similar(x)
-        DIVAnd.decompB!(s.sv,β,ivol,nus,nmax,α,x,work1,work2,decompBx)
+        DIVAnd.decompB!(s.sv, β, ivol, nus, nmax, α, x, work1, work2, decompBx)
 
 #        decompBx2 = (sW)^2 *  decompBx
 #        DIVAnd.decompB!(s.sv,β,ivol,nus,nmax,α,decompBx2,work1,work2,decompBx)
@@ -238,8 +252,17 @@ function varanalysis(mask::AbstractArray{Bool,N},pmn,xi,x,
         return decompBx
     end
 
-    info = Dict(:B => x -> decompB((sW)^2 * decompB(x)),:H => H, :R => R, :yo => yo,
-                :mask => mask, :ivol => ivol, :nus => nus, :β => β,
-                :α => α, :nmax => nmax)
-    return unpack(s.sv, tmpx,NaN)[1],s,info
+    info = Dict(
+        :B => x -> decompB((sW)^2 * decompB(x)),
+        :H => H,
+        :R => R,
+        :yo => yo,
+        :mask => mask,
+        :ivol => ivol,
+        :nus => nus,
+        :β => β,
+        :α => α,
+        :nmax => nmax,
+    )
+    return unpack(s.sv, tmpx, NaN)[1], s, info
 end

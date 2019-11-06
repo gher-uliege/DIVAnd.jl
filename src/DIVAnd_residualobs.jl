@@ -1,11 +1,14 @@
 """
-Computes the residual yo- H xa  only at real data points using the analysis on the grid fi and the solution structure s
+    dataresidual = DIVAnd_residualobs(s,fi);
 
-dataresidual = DIVAnd_residualobs(s,fi);
-
+Computes the residual yo - H xa  only at real data points using the analysis.
+on the grid `fi` and the solution structure `s`.
 """
-function DIVAnd_residualobs(s,fi)
-    return s.obsconstrain.yo-(s.obsconstrain.H)*statevector_pack(s.sv,(fi,))
+function DIVAnd_residualobs(s, fi)
+    residual = zeros(length(s.obsconstrain.yo))
+    residual .= s.obsconstrain.yo - (s.obsconstrain.H) * statevector_pack(s.sv, (fi,))
+    residual[s.obsout] .= NaN
+    return residual
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>

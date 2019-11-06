@@ -1,114 +1,150 @@
 
-function DIVAndrun(operatortype,mask::BitArray{N},pmnin,xiin,x,f::Vector{T},lin,epsilon2;
-                   velocity = (),
-                   primal::Bool = true,
-                   factorize = true,
-                   tol = 1e-6,
-                   maxit = 100,
-                   minit = 0,
-                   constraints = (),
-                   inversion = :chol,
-                   moddim = [],
-                   fracindex = Matrix{T}(undef,0,0),
-                   alpha = [],
-                   keepLanczosVectors = 0,
-                   compPC = DIVAnd_pc_none,
-                   progress = (iter,x,r,tol2,fun,b) -> nothing,
-                   fi0 = zeros(size(mask)),
-                   f0 = zeros(size(f)),
-                   alphabc = 1.0,
-                   scale_len = true,
-                   btrunc=[],
-				   MEMTOFIT=16.,
-				   topographyforfluxes = (),
-				   fluxes = (),
-				   epsfluxes = 0,
-				   epsilon2forfractions=0,
-				   RTIMESONESCALES=(),
-				   QCMETHOD=()
-                   ) where {N,T}
+function DIVAndrun(
+    operatortype,
+    mask::BitArray{N},
+    pmnin,
+    xiin,
+    x,
+    f::Vector{T},
+    lin,
+    epsilon2;
+    velocity = (),
+    primal::Bool = true,
+    factorize = true,
+    tol = 1e-6,
+    maxit = 100,
+    minit = 0,
+    constraints = (),
+    inversion = :chol,
+    moddim = [],
+    fracindex = Matrix{T}(undef, 0, 0),
+    alpha = [],
+    keepLanczosVectors = 0,
+    compPC = DIVAnd_pc_none,
+    progress = (iter, x, r, tol2, fun, b) -> nothing,
+    fi0 = zeros(size(mask)),
+    f0 = zeros(size(f)),
+    alphabc = 1.0,
+    scale_len = true,
+    btrunc = [],
+    MEMTOFIT = 16.,
+    topographyforfluxes = (),
+    fluxes = (),
+    epsfluxes = 0,
+    epsilon2forfractions = 0,
+    RTIMESONESCALES = (),
+    QCMETHOD = (),
+    coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
+    coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
+) where {N,T}
 
     # check pmn .* len > 4
     #checkresolution(mask,pmnin,lin)
 
-    pmn,xi,len = DIVAnd_bc_stretch(mask,pmnin,xiin,lin,moddim,alphabc)
+    pmn, xi, len = DIVAnd_bc_stretch(mask, pmnin, xiin, lin, moddim, alphabc)
+
 
 
     # observation error covariance (scaled)
     # Note: iB is scaled such that diag(inv(iB)) is 1 far from the
     # boundary
     # For testing this version of alphabc deactivate the other one
-    s = DIVAnd_background(operatortype,mask,pmn,len,alpha,moddim,scale_len,[]; btrunc=btrunc);
+    s = DIVAnd_background(
+        operatortype,
+        mask,
+        pmn,
+        len,
+        alpha,
+        moddim,
+        scale_len,
+        [];
+        btrunc = btrunc,
+        coeff_laplacian = coeff_laplacian,
+        coeff_derivative2 = coeff_derivative2,
+    )
 
     # check inputs
     if !any(mask[:])
-        @warn "No sea points in mask, will return NaN";
-        return fill(NaN,size(mask)),s
+        @warn "No sea points in mask, will return NaN"
+        return fill(NaN, size(mask)), s
     end
 
-    s.betap = 0;
-    s.primal = primal;
-    s.factorize = factorize;
-    s.tol = tol;
-    s.maxit = maxit;
-    s.minit = minit;
-    s.inversion = inversion;
-    s.keepLanczosVectors = keepLanczosVectors;
-    s.compPC = compPC;
+    s.betap = 0
+    s.primal = primal
+    s.factorize = factorize
+    s.tol = tol
+    s.maxit = maxit
+    s.minit = minit
+    s.inversion = inversion
+    s.keepLanczosVectors = keepLanczosVectors
+    s.compPC = compPC
     s.progress = progress
 
     #@info "Creating observation error covariance matrix"
-    R = DIVAnd_obscovar(epsilon2,length(f));
+    R = DIVAnd_obscovar(epsilon2, length(f))
 
     # add observation constrain to cost function
     #@info "Adding observation constraint to cost function"
-    obscon = DIVAnd_obs(s,xi,x,f,R,fracindex)
+    obscon = DIVAnd_obs(s, xi, x, f, R, fracindex)
 
-    s = DIVAnd_addc(s,obscon);
+    s = DIVAnd_addc(s, obscon)
 
     # add advection constraint to cost function
     if !isempty(velocity)
         #@info "Adding advection constraint to cost function"
-        velcon = DIVAnd_constr_advec(s,velocity)
-        s = DIVAnd_addc(s,velcon);
-	end
+        velcon = DIVAnd_constr_advec(s, velocity)
+        s = DIVAnd_addc(s, velcon)
+    end
 
-	if !isempty(topographyforfluxes)
+    if !isempty(topographyforfluxes)
         #@info "Adding integral constraints"
-        fluxcon = DIVAnd_constr_fluxes(s,topographyforfluxes,fluxes,epsfluxes,pmnin)
-		s = DIVAnd_addc(s,fluxcon);
+        fluxcon = DIVAnd_constr_fluxes(s, topographyforfluxes, fluxes, epsfluxes, pmnin)
+        s = DIVAnd_addc(s, fluxcon)
     end
 
-	if epsilon2forfractions>0
+    if epsilon2forfractions > 0
         #@info "Adding constraints on fractions"
-        fluxcon = DIVAnd_constr_fractions(s,epsilon2forfractions)
-		s = DIVAnd_addc(s,fluxcon);
+        fluxcon = DIVAnd_constr_fractions(s, epsilon2forfractions)
+        s = DIVAnd_addc(s, fluxcon)
     end
-	
+
     # add all additional constrains
-    for i=1:length(constraints)
+    for i = 1:length(constraints)
         #@info "Adding additional constrain - $(i)"
-        s = DIVAnd_addc(s,constraints[i]);
+        s = DIVAnd_addc(s, constraints[i])
     end
 
     # factorize a posteriori error covariance matrix
     # or compute preconditioner
     #@info "Factorizing a posteriori error covariance matrix"
-    DIVAnd_factorize!(s);
+    DIVAnd_factorize!(s)
 
     # @info "Solving..."
-    fi0_pack = statevector_pack(s.sv,(fi0,))[:,1]
+    fi0_pack = statevector_pack(s.sv, (fi0,))[:, 1]
 
     #@code_warntype DIVAnd_solve!(s,fi0_pack,f0)
-    fi = DIVAnd_solve!(s,fi0_pack,f0;btrunc=btrunc) :: Array{T,N}
+    fi = DIVAnd_solve!(s, fi0_pack, f0; btrunc = btrunc)::Array{T,N}
 
     # @info "Done solving"
-    return fi,s
+
+    # iii = findfirst(x[1] .== 12.43212345678)
+
+    # if iii !== nothing
+    #     if f[iii] !== 1.0
+    #         @show iii
+    #         @show f[iii]
+    #         @show obscon.H[iii,:]
+    #         @show (obscon.H* pack(s.sv,(fi,)))[iii]
+    #         JLD2.@save "/tmp/test_fi.jld2" fi
+    #     end
+    # end
+
+    return fi, s
 end
 
 
-function DIVAndrun(mask::Array{Bool,N},args...; kwargs...) where N
-    return DIVAndrun(convert(BitArray{N},mask),args...; kwargs...)
+function DIVAndrun(mask::Array{Bool,N}, args...; kwargs...) where {N}
+    return DIVAndrun(convert(BitArray{N}, mask), args...; kwargs...)
 end
 
 
@@ -209,18 +245,19 @@ For oceanographic application, this is the land-sea mask where sea is true and l
     than in 2D. The kernel behaves thus similar to
     the default kernel in two dimensions (alpha = [1,2,1]).
 
-* `alphabc` : numerical value defining how the last grid points are stretched outward.
+* `alphabc`: numerical value defining how the last grid points are stretched outward.
    If `alphabc` is 1, the default value mimics an infinite domain.
    To have previous behaviour of finite domain use alphabc equal to `0`.
 
-* `btrunc` : if provided defines where to truncate the calculation of the
+* `btrunc`: if provided defines where to truncate the calculation of the
     covariance matrix B. Only values up and including alpha[btrunc] will be
     calculated. If the iterative solution is calculated, the missing terms will
-    be calculated on the fly during the conjugate gradient calulcations. Default value is none and full covariance calculation.
+    be calculated on the fly during the conjugate gradient calculations.
+     Default value is none and full covariance calculation.
 
 # Output:
 *  `fi`: the analysed field
-*  `s`: structure with an array `s.P` representing the analysed error covariance
+*  `s`: a structure with an array `s.P` representing the analysed error covariance
 
 # Note:
   If zero is not a valid first guess for your variable (as it is the case for
@@ -233,10 +270,19 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 # References
 [1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
 """
-function DIVAndrun(mask::BitArray,pmnin,xiin,x,f::Vector{T},lin,epsilon2;
-                   operatortype = Val{:sparse}, kwargs...) where T
+function DIVAndrun(
+    mask::BitArray,
+    pmnin,
+    xiin,
+    x,
+    f::Vector{T},
+    lin,
+    epsilon2;
+    operatortype = Val{:sparse},
+    kwargs...,
+) where {T}
 
-    return DIVAndrun(operatortype,mask,pmnin,xiin,x,f,lin,epsilon2; kwargs...)
+    return DIVAndrun(operatortype, mask, pmnin, xiin, x, f, lin, epsilon2; kwargs...)
 end
 
 

@@ -1,0 +1,6 @@
+# execute from root of project, e.g. $HOME/Julia/DIVAnd.jl
+# remove trailing space
+find . -name "*jl" -exec sed -i 's/[ \t]*$//'  {} \;
+# expand tab by space
+perl -pi -e  's/\t/     /g' src/*jl test/*jl
+julia --eval 'using JuliaFormatter; format(["src","test"])'

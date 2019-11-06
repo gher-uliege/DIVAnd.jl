@@ -1,18 +1,27 @@
+# nofmt
+
+# disable formatting: https://github.com/domluna/JuliaFormatter.jl/issues/72
+
+
 """
 
     bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D = DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method;...);
+
+Performs a cross validation to estimate the analysis parameters
+(correlation length and signal-to-noise ratio).
 
 # Input
 
 Same as for `DIVAndrun` with three more parameters `nl`,`ne` and `method`
 
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
        element represents the scale factor of the corresponding dimension. Its
        inverse is the local resolution of the grid in a particular dimension.
 
-*  `xi`: tuple with n elements. Every element represents a coordinate
+* `xi`: tuple with n elements. Every element represents a coordinate
   of the final grid on which the observations are interpolated
 
 * `x`: tuple with n elements. Every element represents a coordinate of
@@ -125,10 +134,11 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 
             fi,s =  DIVAndrun(mask,pmn,xi,x,f,len.*factorsl[i],epsilon2.*factorse[j]; otherargs...);
-            residual=DIVAnd_residualobs(s,fi);
-            nrealdata=sum(1 .- s.obsout);
-            d0d=dot((1 .- s.obsout).*(s.yo),(s.yo));
-            d0dmd1d=dot((1 .- s.obsout).*residual,(s.yo));
+            residual = DIVAnd_residualobs(s,fi);
+            obsin = .!s.obsout
+            nrealdata = sum(obsin)
+            d0d = s.yo[obsin] ⋅ s.yo[obsin]
+            d0dmd1d = s.yo[obsin] ⋅ residual[obsin]
 
             # Determine which method to use
 
@@ -177,19 +187,11 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
                 lonsea=length(onsea)
                 #   @warn "So",lonsea
                 # if optimisation is to be used, make sure to use the same reference random points
-                if VERSION >= v"0.7.0-beta.0"
-                    Random.seed!(nrealdata)
-                else
-                    srand(nrealdata)
-                end
+                Random.seed!(nrealdata)
 
                 # otherwise you add noise to the cv field
                 indexlist1=unique(collect(rand(1:lonsea,50*samplesforHK)))[1:samplesforHK]
-                if VERSION >= v"0.7.0-beta.0"
-                    Random.seed!()
-                else
-                    srand()
-                end
+                Random.seed!()
 
                 indexlist=onsea[indexlist1];
                 #   indexlist=collect(1:lonsea);
@@ -322,7 +324,7 @@ return bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2
 
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

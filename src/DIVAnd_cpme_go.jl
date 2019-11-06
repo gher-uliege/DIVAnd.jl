@@ -8,11 +8,11 @@
 # Input:
 *  Same arguments as DIVAndrun with in addition
 *  `MEMTOFIT=`: keyword controlling how to cut the domain depending on the memory remaining available for inversion (not total memory)
-*  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details 
+*  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details
 
 
 # Output:
-*  `erri`: relative error field using the clever poor man's error approach. Result on the same grid as fi. `
+*  `erri`: relative error field using the clever poor man's error approach. Result on the same grid as fi.
 
 
 
@@ -20,33 +20,43 @@
 
 
 """
-function DIVAnd_cpme_go(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...)
+function DIVAnd_cpme_go(mask, pmn, xi, x, f, Labs, epsilon2; otherargs...)
 
 
-    
-    errorscale=1;
+
+    errorscale = 1
 
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
     # Could be a small improvement. Also used in DIVAnd_aexerr
 
 
-    if isa(Labs,Tuple)
-        len=([x./1.70766 for x in Labs]...,);
+    if isa(Labs, Tuple)
+        len = ([x ./ 1.70766 for x in Labs]...,)
     else
-        len=Labs./1.70766
+        len = Labs ./ 1.70766
     end
 
 
-    
-        cpme,bidon,zut =  DIVAndgo(mask,pmn,xi,x,ones(size(f)),len,epsilon2,:none; otherargs...);
-		@show size(cpme),size(bidon),size(zut)
-        cpme=errorscale .* max.(-cpme.+1,0)
+
+    cpme, bidon, zut = DIVAndgo(
+        mask,
+        pmn,
+        xi,
+        x,
+        ones(size(f)),
+        len,
+        epsilon2,
+        :none;
+        otherargs...,
+    )
+    @show size(cpme), size(bidon), size(zut)
+    cpme = errorscale .* max.(-cpme .+ 1, 0)
 
     return cpme
 
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

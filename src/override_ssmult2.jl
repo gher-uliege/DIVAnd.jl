@@ -9,21 +9,25 @@ function myspmatmul_nnz(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}) wh
 
     mA, nA = size(A)
     mB, nB = size(B)
-    nA==mB || throw(DimensionMismatch())
+    nA == mB || throw(DimensionMismatch())
 
-    colptrA = A.colptr; rowvalA = A.rowval; nzvalA = A.nzval
-    colptrB = B.colptr; rowvalB = B.rowval; nzvalB = B.nzval
+    colptrA = A.colptr
+    rowvalA = A.rowval
+    nzvalA = A.nzval
+    colptrB = B.colptr
+    rowvalB = B.rowval
+    nzvalB = B.nzval
 
     ip = 1::Ti
 
     @inbounds begin
         xb = zeros(Ti, mA)
-        for i in 1:nB
+        for i = 1:nB
 
-            for jp in colptrB[i]:(colptrB[i+1] - 1)
+            for jp = colptrB[i]:(colptrB[i+1]-1)
 
                 j = rowvalB[jp]
-                for kp in colptrA[j]:(colptrA[j+1] - 1)
+                for kp = colptrA[j]:(colptrA[j+1]-1)
                     k = rowvalA[kp]
                     if xb[k] != i
                         ip += 1
@@ -34,34 +38,42 @@ function myspmatmul_nnz(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}) wh
         end
     end
 
-    return ip-1
+    return ip - 1
 end
 
 
 
-function myspmatmul_unsorted(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}, nnzC::Ti) where {Tv,Ti}
+function myspmatmul_unsorted(
+    A::SparseMatrixCSC{Tv,Ti},
+    B::SparseMatrixCSC{Tv,Ti},
+    nnzC::Ti,
+) where {Tv,Ti}
 
     mA, nA = size(A)
     mB, nB = size(B)
-    nA==mB || throw(DimensionMismatch())
+    nA == mB || throw(DimensionMismatch())
 
-    colptrA = A.colptr; rowvalA = A.rowval; nzvalA = A.nzval
-    colptrB = B.colptr; rowvalB = B.rowval; nzvalB = B.nzval
+    colptrA = A.colptr
+    rowvalA = A.rowval
+    nzvalA = A.nzval
+    colptrB = B.colptr
+    rowvalB = B.rowval
+    nzvalB = B.nzval
 
-    colptrC = Array{Ti}(nB+1)
+    colptrC = Array{Ti}(nB + 1)
     rowvalC = Array{Ti}(nnzC)
     nzvalC = Array{Tv}(nnzC)
 
     @inbounds begin
         ip = 1
         xb = zeros(Ti, mA)
-        x  = zeros(Tv, mA)
-        for i in 1:nB
+        x = zeros(Tv, mA)
+        for i = 1:nB
             colptrC[i] = ip
-            for jp in colptrB[i]:(colptrB[i+1] - 1)
+            for jp = colptrB[i]:(colptrB[i+1]-1)
                 nzB = nzvalB[jp]
                 j = rowvalB[jp]
-                for kp in colptrA[j]:(colptrA[j+1] - 1)
+                for kp = colptrA[j]:(colptrA[j+1]-1)
                     nzC = nzvalA[kp] * nzB
                     k = rowvalA[kp]
                     if xb[k] != i
@@ -74,7 +86,7 @@ function myspmatmul_unsorted(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti
                     end
                 end
             end
-            for vp in colptrC[i]:(ip - 1)
+            for vp = colptrC[i]:(ip-1)
                 nzvalC[vp] = x[rowvalC[vp]]
             end
         end
@@ -87,54 +99,54 @@ end
 
 
 
-function Base.:*(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int})
+function Base.:*(A::SparseMatrixCSC{Float64,Int}, B::SparseMatrixCSC{Float64,Int})
 
-    nnzC = myspmatmul_nnz(A,B)
+    nnzC = myspmatmul_nnz(A, B)
     #@show nnz(A),nnz(B),nnzC
     if nnz(A) + nnz(B) < nnzC
         # compute A*B as (B'*A')'
-        # swap and transpose        
+        # swap and transpose
         #@show "swap"
-        return myspmatmul_unsorted(B',A',nnzC)'        
+        return myspmatmul_unsorted(B', A', nnzC)'
     else
-        Cunsorted = myspmatmul_unsorted(A,B,nnzC)
-        C = SparseArrays.sortSparseMatrixCSC!(Cunsorted, sortindices=:doubletranspose)
+        Cunsorted = myspmatmul_unsorted(A, B, nnzC)
+        C = SparseArrays.sortSparseMatrixCSC!(Cunsorted, sortindices = :doubletranspose)
         return C
     end
 end
 
 
-function Base.:A_mul_Bc(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int})
+function Base.:A_mul_Bc(A::SparseMatrixCSC{Float64,Int}, B::SparseMatrixCSC{Float64,Int})
 
     BT = B'
-    nnzC = myspmatmul_nnz(A,BT)
+    nnzC = myspmatmul_nnz(A, BT)
     #@show nnz(A),nnz(B),nnzC
     if nnz(A) + nnz(B) < nnzC
         # compute A*B' as (B*A')'
-        # swap and transpose        
+        # swap and transpose
         #@show "swap"
-        return myspmatmul_unsorted(B,A',nnzC)'        
+        return myspmatmul_unsorted(B, A', nnzC)'
     else
-        Cunsorted = myspmatmul_unsorted(A,BT,nnzC)
-        C = SparseArrays.sortSparseMatrixCSC!(Cunsorted, sortindices=:doubletranspose)
+        Cunsorted = myspmatmul_unsorted(A, BT, nnzC)
+        C = SparseArrays.sortSparseMatrixCSC!(Cunsorted, sortindices = :doubletranspose)
         return C
     end
 end
 
 
-function Base.:Ac_mul_B(A::SparseMatrixCSC{Float64,Int},B::SparseMatrixCSC{Float64,Int})
+function Base.:Ac_mul_B(A::SparseMatrixCSC{Float64,Int}, B::SparseMatrixCSC{Float64,Int})
 
     AT = A'
-    nnzC = myspmatmul_nnz(AT,B)
+    nnzC = myspmatmul_nnz(AT, B)
     #@show nnz(A),nnz(B),nnzC
     if nnz(A) + nnz(B) < nnzC
         # compute A'*B as (B'*A)'
-        # swap and transpose        
+        # swap and transpose
         #@show "swap"
-        return myspmatmul_unsorted(B',A,nnzC)'        
+        return myspmatmul_unsorted(B', A, nnzC)'
     else
-        Cunsorted = myspmatmul_unsorted(AT,B,nnzC)
-        C = SparseArrays.sortSparseMatrixCSC!(Cunsorted, sortindices=:doubletranspose)
+        Cunsorted = myspmatmul_unsorted(AT, B, nnzC)
+        C = SparseArrays.sortSparseMatrixCSC!(Cunsorted, sortindices = :doubletranspose)
         return C
     end
 end

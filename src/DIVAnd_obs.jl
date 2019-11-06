@@ -2,7 +2,7 @@
     s = DIVAnd_obs(s,xi,x,R,I)
 
 Include the constrain from the observations.
-It is assumed that the each coordinate depends only on one
+It is assumed that each coordinate depends only on one
 index. If this is not the case, then matrix I must be provided.
 
 Input:
@@ -16,18 +16,18 @@ Input:
 Output:
   s: structure to be used by DIVAnd_factorize
 
-Note make sure not to mix Float32 and Float64 for DIVAnd_constrain.
+Note: make sure not to mix Float32 and Float64 for DIVAnd_constrain.
 """
-function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
+function DIVAnd_obs(s, xi, x, yo::Vector{T}, R, I = zeros(T, 0, 0)) where {T}
     mask = s.mask
     iscyclic = s.iscyclic
     moddim = s.moddim
 
     if isempty(I)
-        I = localize_separable_grid(x,mask,xi) :: Matrix{T}
+        I = localize_separable_grid(x, mask, xi)::Matrix{T}
     end
 
-    H,out,outbbox = sparse_interp(mask,I,iscyclic)
+    H, out, outbbox = sparse_interp(mask, I, iscyclic)
 
     nout = sum(out)
     if nout != 0
@@ -41,7 +41,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
     if nnanobs != 0
         out = out .| nanobs
         yo = deepcopy(yo)
-        yo[nanobs] = 0.
+        yo[nanobs] .= 0.
         @warn "Observations equal to NaN: $(nnanobs)"
     end
 
@@ -49,7 +49,7 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
 
     s.obsout = out
 
-    if isa(R,Diagonal)
+    if isa(R, Diagonal)
         diagR = Float64.(diag(R))
         diagR[out] .= Inf
         R = Diagonal(diagR)
@@ -57,14 +57,14 @@ function DIVAnd_obs(s,xi,x,yo::Vector{T},R,I = zeros(T,0,0)) where T
         error("all observation must be inside the domain for non-diagonal error observation covariance matrix")
     end
 
-    constrain = DIVAnd_constrain(yo,R,H)
+    constrain = DIVAnd_constrain(yo, R, H)
 
     s.obsconstrain = constrain
 
     return constrain
 end
 
-# Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014,2019 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

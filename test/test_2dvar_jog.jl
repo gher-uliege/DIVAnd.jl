@@ -1,37 +1,68 @@
 # Testing DIVAnd in 2 dimensions with advection.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using Compat
 import DIVAnd
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd.DIVAnd_squaredom(
-    2,range(-1, stop = 1, length = 50))
+mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_squaredom(2, range(-1, stop = 1, length = 50))
 
 x = [.4]
 y = [.4]
 f = [1.]
 
 a = 5;
-u = a*yi;
-v = -a*xi;
-epsilon2 = 1/200
+u = a * yi;
+v = -a * xi;
+epsilon2 = 1 / 200
 len = 0.4
 
-fi_ref,s = DIVAnd.DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;velocity = (u,v),alphabc=0)
+fi_ref, s = DIVAnd.DIVAndrun(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    f,
+    len,
+    epsilon2;
+    velocity = (u, v),
+    alphabc = 0,
+)
 
-for i=1:5
-    fi,s = DIVAnd.DIVAndjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[2 2],[1 1],i;velocity = (u,v),alphabc=0);
-    @test fi ≈ fi_ref rtol=1e-3
+for i = 1:5
+    fi, s = DIVAnd.DIVAndjog(
+        mask,
+        (pm, pn),
+        (xi, yi),
+        (x, y),
+        f,
+        len,
+        epsilon2,
+        [2 2],
+        [1 1],
+        i;
+        velocity = (u, v),
+        alphabc = 0,
+    )
+    @test fi ≈ fi_ref rtol = 1e-3
 end
 
-for ii=1:5
-    fi,s = DIVAnd.DIVAndjog(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2,[1 1],[1 1],ii;velocity = (u,v),alphabc=0);
-    @test fi ≈ fi_ref rtol=1e-2
+for ii = 1:5
+    fi, s = DIVAnd.DIVAndjog(
+        mask,
+        (pm, pn),
+        (xi, yi),
+        (x, y),
+        f,
+        len,
+        epsilon2,
+        [1 1],
+        [1 1],
+        ii;
+        velocity = (u, v),
+        alphabc = 0,
+    )
+    @test fi ≈ fi_ref rtol = 1e-2
 end
 
 

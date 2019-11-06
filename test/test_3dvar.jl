@@ -1,31 +1,28 @@
 # Testing DIVAnd in 3 dimensions.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
 # function to interpolate
-fun(x,y,z) = sin(6x) * cos(6y) * sin(6z)
+fun(x, y, z) = sin(6x) * cos(6y) * sin(6z)
 
 # grid of background field
-mask,(pm,pn,po),(xi,yi,zi) = DIVAnd_squaredom(3,
-    range(0,stop=1,length=15))
+mask, (pm, pn, po), (xi, yi, zi) = DIVAnd_squaredom(3, range(0, stop = 1, length = 15))
 
-fi_ref = fun.(xi,yi,zi)
+fi_ref = fun.(xi, yi, zi)
 
 ϵ = eps()
 # grid of observations
-x,y,z = ndgrid(range(ϵ, stop=1-ϵ, length=10),
-               range(ϵ, stop=1-ϵ, length=10),
-               range(ϵ, stop=1-ϵ, length=10));
+x, y, z = ndgrid(
+    range(ϵ, stop = 1 - ϵ, length = 10),
+    range(ϵ, stop = 1 - ϵ, length = 10),
+    range(ϵ, stop = 1 - ϵ, length = 10),
+);
 x = x[:];
 y = y[:];
 z = z[:];
 
 # observations
-f = fun.(x,y,z)
+f = fun.(x, y, z)
 
 # correlation length
 len = 0.1;
@@ -34,7 +31,16 @@ len = 0.1;
 epsilon2 = 0.01;
 
 # fi is the interpolated field
-fi,s = DIVAndrun(mask,(pm,pn,po),(xi,yi,zi),(x,y,z),f,len,epsilon2;alphabc=0);
+fi, s = DIVAndrun(
+    mask,
+    (pm, pn, po),
+    (xi, yi, zi),
+    (x, y, z),
+    f,
+    len,
+    epsilon2;
+    alphabc = 0,
+);
 
 # compute RMS to background field
 rms = sqrt(mean((fi_ref[:] - fi[:]).^2));

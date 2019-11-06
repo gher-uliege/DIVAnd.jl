@@ -2,19 +2,16 @@
 # with observations from an analytical function.
 
 using DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
+using LinearAlgebra
 
 # final grid
-gridsize = (101,101)
+gridsize = (101, 101)
 
 n = length(gridsize)
 
 # observations
-xy = ntuple(i -> [0.],n)
+xy = ntuple(i -> [0.], n)
 f = [2.]
 
 
@@ -22,40 +19,40 @@ f = [2.]
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension,...
 
-mask,pmn,xyi = DIVAnd_rectdom([range(-1,stop=1,length=s) for s in gridsize]...)
+mask, pmn, xyi = DIVAnd_rectdom([range(-1, stop = 1, length = s) for s in gridsize]...)
 
 
 sv = statevector((mask,))
 
 # correlation length
-len = ntuple(i -> 0.2,n)
+len = ntuple(i -> 0.2, n)
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
 
 
-alpha = [1,2,1]
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
-mu,K,len_scale = DIVAnd_kernel(n,alpha);
+alpha = [1, 2, 1]
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2, alpha = alpha)
+mu, K, len_scale = DIVAnd_kernel(n, alpha);
 # xy is a tuple with the coordinates in every dimensions
-fit = [ K(len_scale * norm([xy...]./[len...])) for xy in zip(xyi...)]
-@test fi ≈ fit rtol=1e-2
+fit = [K(len_scale * norm([xy...] ./ [len...])) for xy in zip(xyi...)]
+@test fi ≈ fit rtol = 1e-2
 
 
-alpha = [1,3,3,1]
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha)
-mu,K,len_scale = DIVAnd_kernel(n,alpha);
+alpha = [1, 3, 3, 1]
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2, alpha = alpha)
+mu, K, len_scale = DIVAnd_kernel(n, alpha);
 # xy is a tuple with the coordinates in every dimensions
-fit = [ K(len_scale * norm([xy...]./[len...])) for xy in zip(xyi...)]
-@test fi ≈ fit rtol=1e-2
+fit = [K(len_scale * norm([xy...] ./ [len...])) for xy in zip(xyi...)]
+@test fi ≈ fit rtol = 1e-2
 
 
-alpha = [1,0,1]
-fi,s = DIVAndrun(mask,pmn,xyi,xy,f,len,epsilon2,alpha = alpha,scale_len = false)
-mu,K,len_scale = DIVAnd_kernel(n,alpha);
+alpha = [1, 0, 1]
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2, alpha = alpha, scale_len = false)
+mu, K, len_scale = DIVAnd_kernel(n, alpha);
 # xy is a tuple with the coordinates in every dimensions
-fit = [ K(len_scale * norm([xy...]./[len...])) for xy in zip(xyi...)]
-@test fi ≈ fit rtol=0.5
+fit = [K(len_scale * norm([xy...] ./ [len...])) for xy in zip(xyi...)]
+@test fi ≈ fit rtol = 0.5
 
 
 

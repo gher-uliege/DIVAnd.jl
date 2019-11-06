@@ -2,7 +2,7 @@
 
     factor = DIVAnd_adaptedeps2(s,fi);
 
-# Input: 
+# Input:
 * `s`: structure returned by `DIVAndrun`
 * `fi`: analysis returned by `DIVAndrun`
 
@@ -10,38 +10,38 @@
 * `factor` : multiplicative factor to apply to epsilon2
 
 
- Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
+Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
 estimate of the R matrix. If you cannot use `DIVAndrun` but use `DIVAndgo`, the latter provides automatically this pamater as result.
 
 
 """
-function DIVAnd_adaptedeps2(s,fi);
+function DIVAnd_adaptedeps2(s, fi)
 
-    residual=DIVAnd_residualobs(s,fi);
-	tutu=diag(s.obsconstrain.R)
-	sel=.!isinf.(tutu)
-    d0d=dot((1 .- s.obsout).*(s.yo),(s.yo));
-	
-	d0dbis=dot((1 .- s.obsout[sel]).*(s.yo[sel]),(s.yo[sel]))
-	
-	
-    d0dmd1d=dot((1 .- s.obsout).*residual,(s.yo));
-	d0dmd1dbis=dot((1 .- s.obsout[sel]).*residual[sel],(s.yo[sel]));
-	
-	
-    ll1= d0d/(d0dmd1d)-1;
-	ll1bis= d0dbis/(d0dmd1dbis)-1;
-    eps1=1/ll1;
-	
-    eps2 = mean(tutu[sel]);
-    factor=eps1/eps2;
-	#@show d0d,d0dbis,d0dmd1d,ll1,ll1bis,eps1,eps2
+    residual = DIVAnd_residualobs(s, fi)
+
+    d0d = zero(eltype(fi))     # yo ⋅ yo
+    d0dmd1d = zero(eltype(fi)) # (yo - Hxa) ⋅ yo
+    diagR = diag(s.obsconstrain.R)::Vector{Float64}
+    eps2 = zero(eltype(fi))    # mean of diagonal of R
+    nrealdata = 0
+
+    for i = 1:length(s.yo)
+        if (!s.obsout[i]) && (!isinf(diagR[i]))
+            d0d += s.yo[i]^2
+            d0dmd1d += s.yo[i] * residual[i]
+            eps2 += diagR[i]
+            nrealdata += 1
+        end
+    end
+    eps2 /= nrealdata
+
+    ll1 = d0d / (d0dmd1d) - 1
+    eps1 = 1 / ll1
+    factor = eps1 / eps2
     return factor
-
-
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

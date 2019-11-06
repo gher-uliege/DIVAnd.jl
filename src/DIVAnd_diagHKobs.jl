@@ -1,34 +1,35 @@
 """
+    diagonalterms = DIVAnd_diagHKobs(s)
+
 Computes the diagonal terms of the so called hat-matrix HK, using the already solved analysis and it structure s. Warning: might take some time
 
 This version only uses the real data (not those related to additional constraints)
 
-diagonalterms = DIVAnd_diagHKobs(s);
 
 """
-function DIVAnd_diagHKobs(s,indexlist=[])
+function DIVAnd_diagHKobs(s, indexlist = [])
 
-    H = s.obsconstrain.H;
-    R = s.obsconstrain.R;
-    P=s.P;
-    m = size(R,1)
+    H = s.obsconstrain.H
+    R = s.obsconstrain.R
+    P = s.P
+    m = size(R, 1)
 
-    if indexlist==[]
-        diagHK=diagLtCM(H',P,(H' * (R \ Matrix(I,m,m))))
+    if indexlist == []
+        diagHK = diagLtCM(H', P, (H' * (R \ Matrix(I, m, m))))
         #diagHK=diagLtCM(H',P,(H' * (R \ I)))
     else
-        Z=zeros(m,length(indexlist));
+        Z = zeros(m, length(indexlist))
 
         for i = 1:length(indexlist)
-            Z[indexlist[i],i] = 1;
+            Z[indexlist[i], i] = 1
         end
-        diagHK=diagLtCM((H'*Z),P,(H' * (R \ Z)))
+        diagHK = diagLtCM((H' * Z), P, (H' * (R \ Z)))
     end
 
 
     # to be replaced later exploiting the factors of P ?
     #
-    P = s.P;
+    P = s.P
     #   WW=P * (H'* (R \ Z));
     #   ZtHKZ =  Z'*H*WW;
 
@@ -41,7 +42,7 @@ function DIVAnd_diagHKobs(s,indexlist=[])
     return diagHK
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

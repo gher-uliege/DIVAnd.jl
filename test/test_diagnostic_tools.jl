@@ -1,16 +1,11 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 
 import DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Statistics
-else
-    using Base.Test
-end
+using Test
+using Statistics
 
 # grid of background field (its size should be odd)
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(
-    2,range(0.0,stop=1.0,length=15))
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0.0, stop = 1.0, length = 15))
 
 # grid of observations
 x = [0.5]
@@ -23,18 +18,18 @@ len = 0.2
 # normalized error variance
 epsilon2 = 1.;
 
-fi,s = DIVAnd.DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=0);
+fi, s = DIVAnd.DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; alphabc = 0);
 
-@test abs(mean(DIVAnd.DIVAnd_diagHK(s))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_diagHKobs(s))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_diagHKobs(s,[1]))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_GCVKii(s))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_GCVKiiobs(s))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_residual(s,fi))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_residualobs(s,fi))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_erroratdatapoints(s))-0.5)<0.05
-@test abs(mean(DIVAnd.DIVAnd_adaptedeps2(s,fi))-0.89)<0.15
-@test abs(DIVAnd.DIVAnd_cvestimator(s,DIVAnd.DIVAnd_residual(s,fi))-0.22)<0.05
+@test abs(mean(DIVAnd.DIVAnd_diagHK(s)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_diagHKobs(s)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_diagHKobs(s, [1])) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_GCVKii(s)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_GCVKiiobs(s)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_residual(s, fi)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_residualobs(s, fi)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_erroratdatapoints(s)) - 0.5) < 0.05
+@test abs(mean(DIVAnd.DIVAnd_adaptedeps2(s, fi)) - 0.89) < 0.15
+@test abs(DIVAnd.DIVAnd_cvestimator(s, DIVAnd.DIVAnd_residual(s, fi)) - 0.22) < 0.05
 
 # Copyright (C) 2014-2017 Alexander Barth <a.barth@ulg.ac.be>
 #                         Jean-Marie Beckers <JM.Beckers@ulg.ac.be>

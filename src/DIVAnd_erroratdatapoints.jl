@@ -1,18 +1,15 @@
 """
+    errorvariance = DIVAnd_erroratdatapoints(s)
+
 Computes the error at the real data locations using the analysis structure s
 
-errorvariance = DIVAnd_erroratdatapoints(s);
 
 """
 function DIVAnd_erroratdatapoints(s)
-
-
-
-    return diagMtCM(s.P,s.obsconstrain.H')
-
+    return diagMtCM(s.P, s.obsconstrain.H')
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

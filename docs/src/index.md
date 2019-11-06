@@ -19,6 +19,7 @@ DIVAnd.smoothfilter
 DIVAnd.Anam.loglin
 DIVAnd.Anam.logit
 DIVAnd.divadoxml
+DIVAnd.getedmoinfo
 DIVAnd.random
 DIVAnd.distance
 DIVAnd.interp
@@ -59,8 +60,6 @@ DIVAnd.ODVspreadsheet.myparse
 ### Parameter optimization
 
 ```@docs
-DIVAnd.fit_isotropic
-DIVAnd.fit
 DIVAnd.DIVAnd_cv
 DIVAnd.empiriccovar
 DIVAnd.fithorzlen
@@ -84,7 +83,7 @@ DIVAnd.Vocab.altLabel
 DIVAnd.Vocab.notation
 DIVAnd.Vocab.definition
 DIVAnd.Vocab.resolve
-DIVAnd.Vocab.find(c::DIVAnd.Vocab.Concept,name,collection)
+DIVAnd.Vocab.find
 DIVAnd.Vocab.description
 DIVAnd.Vocab.canonical_units
 DIVAnd.Vocab.splitURL
@@ -99,9 +98,9 @@ DIVAnd.Vocab.splitURL
 DIVAnd.statevector
 DIVAnd.pack
 DIVAnd.unpack
-Base.sub2ind
-Base.ind2sub
-Base.length
+DIVAnd.sub2ind
+DIVAnd.ind2sub
+DIVAnd.length
 ```
 
 ### Constraints
@@ -130,7 +129,6 @@ DIVAnd.ODVspreadsheet.nprofiles
 ```@docs
 DIVAnd.sparse_interp
 DIVAnd.sparse_interp_g
-DIVAnd.sparse_gradient
 DIVAnd.sparse_diff
 DIVAnd.matfun_trim
 DIVAnd.matfun_stagger
@@ -164,6 +162,7 @@ DIVAnd.checksym
 
 ```@docs
 DIVAnd.DIVAnd_laplacian
+DIVAnd.DIVAnd_gradient
 DIVAnd.DIVAnd_obscovar
 DIVAnd.DIVAnd_adaptedeps2
 DIVAnd.DIVAnd_diagHKobs
@@ -223,10 +222,15 @@ In the folder `examples` of DIVAnd, you can run e.g. the example `DIVAnd_simple_
 
 ```julia
 # cd("/path/to/DIVAnd/examples")
-include("DIVAnd_simple_example_1D.jl")
+include("test/DIVAnd_simple_example_1D.jl")
 ```
 
-Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of `Pkg.dir("DIVAnd")` if you installed `DIVAnd` using Julia's package manager.
+Replace `/path/to/DIVAnd/` by the installation directory of DIVAnd which is the output of the following code:
+
+```julia
+using DIVAnd;
+joinpath(dirname(pathof(DIVAnd)), "..")
+```
 
 
 ## Performance considerations
@@ -255,9 +259,77 @@ ENV["JULIA_DEBUG"] = "DIVAnd"
 
 See also https://docs.julialang.org/en/v1/stdlib/Logging/index.html#Environment-variables-1 .
 
+## Correlation length
+
+The estimation of the correlation length in the function `diva3d` can be activated with the option
+`fitcorrlen` for the horizontal and vertical correlaton. The parameter `len` should then
+an empty tuple (`()`) or a tuple of arrays equal to one. The actually used correlation length is a product
+between the prodived values of the array `len` and the estimated correlation length by fitting. Setting `fitcorrlen`
+to true means thus that the intepretation of the parameters changes from absolution correlation
+length to relative correlation length.
+
+The estimation of the horizontal and vertical correlation can also be activated selectively by just setting
+`fithorzcorrlen` and `fitvertcorrlen` (respectively) to true.
+
+If one wants to not use the vertical correlation length, the one can put the corresponding value in `len` to zero.
+Consequently the value of `fitvertcorrlen` and `fitcorrlen` should be keep to `false` (i.e. its default values).
+Optimizing the horizontal correlation length is still possible by setting `fithorzcorrlen` to `true`.
+
+
+## Integrating different datasets
+
+To facilitated the integrating of different datasets,
+the function `WorldOceanDatabase.load` from the module `PhysOcean` now supports an option `prefixid` which can be set to `"1977-"`
+so that the obsids have automatically the right format for DIVAnd, e.g. `"1977-wod123456789O"`:
+
+```julia
+using PhysOcean
+# assuming the data in the directory "somedir": e.g. "somedir/CTD/file.nc", "somedir/XBT/file.nc"...
+basedir = "somedir"
+varname = "Temperature"
+prefixid = "1977-"
+obsvalue,obslon,obslat,obsdepth,obstime,obsid = WorldOceanDatabase.load(Float64,
+   basedir,varname; prefixid = prefixid);
+```
+
+In the module PhysOcean, we implemented the function ARGO.load which can load data following the ARGO format and in particular the CORA dataset.
+In fact, even if CORA is distributed through CMEMS, the netCDF files in CORA do not follow the same format than the other in situ netCDF files from CMEMS.
+Therefore the function `CMEMS.load` can not be used for the CORA dataset.
+ARGO.load also supports the option prefixid.
+
+
+```julia
+using Glob, PhysOcean
+# assuming the data in the directory "somedir": e.g. "somedir/someyear/file.nc"
+filenames = glob("*/*nc","somedir")
+obsvalue,obslon,obslat,obsdepth,obstime,obsids = ARGO.load(Float64,
+   filenames,varname; prefixid = "4630-")
+```
+
+In divadoxml we added the new argument additionalcontacts which allows to acknowledge other datasets which are not in the MARIS database:
+
+```julia
+using DIVAnd
+additionalcontacts = [
+    DIVAnd.getedmoinfo(1977,"originator"), # US NODC for World Ocean Database
+    DIVAnd.getedmoinfo(4630,"originator"), # CORIOLIS for CORA
+]
+ignore_errors = true
+DIVAnd.divadoxml(
+           filename,varname,project,cdilist,xmlfilename,
+           ignore_errors = ignore_errors,
+           additionalcontacts = additionalcontacts
+)
+```
+
+!!! note
+    You will see a warning that not all observation identifiers could be found, but this is normal and expected.
+
+
+
 ## Fequently asked questions
 
-### Which data points are using for the analysis?
+### Which data points are used for the analysis?
 
 An individual data point is used if all following conditions are met:
 1. longitude/latitude is inside the domain and not adjacent to a land point
@@ -268,16 +340,12 @@ An individual data point is used if all following conditions are met:
 
 Note that for points 1.-3. the finite precision of floating point numbers can affect the results.
 
-
 ### How to resolve a bias of the surface layer (or the deepest layer)?
 
 In DIVAnd, the vertical levels must resolve the vertical correlation length. If the vertical correlation length is smaller than the
 surface resolution, this can result in a bias of the surface value. A similar problem can also be present at the deepest layer.
 The solution is to either refine the vertical resolution or to increase the vertical correlation length.
 
-### How do I estimate the horizontal and vertical correlation length in DIVAnd?
-
-Set the option `fitcorrlen` to `true` in `diva3d` and parameter `len` to an empty tuple (`()`) or a tuple of arrays equal to one.
 
 ### How do I limit the estimated horizontal and vertical correlation length in DIVAnd?
 
@@ -288,7 +356,7 @@ and 200 km (independently of the depth).
 
 ```julia
 # len and z are expressed in meters
-function mylimitfun(len,z)
+function mylimitfun(z,len)
    if len > 200_000
       return 200_000
    end
@@ -310,8 +378,8 @@ The same can be achieved more compactly as follows:
 
 ```julia
 ... = diva3d(...
-   fithorz_param = Dict(:limitfun => (len,z) -> min(max(len,50_000),200_000)),
-   fitvert_param = Dict(:limitfun => (len,z) -> min(max(len,20),200)))
+   fithorz_param = Dict(:limitfun => (z,len) -> min(max(len,50_000),200_000)),
+   fitvert_param = Dict(:limitfun => (z,len) -> min(max(len,20),200)))
 ```
 
 A similar option has also be added for the vertical correlation length.
@@ -328,11 +396,21 @@ If data from a high-resolution data (e.g. profiling float, dense time serie) set
 combined with data with a low spatial resolution (e.g. profiles from a research
 vessel), then the analysis can be biased toward the high-resolution data. The function `weight_RtimesOne(x,len)` can be used to reduce the weight of the high-resoliution data (https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/13-processing-parameter-optimization.ipynb). Alternative methods are averaging data in bins ("binning") or simply sub-sampling the data.
 
+### My parameter represent a concentration and I get unrealistic negative values
+
+
+* You can use an anamorphosis transform, in particular `DIVAnd.Anam.loglin`. The idea is that the transformed variable is close to a Gaussian distribution that the original variable.
+* Use the option `fieldmin = 0.0` of `diva3d`
+
+If the parameter `epsilon` of `DIVAnd.Anam.loglin` is larger than zero (which is necessary if some measurements are exactly zero), then the smallest value that analysis can have is `-epsilon`. Therefore the option `fieldmin` is still required to avoid negative values.
+
 
 ## API changes
 
 We do are best to avoid changing the API, but sometimes it is unfortunately necessary.
 
+* 2019-06-24: `DIVAnd.fit_isotropic` and `DIVAnd.fit` are removed and replaced by `DIVAnd.fithorzlen` and `DIVAnd.fitvertlen`.
+* 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preceedence will now be given for `background_lenz`.
 * 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
 * 2018-06-18: The options `nmean` and `distbin` of `fithorzlen` and `fitvertlen` have been removed. The functions now choose appropriate values for these parameters automatically.
 
@@ -343,6 +421,7 @@ We do are best to avoid changing the API, but sometimes it is unfortunately nece
 To update the documentation locally, install the package `Documenter` and run the script `include("docs/make.jl")`.
 
 ```julia
+using Pkg
 Pkg.add("Documenter")
 ```
 
@@ -356,10 +435,34 @@ Julia calls the local copy of the packge list `METADATA`.
 For example to retry the installation of EzXML issue the following command:
 
 ```julia
+using Pkg
 Pkg.update()
 Pkg.add("EzXML")
 ```
 
+
+### Installation problem of PyPlot on Linux (Debian/Ubuntu)
+
+Make sure that the following Debian/Ubuntu packages are installed:
+
+```bash
+sudo apt-get install python3 libpython3 python3-tk
+```
+
+Then start Julia and run:
+
+```
+using Pkg
+Pkg.build("PyCall")
+Pkg.build("PyPlot")
+```
+
+Test PyPlot with:
+
+```julia
+using PyPlot
+plot(1:10)
+```
 
 
 ### No plotting window appears
@@ -435,50 +538,61 @@ The `zlib` library of RedHat 6, is slightly older than the library which `EzXML.
 To verify this issue, you can type in Julia
 
 ```
+using Libdl
+using Pkg
 Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))
 ```
 
 It should not return an error message. On Redhat 6.6, the following error message is returned:
 
 ```
-ERROR: could not load library "/home/username/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so"
+ERROR: could not load library "/home/username/.../EzXML/deps/usr/lib/libxml2.so"
 
-/lib64/libz.so.1: version `ZLIB_1.2.3.3' not found (required by /home/divahs1/.julia/v0.6/EzXML/deps/usr/lib/libxml2.so)
+/lib64/libz.so.1: version `ZLIB_1.2.3.3' not found (required by /home/.../EzXML/deps/usr/lib/libxml2.so)
 
 Stacktrace:
 
  [1] dlopen(::String, ::UInt32) at ./libdl.jl:97 (repeats 2 times)
 ```
 
+A newer version `zlib` can be installed by the following command:
+
+```julia
+using Pkg
+Pkg.add("CodecZlib")
+```
+
 However, the following command should work:
 
 ```julia
- LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH" julia --eval  'print(Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))'
+ LD_LIBRARY_PATH="$HOME/.julia/full/path/to/CodecZlib/.../deps/usr/lib/:$LD_LIBRARY_PATH" julia --eval  'print(Libdl.dlopen(joinpath(Pkg.dir("EzXML"),"deps/usr/lib/libxml2.so"))'
 ```
 
-Lukily, EzZML.jl includes a newer version of the `zlib` library, but it does not load the library automatically.
-(see also <https://github.com/JuliaLang/julia/issues/7004> and <https://github.com/JuliaIO/HDF5.jl/issues/97>)
+by replacing the file path appropriately.
+(see also <https://github.com/JuliaLang/julia/issues/7004>, <https://github.com/JuliaIO/HDF5.jl/issues/97>, and <https://github.com/bicycle1885/EzXML.jl/issues/102>)
 
 To make Julia use this library, a user on RedHat 6 should always start Julia with:
 
 ```bash
-LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH" julia
+LD_LIBRARY_PATH="$HOME/.julia/full/path/to/CodecZlib/.../deps/usr/lib/:$LD_LIBRARY_PATH" julia
 ```
 
 One can also create script with the following content:
 
 ```bash
 #!/bin/bash
-export LD_LIBRARY_PATH="$HOME/.julia/v0.6/EzXML/deps/usr/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$HOME/.julia/full/path/to/CodecZlib/.../deps/usr/lib/:$LD_LIBRARY_PATH"
 exec /path/to/bin/julia "$@"
 ```
 
 by replacing `/path/to/bin/julia` to the full path of your installation directory.
 The script should be marked executable and it can be included in your Linux search [`PATH` environement variable](http://www.linfo.org/path_env_var.html). Julia can then be started by calling directly this script.
 
+
+
 ### The DIVAnd test suite fails with `automatic download failed`
 
-Running `Pkg.test("DIVAnd")` fails with the error:
+Running `using Pkg; Pkg.test("DIVAnd")` fails with the error:
 
 ```julia
 automatic download failed (error: 2147500036)
@@ -494,7 +608,7 @@ You can check the current working directory with:
 pwd()
 ```
 
-### METADATA cannot be updated
+### METADATA cannot be updated in Julia 0.6
 
 `Pkg.update` fails with the error message `METADATA cannot be updated`.
 
@@ -567,12 +681,13 @@ LoadError: ArgumentError: Module Roots not found in current path.
 Run `Pkg.add("Roots")` to install the Roots package.
 ```
 
-### Kernel not working with IJulia/Jupyter under julia0.7 Windows
+### Kernel not working with IJulia/Jupyter under Julia 0.7 Windows
 
 Try these commands
+
 ```julia
+using Pkg
 Pkg.add("ZMQ")
 Pkg.add("IJulia")
 Pkg.update()
 ```
-

@@ -2,7 +2,7 @@
 #
 # c = DIVAnd_constr_advec(s,velocity)
 #
-# Create the advection constrain using the specified velocity.
+# Create the advection constrain using the specified velocity field.
 #
 # Input:
 #   s: structure created by DIVAnd_background
@@ -13,44 +13,44 @@
 #     covariance matrix), H (extraction operator) and yo (specified value for
 #     the constrain).
 
-function DIVAnd_constr_advec(s,velocity)
+function DIVAnd_constr_advec(s, velocity)
 
     # check for NaNs
     nancount = sum([sum(isnan.(v)) for v in velocity])
     if nancount > 0
-        error("$(nancount) velocity values are equal to NaN");
+        error("$(nancount) velocity values are equal to NaN")
     end
 
-    mask = s.mask;
+    mask = s.mask
 
-    n  = s.n;
-    iscyclic = s.iscyclic;
+    n = s.n
+    iscyclic = s.iscyclic
 
-    sz = size(mask);
+    sz = size(mask)
 
-    A = spzeros(s.sv.n,s.sv.n)
+    A = spzeros(s.sv.n, s.sv.n)
 
-    for i=1:n
-        S = sparse_stagger(sz,i,iscyclic[i]);
-        m = (S * mask[:]) .== 1;
+    for i = 1:n
+        S = sparse_stagger(sz, i, iscyclic[i])
+        m = (S * mask[:]) .== 1
 
         d = velocity[i]
 
-        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
+        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i]
     end
 
-    l = size(A,1);
+    l = size(A, 1)
 
-    H = A;
+    H = A
     yo = zeros(l)
     R = Diagonal(ones(l))
     #R = speye(size(H,1));
 
-    return DIVAnd_constrain(yo,R,H)
+    return DIVAnd_constrain(yo, R, H)
 
 end
 
-# Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
+# Copyright (C) 2014, 2019 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

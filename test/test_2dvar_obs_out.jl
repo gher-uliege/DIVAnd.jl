@@ -1,34 +1,39 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using DIVAnd
 
 
 # grid of background field
-mask,(pm,pn),(xi,yi) = DIVAnd_squaredom(2,0.:1:2)
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, 0.:1:2)
 mask .= false
-mask[2,2] = true
+mask[2, 2] = true
 
 epsilon = 1e-10;
 
 # grid of observations
 nobs = 10000
-x = fill(1.99,(nobs,))
-y = fill(1.,(nobs,))
-v = fill(1.,(nobs,))
+x = fill(1.99, (nobs,))
+y = fill(1., (nobs,))
+v = fill(1., (nobs,))
 
 lenx = .15;
 leny = .15;
 
 epsilon2 = 1;
 
-va,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),v,(lenx,leny),epsilon2,primal=true)
+va, s = DIVAndrun(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    v,
+    (lenx, leny),
+    epsilon2,
+    primal = true,
+)
 
-@test va[2,2] ≈ 0.
+@test va[2, 2] ≈ 1 atol = 1e-3
 
 
 # Copyright (C) 2014, 2016 Alexander Barth <a.barth@ulg.ac.be>

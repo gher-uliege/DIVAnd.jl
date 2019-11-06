@@ -14,17 +14,15 @@ mutable struct statevector{nvar_,N}
     unpacked2packed::Vector{Vector{Int}}
 end
 
-function unpack_(v::AbstractVector{T},mask) where T
-    tmp = zeros(T,size(mask));
-    tmp[mask] = v;
+function unpack_(v::AbstractVector{T}, mask) where {T}
+    tmp = zeros(T, size(mask))
+    tmp[mask] = v
     return tmp[:]
 end
 
 
 """
-Initialize structure for packing and unpacking given their mask.
-
-sv = statevector_init((mask1, mask2, ...))
+    sv = statevector_init((mask1, mask2, ...))
 
 Initialize structure for packing and unpacking
 multiple variables given their corresponding land-sea mask.
@@ -42,43 +40,42 @@ see also statevector_pack, statevector_unpack
 Author: Alexander Barth, 2009,2017 <a.barth@ulg.ac.be>
 License: GPL 2 or later
 """
-function statevector(masks::NTuple{nvar_,BitArray{N}}) where nvar_ where N
+function statevector(masks::NTuple{nvar_,BitArray{N}}) where {nvar_} where {N}
 
-    numels = [sum(mask)    for mask in masks]
+    numels = [sum(mask) for mask in masks]
     ind = [0, cumsum(numels)...]
 
     # vector mapping packed indices to unpacked indices
     packed2unpacked = [(1:length(mask))[mask[:]] for mask in masks]
 
     # vector mapping unpacked indices packed indices
-    unpacked2packed = [unpack_(1:sum(mask),mask) for mask in masks]
+    unpacked2packed = [unpack_(1:sum(mask), mask) for mask in masks]
 
     sv = statevector{nvar_,N}(
-                     masks,
-                     length(masks),
-                     numels,
-                     [length(mask) for mask in masks],
-                     [size(mask) for mask in masks],
-                     ind,
-                     ind[end],
-                     packed2unpacked,
-                     unpacked2packed
-                     )
+        masks,
+        length(masks),
+        numels,
+        [length(mask) for mask in masks],
+        [size(mask) for mask in masks],
+        ind,
+        ind[end],
+        packed2unpacked,
+        unpacked2packed,
+    )
 
     return sv
 end
 
 
-function statevector(masks::NTuple{nvar_,Array{Bool,N}}) where nvar_ where N
-    return statevector(([convert(BitArray{N},mask) for mask in masks]...,))
+function statevector(masks::NTuple{nvar_,Array{Bool,N}}) where {nvar_} where {N}
+    return statevector(([convert(BitArray{N}, mask) for mask in masks]...,))
 end
 
 """
-Pack a series of variables into a vector under the control of a mask.
+    x = pack(sv,(var1, var2, ...))
 
-x = pack(sv,(var1, var2, ...))
-
-Pack the different variables var1, var2, ... into the vector x where `sv` is a `statevector`.
+Pack the different variables var1, var2, ... into the vector x where `sv` is a `statevector`
+under the control of a mask.
 Only sea grid points are retained.
 
 Input:
@@ -93,20 +90,19 @@ If var1, var2, ... have an additional trailing dimension, then this dimension is
 to represent the different ensemble members. In this case x is a matrix and its last dimension
 is the number of ensemble members.
 """
-function pack(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,N}})::Vector{T} where {nvar_,N,T}
+function pack(sv::statevector{nvar_,N}, vars::NTuple{nvar_,Array{T,N}})::Vector{T} where {
+    nvar_,
+    N,
+    T,
+}
 
-    k = size(vars[1],ndims(sv.mask[1])+1)
+    k = size(vars[1], ndims(sv.mask[1]) + 1)
 
-    x = Vector{T}(undef,sv.n)
+    x = Vector{T}(undef, sv.n)
 
-    for i=1:sv.nvar
-        tmp = reshape(vars[i],sv.numels_all[i],k)
-        ind =
-            @static if VERSION >= v"0.7.0-beta.0"
-                (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
-            else
-                find(sv.mask[i])
-            end
+    for i = 1:sv.nvar
+        tmp = reshape(vars[i], sv.numels_all[i], k)
+        ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
         x[sv.ind[i]+1:sv.ind[i+1]] = tmp[ind]
     end
 
@@ -115,22 +111,19 @@ end
 
 
 
-function packens(sv::statevector{nvar_,N},vars::NTuple{nvar_,Array{T,Np}})::Array{T,2} where {nvar_,N,T,Np}
+function packens(sv::statevector{nvar_,N}, vars::NTuple{nvar_,Array{T,Np}})::Array{
+    T,
+    2,
+} where {nvar_,N,T,Np}
 
-    k = size(vars[1],ndims(sv.mask[1])+1)
+    k = size(vars[1], ndims(sv.mask[1]) + 1)
 
-    x = Array{T,2}(undef,sv.n,k)
+    x = Array{T,2}(undef, sv.n, k)
 
-    for i=1:sv.nvar
-        tmp = reshape(vars[i],sv.numels_all[i],k)
-        ind =
-            @static if VERSION >= v"0.7.0-beta.0"
-                (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
-            else
-                find(sv.mask[i])
-            end
-
-        x[sv.ind[i]+1:sv.ind[i+1],:] = tmp[ind,:]
+    for i = 1:sv.nvar
+        tmp = reshape(vars[i], sv.numels_all[i], k)
+        ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
+        x[sv.ind[i]+1:sv.ind[i+1], :] = tmp[ind, :]
     end
 
     return x
@@ -138,10 +131,8 @@ end
 
 
 """
-Unpack a vector into different variables under the control of a mask.
-
-var1, var2, ... = unpack(sv,x)
-var1, var2, ... = unpack(sv,x,fillvalue)
+    var1, var2, ... = unpack(sv,x)
+    var1, var2, ... = unpack(sv,x,fillvalue)
 
 Unpack the vector x into the different variables var1, var2, ...
 where `sv` is a `statevector`.
@@ -162,48 +153,39 @@ If x is a matrix, then the second dimension is assumed
 to represent the different ensemble members. In this case,
 var1, var2, ... have also an additional trailing dimension.
 """
-function unpack(sv::statevector{nvar_,N},x::Vector{T},fillvalue = 0) where {nvar_,N,T}
+function unpack(sv::statevector{nvar_,N}, x::Vector{T}, fillvalue = 0) where {nvar_,N,T}
     out = ntuple(i -> begin
-                 v = Array{T,N}(undef,sv.size[i]);
-                 v[:] .= fillvalue
-                 v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
+        v = Array{T,N}(undef, sv.size[i])
+        v[:] .= fillvalue
+        v[sv.mask[i]] = x[sv.ind[i]+1:sv.ind[i+1]]
 
-                 return v
-                 end,
-                 Val(nvar_))
+        return v
+    end, Val(nvar_))
     return out
 end
 
 # output is Tuple{_<:Array{Float64,N}} (not completely type-stable)
 
-function unpackens(sv::statevector{nvar_,N},x::Array{T,2},fillvalue = 0) where {nvar_,N,T}
+function unpackens(sv::statevector{nvar_,N}, x::Array{T,2}, fillvalue = 0) where {nvar_,N,T}
 
-    k = size(x,2)
+    k = size(x, 2)
 
-    out = ntuple(i -> begin
-                 v = Array{T,N+1}(undef,(sv.size[i]...,k));
-                 v[:] .= fillvalue
+    out = ntuple(
+        i -> begin
+            v = Array{T,N + 1}(undef, (sv.size[i]..., k))
+            v[:] .= fillvalue
 
-                 ind =
-                   @static if VERSION >= v"0.7.0-beta.0"
-                     (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
-                   else
-                     find(sv.mask[i])
-                   end
+            ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
 
-                tmp = reshape(v,sv.numels_all[i],k)
-                tmp[ind,:] = x[sv.ind[i]+1:sv.ind[i+1],:]
+            tmp = reshape(v, sv.numels_all[i], k)
+            tmp[ind, :] = x[sv.ind[i]+1:sv.ind[i+1], :]
 
-                return v
-                end,Val(nvar_))::NTuple{nvar_,Array{T,N+1}}
+            return v
+        end,
+        Val(nvar_),
+    )::NTuple{nvar_,Array{T,N + 1}}
 
     return out
-end
-
-if VERSION < v"1.0.0"
-    import Base: ind2sub, sub2ind
-    #Base.ind2sub(sv::statevector,index::Integer) = ind2sub(sv,index)
-    #Base.sub2ind(sv::statevector,subscripts::Tuple) = sub2ind(sv,subscripts)
 end
 
 
@@ -213,7 +195,7 @@ end
 Compute from linear index in the packed state vector a tuple of subscripts.
 The first element of the subscript indicates the variable index and the remaining the spatial subscripts.
 """
-function ind2sub(sv::statevector,index::Integer)
+function ind2sub(sv::statevector, index::Integer)
 
     # variable index
     ivar = sum(sv.ind .< index)
@@ -222,14 +204,9 @@ function ind2sub(sv::statevector,index::Integer)
     vind = index - sv.ind[ivar]
 
     # spatial subscript
-    subscript =
-        @static if VERSION >= v"0.7.0-beta.0"
-            Tuple(CartesianIndices(sv.size[ivar])[sv.packed2unpacked[ivar][vind]])
-        else
-            ind2sub(sv.size[ivar],sv.packed2unpacked[ivar][vind])
-        end
+    subscript = Tuple(CartesianIndices(sv.size[ivar])[sv.packed2unpacked[ivar][vind]])
 
-    return (ivar,subscript...)
+    return (ivar, subscript...)
 
 end
 
@@ -240,7 +217,7 @@ end
 Compute from a tuple of subscripts the linear index in the packed state vector.
 The first element of the subscript indicates the variable index and the remaining the spatial subscripts.
 """
-function sub2ind(sv::statevector,subscripts::Tuple)
+function sub2ind(sv::statevector, subscripts::Tuple)
 
     # index of variable
     ivar = subscripts[1]
@@ -259,10 +236,10 @@ end
 # full names with prefix
 
 statevector_init(masks::Tuple) = statevector(masks)
-statevector_pack(sv::statevector,vars::Tuple) = pack(sv,vars)
-statevector_unpack(sv::statevector,x,fillvalue = 0) = unpack(sv,x,fillvalue)
-statevector_sub2ind(sv::statevector,subscripts::Tuple) = sub2ind(sv,subscripts)
-statevector_ind2sub(sv::statevector,index::Integer) = ind2sub(sv,index)
+statevector_pack(sv::statevector, vars::Tuple) = pack(sv, vars)
+statevector_unpack(sv::statevector, x, fillvalue = 0) = unpack(sv, x, fillvalue)
+statevector_sub2ind(sv::statevector, subscripts::Tuple) = sub2ind(sv, subscripts)
+statevector_ind2sub(sv::statevector, index::Integer) = ind2sub(sv, index)
 
 
 

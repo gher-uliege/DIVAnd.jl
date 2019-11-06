@@ -1,14 +1,14 @@
 """
     dataresidual = DIVAnd_residual(s,fi)
 
-Computes the generalized residual yo - H xa  using the analysis on the grid 
+Computes the generalized residual yo - H xa  using the analysis on the grid
 `fi` and the solution structure `s`.
 """
-function DIVAnd_residual(s,fi)
+function DIVAnd_residual(s, fi)
 
 
 
-    return s.yo-(s.H)*statevector_pack(s.sv,(fi,))
+    return s.yo - (s.H) * statevector_pack(s.sv, (fi,))
 
 end
 

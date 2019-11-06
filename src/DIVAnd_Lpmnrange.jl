@@ -1,10 +1,9 @@
 """
 
+    Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
 
-Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
-
-# In each direction searches for the minimum and maximum value of the length scale times the metric in this diretion
-# Si it basically looks at the worst and the best resolution found in the grid
+# In each direction, searches for the minimum and maximum value of the length scale times the metric in this direction
+# So it basically looks at the worst and the best resolution found in the grid
 
 # Input:
 
@@ -15,24 +14,23 @@ Lpmnrange = DIVAnd_Lpmnrange(pmn,len);
 * `len`: correlation length
 
 
-
 # Output:
 
 * `Lpmnrange`: Array of range tuples (minimum and maximum of L times metric)
 
 """
-function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}},len) where {N,T}
-    Lpmnrange = Vector{NTuple{2,T}}(undef,N)
+function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}}, len) where {N,T}
+    Lpmnrange = Vector{NTuple{2,T}}(undef, N)
 
-    for i=1:N
-        if isa(len,Number)
-            Lpmnrange[i] = extrema(len*pmn[i]);
-        elseif isa(len,Tuple)
+    for i = 1:N
+        if isa(len, Number)
+            Lpmnrange[i] = extrema(len * pmn[i])
+        elseif isa(len, Tuple)
 
-            if isa(len[1],Number)
-                Lpmnrange[i] = extrema(len[i]*pmn[i]);
+            if isa(len[1], Number)
+                Lpmnrange[i] = extrema(len[i] * pmn[i])
             else
-                Lpmnrange[i] = extrema(len[i].*pmn[i])
+                Lpmnrange[i] = extrema(len[i] .* pmn[i])
             end
 
         end
@@ -41,7 +39,7 @@ function DIVAnd_Lpmnrange(pmn::NTuple{N,Array{T,N}},len) where {N,T}
     return Lpmnrange
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

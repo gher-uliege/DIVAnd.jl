@@ -15,27 +15,38 @@ As for DIVAndrun, including all dimensions before averaging
 * faanom: Data anomalies when the analysis is subtracted from the input field.
 
 """
-function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
+function DIVAnd_averaged_bg(
+    mask,
+    pmn,
+    xi,
+    x,
+    f,
+    len,
+    epsilon2,
+    toaverage;
+    moddim = [],
+    filterbackground = 0,
+)
 
-    n=ndims(mask)
+    n = ndims(mask)
 
     if isempty(moddim)
-        moddim = zeros(1,n)
+        moddim = zeros(1, n)
     end
 
 
-    if sum(toaverage)==n
-        vm=mean(f)
-        fma=fill(vm,size(mask));
-        faanom=f .- vm
-        return fma,faanom
+    if sum(toaverage) == n
+        vm = mean(f)
+        fma = fill(vm, size(mask))
+        faanom = f .- vm
+        return fma, faanom
     end
 
-    if sum(toaverage)==0
+    if sum(toaverage) == 0
         @warn "no averaging was asked in averaging routine"
-        fma,s=DIVAndrun(mask,pmn,xi,x,f,len,epsilon2)
-        faanom=f-s.H*statevector_pack(s.sv,(fma,))
-        return fma,faanom
+        fma, s = DIVAndrun(mask, pmn, xi, x, f, len, epsilon2)
+        faanom = f - s.H * statevector_pack(s.sv, (fma,))
+        return fma, faanom
     end
 
 
@@ -61,32 +72,32 @@ function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
     # but it left empty dimensions instead of taking them out
     #
 
-    dimstokeep=[]
-    for i=1:n
+    dimstokeep = []
+    for i = 1:n
         if !toaverage[i]
-            dimstokeep=vcat(dimstokeep,[i])
+            dimstokeep = vcat(dimstokeep, [i])
         end
     end
     #   @show dimstokeep
 
-    xm=x[dimstokeep]
-    moddimm=moddim[dimstokeep]
+    xm = x[dimstokeep]
+    moddimm = moddim[dimstokeep]
 
-    pmnmf=pmn[dimstokeep]
-    ximf=xi[dimstokeep]
+    pmnmf = pmn[dimstokeep]
+    ximf = xi[dimstokeep]
 
-    pmnm=([ x[ind1...] for x in pmnmf ]...,)
-    xim=([ x[ind1...] for x in ximf ]...,)
+    pmnm = ([x[ind1...] for x in pmnmf]...,)
+    xim = ([x[ind1...] for x in ximf]...,)
 
 
-    if isa(len,Number)
-        lenm=len
-    elseif isa(len,Tuple)
-        if isa(len[1],Number)
-            lenm=len[dimstokeep]
+    if isa(len, Number)
+        lenm = len
+    elseif isa(len, Tuple)
+        if isa(len[1], Number)
+            lenm = len[dimstokeep]
         else
-            lenmf=len[dimstokeep]
-            lenm=([ x[ind1...] for x in lenmf ]...,)
+            lenmf = len[dimstokeep]
+            lenm = ([x[ind1...] for x in lenmf]...,)
         end
     end
 
@@ -100,31 +111,34 @@ function DIVAnd_averaged_bg(mask,pmn,xi,x,f,len,epsilon2,toaverage;moddim=[])
 
     #maskm=maskmf[ind1]
 
-    maskm=trues(size(xim[1]))
+    maskm = trues(size(xim[1]))
     #       @show size(maskm)
 
 
-    fm,sm=DIVAndrun(maskm,pmnm,xim,xm,f,lenm,epsilon2;moddim=moddimm)
-    vaanalyzed=sm.H*statevector_pack(sm.sv,(fm,))
+    fm, sm = DIVAndrun(maskm, pmnm, xim, xm, f, lenm, epsilon2; moddim = moddimm)
+
+    fm = DIVAnd_filter3(fm, NaN, filterbackground)
+
+    vaanalyzed = sm.H * statevector_pack(sm.sv, (fm,))
     vaanalyzed[sm.obsout] .= NaN
     faanom = f - vaanalyzed
     #@show extrema(vaanalyzed), sum(sm.obsout), extrema(faanom)
 
-    reshapeshape = ntuple(i -> (toaverage[i] ? 1 : size(mask,i)),n)
-    copyshape = ntuple(i -> (toaverage[i] ? size(mask,i) : 1),n)
+    reshapeshape = ntuple(i -> (toaverage[i] ? 1 : size(mask, i)), n)
+    copyshape = ntuple(i -> (toaverage[i] ? size(mask, i) : 1), n)
 
     #       @show reshapeshape
     #       @show copyshape
-    fma=repeat(reshape(fm,reshapeshape), inner=copyshape)
+    fma = repeat(reshape(fm, reshapeshape), inner = copyshape)
 
 
-    return fma,faanom
+    return fma, faanom
 
 end
 
 
 
-# Copyright (C) 2008-2016 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under

@@ -1,31 +1,27 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
-mask = rand(10,10) .> .5;
-mask_u = rand(9,10) .> .5;
-mask_v = rand(10,9) .> .5;
+mask = rand(10, 10) .> .5;
+mask_u = rand(9, 10) .> .5;
+mask_v = rand(10, 9) .> .5;
 
 # a couple of point should always be unmasked
-mask[3,5] = true
-mask_u[4,6] = true
-mask_v[5,7] = true
+mask[3, 5] = true
+mask_u[4, 6] = true
+mask_v[5, 7] = true
 
 
-sv = statevector((mask,mask_u,mask_v));
-var = rand(10,10);
+sv = statevector((mask, mask_u, mask_v));
+var = rand(10, 10);
 var[mask.==0] .= 0;
 
-var_u = rand(9,10);
+var_u = rand(9, 10);
 var_u[mask_u.==0] .= 0;
 
-var_v = rand(10,9);
+var_v = rand(10, 9);
 var_v[mask_v.==0] .= 0;
 
-E = pack(sv,(var,var_u,var_v));
-Ezeta2,Eu2,Ev2 = unpack(sv,E);
+E = pack(sv, (var, var_u, var_v));
+Ezeta2, Eu2, Ev2 = unpack(sv, E);
 
 #@show all(Ezeta2 .== var)
 #@show maximum(abs(Ezeta2 - var))
@@ -35,29 +31,29 @@ Ezeta2,Eu2,Ev2 = unpack(sv,E);
 @test Ev2 ≈ var_v
 
 
-data0 = randn(sv.n,5)
-Ezeta2,Eu2,Ev2 = unpackens(sv,data0)
-data2 = packens(sv,(Ezeta2,Eu2,Ev2))
-@test size(Ezeta2,3) == 5
+data0 = randn(sv.n, 5)
+Ezeta2, Eu2, Ev2 = unpackens(sv, data0)
+data2 = packens(sv, (Ezeta2, Eu2, Ev2))
+@test size(Ezeta2, 3) == 5
 @test data0 ≈ data2
 
 
-ind = sub2ind(sv,(1,3,5))
-@test var[3,5] ≈ E[ind]
-@test ind2sub(sv,ind) == (1,3,5)
+ind = sub2ind(sv, (1, 3, 5))
+@test var[3, 5] ≈ E[ind]
+@test ind2sub(sv, ind) == (1, 3, 5)
 
 
-ind = sub2ind(sv,(2,4,6))
-@test var_u[4,6] ≈ E[ind]
-@test ind2sub(sv,ind) == (2,4,6)
+ind = sub2ind(sv, (2, 4, 6))
+@test var_u[4, 6] ≈ E[ind]
+@test ind2sub(sv, ind) == (2, 4, 6)
 
-ind = sub2ind(sv,(3,5,7))
-@test var_v[5,7] ≈ E[ind]
-@test ind2sub(sv,ind) == (3,5,7)
+ind = sub2ind(sv, (3, 5, 7))
+@test var_v[5, 7] ≈ E[ind]
+@test ind2sub(sv, ind) == (3, 5, 7)
 
 
 # mask as Array{Bool,1} instead of BitArray
-sv = statevector(([true,false],))
+sv = statevector(([true, false],))
 @test sv.n == 1
 
 

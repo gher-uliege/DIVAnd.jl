@@ -56,20 +56,33 @@ metadata = OrderedDict(
     "acknowledgment" => "...",
 
     # Digital Object Identifier of the data product
-    "doi" => "...")
+    "doi" => "...",
+)
 
 filename = "test.nc"
 varname = "temp"
-ncglobalattrib,ncvarattrib = DIVAnd.SDNMetadata(metadata,filename,varname,1:10,1:10;
-                                         field = ones(10,10))
+ncglobalattrib, ncvarattrib = DIVAnd.SDNMetadata(
+    metadata,
+    filename,
+    varname,
+    1:10,
+    1:10;
+    field = ones(10, 10),
+)
 
 @test ncvarattrib["units"] == "degree Celsius"
 @test typeof(ncglobalattrib["area_keywords"]) == String
 
-ncglobalattrib,ncvarattrib = DIVAnd.SDNMetadata(metadata,filename,varname,1:10,1:10;
-                                         default_field_min = -123,
-                                         default_field_max = 123)
+ncglobalattrib, ncvarattrib = DIVAnd.SDNMetadata(
+    metadata,
+    filename,
+    varname,
+    1:10,
+    1:10;
+    default_field_min = -123,
+    default_field_max = 123,
+)
 
-@test occursin("123",ncglobalattrib["preview"])
+@test occursin("123", ncglobalattrib["preview"])
 
 

@@ -6,7 +6,7 @@ for "collapsed" matrix of the size `sz1`.
 `cyclic` is true if domain is cyclic along dimension m.
 `false` is the default value
 """
-sparse_stagger(sz1,m,cyclic = false) = _sparse_wsum(sz1,m,0.5,0.5,cyclic)
+sparse_stagger(sz1, m, cyclic = false) = _sparse_wsum(sz1, m, 0.5, 0.5, cyclic)
 
 # Copyright (C) 2009,2018 Alexander Barth <a.barth@ulg.ac.be>
 #

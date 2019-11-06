@@ -1,11 +1,6 @@
 import DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using DelimitedFiles
-else
-    using Base.Test
-    using Compat
-end
+using Test
+using DelimitedFiles
 using DataStructures
 using Missings
 using NCDatasets
@@ -15,25 +10,45 @@ varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
 
-bathname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
-                    "Global","Bathymetry","gebco_30sec_16.nc")
+bathname = joinpath(
+    dirname(@__FILE__),
+    "..",
+    "..",
+    "DIVAnd-example-data",
+    "Global",
+    "Bathymetry",
+    "gebco_30sec_16.nc",
+)
 bathisglobal = true
 
-obsname = joinpath(dirname(@__FILE__),"..","..","DIVAnd-example-data",
-                    "Provencal","WOD-Salinity.nc")
+obsname = joinpath(
+    dirname(@__FILE__),
+    "..",
+    "..",
+    "DIVAnd-example-data",
+    "Provencal",
+    "WOD-Salinity.nc",
+)
 
-cdilist = joinpath(dirname(@__FILE__),"..","data","CDI-list-export.csv")
+cdilist = joinpath(dirname(@__FILE__), "..", "data", "CDI-list-export.csv")
 
 
 if !isfile(bathname)
+    @info("download bathymetry $bathname")
     bathname = download("https://dox.ulg.ac.be/index.php/s/U0pqyXhcQrXjEUX/download")
 end
 
+
 if !isfile(obsname)
+    @info("download obsevations $obsname")
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
-obsvalue,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.loadobs(Float64,obsname,"Salinity")
+obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
+    Float64,
+    obsname,
+    "Salinity",
+)
 
 # for testing only
 obsids[1] = "100-123"
@@ -45,15 +60,29 @@ obsids[4:end] .= "101-125"
 dx = dy = 0.5
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
-depthr = [0.,20.]
+depthr = [0., 20., 30.]
 epsilon2 = 0.01
 
+# put one point on land
+index_land_point = 897297
+obslat[index_land_point] = 43.6333
+obslon[index_land_point] = 6
 
-sz = (length(lonr),length(latr),length(depthr))
+# put one to NaN
+index_NaN = 897298
+obsvalue[index_NaN] = NaN
 
-lenx = fill(200_000,sz)
-leny = fill(200_000,sz)
-lenz = [10+depthr[k]/15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
+# put an outlier
+index_outlier = 897299
+obsvalue[index_outlier] = 50.
+
+
+surfextend = true
+sz = (length(lonr), length(latr), length(depthr))
+
+lenx = fill(200_000, sz)
+leny = fill(200_000, sz)
+lenz = [10 + depthr[k] / 15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
 
 years = 1993:1993
 
@@ -64,15 +93,10 @@ year_window = 10
 # summer: July-September   7,8,9
 # autumn: October-December 10,11,12
 
-monthlists = [
-    [1,2,3],
-    [4,5,6],
-    [7,8,9],
-    [10,11,12]
-];
+monthlists = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
 
 
-TS = DIVAnd.TimeSelectorYW(years,year_window,monthlists)
+TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 varname = "Salinity"
 
@@ -135,144 +159,119 @@ metadata = OrderedDict(
     "acknowledgment" => "...",
 
     # Digital Object Identifier of the data product
-    "doi" => "...")
+    "doi" => "...",
+)
 
 
 # edit the bathymetry
-mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr,depthr)
-mask[3,3,1] = false
+mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.domain(bathname, bathisglobal, lonr, latr, depthr)
+mask[3, 3, 1] = false
 
-ncglobalattrib,ncvarattrib = DIVAnd.SDNMetadata(metadata,filename,varname,lonr,latr)
+ncglobalattrib, ncvarattrib = DIVAnd.SDNMetadata(metadata, filename, varname, lonr, latr)
 
 if isfile(filename)
-   rm(filename) # delete the previous analysis
+    rm(filename) # delete the previous analysis
 end
 
-dbinfo = @static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*netCDF*") match_mode=:any DIVAnd.diva3d(
-        (lonr,latr,depthr,TS),
-        (obslon,obslat,obsdepth,obstime),
-        obsvalue,
-        (lenx,leny,lenz),
-        epsilon2,
-        filename,varname,
-        bathname = bathname,
-        bathisglobal = bathisglobal,
-        ncvarattrib = ncvarattrib,
-        ncglobalattrib = ncglobalattrib,
-        mask = mask,
-    )
-else
-    @test_warn r".netCDF.*" DIVAnd.diva3d(
-        (lonr,latr,depthr,TS),
-        (obslon,obslat,obsdepth,obstime),
-        obsvalue,
-        (lenx,leny,lenz),
-        epsilon2,
-        filename,varname,
-        bathname = bathname,
-        bathisglobal = bathisglobal,
-        ncvarattrib = ncvarattrib,
-        ncglobalattrib = ncglobalattrib,
-        mask = mask,
-    )
-end
+dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
+    (lonr, latr, depthr, TS),
+    (obslon, obslat, obsdepth, obstime),
+    obsvalue,
+    (lenx, leny, lenz),
+    epsilon2,
+    filename,
+    varname,
+    bathname = bathname,
+    bathisglobal = bathisglobal,
+    ncvarattrib = ncvarattrib,
+    ncglobalattrib = ncglobalattrib,
+    mask = mask,
+    surfextend = surfextend,
+)
 
 obsused = dbinfo[:used]
 #DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
 
-DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids)
+DIVAnd.saveobs(filename, (obslon, obslat, obsdepth, obstime), obsids)
 
 
 project = "SeaDataCloud"
 xmlfilename = "test.xml"
 ignore_errors = true
 
-@static if VERSION >= v"0.7.0"
-    @test_logs (:info,r".*") match_mode=:any DIVAnd.divadoxml(
-        filename,varname,project,cdilist,xmlfilename,
-        ignore_errors = ignore_errors)
-else
-    @test_warn r".*" DIVAnd.divadoxml(
-        filename,varname,project,cdilist,xmlfilename,
-        ignore_errors = ignore_errors)
-end
+additionalcontacts = [
+    DIVAnd.getedmoinfo(1977, "originator"),
+    DIVAnd.getedmoinfo(4630, "originator"),
+]
+
+@test_logs (:info, r".*") match_mode = :any DIVAnd.divadoxml(
+    filename,
+    varname,
+    project,
+    cdilist,
+    xmlfilename,
+    ignore_errors = ignore_errors,
+    additionalcontacts = additionalcontacts,
+)
 
 errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
 
-errdata,header = readdlm(errname,'\t'; header = true)
+errdata, header = readdlm(errname, '\t'; header = true)
 
 # check if the missing CDI was identified
 @test errdata[1] == 999
 @test errdata[2] == "missing"
 
 # check if editing of the mask was successful
-@test ismissing(Dataset(filename)["Salinity"][3,3,1,1])
+@test ismissing(Dataset(filename)["Salinity"][3, 3, 1, 1])
 
-xmlstr = read(xmlfilename,String);
+xmlstr = read(xmlfilename, String);
 
-keyword_code = split(metadata["parameter_keyword_urn"],':')[end]
-@test occursin(keyword_code,xmlstr)
+keyword_code = split(metadata["parameter_keyword_urn"], ':')[end]
+@test occursin(keyword_code, xmlstr)
+@test occursin("1977", xmlstr)
+@test occursin("4630", xmlstr)
 
 # new analysis with background from file
 
 filename2 = "Water_body_$(replace(varname,' ' => '_'))2.4Danl.nc"
 if isfile(filename2)
-   rm(filename2) # delete the previous analysis
+    rm(filename2) # delete the previous analysis
 end
 
 
-dbinfo =
-    @static if VERSION >= v"0.7.0"
-        @test_logs (:info,r".*") (:warn,r".*Be patient.*") match_mode=:any DIVAnd.diva3d(
-            (lonr,latr,depthr,TS),
-            (obslon,obslat,obsdepth,obstime),
-            obsvalue,
-            (),
-            epsilon2,
-            filename2,varname,
-            bathname = bathname,
-            bathisglobal = bathisglobal,
-            ncvarattrib = ncvarattrib,
-            ncglobalattrib = ncglobalattrib,
-            background = DIVAnd.backgroundfile(filename,varname),
-            fitcorrlen = true,
-            background_len = (lenx,leny,lenz),
-            fithorz_param = Dict(
-                :maxnsamp => 500,
-            ),
-            fitvert_param = Dict(
-                :maxnsamp => 100,
-            ),
-            mask = mask,
-            niter_e = 2,
-            QCMETHOD = 0,
-        )
-    else
-        @test_warn r".*Be patient.*" DIVAnd.diva3d(
-            (lonr,latr,depthr,TS),
-            (obslon,obslat,obsdepth,obstime),
-            obsvalue,
-            (),
-            epsilon2,
-            filename2,varname,
-            bathname = bathname,
-            bathisglobal = bathisglobal,
-            ncvarattrib = ncvarattrib,
-            ncglobalattrib = ncglobalattrib,
-            background = DIVAnd.backgroundfile(filename,varname),
-            fitcorrlen = true,
-            background_len = (lenx,leny,lenz),
-            fithorz_param = Dict(
-                :maxnsamp => 500,
-            ),
-            fitvert_param = Dict(
-                :maxnsamp => 100,
-            ),
-            mask = mask,
-            niter_e = 2,
-            QCMETHOD = 0,
-        )
-    end
+dbinfo = @test_logs (:info, r".*") (:warn, r".*Be patient.*") match_mode = :any DIVAnd.diva3d(
+    (lonr, latr, depthr, TS),
+    (obslon, obslat, obsdepth, obstime),
+    obsvalue,
+    (),
+    epsilon2,
+    filename2,
+    varname,
+    bathname = bathname,
+    bathisglobal = bathisglobal,
+    ncvarattrib = ncvarattrib,
+    ncglobalattrib = ncglobalattrib,
+    background = DIVAnd.backgroundfile(filename, varname),
+    fitcorrlen = true,
+    background_len = (lenx, leny, lenz),
+    fithorz_param = Dict(:maxnsamp => 500, :epsilon2 => ones(size(obsvalue))),
+    fitvert_param = Dict(:maxnsamp => 100,),
+    mask = mask,
+    niter_e = 2,
+    QCMETHOD = 0,
+    surfextend = surfextend,
+)
+
+qcvalue = dbinfo[:qcvalues]
+used = dbinfo[:used]
+residuals = dbinfo[:residuals]
+
+@test isnan(residuals[index_land_point])
+@test isnan(residuals[index_NaN])
+@test !used[index_NaN]
+@test all(isfinite.(qcvalue[used]))
+@test qcvalue[index_outlier] > 9
 
 nothing
+

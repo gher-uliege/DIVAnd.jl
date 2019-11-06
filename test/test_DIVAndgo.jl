@@ -1,12 +1,7 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 
-if VERSION >= v"0.7"
-    using Test
-else
-    using Base.Test
-    using Compat: range
-end
+using Test
 
 using DIVAnd
 
@@ -17,9 +12,10 @@ y = [0.5];
 f = [1.];
 
 # final grid
-mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(
-    range(0,stop=1,length=23),
-    range(0,stop=1,length=22))
+mask, (pm, pn), (xi, yi) = DIVAnd_rectdom(
+    range(0, stop = 1, length = 23),
+    range(0, stop = 1, length = 22),
+)
 
 # correlation length
 len = 0.005;
@@ -29,14 +25,23 @@ epsilon2 = 1.;
 
 # fi is the interpolated field
 
-fiex,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
+fiex, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, (0.5 * len, 1 * len), epsilon2);
 
 # to compare to the filtered version
-fiexf=DIVAnd_filter3(fiex,NaN,2)
+fiexf = DIVAnd_filter3(fiex, NaN, 2)
 
-fi,s = DIVAndgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2);
+fi, s = DIVAndgo(mask, (pm, pn), (xi, yi), (x, y), f, (0.5 * len, 1 * len), epsilon2);
 
-fifp,s = DIVAndgo(mask,(pm,pn),(xi,yi),(x,y),f,(0.5*len,1*len),epsilon2;moddim=[0,0]);
+fifp, s = DIVAndgo(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    f,
+    (0.5 * len, 1 * len),
+    epsilon2;
+    moddim = [0, 0],
+);
 
 @test maximum(fi) ≈ maximum(fiexf)
 

@@ -2,20 +2,16 @@
 # with observations from an analytical function.
 
 using DIVAnd
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 #using PyPlot
 
 # final grid
-gridsize = (101,101)
+gridsize = (101, 101)
 
 n = length(gridsize)
 
 # observations
-xy = ntuple(i -> [0.5],n)
+xy = ntuple(i -> [0.5], n)
 f = [1]
 
 
@@ -24,16 +20,15 @@ f = [1]
 # pm is the inverse of the resolution along the 1st dimension,...
 
 
-mask,pmn,xyi = DIVAnd_rectdom(
-    [range(0, stop = 1,length = s) for s in gridsize]...)
+mask, pmn, xyi = DIVAnd_rectdom([range(0, stop = 1, length = s) for s in gridsize]...)
 
 
 sv = statevector((mask,))
 
 # correlation length
 #lenxy = ntuple(i -> 1.,n)
-lenxy = ntuple(i -> .1,n)
-lenxy = (0.1,0.15)
+lenxy = ntuple(i -> .1, n)
+lenxy = (0.1, 0.15)
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;
@@ -54,14 +49,14 @@ tol = 1e-5
 
 Ld = [mean(L) for L in lenxy]
 nu = ([L.^2 for L in lenxy]...)
-D = DIVAnd_laplacian(Val{:sparse},mask,pmn,nu,falses(4))
+D = DIVAnd_laplacian(Val{:sparse}, mask, pmn, nu, falses(4))
 
 
 
 #1/dx 1/dy ( ∂_x  dy/dx nu  ∂_x  )
 
 zi0 = zeros(gridsize)
-zi0[50,50] = 1
+zi0[50, 50] = 1
 
 ivol = .*(pmn...)
 
@@ -78,22 +73,23 @@ nmax2 = 10000
 α = 0.0001
 
 for niter = 1:nmax2
-    zi += α * (D*zi)
+    zi += α * (D * zi)
 end
 
 
-zi = reshape(zi,gridsize)
+zi = reshape(zi, gridsize)
 
 @show sum(zi ./ ivol)
 
-xi,yi = xyi
+xi, yi = xyi
 
 
 
-ri = [ sqrt((xi[i,j]-xi[50,50])^2 / Ld[1]^2  + (yi[i,j]-yi[50,50])^2 / Ld[2]^2)  for i=1:gridsize[1], j=1:gridsize[2]]
-zit = exp(-ri.^2/(4 * nmax2 * α)) ./ ((4 * π * nmax2 * α)^(n/2) * prod(Ld) * ivol[50,50])
+ri = [sqrt((xi[i, j] - xi[50, 50])^2 / Ld[1]^2 + (yi[i, j] - yi[50, 50])^2 / Ld[2]^2) for i = 1:gridsize[1], j = 1:gridsize[2]]
+zit = exp(-ri.^2 / (4 * nmax2 * α)) ./
+      ((4 * π * nmax2 * α)^(n / 2) * prod(Ld) * ivol[50, 50])
 
-@show maximum(abs(zit-zi))
+@show maximum(abs(zit - zi))
 @test_approx_eq_eps zit zi 1e-4
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

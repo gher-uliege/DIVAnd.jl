@@ -24,53 +24,60 @@
 
 function test_2dvar_benchmark(name)
 
-    @printf("Running DIVAnd benchmark in 2 dimensions\n");
+    @printf("Running DIVAnd benchmark in 2 dimensions\n")
 
     # domain sizes
-    ng = 100:100:500;
+    ng = 100:100:500
 
-    time = zeros(10,length(ng))
-    RMS = zeros(10,length(ng))
+    time = zeros(10, length(ng))
+    RMS = zeros(10, length(ng))
 
-    for j=1:10
-        for i=1:length(ng)
-            time[i,j],RMS[i,j] = benchmark2d(ng[i]);
-            if (RMS[i,j] > 0.2)
-                error("unexpected large RMS. Results might be wrong");
+    for j = 1:10
+        for i = 1:length(ng)
+            time[i, j], RMS[i, j] = benchmark2d(ng[i])
+            if (RMS[i, j] > 0.2)
+                error("unexpected large RMS. Results might be wrong")
             end
 
-            @printf("size %5d time %10.4f \n",ng[i],time[i,j]);
+            @printf("size %5d time %10.4f \n", ng[i], time[i, j])
         end
     end
 
-    @printf("\nMedian results\n");
+    @printf("\nMedian results\n")
 
-    median_time = median(time,2);
+    median_time = median(time, 2)
 
-    for i=1:length(ng)
-        @printf("size %5d time %10.4f \n",ng[i],median_time[i]);
+    for i = 1:length(ng)
+        @printf("size %5d time %10.4f \n", ng[i], median_time[i])
     end
 
     fname = "test_2dvar_benchmark_$(name).mat"
-    @printf("save result in file %s\n",fname)
-    matwrite(fname,Dict("time" => time,"RMS" => RMS,"ng" => ng))
+    @printf("save result in file %s\n", fname)
+    matwrite(fname, Dict("time" => time, "RMS" => RMS, "ng" => ng))
 
-    return median_time,ng,time
+    return median_time, ng, time
 end
 
-function benchmark_nd_repeat(n,ng,ntimes; kwargs...)
+function benchmark_nd_repeat(n, ng, ntimes; kwargs...)
     times = zeros(ntimes)
     RMS = zeros(ntimes)
 
-    times[1],RMS[1] = benchmark_nd(n,ng; kwargs...)
+    times[1], RMS[1] = benchmark_nd(n, ng; kwargs...)
 
     for i = 1:ntimes
-        times[i],RMS[i] = benchmark_nd(n,ng; kwargs...)
+        times[i], RMS[i] = benchmark_nd(n, ng; kwargs...)
     end
 
     mad(x) = median(abs.(x - median(x)))
 
-    stat = Dict{String,Any}([(string(f),f(times)) for f in [mean,std,median,mad,minimum,maximum]])
+    stat = Dict{String,Any}([(string(f), f(times)) for f in [
+        mean,
+        std,
+        median,
+        mad,
+        minimum,
+        maximum,
+    ]])
     stat["samples"] = length(times)
     stat["times"] = times
     stat["RMS"] = RMS
@@ -78,40 +85,40 @@ function benchmark_nd_repeat(n,ng,ntimes; kwargs...)
 end
 
 
-function benchmark_nd(n,ng; kwargs...)
-    mg = max(ceil(Int,ng/5),2);
-    len = 10/ng;
+function benchmark_nd(n, ng; kwargs...)
+    mg = max(ceil(Int, ng / 5), 2)
+    len = 10 / ng
 
-    epsilon2 = 0.05;
+    epsilon2 = 0.05
 
-    f(xy...) = .*([cos.(2*pi*ng*x/20) for x in xy]...)
+    f(xy...) = .*([cos.(2 * pi * ng * x / 20) for x in xy]...)
 
     # grid of background field
-    mask,pmn,xyi =  DIVAnd_squaredom(n,linspace(0,1,ng))
-    vi = f(xyi...);
+    mask, pmn, xyi = DIVAnd_squaredom(n, linspace(0, 1, ng))
+    vi = f(xyi...)
 
     # grid of observations
-    xy = ndgrid([linspace(1e-6,1-1e-6,mg) for i = 1:n]...)
-    v = f([x[:] for x in xy]...);
+    xy = ndgrid([linspace(1e-6, 1 - 1e-6, mg) for i = 1:n]...)
+    v = f([x[:] for x in xy]...)
 
     t1 = time_ns()
-    va,s = varanalysis(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
+    va, s = varanalysis(mask, pmn, xyi, xy, v, len, epsilon2; kwargs...)
     #va,s = DIVAndrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
     t2 = time_ns()
-    time = (t2 - t1)/1e9
-    RMS = rms(va,vi);
+    time = (t2 - t1) / 1e9
+    RMS = rms(va, vi)
 
-    return time,RMS
+    return time, RMS
 end
 
 
-function rms(x,y)
+function rms(x, y)
 
-    d = x-y;
+    d = x - y
 
-    m = .!isnan.(d);
-    r = mean(d[m].^2);
+    m = .!isnan.(d)
+    r = mean(d[m].^2)
 
-    r = sqrt.(r);
+    r = sqrt.(r)
     return r
 end

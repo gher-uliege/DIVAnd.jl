@@ -1,8 +1,6 @@
 module Quadtrees
 
-if VERSION >= v"0.7.0-beta.0"
-    using Dates
-end
+using Dates
 using Compat
 import Base.length
 
@@ -13,47 +11,51 @@ TA the type of the attributes
 N number of dimensions
 """
 mutable struct QT{T,TA,N}
-    children :: Vector{QT{T,TA,N}}  # vector of child nodes (empty if node is a leaf)
+    children::Vector{QT{T,TA,N}}  # vector of child nodes (empty if node is a leaf)
     # list of coordinates (only non-empty if node is a leaf)
     # points[:,i] coordinates of the i-th point
-    points :: Array{T,2}
-    min :: Vector{T}                # minimum of bounding box
-    max :: Vector{T}                # maximim of bounding box
-    attribs :: Vector{TA}           # additional attributes (only non-empty if node is a leaf)
+    points::Array{T,2}
+    min::Vector{T}                # minimum of bounding box
+    max::Vector{T}                # maximim of bounding box
+    attribs::Vector{TA}           # additional attributes (only non-empty if node is a leaf)
 end
 
 """create empty quadtree
 """
-QT(TA::DataType,min::Vector{T}, max::Vector{T}) where T =
-    QT(QT{T,TA,size(min,1)}[],Matrix{T}(undef,size(min,1),0),min,max,TA[])
+QT(TA::DataType, min::Vector{T}, max::Vector{T}) where {T} =
+    QT(QT{T,TA,size(min, 1)}[], Matrix{T}(undef, size(min, 1), 0), min, max, TA[])
 
 """create a quadtree
 """
-QT(points::AbstractArray{T,2},attribs::AbstractVector{TA}) where {T,TA} =
-    if VERSION >= v"0.7.0-beta.0"
-        QT(QT{T,TA,size(points,1)}[],
-           points,
-           minimum(points,dims = 2)[:],
-           maximum(points,dims = 2)[:],
-           attribs)
-    else
-        QT(QT{T,TA,size(points,1)}[],
-           points,
-           minimum(points,2)[:],
-           maximum(points,2)[:],
-           attribs)
-    end
+QT(points::AbstractArray{T,2}, attribs::AbstractVector{TA}) where {T,TA} =
+    QT(
+       QT{T,TA,size(points, 1)}[],
+       points,
+       minimum(points, dims = 2)[:],
+       maximum(points, dims = 2)[:],
+       attribs,
+    )
 
-function QT(points::AbstractArray{T,2}, min::Vector{T}, max::Vector{T}, attribs::AbstractVector{TA}) where {T,TA}
+function QT(
+    points::AbstractArray{T,2},
+    min::Vector{T},
+    max::Vector{T},
+    attribs::AbstractVector{TA},
+) where {T,TA}
 
-    if length(attribs) != size(points,2)
+    if length(attribs) != size(points, 2)
         error("QT inconsistent size $(length(attribs)) versus $(size(points,2))")
     end
 
-    return QT(QT{T,TA,size(points,1)}[],points,min,max,attribs)
+    return QT(QT{T,TA,size(points, 1)}[], points, min, max, attribs)
 end
 
 """
+    inside(x0,x1,y)
+
+Returns true of the point `y` is inside the rectange defined by `x0` and `x1`.
+
+```
              x1
   +----------+
   |          |
@@ -61,9 +63,9 @@ end
   |   y      |
   +----------+
  x0
-
+```
 """
-function inside(x0,x1,y)
+@inline function inside(x0, x1, y)
     insd = true
 
     @inbounds for i = 1:length(y)
@@ -75,36 +77,13 @@ end
 """
 Test if the n-th bit in a is set. The least significant bit is n = 1.
 """
-bitget(a,n) = Bool((a & (1 << (n-1))) >> (n-1))
+bitget(a, n) = Bool((a & (1 << (n - 1))) >> (n - 1))
 
-
-
-
-
-function intersect_(x0,x1,y0,y1)
-    # number of dimensions
-    n = size(x0,1)
-
-    intrsct = false
-
-    @inbounds for i = 1:2^n
-        inside = true
-        @inbounds for j = 1:n
-            if bitget(i-1, j)
-                inside = inside & (x0[j] <= y0[j] <= x1[j])
-            else
-                inside = inside & (x0[j] <= y1[j] <= x1[j])
-            end
-        end
-
-        intrsct = intrsct | inside
-    end
-
-    return intrsct
-end
 
 """
-Test of the rectanges defined by x0,x1  and y0,y1 intersects
+Test if the rectanges defined by x0,x1 and y0,y1 intersects/overlap
+
+```
              x1
   +----------+
   |          |
@@ -115,26 +94,56 @@ Test of the rectanges defined by x0,x1  and y0,y1 intersects
       |          |
       +----------+
      y0
+```
 """
-function intersect(x0,x1,y0,y1)
-    n = size(x0,1)
+function intersect(x0, x1, y0, y1)
+    n = size(x0, 1)
 #    if (n != length(x1)) || (n != length(y0)) || (n != length(y1))
 #        throw(ArgumentError("all arguments of intersect must have the same length"))
 #    end
 
-    return intersect_(x0,x1,y0,y1) || intersect_(y0,y1,x0,x1)
+    # https://stackoverflow.com/a/306332/3801401
+    cond = true
+    for i = 1:length(x0)
+        cond = cond && (x0[i] <= y1[i]) && (x1[i] >= y0[i])
+    end
+    return cond
 end
+
+
+
+
+
+
+"""
+Test if the rectangle defined by x0,x1 is included in rectangle y0,y1
+             x1
+  +------------+
+  |            |
+  |   +--+ y1  |
+  |   |  |     |
+  |   +--+     |
+  | y0         |
+  +------------+
+ x0
+
+"""
+@inline function include(x0, x1, y0, y1)
+    return inside(x0, x1, y0) && inside(x0, x1, y1)
+end
+
+
 
 """
 number of points per node
 it is always zero for non-leaf nodes
 """
-Base.length(qt::QT) = size(qt.points,2)
+Base.length(qt::QT) = size(qt.points, 2)
 
 isleaf(qt) = length(qt.children) == 0
 
-inside(qt::QT,y) = inside(qt.min,qt.max,y)
-Base.intersect(qt::QT,y0,y1) = intersect(qt.min,qt.max,y0,y1)
+inside(qt::QT, y) = inside(qt.min, qt.max, y)
+Base.intersect(qt::QT, y0, y1) = intersect(qt.min, qt.max, y0, y1)
 Base.ndims(qt::QT{T,TA,N}) where {T,TA,N} = N
 
 function count(qt::QT)
@@ -153,25 +162,25 @@ end
 """
 sucess = add!(qt,x,attrib,max_cap = 10)
 Add point `x` with the attribute `attrib` to the quadtree `qt`.
-`sucess` is true if `x`is within the bounds of the quadtree node `qt` (otherwise
+`sucess` is true if `x` is within the bounds of the quadtree node `qt` (otherwise
 false and the point has not been added)
 """
-function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
-    if length(attrib) != size(x,2)
-        @show length(attrib), size(x,2)
+function add!(qt::QT{T,TA,N}, x, attrib, max_cap = 10) where {T,TA,N}
+    if length(attrib) != size(x, 2)
+        @show length(attrib), size(x, 2)
         error("QT inconsistent size")
     end
 
-    if !inside(qt,x)
+    if !inside(qt, x)
         return false
     else
         if isleaf(qt)
-            qt.points = hcat(qt.points,x)
+            qt.points = hcat(qt.points, x)
 
-            push!(qt.attribs,attrib)
+            push!(qt.attribs, attrib)
 
-            if length(qt.attribs) != size(qt.points,2)
-                @show length(qt.attribs), size(qt.points,2)
+            if length(qt.attribs) != size(qt.points, 2)
+                @show length(qt.attribs), size(qt.points, 2)
                 error("QT inconsistent size")
             end
 
@@ -182,21 +191,21 @@ function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
         else
             # try to add to all children and returns on first sucessful
             for child in qt.children
-                if add!(child,x,attrib,max_cap)
+                if add!(child, x, attrib, max_cap)
                     return true
                 end
             end
 
             # bounds of child
-            cmin = Vector{T}(undef,N)
-            cmax = Vector{T}(undef,N)
-            xcenter = (qt.max + qt.min)/2
+            cmin = Vector{T}(undef, N)
+            cmax = Vector{T}(undef, N)
+            xcenter = (qt.max + qt.min) / 2
 
             # create missing child
             @inbounds for i = 1:2^N
                 for j = 1:N
                     # all corners of a hypercube
-                    if bitget(i-1, j)
+                    if bitget(i - 1, j)
                         cmin[j] = qt.min[j]
                         cmax[j] = xcenter[j]
                     else
@@ -206,9 +215,9 @@ function add!(qt::QT{T,TA,N},x,attrib,max_cap = 10) where {T,TA,N}
                 end
 
                 if all(cmin .< x .<= cmax)
-                    child = QT(TA,cmin,cmax)
-                    add!(child,x,attrib)
-                    push!(qt.children,child)
+                    child = QT(TA, cmin, cmax)
+                    add!(child, x, attrib)
+                    push!(qt.children, child)
                     return true
                 end
             end
@@ -227,72 +236,91 @@ function split!(qt::QT{T,TA,N}) where {T,TA,N}
     # N: number of dimenions
 
     if isleaf(qt)
-        xcenter = (qt.max + qt.min)/2
+        xcenter = (qt.max + qt.min) / 2
 
         nchildren = 2^N
-        qt.children = Vector{QT{T,TA,N}}(undef,nchildren)
+        qt.children = Vector{QT{T,TA,N}}(undef, nchildren)
 
         # bounds of child
-        cmin = Vector{T}(undef,N)
-        cmax = Vector{T}(undef,N)
-        sel = trues(size(qt.points,2))
+        cmin = Vector{T}(undef, N)
+        cmax = Vector{T}(undef, N)
+        sel = trues(size(qt.points, 2))
         nchildreneff = 0
 
         @inbounds for i = 1:nchildren
-            fill!(sel,true)
+            fill!(sel, true)
 
             for j = 1:N
                 # all corners of a hypercube
-                if bitget(i-1, j)
-                    sel = sel .& (qt.points[j,:] .<= xcenter[j])
+                if bitget(i - 1, j)
+                    sel = sel .& (qt.points[j, :] .<= xcenter[j])
                     cmin[j] = qt.min[j]
                     cmax[j] = xcenter[j]
                 else
-                    sel = sel .& (qt.points[j,:] .> xcenter[j])
+                    sel = sel .& (qt.points[j, :] .> xcenter[j])
                     cmin[j] = xcenter[j]
                     cmax[j] = qt.max[j]
                 end
             end
 
-            child = QT(qt.points[:,sel],copy(cmin),copy(cmax),qt.attribs[sel])
-
+            child = QT(qt.points[:, sel], copy(cmin), copy(cmax), qt.attribs[sel])
+            #=
+            points_sel = qt.points[:,sel]
+            child = QT(points_sel,
+                       minimum(points_sel, dims = 1)[1,:],
+                       maximum(points_sel, dims = 1)[1,:],
+                       qt.attribs[sel])
+            =#
             # add only children with data
             if length(child) > 0
-                 nchildreneff = nchildreneff+1
-                 qt.children[nchildreneff] = child
+                nchildreneff = nchildreneff + 1
+                qt.children[nchildreneff] = child
             end
         end
 
         # trim leaves with no data
-        resize!(qt.children,nchildreneff)
+        resize!(qt.children, nchildreneff)
 
         # remove points from node
-        qt.points = Matrix{T}(undef,N,0)
-        qt.attribs = Vector{T}(undef,0)
+        qt.points = Matrix{T}(undef, N, 0)
+        qt.attribs = Vector{T}(undef, 0)
     end
 end
 
 """
 recursive split
 """
-function rsplit!(qt::QT{T,TA,N}, max_cap = 10) where {T,TA,N}
+function rsplit!(qt::QT{T,TA,N}, max_cap = 10, min_size = zeros(N)) where {T,TA,N}
 
 
 
     if isleaf(qt)
         if length(qt) < max_cap
-            # no enougth points, nothing to do
+            # no enougth points, stop recursion
             return
         end
 
-        allequal = true
+        # check if the minimum size is reached
+        min_size_reached = true
 
-        @inbounds for i = 2:size(qt.points,2)
-            allequal = allequal & (qt.points[:,i] == qt.points[:,1])
+        for i = 1:N
+            min_size_reached = min_size_reached && ((qt.max[i] - qt.min[i]) < min_size[i])
         end
 
-        # all points are equal, stop recursion
+        if min_size_reached
+            # small enought, stop recursion
+            return
+        end
+
+        # check of all are equal
+        allequal = true
+
+        @inbounds for i = 2:size(qt.points, 2)
+            allequal = allequal & ((@view qt.points[:, i]) == (@view qt.points[:, 1]))
+        end
+
         if allequal
+            # all points are equal, stop recursion
             return
         end
 
@@ -300,7 +328,7 @@ function rsplit!(qt::QT{T,TA,N}, max_cap = 10) where {T,TA,N}
     end
 
     for child in qt.children
-        rsplit!(child,max_cap)
+        rsplit!(child, max_cap, min_size)
     end
 
 end
@@ -309,59 +337,107 @@ end
 """
     attribs = within(qt,min,max)
 
-Search all points within a bounding box defined by the vectors `min` and `max`.
+Search all the points within a bounding box defined by the vectors `min` and `max`.
 """
 function within(qt::QT{T,TA,N}, min, max) where {T,TA,N}
-    attribs = TA[]
-    sizehint!(attribs,1)
-    within!(qt,min,max,attribs)
+    nattrib = within_count(qt, min, max)
+    attribs = Vector{TA}(undef, nattrib)
+
+    within_buffer!(qt, min, max, attribs)
     return attribs
 end
 
-function within!(qt::QT{T,TA,N}, min, max, attribs) where {T,TA,N}
+
+function within_count(qt::QT{T,TA,N}, min, max) where {T,TA,N}
+    nattrib = 0
+
+    if !Base.intersect(qt, min, max)
+        # nothing to do
+        return nattrib
+    end
+
+    if isleaf(qt)
+        #@show "checking"
+        @inbounds for i = 1:length(qt)
+            if inside(min, max, @view qt.points[:, i])
+                nattrib += 1
+            end
+        end
+        return nattrib
+    end
+
+    for child in qt.children
+        nattrib += within_count(child, min, max)
+    end
+    return nattrib
+end
+
+
+function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {T,TA,N}
     #@show Base.intersect(qt, min, max), min, max, qt.min, qt.max
     if !Base.intersect(qt, min, max)
         # nothing to do
-        return
+        return nattribs
     end
 
+    @debug "within_buffer $(qt.min) - $(qt.max)"
+
     if isleaf(qt)
-        #@show "checking"
-        @inbounds for i = 1:length(qt)
-            if inside(min,max,qt.points[:,i])
-                push!(attribs,qt.attribs[i])
+        @debug "leaf $(qt.min) - $(qt.max)"
+        # check if node is entirely inside search area min-max
+        if include(min, max, qt.min, qt.max)
+            # add all
+            if nattribs + length(qt) > length(attribs)
+                # buffer too small
+                return -1
+            end
+
+            @inbounds for i = 1:length(qt)
+                nattribs += 1
+                attribs[nattribs] = qt.attribs[i]
+            end
+        else
+            #@show "check $qt"
+            @inbounds for i = 1:length(qt)
+                if inside(min, max, @view qt.points[:, i])
+                    nattribs += 1
+                    if nattribs > length(attribs)
+                        # buffer too small
+                        return -1
+                    end
+                    attribs[nattribs] = qt.attribs[i]
+                end
             end
         end
-        return
+        return nattribs
     end
 
     for child in qt.children
-        within!(child, min, max, attribs)
+        nattribs = within_buffer!(child, min, max, attribs, nattribs)
+
+        if nattribs == -1
+            return -1
+        end
     end
 
-    return attribs
+    return nattribs
 end
 
-function withincount!(qt::QT{T,TA,N}, min, max, count) where {T,TA,N}
-    if !Base.intersect(qt, min, max)
-        # nothing to do
-        return
-    end
 
+
+function maxdepth(qt::QT{T,TA,N}, d = 0) where {T,TA,N}
     if isleaf(qt)
-        #@show "checking"
-        @inbounds for i = 1:length(qt)
-            #if inside(min,max,qt.points[:,i])
-            if inside(min,max,view(qt.points,:,i))
-                count[ qt.attribs[i] ] += 1
-            end
-        end
-        return
+        return d
     end
 
+    dchild = 0
     for child in qt.children
-        withincount!(child, min, max, count)
+        tmp = maxdepth(child, d)
+        if tmp > dchild
+            dchild = tmp
+        end
     end
+    return d + dchild + 1
 end
 
 
@@ -378,17 +454,17 @@ end
 #     end
 # end
 
-function Base.show(io::IO,qt::QT; indent = "  ")
+function Base.show(io::IO, qt::QT; indent = "  ")
     if isleaf(qt)
-        printstyled(io, indent,"Leaf $(length(qt))",color=:green)
+        printstyled(io, indent, "Leaf $(length(qt))", color = :green)
     else
-        printstyled(io, indent,"Node ",color=:blue)
+        printstyled(io, indent, "Node ", color = :blue)
     end
-    print(io,"  from $(qt.min) to $(qt.max)\n")
+    print(io, "  from $(qt.min) to $(qt.max)\n")
 
     if !isleaf(qt)
         for child in qt.children
-            show(io,child; indent = indent * "  ")
+            show(io, child; indent = indent * "  ")
         end
     end
 end
@@ -399,11 +475,11 @@ end
 
 function dupset(duplicates)
     d = Vector{Set{Int}}()
-    sizehint!(d,length(duplicates) ÷ 2)
+    sizehint!(d, length(duplicates) ÷ 2)
 
     for i = 1:length(duplicates)
         if !(duplicates[i] in d)
-            push!(d,duplicates[i])
+            push!(d, duplicates[i])
         end
     end
 
@@ -416,14 +492,15 @@ function catx(x::Tuple)
     n = length(x)
     Nobs = length(x[1])
 
-    X = Array{Float64,2}(undef,n,Nobs)
+    X = Array{Float64,2}(undef, n, Nobs)
     for i = 1:n
         if eltype(x[i]) <: DateTime
             for j = 1:Nobs
-                X[i,j] = Dates.Millisecond(x[i][j] - DateTime(1900,1,1)).value/24/60/60/1000
+                X[i, j] = Dates.Millisecond(x[i][j] - DateTime(1900, 1, 1)).value / 24 /
+                          60 / 60 / 1000
             end
         else
-            X[i,:] = x[i]
+            X[i, :] = x[i]
         end
     end
     return X
@@ -433,66 +510,76 @@ end
 """
     dupl = checkduplicates(x,value,delta,deltavalue)
 
-Based the coordinates `x` (a tuple of longitude `lons`, latitudes `lats`, depth (`zs`)
-and time (`times` vector of `DateTime`)) check of points who are in the same spatio-temporal bounding
- box of a length `delta`. `delta` is a vector with 4 elements corresponding to
+Based on the coordinates `x` (a tuple of longitudes `lons`, latitudes `lats`, depths (`zs`)
+and times (`times` vector of `DateTime`)), search for points which are in the same spatio-temporal bounding
+ box of length `delta`. `delta` is a vector with 4 elements corresponding to
 longitude, latitude, depth and time
-(in days). `dupl` a vector of vectors containing indices of the duplicates.
+(in days). `dupl` a vector of vectors containing the indices of the duplicates.
 """
-function checkduplicates(x::Tuple,value,delta,deltavalue;
-                         maxcap = 100, label = collect(1:size(x[1],1)))
+function checkduplicates(
+    x::Tuple,
+    value,
+    delta,
+    deltavalue;
+    maxcap = 10_000,
+    label = collect(1:size(x[1], 1)),
+    factor = 5,
+)
     n = length(x)
     Nobs = length(x[1])
 
-    X = Array{Float64,2}(undef,n,Nobs)
+    X = Array{Float64,2}(undef, n, Nobs)
     for i = 1:n
         if eltype(x[i]) <: DateTime
             for j = 1:Nobs
-                X[i,j] = Dates.Millisecond(x[i][j] - DateTime(1900,1,1)).value/24/60/60/1000
+                X[i, j] = Dates.Millisecond(x[i][j] - DateTime(1900, 1, 1)).value / 24 /
+                          60 / 60 / 1000
             end
         else
-            X[i,:] = x[i]
+            X[i, :] = x[i]
         end
     end
 
-    qt = Quadtrees.QT(X,label)
-    Quadtrees.rsplit!(qt, maxcap)
+    qt = Quadtrees.QT(X, label)
+    Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
 
     duplicates = Set{Int}[]
 
     xmin = zeros(n)
     xmax = zeros(n)
 
+    index_buffer = zeros(Int, Nobs)
+
     @fastmath @inbounds for i = 1:Nobs
         for j = 1:n
-            xmin[j] = X[j,i] - delta[j]
-            xmax[j] = X[j,i] + delta[j]
+            xmin[j] = X[j, i] - delta[j]
+            xmax[j] = X[j, i] + delta[j]
         end
 
-        index = Quadtrees.within(qt,xmin,xmax)
+        nindex = Quadtrees.within_buffer!(qt, xmin, xmax, index_buffer)
 
-        #@show index
+        if nindex > 0
+            index = @view index_buffer[1:nindex]
 
-        if length(index) > 1
             # check for values
             vv = value[index]
             ii = sortperm(vv)
 
             istart = 1
-            for i=1:length(vv)-1
+            for i = 1:length(vv)-1
                 if vv[ii[i+1]] - vv[ii[i]] > deltavalue
                     #@show istart:i;
 
                     if i > istart
-                        push!(duplicates,Set(index[ii[istart:i]]))
+                        push!(duplicates, Set(index[ii[istart:i]]))
                     end
 
-                    istart=i+1
+                    istart = i + 1
                 end
             end
             i = length(vv)
             if i > istart
-                push!(duplicates,Set(index[ii[istart:i]]))
+                push!(duplicates, Set(index[ii[istart:i]]))
             end
 
             #push!(duplicates,Set(index))
@@ -509,43 +596,52 @@ end
 """
     dupl = checkduplicates(x1,value1,x2,v2,value2,delta,deltavalue)
 
-Report duplicate of observation in data set (x2,v2) which are also in data set
-(x1,v1). `x1` and `x2` is a tuple of vectors with the cooridantes and `v1` and `v2` the
+Report duplicates of observations in data set (x2,v2) which are also in data set
+(x1,v1). `x1` and `x2` are tuples of vectors with the coordinates, `v1` and `v2` are the
 corresponding values.
 """
-function checkduplicates(x1::Tuple,value1,
-                         x2::Tuple,value2,
-                         delta, deltavalue;
-                         maxcap = 100,
-                         label1 = collect(1:length(x1[1]))
-                         )
+function checkduplicates(
+    x1::Tuple,
+    value1,
+    x2::Tuple,
+    value2,
+    delta,
+    deltavalue;
+    maxcap = 10_000,
+    label1 = collect(1:length(x1[1])),
+    factor = 5,
+)
     X1 = catx(x1)
     X2 = catx(x2)
 
-    n = size(X1,1)
-    Nobs1 = size(X1,2)
-    Nobs2 = size(X2,2)
+    n = size(X1, 1)
+    Nobs1 = size(X1, 2)
+    Nobs2 = size(X2, 2)
 
-    qt = Quadtrees.QT(X1,label1)
-    Quadtrees.rsplit!(qt, maxcap)
+    qt = Quadtrees.QT(X1, label1)
+    Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
+    #@show qt
 
-    duplicates = Vector{Vector{Int}}(undef,Nobs2)
+    duplicates = Vector{Vector{Int}}(undef, Nobs2)
 
     xmin = zeros(n)
     xmax = zeros(n)
 
+    index_buffer = zeros(Int, Nobs1)
+
     @fastmath @inbounds for i = 1:Nobs2
         for j = 1:n
-            xmin[j] = X2[j,i] - delta[j]
-            xmax[j] = X2[j,i] + delta[j]
+            xmin[j] = X2[j, i] - delta[j]
+            xmax[j] = X2[j, i] + delta[j]
         end
 
-        index = Quadtrees.within(qt,xmin,xmax)
+        nindex = Quadtrees.within_buffer!(qt, xmin, xmax, index_buffer)
 
-        if length(index) > 0
+        if nindex > 0
+            index = @view index_buffer[1:nindex]
             # check for values
             vv = value1[index]
-            duplicates[i] = sort(index[abs.(vv .- value2[i]) .< deltavalue])
+            duplicates[i] = sort(index[abs.(vv .- value2[i]).<deltavalue])
         else
             duplicates[i] = Int[]
         end
@@ -555,6 +651,6 @@ function checkduplicates(x1::Tuple,value1,
 end
 
 
-export  QT, rsplit!, add!, show, ndims, count, checkduplicates
+export QT, rsplit!, add!, show, ndims, count, checkduplicates
 
 end # module

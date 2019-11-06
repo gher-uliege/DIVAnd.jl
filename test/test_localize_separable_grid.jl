@@ -1,45 +1,39 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 
-
-gridindices = localize_separable_grid(([4],),trues((10,)),(2*collect(1:10),))
+gridindices = localize_separable_grid(([4],), trues((10,)), (2 * collect(1:10),))
 @test gridindices[1] ≈ 2.
 
 # 2D with one point
 
-x1,y1 = ndgrid(2 * collect(1:5),collect(1:6))
-x = (x1,y1)
-xi = ([3],[3])
+x1, y1 = ndgrid(2 * collect(1:5), collect(1:6))
+x = (x1, y1)
+xi = ([3], [3])
 mask = trues(size(x1))
 
-gridindices = localize_separable_grid(xi,mask,x)
+gridindices = localize_separable_grid(xi, mask, x)
 
 @test gridindices ≈ [1.5; 3]
 
 
 # 2D with 2 points
 
-x1,y1 = ndgrid(2 * collect(1:5),collect(1:6))
-x = (x1,y1)
-xi = ([3,4],[3,5])
+x1, y1 = ndgrid(2 * collect(1:5), collect(1:6))
+x = (x1, y1)
+xi = ([3, 4], [3, 5])
 mask = trues(size(x1))
 
-gridindices = localize_separable_grid(xi,mask,x)
+gridindices = localize_separable_grid(xi, mask, x)
 
-@test gridindices ≈ [1.5 2.0; 3. 5. ]
+@test gridindices ≈ [1.5 2.0; 3. 5.]
 
 
 # 2D with 1 point outside
 
-x1,y1 = ndgrid(range(0.5,stop=1,length=50),
-               range(0.,stop=1,length=30));
-x = (x1,y1)
-xi = ([0.2],[0.5])
+x1, y1 = ndgrid(range(0.5, stop = 1, length = 50), range(0., stop = 1, length = 30));
+x = (x1, y1)
+xi = ([0.2], [0.5])
 mask = trues(size(x1))
-gridindices = localize_separable_grid(xi,mask,x)
+gridindices = localize_separable_grid(xi, mask, x)
 @test gridindices[1] < 1
 
 

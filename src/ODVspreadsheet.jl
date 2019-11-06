@@ -1,10 +1,6 @@
 module ODVspreadsheet
 
-if VERSION >= v"0.7.0-beta.0"
-    using Dates
-else
-    using Compat: @info, @warn, @debug
-end
+using Dates
 using Compat
 
 #using StringEncodings
@@ -63,7 +59,7 @@ nprofiles(ODVData) = length(ODVData.profileList)
     Input
 
     *`datafile`: the path to an ODV spreadsheet file.
-               The Path can be relative or absolute.
+               The path can be relative or absolute.
 
     Output
 
@@ -73,8 +69,8 @@ nprofiles(ODVData) = length(ODVData.profileList)
 function readODVspreadsheet(datafile)
 
     # metadata will be stored in a dictionary
-    # ODV doc: Comment lines start with two slashes  // as first two characters
-    metadata = Dict{String, String}()
+    # ODV doc: Comment lines start with two slashes // as first two characters
+    metadata = Dict{String,String}()
     SDN_parameter_mapping = Dict{String,Dict{String,String}}()
 
     # using the encoding Latin-1 degrates significantly the performance
@@ -83,7 +79,7 @@ function readODVspreadsheet(datafile)
         line = readline(f)
 
         # Byte Order Mark (BOM)
-        if startswith(line,"\uFEFF")
+        if startswith(line, "\uFEFF")
             # ignore BOM
             line = line[2:end]
         end
@@ -92,7 +88,7 @@ function readODVspreadsheet(datafile)
         # unfortunately, there are also some files with empty line in the
         # header
 
-        while startswith(line,"//") || (length(line) == 0)
+        while startswith(line, "//") || (length(line) == 0)
             # Identify metadata fields using regex
             # (name of the field is between < > and </ >)
             m = match(r"<(\w+)>(.+)</(\w+)>", line)
@@ -104,25 +100,25 @@ function readODVspreadsheet(datafile)
             end
 
             if line == "//SDN_parameter_mapping"
-                line = readline(f);
+                line = readline(f)
                 # @info "Length line SDN_parameter_mapping: $(length(line))"
                 # The semantic descriptions are terminated by an empty comment
                 # record (i.e. a record containing the // characters and nothing else)
 
                 while line != "//"
-                    @assert startswith(line,"//")
+                    @assert startswith(line, "//")
 
                     # split at < or >
-                    parts = Compat.split(line[3:end],r"[<|>]",keepempty=false)
-                    tmp = Dict(k => v for (k,v) in zip(parts[1:3:end],parts[2:3:end]))
+                    parts = Compat.split(line[3:end], r"[<|>]", keepempty = false)
+                    tmp = Dict(k => v for (k, v) in zip(parts[1:3:end], parts[2:3:end]))
 
                     subject = tmp["subject"]
-                    delete!(tmp,"subject")
+                    delete!(tmp, "subject")
                     SDN_parameter_mapping[subject] = tmp
-                    line = readline(f);
+                    line = readline(f)
                 end
             end
-            line = readline(f);
+            line = readline(f)
         end
 
         # Read the column labels and set number of columns
@@ -131,32 +127,40 @@ function readODVspreadsheet(datafile)
         columnline = line
         columnLabels = split(chomp(columnline), '\t')
         @debug "Column labels: $(columnLabels)"
-        ncols = length(columnLabels);
+        ncols = length(columnLabels)
         # @info "Total no. of columns (before selection): $ncols"
 
         # Discard columns that won't be used (should be extended)
-        column2discard = ["QF", "Instrument Info",
-                          "Reference", "Data set name", "Discipline",
-                          "Category", "Variables measured",
-                          "Data format", "Data format version",
-                          "Data size", "Data set creation date",
-                          "Measuring area type", "Track resolution",
-                          "Track resolution unit", "Frequency",
-                          "Frequency unit", "Cruise name",
-                          "Alternative cruise name", "Cruise start date",
-                          "Station name", "Alternative station name",
-                          "Station start date"];
+        column2discard = [
+            "QF",
+            "Instrument Info",
+            "Reference",
+            "Data set name",
+            "Discipline",
+            "Category",
+            "Variables measured",
+            "Data format",
+            "Data format version",
+            "Data size",
+            "Data set creation date",
+            "Measuring area type",
+            "Track resolution",
+            "Track resolution unit",
+            "Frequency",
+            "Frequency unit",
+            "Cruise name",
+            "Alternative cruise name",
+            "Cruise start date",
+            "Station name",
+            "Alternative station name",
+            "Station start date",
+        ]
 
-        goodcols = setdiff(columnLabels, column2discard);
+        goodcols = setdiff(columnLabels, column2discard)
         # Get indices of the good columns
-        index2keep =
-            @static if VERSION >= v"0.7.0-beta2.188"
-                findall((in)(goodcols,), columnLabels)
-            else
-                findin(columnLabels, goodcols)
-            end
+        index2keep = findall((in)(goodcols,), columnLabels)
 
-        ncols2 = length(index2keep);
+        ncols2 = length(index2keep)
         # @info "No. of columns after selection: $ncols2"
 
         # number of total lines
@@ -166,13 +170,13 @@ function readODVspreadsheet(datafile)
         # or the empty lines
         for row in eachline(f)
 
-            if startswith(row,"//")
+            if startswith(row, "//")
                 # ignore lines starting with e.g.
                 # //<History> ...
                 continue
             end
 
-            line = split(row, "\t");
+            line = split(row, "\t")
 
             # some files have only white space on the last line
             if all.(isempty(line))
@@ -181,22 +185,22 @@ function readODVspreadsheet(datafile)
             totallines += 1
         end
         # @info "Total no. of lines: $totallines"
-        seek(f,pos)
+        seek(f, pos)
 
         # load all data
-        alldata = Array{SubString{String},2}(undef,ncols2,totallines);
+        alldata = Array{SubString{String},2}(undef, ncols2, totallines)
         ##@info "Size (in GB) of data matrix (OLD): " * string(sizeof(alldataold))
         i = 0
 
         for row in Compat.eachline(f; keep = false)
 
-            if startswith(row,"//")
+            if startswith(row, "//")
                 # ignore lines starting with e.g.
                 # //<History> ...
                 continue
             end
 
-            line = split(row, "\t")[index2keep];
+            line = split(row, "\t")[index2keep]
 
             # some files have only white space on the last line
             if all.(isempty(line))
@@ -207,8 +211,8 @@ function readODVspreadsheet(datafile)
                 error("Expecting $(ncols2) columns but $(length(line)) found in line $(line) (line number $i).")
             end
 
-            i = i+1
-            alldata[:,i] = line
+            i = i + 1
+            alldata[:, i] = line
         end
 
         # @info "Size of data matrix: " * string(size(alldata))
@@ -218,61 +222,93 @@ function readODVspreadsheet(datafile)
 
         # count profiles
         nprofiles = 0
-        for i = 1:size(alldata,2)
+        for i = 1:size(alldata, 2)
             # If the first value (Station) is not empty,
             # then it's a profile
-            if alldata[1,i] != ""
+            if alldata[1, i] != ""
                 nprofiles += 1
             end
         end
 
         # count each profiles length
-        profile_start_index = Vector{Int}(undef,nprofiles+1)
+        profile_start_index = Vector{Int}(undef, nprofiles + 1)
         j = 0
-        for i = 1:size(alldata,2)
+        for i = 1:size(alldata, 2)
             # If the first value (Station) is not empty,
             # then it's a profile
-            if alldata[1,i] != ""
+            if alldata[1, i] != ""
                 j += 1
                 profile_start_index[j] = i
             end
         end
-        profile_start_index[end] = size(alldata,2)+1
+        profile_start_index[end] = size(alldata, 2) + 1
 
         # split into profiles
         iprofile = 1
-        profileList = Vector{Array{SubString{String},2}}(undef,nprofiles)
+        profileList = Vector{Array{SubString{String},2}}(undef, nprofiles)
         j = 1
         for i = 1:nprofiles
-            profileList[i] = alldata[:,profile_start_index[i]:profile_start_index[i+1]-1]
+            profileList[i] = alldata[:, profile_start_index[i]:profile_start_index[i+1]-1]
         end
 
         @info "No. of profiles in the file: " * string(nprofiles)
-        ODVdata = Spreadsheet(metadata, SDN_parameter_mapping, columnLabels[index2keep], profileList)
+        ODVdata = Spreadsheet(
+            metadata,
+            SDN_parameter_mapping,
+            columnLabels[index2keep],
+            profileList,
+        )
         return ODVdata
     end
 end
 
+
+
+function getheaderline(fname)
+    for row in eachline(fname)
+        if startswith(row, "//")
+            continue
+        end
+        return split(row, '\t')
+    end
+end
+
+stripunits(h) = ('[' in h ? strip(split(h, '[')[1]) : h)
+
+"""
+    parameters = ODVspreadsheet.listparameters(fname,ignore = ["QF","QV:SEADATANET","QV:SEADATANET:SAMPLE","STANDARD_DEV"])
+
+List all parameters defined in the ODV file `fname` ignoring the
+variables listed in `ignore` (i.e. quality flags)
+"""
+function listparameters(
+    fname,
+    ignore = ["QF", "QV:SEADATANET", "QV:SEADATANET:SAMPLE", "STANDARD_DEV"],
+)
+    return stripunits.(filter(h -> !(h ∈ ignore), getheaderline(fname)))
+end
+
+
 """
     p = listSDNparam(ODVData)
 
-    Return a list of SeaDataNet P01 parameters in a ODV spreadsheet `ODVData`.
+Return a list of SeaDataNet P01 parameters in a ODV spreadsheet `ODVData`.
 """
 function listSDNparams(ODVData)
-    return [d["object"] for (k,d) in ODVData.SDN_parameter_mapping]
+    return [d["object"] for (k, d) in ODVData.SDN_parameter_mapping]
 end
 
 
 function countP01(sheets)
 
-    count_P01 = Dict{String,Int}();
+    count_P01 = Dict{String,Int}()
     for sheet in sheets
         for p in listSDNparams(sheet)
-            count_P01[p] = get(count_P01,p,0) + 1;
+            count_P01[p] = get(count_P01, p, 0) + 1
         end
     end
 
-    stat = sort([(k,v) for (k,v) in count_P01]; by = kv -> kv[2])
+    stat = sort([(k, v) for (k, v) in count_P01]; by = kv -> kv[2])
     return stat
 end
 
@@ -283,7 +319,8 @@ Return a list `list` of all local names mapping to the specified `P01name` in th
 ODV spreadsheet `sheet` without the prefix "SDN:LOCAL:".
 
 """
-localnames(sheet,P01name) = String[replace(v,r"^SDN:LOCAL:" => "") for (v,d) in sheet.SDN_parameter_mapping if d["object"] == P01name]
+localnames(sheet, P01name) =
+    String[replace(v, r"^SDN:LOCAL:" => "") for (v, d) in sheet.SDN_parameter_mapping if d["object"] == P01name]
 
 """
     list = localnames(sheet)
@@ -292,7 +329,7 @@ Return a list `list` of all local names  in the
 ODV spreadsheet `sheet` without the prefix "SDN:LOCAL:" in the order as they
 appear in the ODV file.
 """
-localnames(sheet) = String[strip(split(l,'[')[1]) for l in sheet.columnLabels]
+localnames(sheet) = String[strip(split(l, '[')[1]) for l in sheet.columnLabels]
 
 """
     cn = colnumber(sheet,localname)
@@ -300,15 +337,48 @@ localnames(sheet) = String[strip(split(l,'[')[1]) for l in sheet.columnLabels]
 Return the column number `cn` of the first column with the local name
 `localname` (without the prefix "SDN:LOCAL:") in the ODV spreadsheet `sheet`.
 """
-function colnumber(sheet,localname)::Int
+function colnumber(sheet, localname)::Int
     ind = findfirst(localnames(sheet) .== localname)
-    @static if VERSION >= v"0.7.0-beta.0"
-        if ind == nothing
+    if ind == nothing
+        return 0
+    end
+
+    return ind
+end
+
+"""
+    cn = colnumber_qv(sheet,localname)
+
+Return the column number `cn` of the quality flag column with
+for the local name
+`localname` (without the prefix "SDN:LOCAL:") in the ODV spreadsheet `sheet`.
+"""
+function colnumber_qv(sheet, localname, qvlocalname)::Int
+    locnames = localnames(sheet)
+    ind = colnumber(sheet, localname)
+    if ind == 0
+        # variable not found
+        return 0
+    end
+
+    ind = ind + 1
+    while ind <= length(locnames)
+        if locnames[ind] == qvlocalname
+            # bingo!
+            return ind
+        end
+
+        if locnames[ind] ∈ ["QV:SEADATANET", "STANDARD_DEV"]
+            ind = ind + 1
+        else
+            # a new data variable, stop searching
             return 0
         end
     end
-    return ind
+    # all columns checked
+    return 0
 end
+
 
 """
     dt = parsejd(t)
@@ -323,7 +393,9 @@ elapsed in days from 00:00 on January 1 st 4713 BC. ... "
 
 The time origin is _not_ noon (12:00) on Monday, January 1, 4713 BC as for the Julia Date Number.
 """
-parsejd(t) = DateTime(2007,2,10) + Dates.Millisecond(round(Int64,(t - 2454142.) * (24*60*60*1000)))
+parsejd(t) =
+    DateTime(2007, 2, 10) +
+    Dates.Millisecond(round(Int64, (t - 2454142.) * (24 * 60 * 60 * 1000)))
 
 
 """
@@ -333,11 +405,11 @@ Parse the string `s` as a type `T`. Unlike Julia's parse function
 an error message contains the string `s` (which could not be parsed) for
 debugging.
 """
-function myparse(T,s)
+function myparse(T, s)
     try
-        return parse(T,s)
+        return parse(T, s)
     catch err
-        if isa(err,ArgumentError)
+        if isa(err, ArgumentError)
             throw(ArgumentError("unable to parse $(s) as $(T)"))
         else
             rethrow(err)
@@ -354,7 +426,7 @@ of the vector `data`. Empty values are either replaced by `fillvalue`
 (if fillmode is :fill) or the previous value if repeated (if fillmode
 is :repeat)
 """
-function SDNparse!(col,fillmode,fillvalue,data)
+function SDNparse!(col, fillmode, fillvalue, data)
     for i = 1:length(col)
         if col[i] == ""
             if (i > 1) && (fillmode == :repeat)
@@ -371,7 +443,7 @@ function SDNparse!(col,fillmode,fillvalue,data)
             if eltype(data) <: AbstractString
                 data[i] = col[i]
             else
-                data[i] = myparse(eltype(data),col[i])
+                data[i] = myparse(eltype(data), col[i])
                 #data[i] = parse(eltype(data),col[i])
             end
         end
@@ -389,16 +461,16 @@ Load a single column referred by the local name `locname` in the profile
 by `fillvalue` (if fillmode is :fill) or the previous value if repeated (if fillmode
 is :repeat)
 """
-function loaddata(sheet,profile,locname,fillvalue::T; fillmode = :repeat) where T
-    lenprof = size(profile,2)
+function loaddata(sheet, profile, locname, fillvalue::T; fillmode = :repeat) where {T}
+    lenprof = size(profile, 2)
 
-    cn_data = colnumber(sheet,locname)
-    data = Vector{T}(undef,lenprof)
+    cn_data = colnumber(sheet, locname)
+    data = Vector{T}(undef, lenprof)
 
     if cn_data == 0
         data[:] = fillvalue
     else
-        SDNparse!(profile[cn_data,:],fillmode,fillvalue,data)
+        SDNparse!(profile[cn_data, :], fillmode, fillvalue, data)
     end
 
     return data
@@ -412,16 +484,20 @@ The same as `loaddata`, but now the quality flag are also loaded.
 profile[i][j] is the j-th column of the i-th row of a profile.
 profile[i,j] is the i-th column of the j-th row of a profile.
 """
-function loaddataqv(sheet,profile,locname,fillvalue::T;
-                    fillmode = :repeat,
-                    qvlocalname = "QV:SEADATANET"
-                    ) where T
+function loaddataqv(
+    sheet,
+    profile,
+    locname,
+    fillvalue::T;
+    fillmode = :repeat,
+    qvlocalname = "QV:SEADATANET",
+) where {T}
     locnames = localnames(sheet)
-    lenprof = size(profile,2)
+    lenprof = size(profile, 2)
 
-    cn_data = colnumber(sheet,locname)
-    data = Vector{T}(undef,lenprof)
-    data_qv = fill("",(lenprof,))
+    cn_data = colnumber(sheet, locname)
+    data = Vector{T}(undef, lenprof)
+    data_qv = fill("", (lenprof,))
 
 
     if cn_data == 0
@@ -429,18 +505,21 @@ function loaddataqv(sheet,profile,locname,fillvalue::T;
         data_qv[:] = MISSING_VALUE
     else
         if cn_data > length(profile)
-            @show profile,cn_data
+            @show profile, cn_data
             error("incomplete profile record")
         end
 
-        SDNparse!(profile[cn_data,:],fillmode,fillvalue,data)
+        SDNparse!(profile[cn_data, :], fillmode, fillvalue, data)
 
-        if (cn_data < length(locnames)) && (locnames[cn_data+1] == qvlocalname)
-            data_qv[:] = profile[cn_data+1,:]
+        cn_qv = colnumber_qv(sheet, locname, qvlocalname)
+        if cn_qv == 0
+            @debug "no quality flag found for variable $(locname)"
+        else
+            data_qv[:] = profile[cn_qv, :]
         end
     end
 
-    return data,data_qv
+    return data, data_qv
 end
 
 """
@@ -454,10 +533,14 @@ dataname is the P01 vocabulary name with the SDN prefix. If nametype is
  The resulting vectors have the data type `T`
 (expect the quality flag and `obstime`) .
 """
-function loadprofile(T,sheet,iprofile,dataname;
-                     nametype = :P01,
-                     qvlocalname = "QV:SEADATANET"
-                     )
+function loadprofile(
+    T,
+    sheet,
+    iprofile,
+    dataname;
+    nametype = :P01,
+    qvlocalname = "QV:SEADATANET",
+)
     fillvalue = T(NaN)
     filldate_jd = 0.
     filldate = parsejd(filldate_jd)
@@ -466,18 +549,22 @@ function loadprofile(T,sheet,iprofile,dataname;
     locnames = localnames(sheet)
     P01names = listSDNparams(sheet)
 
-    localname =
-        if nametype == :P01
-            localnames(sheet,dataname)[1]
-        elseif nametype == :localname
-            dataname
-        else
-            error("nametype should be :P01 or :localname and not $(nametype)")
-        end
+    localname = if nametype == :P01
+        localnames(sheet, dataname)[1]
+    elseif nametype == :localname
+        dataname
+    else
+        error("nametype should be :P01 or :localname and not $(nametype)")
+    end
 
-    data,data_qv = loaddataqv(sheet,profile,localname,fillvalue;
-                              fillmode = :fill,
-                              qvlocalname = qvlocalname)
+    data, data_qv = loaddataqv(
+        sheet,
+        profile,
+        localname,
+        fillvalue;
+        fillmode = :fill,
+        qvlocalname = qvlocalname,
+    )
     sz = size(data)
 
     #cruise = loaddata(sheet,profile,"Cruise","")
@@ -487,27 +574,36 @@ function loadprofile(T,sheet,iprofile,dataname;
     # look for EDMO_code and EDMO_CODE
     # is both are absent return an empty value
 
-    EDMO =
-        if "EDMO_code" in locnames
-            loaddata(sheet,profile,"EDMO_code","")
-        else
-            loaddata(sheet,profile,"EDMO_CODE","")
-        end
+    EDMO = if "EDMO_code" in locnames
+        loaddata(sheet, profile, "EDMO_code", "")
+    else
+        loaddata(sheet, profile, "EDMO_CODE", "")
+    end
 
-    LOCAL_CDI_ID = loaddata(sheet,profile,"LOCAL_CDI_ID","")
+    LOCAL_CDI_ID = loaddata(sheet, profile, "LOCAL_CDI_ID", "")
 
-    lon = loaddata(sheet,profile,"Longitude",fillvalue)
-    lat = loaddata(sheet,profile,"Latitude",fillvalue)
+    lon = loaddata(sheet, profile, "Longitude", fillvalue)
+    lat = loaddata(sheet, profile, "Latitude", fillvalue)
 
-    depth = fill(fillvalue,sz)
-    depth_qv = fill("",sz)
+    depth = fill(fillvalue, sz)
+    depth_qv = fill("", sz)
     if "SDN:P01::ADEPZZ01" in P01names
-        localname_depth = localnames(sheet,"SDN:P01::ADEPZZ01")
-        depth[:],depth_qv[:] = loaddataqv(sheet,profile,localname_depth,fillvalue;
-                                          qvlocalname = qvlocalname)
+        localname_depth = localnames(sheet, "SDN:P01::ADEPZZ01")
+        depth[:], depth_qv[:] = loaddataqv(
+            sheet,
+            profile,
+            localname_depth,
+            fillvalue;
+            qvlocalname = qvlocalname,
+        )
     elseif "Depth" in locnames
-        depth[:],depth_qv[:] = loaddataqv(sheet,profile,"Depth",fillvalue;
-                                          qvlocalname = qvlocalname)
+        depth[:], depth_qv[:] = loaddataqv(
+            sheet,
+            profile,
+            "Depth",
+            fillvalue;
+            qvlocalname = qvlocalname,
+        )
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
@@ -521,51 +617,73 @@ function loadprofile(T,sheet,iprofile,dataname;
         # end
     end
 
-    time = Vector{DateTime}(undef,sz)
-    time_qv = Vector{String}(undef,sz)
+    time = Vector{DateTime}(undef, sz)
+    time_qv = Vector{String}(undef, sz)
 
     # chronological julian day
     if "SDN:P01::CJDY1101" in P01names
-        locname_time = localnames(sheet,"SDN:P01::CJDY1101")[1]
-        timedata,time_qv = loaddataqv(sheet,profile,locname_time,filldate_jd;
-                                      qvlocalname = qvlocalname)
+        locname_time = localnames(sheet, "SDN:P01::CJDY1101")[1]
+        timedata, time_qv = loaddataqv(
+            sheet,
+            profile,
+            locname_time,
+            filldate_jd;
+            qvlocalname = qvlocalname,
+        )
         time = parsejd.(timedata)
     elseif "time_ISO8601" in locnames
-        time,time_qv = loaddataqv(sheet,profile,"time_ISO8601",filldate;
-                                  qvlocalname = qvlocalname)
+        time, time_qv = loaddataqv(
+            sheet,
+            profile,
+            "time_ISO8601",
+            filldate;
+            qvlocalname = qvlocalname,
+        )
     elseif "SDN:P01::DTUT8601" in P01names
         # ISO8601 format, e.g. yyyy-mm-ddThh:mm:ss.sss
 
-        locname_time = localnames(sheet,"SDN:P01::DTUT8601")
-        time,time_qv = loaddataqv(sheet,profile,locname_time,filldate;
-                                  qvlocalname = qvlocalname)
+        locname_time = localnames(sheet, "SDN:P01::DTUT8601")
+        time, time_qv = loaddataqv(
+            sheet,
+            profile,
+            locname_time,
+            filldate;
+            qvlocalname = qvlocalname,
+        )
     else
         # hopefully not necessary
-        for header in ["yyyy-mm-ddThh:mm:ss.sss",
-                       "yyyy-mm-ddThh:mm:ss",
-                       "yyyy-mm-ddThh:mm",
-                       "yyyy-mm-ddThh",
-                       "yyyy-mm-dd"]
+        for header in [
+            "yyyy-mm-ddThh:mm:ss.sss",
+            "yyyy-mm-ddThh:mm:ss",
+            "yyyy-mm-ddThh:mm",
+            "yyyy-mm-ddThh",
+            "yyyy-mm-dd",
+        ]
             if header in locnames
-                time,time_qv = loaddataqv(sheet,profile,header,filldate;
-                                          qvlocalname = qvlocalname)
+                time, time_qv = loaddataqv(
+                    sheet,
+                    profile,
+                    header,
+                    filldate;
+                    qvlocalname = qvlocalname,
+                )
                 break
             end
         end
     end
 
-    return data,data_qv,lon,lat,depth,depth_qv,time,time_qv,EDMO,LOCAL_CDI_ID
+    return data, data_qv, lon, lat, depth, depth_qv, time, time_qv, EDMO, LOCAL_CDI_ID
 end
 
 
-function goodflag(obstime_qv,qv_flags)
+function goodflag(obstime_qv, qv_flags)
     good_time = falses(size(obstime_qv))
     for flag in qv_flags
-        good_time[:] =  good_time .| (obstime_qv .== flag)
+        good_time[:] = good_time .| (obstime_qv .== flag)
     end
 
     # time quality flag can also be absent
-    good_time[:] =  good_time .| (obstime_qv .== "")
+    good_time[:] = good_time .| (obstime_qv .== "")
 
     return good_time
 end
@@ -578,11 +696,12 @@ end
         nametype = :P01,
         qvlocalname = "QV:SEADATANET")
 
-Load all profiles in all file from the array `fnames` corresponding to
-one of the parameter names `datanames`. If `nametype` is `:P01` (default), the
-datanames are P01 vocabulary names with the SDN prefix. If nametype is
-`:localname`, then they are the ODV column header without units. For example
-if the column header is `Water body salinity [per mille]`, then `datenames`
+Load all the profiles from every files listed in the array `fnames` corresponding to
+one of the parameter names `datanames`.
+If `nametype` is `:P01` (default), the datanames are P01 vocabulary names with the SDN prefix.
+If nametype is `:localname`, then they are the ODV column header without units.
+
+For example if the column header is `Water body salinity [per mille]`, then `datenames`
 should be `["Water body salinity"]`.
 The resulting vectors have the data type `T` (expect `times` and `ids` which
 are vectors of `DateTime` and `String` respectively). Only values matching the
@@ -592,38 +711,52 @@ One can also use the constants these constants (prefixed with
 `DIVAnd.ODVspreadsheet.`):
 
 `qvlocalname` is the column name to denote quality flags. It is assumed that the
-quality flags follow immediatly the data column.
+quality flags follow immediately the data column.
 
-|                    constant | value |
-|-----------------------------|-------|
-|          NO_QUALITY_CONTROL |   "0" |
-|                  GOOD_VALUE |   "1" |
-|         PROBABLY_GOOD_VALUE |   "2" |
-|          PROBABLY_BAD_VALUE |   "3" |
-|                   BAD_VALUE |   "4" |
-|               CHANGED_VALUE |   "5" |
-|       VALUE_BELOW_DETECTION |   "6" |
-|             VALUE_IN_EXCESS |   "7" |
-|          INTERPOLATED_VALUE |   "8" |
-|               MISSING_VALUE |   "9" |
-|  VALUE_PHENOMENON_UNCERTAIN |   "A" |
+|                      constant | value |
+|-------------------------------|-------|
+|          `NO_QUALITY_CONTROL` |   "0" |
+|                  `GOOD_VALUE` |   "1" |
+|         `PROBABLY_GOOD_VALUE` |   "2" |
+|          `PROBABLY_BAD_VALUE` |   "3" |
+|                   `BAD_VALUE` |   "4" |
+|               `CHANGED_VALUE` |   "5" |
+|       `VALUE_BELOW_DETECTION` |   "6" |
+|             `VALUE_IN_EXCESS` |   "7" |
+|          `INTERPOLATED_VALUE` |   "8" |
+|               `MISSING_VALUE` |   "9" |
+|  `VALUE_PHENOMENON_UNCERTAIN` |   "A" |
 
 
 If the ODV does not contain a semantic header (e.g. for the aggregated ODV files),
 then local names must be used.
 
 ```julia-repl
-julia> data,lon,lat,depth,time,ids = DIVAnd.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
+julia> data,obslon,obslat,obsdepth,obstime,obsids = DIVAnd.ODVspreadsheet.load(Float64,["data_from_med_profiles_non-restricted_v2.txt"],
       ["Water body salinity"]; nametype = :localname );
 ```
 
-No checks are done if the units are consistent.
+In order to read ODV spreasheet containing World Ocean Database file `odvfile`,
+one can use a command like:
+```julia-repl
+julia> obsval,obslon,obslat,obsdepth,obstime,obsid = ODVspreadsheet.load(Float64,[odvfile],
+                           ["Temperature"]; qv_flags=["0", "1"], nametype = :localname, qvlocalname = "QV:WOD");
+```
+i.e.,
+* explicitely specifying the accepted flags `qv_flags`
+* set `qvlocalname` as "QV:WOD".
+
+*Note:* no checks are performed to ensure the units are consistent.
 
 """
-function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractString};
-              qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
-              nametype = :P01,
-              qvlocalname = "QV:SEADATANET")
+function load(
+    T,
+    fnames::Vector{<:AbstractString},
+    datanames::Vector{<:AbstractString};
+    qv_flags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],
+    nametype = :P01,
+    qvlocalname = "QV:SEADATANET",
+)
 
     profiles = T[]
     lons = T[]
@@ -635,13 +768,14 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
 
     for fname in fnames
 
-        sheet = readODVspreadsheet(fname);
+        sheet = readODVspreadsheet(fname)
         sheet_P01names = listSDNparams(sheet)
 
         @debug "sheet_P01names: $sheet_P01names"
 
         # loop over all parameters
         for dataname in datanames
+            @info "Working on variable $(dataname)"
             if nametype == :P01
                 if !(dataname in sheet_P01names)
                     # ignore this file
@@ -658,57 +792,78 @@ function load(T,fnames::Vector{<:AbstractString},datanames::Vector{<:AbstractStr
                 end
             end
 
-            # @info "Starting loop on the $(nprofiles(sheet)) profiles"
+            @info "Starting loop on the $(nprofiles(sheet)) profiles"
             for iprofile = 1:nprofiles(sheet)
-                    data,data_qv,obslon,obslat,obsdepth,obsdepth_qv,obstime,
-                       obstime_qv,EDMO,LOCAL_CDI_ID = loadprofile(T,sheet,iprofile,dataname;
-                                                                  nametype = nametype,
-                                                                  qvlocalname = qvlocalname)
+                data,
+                data_qv,
+                obslon,
+                obslat,
+                obsdepth,
+                obsdepth_qv,
+                obstime,
+                obstime_qv,
+                EDMO,
+                LOCAL_CDI_ID = loadprofile(
+                    T,
+                    sheet,
+                    iprofile,
+                    dataname;
+                    nametype = nametype,
+                    qvlocalname = qvlocalname,
+                )
 
                     # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
-                    obsids = String[e * "-" * l for (e,l) in zip(EDMO,LOCAL_CDI_ID)]
+                obsids = String[e * "-" * l for (e, l) in zip(EDMO, LOCAL_CDI_ID)]
 
                     # select data matching quality flags
 
-                    good_data = falses(size(data_qv))
-                    for flag in qv_flags
-                        good_data[:] =  good_data .| (data_qv .== flag)
-                    end
+                good_data = falses(size(data_qv))
+                for flag in qv_flags
+                    good_data[:] = good_data .| (data_qv .== flag)
+                end
 
-                    good_time = goodflag(obstime_qv,qv_flags)
-                    good_depth = goodflag(obsdepth_qv,qv_flags)
+                good_time = goodflag(obstime_qv, qv_flags)
+                good_depth = goodflag(obsdepth_qv, qv_flags)
 
-                    good = good_data .& good_time .& good_depth
+                good = good_data .& good_time .& good_depth
 
-                    append!(profiles,data[good])
-                    append!(lons,obslon[good])
-                    append!(lats,obslat[good])
-                    append!(depths,obsdepth[good])
-                    append!(times,obstime[good])
-                    append!(ids,obsids[good])
+                append!(profiles, data[good])
+                append!(lons, obslon[good])
+                append!(lats, obslat[good])
+                append!(depths, obsdepth[good])
+                append!(times, obstime[good])
+                append!(ids, obsids[good])
             end
-            # @info "Done reading the profiles"
+            @info "Done reading the profiles"
         end
     end
 
-    return profiles,lons,lats,depths,times,ids
+    return profiles, lons, lats, depths, times, ids
 end
 
 """
      profiles,lons,lats,depths,times,ids = load(T,dir,P01names)
 
-Load all ODV files under the directory `dir` corresponding the
+Load all the ODV files under the directory `dir` corresponding the
 one of the parameter names `P01names`. The resulting vectors have the data
 type `T` (expect `times` and `ids` which are vectors of `DateTime` and
-`String` respectively).
+`String`, respectively).
 
-No checks are done if the units are consistent.
+No checks are done to ensure the units are consistent.
 """
-function load(T,dir::AbstractString,datanames;
-              qv_flags = [GOOD_VALUE,PROBABLY_GOOD_VALUE],
-              nametype = :P01)
-    fnames = vcat([[joinpath(root, file) for file in files if endswith(file,".txt")] for (root, dirs, files) in walkdir(dir)]...)
-    return load(T,fnames,datanames; qv_flags = qv_flags, nametype = nametype)
+function load(
+    T,
+    dir::AbstractString,
+    datanames;
+    qv_flags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],
+    nametype = :P01,
+)
+    fnames = vcat([[joinpath(root, file) for file in files if endswith(file, ".txt")] for (
+        root,
+        dirs,
+        files,
+    ) in walkdir(dir)]...)
+    return load(T, fnames, datanames; qv_flags = qv_flags, nametype = nametype)
 end
 
 export readODVspreadsheet, listSDNparams, nprofiles

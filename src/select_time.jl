@@ -1,7 +1,6 @@
 
 
-struct AbstractTimeSelector
-end
+struct AbstractTimeSelector end
 
 
 
@@ -23,25 +22,28 @@ an empty month range.
 
 ## Example
 
+```julia
 # seasonal climatology using all data from 1900 to 2017
 # for winter (December-February), spring, summer, autumn
 
 TS = DIVAnd.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
+```
 
 """
-struct TimeSelectorYearListMonthList{T1 <: AbstractVector,T2 <: AbstractVector}
+struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector}
     yearlists::T1
     monthlists::T2
 end
 
-Base.length(TS::TimeSelectorYearListMonthList) = length(TS.yearlists) * length(TS.monthlists)
+Base.length(TS::TimeSelectorYearListMonthList) =
+    length(TS.yearlists) * length(TS.monthlists)
 
 function ctimes(TS::TimeSelectorYearListMonthList)
     timeclim = DateTime[]
 
     for yearrange in TS.yearlists
         @assert(length(yearrange) > 0)
-        yearc = yearrange[(end+1) ÷ 2]
+        yearc = yearrange[(end+1)÷2]
 
         for monthrange in TS.monthlists
             @assert(length(monthrange) > 0)
@@ -50,12 +52,12 @@ function ctimes(TS::TimeSelectorYearListMonthList)
             timecentral =
                 # day 16 of the central months
                 if length(monthrange) % 2 == 1
-                    DateTime(yearc,monthrange[(end+1) ÷ 2],16,0,0,0)
+                    DateTime(yearc, monthrange[(end+1)÷2], 16, 0, 0, 0)
                 else
-                    DateTime(yearc,monthrange[end÷2 + 1],1,0,0,0)
+                    DateTime(yearc, monthrange[end÷2+1], 1, 0, 0, 0)
                 end
 
-            push!(timeclim,timecentral)
+            push!(timeclim, timecentral)
         end
     end
 
@@ -78,8 +80,8 @@ function timesstart(TS::TimeSelectorYearListMonthList)
             @assert(length(monthrange) > 0)
 
             # start time instance
-            time0 = DateTime(yearrange[1],monthrange[1],1,0,0,0)
-            push!(timeclim,time0)
+            time0 = DateTime(yearrange[1], monthrange[1], 1, 0, 0, 0)
+            push!(timeclim, time0)
         end
     end
 
@@ -101,17 +103,24 @@ function timesend(TS::TimeSelectorYearListMonthList)
             @assert(length(monthrange) > 0)
 
             # end time instance
-            time0 = Dates.lastdayofmonth(DateTime(yearrange[end],monthrange[end],1,0,0,0))
-            push!(timeclim,time0)
+            time0 = Dates.lastdayofmonth(DateTime(
+                yearrange[end],
+                monthrange[end],
+                1,
+                0,
+                0,
+                0,
+            ))
+            push!(timeclim, time0)
         end
     end
 
     return timeclim
 end
 
-function select(TS::TimeSelectorYearListMonthList,index,obstime)
-    yearindex = (index-1) ÷ length(TS.monthlists) +1
-    mlindex = (index-1) % length(TS.monthlists) +1
+function select(TS::TimeSelectorYearListMonthList, index, obstime)
+    yearindex = (index - 1) ÷ length(TS.monthlists) + 1
+    mlindex = (index - 1) % length(TS.monthlists) + 1
 
     yearlist = TS.yearlists[yearindex]
     monthlist = TS.monthlists[mlindex]
@@ -131,7 +140,7 @@ function select(TS::TimeSelectorYearListMonthList,index,obstime)
         end
 
         # keep an observation is year and month are suitable
-        s[i] = s[i] && sm;
+        s[i] = s[i] && sm
     end
     return s
 end
@@ -145,7 +154,7 @@ Observations at the i-th time instance will be selected
 if the dates is between `times[i]-w/2` and `time[i]+w/2` where
 `w` is the time window expressed as days.
 """
-struct TimeSelectorRunningAverage{T1 <: AbstractVector, T2 <: Number}
+struct TimeSelectorRunningAverage{T1<:AbstractVector,T2<:Number}
     times::T1 # central times
     window::T2 # in days
 end
@@ -155,18 +164,20 @@ Base.length(TS::TimeSelectorRunningAverage) = length(TS.times)
 ctimes(TS::TimeSelectorRunningAverage) = TS.times
 
 timesstart(TS::TimeSelectorRunningAverage) =
-    TS.times - Dates.Millisecond(round(Int64,Int64(TS.window) * 24*60*60*1000/2))
+    TS.times - Dates.Millisecond(round(Int64, Int64(TS.window) * 24 * 60 * 60 * 1000 / 2))
 
 timesend(TS::TimeSelectorRunningAverage) =
-    TS.times + Dates.Millisecond(round(Int64,Int64(TS.window) * 24*60*60*1000/2))
+    TS.times + Dates.Millisecond(round(Int64, Int64(TS.window) * 24 * 60 * 60 * 1000 / 2))
 
-function select(TS::TimeSelectorRunningAverage,index,obstime)
+function select(TS::TimeSelectorRunningAverage, index, obstime)
     # convertion to Int is necessary on 32-bit systems
     s = falses(Int.(size(obstime)))
 
     # loop over all observation time instance
     for i = 1:length(obstime)
-        s[i] =  abs(Dates.Millisecond(obstime[i] - TS.times[index]).value) <= 1000*24*60*60*TS.window
+        s[i] = abs(Dates.Millisecond(obstime[i] - TS.times[index]).value) <= 1000 * 24 *
+                                                                             60 * 60 *
+                                                                             TS.window
     end
 
     return s
@@ -182,9 +193,9 @@ the elements of `yearlists` are centred around `years` and span
 `yearwindow/2` to every element of years.
 
 """
-function TimeSelectorYW(years,yearwindow,monthlists)
+function TimeSelectorYW(years, yearwindow, monthlists)
     yearlists = [y-yearwindow/2:y+yearwindow/2 for y in years]
-    return TimeSelectorYearListMonthList(yearlists,monthlists)
+    return TimeSelectorYearListMonthList(yearlists, monthlists)
 end
 
 
@@ -208,8 +219,8 @@ function climatology_bounds(TS)
 # subinterval used to evaluate the climatological statistics with
 # index i in the time dimension.
 
-    b = Array{DateTime}(undef,2,length(TS))
-    b[1,:] = timesstart(TS)
-    b[2,:] = timesend(TS)
+    b = Array{DateTime}(undef, 2, length(TS))
+    b[1, :] = timesstart(TS)
+    b[2, :] = timesend(TS)
     return b
 end

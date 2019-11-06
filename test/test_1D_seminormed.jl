@@ -1,24 +1,20 @@
 # A simple example of DIVAnd in 1 dimensions
 # with observations from an analytical function.
 
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-else
-    using Base.Test
-end
+using Test
 using DIVAnd
 
 
 # observations with points outside
-x = collect(range(0,stop=1,length=7))
-f = sin.(3*pi*x) ;
+x = collect(range(0, stop = 1, length = 7))
+f = sin.(3 * pi * x);
 
 # final grid
 
-xi = collect(range(-0.1,stop=1.1,length=100))
+xi = collect(range(-0.1, stop = 1.1, length = 100))
 
 # reference field
-fref = sin.(xi*6*pi) ;
+fref = sin.(xi * 6 * pi);
 
 # all points are valid points
 mask = trues(size(xi));
@@ -27,7 +23,7 @@ mask = trues(size(xi));
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2]-xi[1]);
+pm = ones(size(xi)) / (xi[2] - xi[1]);
 
 
 # correlation length
@@ -36,7 +32,7 @@ len = 0.05;
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.
 
-m = Int(ceil(1+1/2))
+m = Int(ceil(1 + 1 / 2))
 # alpha is the (m+1)th row of the Pascal triangle:
 # m=0         1
 # m=1       1   1
@@ -44,33 +40,33 @@ m = Int(ceil(1+1/2))
 # m=2   1   3   3   1
 # ...
 
-alpha = [binomial(m,k) for k = 0:m];
+alpha = [binomial(m, k) for k = 0:m];
 # fi is the interpolated field
 
-firef,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;);
+firef, s = DIVAndrun(mask, (pm,), (xi,), (x,), f, len, epsilon2);
 
-alpha = [binomial(m,k) for k = 0:m];
+alpha = [binomial(m, k) for k = 0:m];
 alpha = 2 * alpha
 # fi is the interpolated field
-fi1,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+fi1, s = DIVAndrun(mask, (pm,), (xi,), (x,), f, len, epsilon2; alpha = alpha);
 @test 0.4 < maximum(fi1) < 0.6
 
 
-alpha = [binomial(m,k) for k = 0:m];
-alpha[1]=0;
-fi2,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+alpha = [binomial(m, k) for k = 0:m];
+alpha[1] = 0;
+fi2, s = DIVAndrun(mask, (pm,), (xi,), (x,), f, len, epsilon2; alpha = alpha);
 # increase tolerance since scale_len is activated
 @test 0.4 < maximum(fi2) < 0.65
 
 
-alpha = [binomial(m,k) for k = 0:m];
-alpha[2]=0;
-fi3,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+alpha = [binomial(m, k) for k = 0:m];
+alpha[2] = 0;
+fi3, s = DIVAndrun(mask, (pm,), (xi,), (x,), f, len, epsilon2; alpha = alpha);
 @test 0.4 < maximum(fi3) < 0.6
 
 
-alpha = [binomial(m,k) for k = 0:m];
-fi4,s = DIVAndrun(mask,(pm,),(xi,),(x,),f,len,epsilon2;alpha=alpha);
+alpha = [binomial(m, k) for k = 0:m];
+fi4, s = DIVAndrun(mask, (pm,), (xi,), (x,), f, len, epsilon2; alpha = alpha);
 @test 0.4 < maximum(fi4) < 0.6
 @test 0.4 < maximum(firef) < 0.6
 @test maximum(fi4) ≈ maximum(firef)

@@ -6,13 +6,14 @@
 
 
 # Input: Same as for `DIVAndrun`
-* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+For oceanographic application, this is the land-sea mask.
 
 * `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
        element represents the scale factor of the corresponding dimension. Its
        inverse is the local resolution of the grid in a particular dimension.
 
-*  `xi`: tuple with n elements. Every element represents a coordinate
+* `xi`: tuple with n elements. Every element represents a coordinate
   of the final grid on which the observations are interpolated
 
 * `x`: tuple with n elements. Every element represents a coordinate of
@@ -39,32 +40,56 @@ the coordinates `x`. The array `cpme` represent the error field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`. If you cannot run `DIVAndrun` you can use `DIVAndgo` with error field calculation `:cpme`
 
 """
-function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2; csteps=[0],lmask=[], alphapc=[], otherargs...)
+function DIVAnd_cpme(
+    mask,
+    pmn,
+    xi,
+    x,
+    f,
+    Labs,
+    epsilon2;
+    csteps = [0],
+    lmask = [],
+    alphapc = [],
+    otherargs...,
+)
 #function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2)
 #    csteps=[0]; lmask=[]; alphapc=[]; otherargs = Dict()
 
-    errorscale=1;
+    errorscale = 1
 
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
     # Could be a small improvement. Also used in DIVAnd_aexerr
 
-    len = len_harmonize(Labs,mask)
+    len = len_harmonize(Labs, mask)
     for i = 1:length(len)
         len[i] .= len[i] / 1.70766
     end
 
-    if sum(csteps)>0
-        cpme,s =  DIVAndjog(mask,pmn,xi,x,ones(size(f)),len,epsilon2,csteps,lmask; alphapc=alphapc, otherargs...);
+    if sum(csteps) > 0
+        cpme, s = DIVAndjog(
+            mask,
+            pmn,
+            xi,
+            x,
+            ones(size(f)),
+            len,
+            epsilon2,
+            csteps,
+            lmask;
+            alphapc = alphapc,
+            otherargs...,
+        )
     else
-        cpme,s =  DIVAndrun(mask,pmn,xi,x,ones(size(f)),len,epsilon2; otherargs...);
+        cpme, s = DIVAndrun(mask, pmn, xi, x, ones(size(f)), len, epsilon2; otherargs...)
     end
-    cpme=errorscale .* max.(-cpme.+1,0)
+    cpme = errorscale .* max.(-cpme .+ 1, 0)
 
     return cpme
 
 end
 
-# Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
+# Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
