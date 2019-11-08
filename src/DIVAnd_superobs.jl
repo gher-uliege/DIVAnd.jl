@@ -29,7 +29,8 @@ Alternative use to prepare heatmaps:
     newx,newinflation,sumw,varp=DIVAnd_superobs(x,ones(size(inflation)),nmax;weights=inflation,intensive=false)
 
 creates a new inflation array by summing up the inflation from the points involved in the superobservation calculation.
-For the moment in this case sumw, varp are not meaningful.
+For the moment in this case sumw, varp are not meaningful. TODO: include in varp the variance on POSITIONS so that for headmaps it can be taken into acount for adaptive length scales
+
 
 
 """

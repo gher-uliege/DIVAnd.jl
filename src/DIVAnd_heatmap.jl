@@ -55,6 +55,8 @@ function DIVAnd_heatmap(
             intensive = false,
         )
        #@show size(inflationin),nmax,size(inflation)
+	   # TODO in future: implement in DIVAnd_superobs the calculation of spread of points in superobs and use it to increase/adapt the length scales accordingly 
+	   # to be tested with known solutions.
     end
 
 
