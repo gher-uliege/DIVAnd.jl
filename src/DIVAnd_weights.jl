@@ -1,3 +1,12 @@
+#using Base.Threads
+
+
+@inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where ndim
+    return CartesianIndex(
+        ntuple( j -> min(max(round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1,1),sz[j]), Val(ndim))
+    )
+end
+
 """
     Rtimesx!(coord,LS,x,Rx)
 
@@ -12,8 +21,8 @@ Adapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90
 function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     ndata = size(coord, 2)
     len = [LS...]
-    coordmin = Compat.minimum(coord, dims = 2)[:, 1]
-    coordmax = Compat.maximum(coord, dims = 2)[:, 1]
+    coordmin = minimum(coord, dims = 2)[:, 1]
+    coordmax = maximum(coord, dims = 2)[:, 1]
 
     ilen = 1 ./ len
     ilenmax = 1 ./ (3 * len)
@@ -25,23 +34,22 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     coordmin -= range * eps(eltype(coord))
     coordmax += range * eps(eltype(coord))
 
-
     # Now number of grid points in each direction
-    sz = (round.(Int, (coordmax - coordmin) .* ilenmax) .+ 1...,)::NTuple{ndim,Int}
+    sz =  let coordmax=coordmax, coordmin=coordmin, ilenmax=ilenmax
+        ntuple(j -> (round(Int, (coordmax[j] - coordmin[j]) * ilenmax[j]) + 1),Val(ndim))
+    end
 
     # now allocate the arrays
     NP = zeros(Int, sz)
     NG = zeros(Int, ndim)
-    gridindex = zeros(Int, ndata, ndim)
+    gridindex = Vector{CartesianIndex{ndim}}(undef,ndata)
 
     # First dummy loop, identify the number of points which fall into
     # any bin of a regular grid
 
     for i = 1:ndata
-        for j = 1:ndim
-            NG[j] = round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1
-        end
-        NP[NG...] += 1
+        NGind = _grid_index(coord, i, coordmin, ilenmax, sz)
+        NP[NGind] += 1
     end
 
     # Now we can allocate the array which indexes points that fall into the grid
@@ -57,11 +65,7 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     NP[:] .= 0
 
     for i = 1:ndata
-        for j = 1:ndim
-            NG[j] = round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1
-        end
-
-        NGind = CartesianIndex{ndim}(NG...)
+        NGind = _grid_index(coord, i, coordmin, ilenmax, sz)
 
         NP[NGind] += 1
         NPP = NP[NGind]
@@ -69,36 +73,32 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
         IP[NGind][NPP] = i
 
         # For all points get index of grid bin where if falls
-        gridindex[i, :] = NG
+        gridindex[i] = NGind
     end
 
     # Ok, now finally calculate covariances and application
-    Rx[:] .= 0
 
-    for i = 1:ndata
+#    Threads.@threads for i = 1:ndata
+    @inbounds for i = 1:ndata
         # Find grid indexes
-        NG = gridindex[i, :]
+        NGind = gridindex[i]
 
         # Now all boxes around this one
         Rx[i] = 0
 
-        istart = CartesianIndex((max.(1, NG .- 1)...,)::NTuple{ndim,Int})
-        iend = CartesianIndex((min.(sz, NG .+ 1)...,)::NTuple{ndim,Int})
 
-        for ind in CartesianIndices(ntuple(i -> istart[i]:iend[i], ndim)::NTuple{
+        @inbounds for ind in CartesianIndices(ntuple(j -> max(1,NGind[j]-1):min(sz[j],NGind[j]+1), ndim)::NTuple{
             ndim,
             UnitRange{Int},
         })
 
-            for ipoint = 1:NP[ind]
-                ii = IP[ind][ipoint]
-
+            @inbounds for ii in IP[ind]
                 dist = 0.
-                for j = 1:ndim
+                @inbounds for j = 1:ndim
                     dist += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
                 end
 
-                cov = exp(-dist)
+                cov = @fastmath exp(-dist)
                 Rx[i] += cov * x[ii]
             end
         end
@@ -117,7 +117,7 @@ representing the correlation length. `len[i]` is the correlation length in the
 i-th dimension.
 """
 function weight_RtimesOne(x::NTuple{ndim,Vector{T}}, len) where {T} where {ndim}
-    coord = hcat(x...)'
+    coord = copy(hcat(x...)')
 
     # geometric mean
     geomean(v) = prod(v)^(1 / length(v))
@@ -126,7 +126,6 @@ function weight_RtimesOne(x::NTuple{ndim,Vector{T}}, len) where {T} where {ndim}
     vec = ones(T, length(x[1]))
     Rvec = ones(T, length(x[1]))
 
-    #@code_warntype Rtimesx!(coord,LS,vec,Rvec)
     Rtimesx!(coord, LS, vec, Rvec)
 
     return 1 ./ Rvec
