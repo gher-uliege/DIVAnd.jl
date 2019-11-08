@@ -1,6 +1,7 @@
 # Testing DIVAnd in 2 dimensions with advection.
 using DIVAnd
 using Test
+using Random
 
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
