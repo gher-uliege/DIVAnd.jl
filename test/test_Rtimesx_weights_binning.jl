@@ -53,3 +53,6 @@ obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
 
 x = (obslon,obslat)
 
+sel  = 1:100000
+
+@time weight = DIVAnd.weight_RtimesOne((obslon[sel], obslat[sel]), (0.1,0.1));
