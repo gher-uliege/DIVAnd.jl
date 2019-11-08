@@ -1,4 +1,4 @@
-#using Base.Threads
+using Base.Threads
 
 
 @inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where ndim
@@ -78,8 +78,8 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
 
     # Ok, now finally calculate covariances and application
 
-#    Threads.@threads for i = 1:ndata
-    @inbounds for i = 1:ndata
+    Threads.@threads for i = 1:ndata
+    #@inbounds for i = 1:ndata
         # Find grid indexes
         NGind = gridindex[i]
 
