@@ -44,6 +44,7 @@ if !isfile(obsname)
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
+
 obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
     Float64,
     obsname,
@@ -53,6 +54,21 @@ obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
 
 x = (obslon,obslat)
 
-sel  = 1:100000
+sel  = 1:1000000
 
-@time weight = DIVAnd.weight_RtimesOne((obslon[sel], obslat[sel]), (0.1,0.1));
+#@time weight = DIVAnd.weight_RtimesOne((obslon[sel], obslat[sel]), (0.1,0.1));
+# 164.468426 seconds on dragon2 and 32 CPUs
+
+
+#dup = @time DIVAnd.Quadtrees.checkduplicates((obslon[sel], obslat[sel], obsdepth[sel], obstime[sel]), obsvalue[sel], [0.1, 0.1, 0.5, 1/24], 0.01);
+
+sel1  = 1:1000000
+sel2  = (1:1000000) .+ sel1[end]
+
+
+dup = @time DIVAnd.Quadtrees.checkduplicates(
+    (obslon[sel1], obslat[sel1], obsdepth[sel1], obstime[sel1]), obsvalue[sel1],
+    (obslon[sel2], obslat[sel2], obsdepth[sel2], obstime[sel2]), obsvalue[sel2],
+    [0.1, 0.1, 0.5, 1/24], 0.01)
+
+nothing
