@@ -114,8 +114,9 @@ function DIVAnd_averaged_bg(
     maskm = trues(size(xim[1]))
     #       @show size(maskm)
 
-
-    fm, sm = DIVAndrun(maskm, pmnm, xim, xm, f, lenm, epsilon2; moddim = moddimm)
+    #print("save DIVAndrun")
+    #JLD2.@save "/tmp/DIVAndrun.jld2" maskm pmnm xim xm f lenm epsilon2 moddimm
+    fm, sm = DIVAndrun(maskm, pmnm, xim, xm, f, lenm, epsilon2; moddim = moddimm, alphabc=0)
 
     fm = DIVAnd_filter3(fm, NaN, filterbackground)
 
