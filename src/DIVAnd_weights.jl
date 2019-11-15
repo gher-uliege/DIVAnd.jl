@@ -1,6 +1,14 @@
 using Base.Threads
 
 
+# https://web.archive.org/web/20191115112938/https://codingforspeed.com/using-faster-exponential-approximation/
+@inline function approximate_exp(x::T) where T
+    x = T(1) + x / T(256)
+    x *= x; x *= x; x *= x; x *= x;
+    x *= x; x *= x; x *= x; x *= x;
+    return max(x,T(0))
+end
+
 @inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where ndim
     return CartesianIndex(
         ntuple( j -> min(max(round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1,1),sz[j]), Val(ndim))
@@ -98,7 +106,9 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
                     dist += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
                 end
 
-                cov = @fastmath exp(-dist)
+                #cov = @fastmath exp(-dist)
+                cov = @fastmath approximate_exp(-dist)
+
                 Rx[i] += cov * x[ii]
             end
         end
