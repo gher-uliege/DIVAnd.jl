@@ -32,17 +32,12 @@ Under Linux you will also need the packages `make`, `gcc` and `netcdf` which you
 apt-get install make gcc libnetcdf-dev netcdf-bin
 ```
 
-You need [Julia](http://julialang.org) (version 1.0 or 1.1) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 1.0 or 1.3) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
 using Pkg
 Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
-```
-
-For Julia 0.6, you can use the following:
-```julia
-Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl") # only for Julia 0.6
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
@@ -139,6 +134,11 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
 Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
+
+
+## Note about the error fields
+
+`DIVAnd` allows the calculation of the analysis error variance, scaled by the background error variance. Though it can be calculated "exactly" using the diagonal of the error covariance matrix s.P, it is too costly and approximations are provided. Two version are recommended, `DIVAnd_cpme` for a quick estimate and `DIVAnd_aexerr` for a version closer the theoretical estimate (see [Beckers et al 2014](https://doi.org/10.1175/JTECH-D-13-00130.1) )
 
 ## Advanced usage
 

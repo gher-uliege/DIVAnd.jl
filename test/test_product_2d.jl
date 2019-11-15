@@ -38,7 +38,7 @@ if !isfile(bathname)
 end
 
 if !isfile(obsname)
-    @info("download obsevations $obsname")
+    @info("download observations $obsname")
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
