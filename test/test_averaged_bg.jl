@@ -33,7 +33,7 @@ fi, fanom = DIVAnd_averaged_bg(
     [true, true, false, true],
 );
 
-@test -1.6 < fi[1, 1, 1, 1] < -1.4
+@test fi[1,1,1,1] ≈ zi[1,1,1,1] atol=0.1
 
 fi, fanom = DIVAnd_averaged_bg(
     mask,
