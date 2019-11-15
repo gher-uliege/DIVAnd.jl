@@ -101,6 +101,8 @@ include("gen_example_file.jl")
     include("test_save.jl")
     include("test_loadobs.jl")
 
+    include("test_load_mask.jl")
+
     # Anamorphosis
     include("test_anam.jl")
 
