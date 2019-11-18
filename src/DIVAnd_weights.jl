@@ -9,6 +9,13 @@ using Base.Threads
     return max(x,T(0))
 end
 
+"""
+    x2 is x squared
+"""
+function approximate_gaussian(x2)
+    return @fastmath 1 / (1 + x2 + x2*x2)
+end
+
 @inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where ndim
     return CartesianIndex(
         ntuple( j -> min(max(round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1,1),sz[j]), Val(ndim))
@@ -107,7 +114,8 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
                 end
 
                 #cov = @fastmath exp(-dist)
-                cov = @fastmath approximate_exp(-dist)
+                #cov = @fastmath approximate_exp(-dist)
+                cov = approximate_gaussian(dist)
 
                 Rx[i] += cov * x[ii]
             end
