@@ -346,6 +346,18 @@ function diva3d(
             [true, true]
         end
 
+        if fithorzcorrlen
+            kmax = length(depthr)
+            # horizontal info
+            dbinfo[:fithorzlen] = Dict{Symbol,Any}(
+                :len => zeros(kmax, length(TS)),
+                :lenf => zeros(kmax, length(TS)),
+                :var0 => zeros(kmax, length(TS)),
+                :fitinfos => Array{Dict{Symbol,Any},2}(undef, kmax, length(TS)),
+            )
+
+        end
+
         if fitvertcorrlen
             kmax = length(depthr)
 
@@ -359,6 +371,7 @@ function diva3d(
                 )
             end
         end
+
 
         dbinfo[:factore] = zeros(niter_e, length(TS))
 
@@ -484,6 +497,11 @@ function diva3d(
                     distfun = distfun,
                     fithorz_param_sel...,
                 )
+
+                dbinfo[:fithorzlen][:lenf][:, timeindex] = lenxy1
+                dbinfo[:fithorzlen][:len][:, timeindex] = infoxy[:len]
+                dbinfo[:fithorzlen][:var0][:, timeindex] = infoxy[:var0]
+                dbinfo[:fithorzlen][:fitinfos][:, timeindex] = infoxy[:fitinfos]
 
                 if n == 3
                     # propagate
