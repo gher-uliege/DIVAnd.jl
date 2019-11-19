@@ -61,7 +61,7 @@ to load the background from a call-back function (default `nothing`). The call-b
 `(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
 (possibly transformed) and `trans` the transformation function. The output of this function is the
 gridded background field and the observations minus the background field.
-* `background_espilon2_factor`: multiplication for `epsilon2` when computing a
+* `background_epsilon2_factor`: multiplication for `epsilon2` when computing a
    vertical profile as a background estimate (default 10.). This parameter is not used
    when the parameter `background` or `background_lenz` is provided.
 * `background_lenz`: vertical correlation for background computation (default 20 m). This parameter is not used
@@ -346,6 +346,18 @@ function diva3d(
             [true, true]
         end
 
+        if fithorzcorrlen
+            kmax = length(depthr)
+            # horizontal info
+            dbinfo[:fithorzlen] = Dict{Symbol,Any}(
+                :len => zeros(kmax, length(TS)),
+                :lenf => zeros(kmax, length(TS)),
+                :var0 => zeros(kmax, length(TS)),
+                :fitinfos => Array{Dict{Symbol,Any},2}(undef, kmax, length(TS)),
+            )
+
+        end
+
         if fitvertcorrlen
             kmax = length(depthr)
 
@@ -359,6 +371,7 @@ function diva3d(
                 )
             end
         end
+
 
         dbinfo[:factore] = zeros(niter_e, length(TS))
 
@@ -484,6 +497,11 @@ function diva3d(
                     distfun = distfun,
                     fithorz_param_sel...,
                 )
+
+                dbinfo[:fithorzlen][:lenf][:, timeindex] = lenxy1
+                dbinfo[:fithorzlen][:len][:, timeindex] = infoxy[:len]
+                dbinfo[:fithorzlen][:var0][:, timeindex] = infoxy[:var0]
+                dbinfo[:fithorzlen][:fitinfos][:, timeindex] = infoxy[:fitinfos]
 
                 if n == 3
                     # propagate

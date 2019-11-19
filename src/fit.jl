@@ -787,7 +787,7 @@ function fitlen(
 
     covarweight = zeros(nbmax)
 
-    Random.seed!(n)
+    Random.seed!(iseed)
 
     for (i, j) in iter
         # compute the distance
@@ -1035,6 +1035,7 @@ function fithorzlen(
 
     weight = 1 ./ epsilon2
 
+    #Threads.@threads for k = 1:length(z)
     for k = 1:length(z)
 
         sel = if length(x) == 3
