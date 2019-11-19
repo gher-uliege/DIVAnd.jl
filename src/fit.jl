@@ -560,21 +560,26 @@ end
 mutable struct RandomCoupels
     n::Int
     count::Int
+    iseed::Int
 end
 
-function Base.iterate(iter::RandomCoupels, state = 0)
-    if state == iter.count
+Base.length(iter::RandomCoupels) = iter.count
+
+function Base.iterate(iter::RandomCoupels, state = (0, MersenneTwister(iter.iseed)))
+    count,rng = state
+
+    if count == iter.count
         return nothing
     end
 
     # pick two random points
-    j = rand(1:iter.n)
+    j = rand(rng,1:iter.n)
     i = j
     while (i == j)
-        i = rand(1:iter.n)
+        i = rand(rng,1:iter.n)
     end
 
-    return ((i, j), state + 1)
+    return ((i, j), (count + 1, rng))
 end
 
 
@@ -652,6 +657,7 @@ this function used to be called lfit in fitlsn.f
 function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
     # number of samples
     n = length(d)
+    iseed = n
 
     iter =
         if (nsamp == 0)
@@ -662,7 +668,7 @@ function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
                 @warn "Strange to ask for more samples than available from data; will proceed"
             end
 
-            RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2)
+            RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2,iseed)
         end
 
     if (n > 10000) && (nsamp != 0)
@@ -1035,8 +1041,8 @@ function fithorzlen(
 
     weight = 1 ./ epsilon2
 
-    #Threads.@threads for k = 1:length(z)
-    for k = 1:length(z)
+    Threads.@threads for k = 1:length(z)
+    #for k = 1:length(z)
 
         sel = if length(x) == 3
             (abs.(x[3] .- z[k]) .< searchz)
