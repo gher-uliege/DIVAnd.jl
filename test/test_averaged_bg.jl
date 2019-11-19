@@ -30,10 +30,10 @@ fi, fanom = DIVAnd_averaged_bg(
     f,
     len,
     epsilon2,
-    [true true false true],
+    [true, true, false, true],
 );
 
-@test -1.6 < fi[1, 1, 1, 1] < -1.4
+@test fi[1,1,1,1] ≈ zi[1,1,1,1] atol=0.1
 
 fi, fanom = DIVAnd_averaged_bg(
     mask,
@@ -43,7 +43,7 @@ fi, fanom = DIVAnd_averaged_bg(
     f,
     len,
     epsilon2,
-    [true true true true],
+    [true, true, true, true],
 );
 
 @test -0.15 < fi[1, 1, 1, 1] < 0
@@ -57,7 +57,7 @@ fi, fanom = @test_logs (:warn, r".*no averaging.*") match_mode = :any DIVAnd_ave
     f,
     len,
     epsilon2,
-    [false false false false],
+    [false, false, false, false],
 );
 
 @test -1.2 < fi[1, 1, 1, 1] < -1.1

@@ -5,7 +5,11 @@ function diffusion!(ivol, nus, α, nmax, x0, x)
 
     for niter = 1:nmax
         DIVAnd_laplacian_apply!(ivol, nus, x, work1)
-        x[:] = x + α * work1
+
+        for ind in eachindex(x)
+            x[ind] = x[ind] + α * work1[ind]
+        end
+        #x[:] = x + α * work1
     end
 
 end
@@ -85,7 +89,7 @@ n-dimensional Green’s function
 G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
 
 
-G(x,x',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x')ᵀ D⁻¹ (x -x')ᵀ / (4t))
+G(x,x',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x')ᵀ D⁻¹ (x -x') / (4t))
 
 http://www.rpgroup.caltech.edu/~natsirt/aph162/diffusion_old.pdf
 

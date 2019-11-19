@@ -419,9 +419,6 @@ function diva3d(
                     vm = mean(value_trans[isfinite.(value_trans)])
                     va = value_trans .- vm
 
-                    #@show background_len[3][1,1,:], vm
-                    #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm
-                    #@show "background saving"
                     # background profile
 
                     if n == 4
@@ -430,6 +427,10 @@ function diva3d(
                             background_len[3] .= 2 ./ pmn[3]
                         end
                     end
+
+                    #@show background_len[3][1,1,:], vm
+                    #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm filterbackground
+                    #@show "background saving"
 
                     fi, vaa = DIVAnd.DIVAnd_averaged_bg(
                         mask,

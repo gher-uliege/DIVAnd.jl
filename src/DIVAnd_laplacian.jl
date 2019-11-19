@@ -207,7 +207,7 @@ for N = 1:6
             Lx::AbstractArray{T,$N},
         ) where {T}
             sz = size(x)
-            Lx[:] .= 0
+            fill!(Lx,0)
 
             @inbounds @nloops $N i d -> 1:sz[d] begin
                 (@nref $N Lx i) = 0

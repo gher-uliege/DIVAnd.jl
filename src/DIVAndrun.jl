@@ -41,8 +41,8 @@ function DIVAndrun(
     # check pmn .* len > 4
     #checkresolution(mask,pmnin,lin)
 
+    @debug "alphabc $alphabc for size $(size(mask))"
     pmn, xi, len = DIVAnd_bc_stretch(mask, pmnin, xiin, lin, moddim, alphabc)
-
 
 
     # observation error covariance (scaled)
