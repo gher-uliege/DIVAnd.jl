@@ -62,7 +62,7 @@ to load the background from a call-back function (default `nothing`). The call-b
 (possibly transformed) and `trans` the transformation function. The output of this function is the
 gridded background field and the observations minus the background field.
 * `background_epsilon2_factor`: multiplication for `epsilon2` when computing a
-   vertical profile as a background estimate (default 10.). This parameter is not used
+   vertical profile as a background estimate (default: computed internally based on the amount of data). This parameter is not used
    when the parameter `background` or `background_lenz` is provided.
 * `background_lenz`: vertical correlation for background computation (default 20 m). This parameter is not used
    when the parameter `background` is provided.
@@ -120,7 +120,7 @@ function diva3d(
     distfun = distfun_m,
     mask = nothing,
     background = nothing,
-    background_epsilon2_factor::Float64 = 10.,
+    background_epsilon2_factor = nothing,
     background_lenz = nothing, # m
     background_len = nothing,
     background_lenz_factor = 4,
@@ -446,7 +446,9 @@ function diva3d(
 
                     # simple estimation of background_epsilon2_factor so that in average
                     # for every level there are 10 observations with an unit epsilon2.
-                    background_epsilon2_factor = sum(filter(isfinite,1 ./ epsilon2[sel])) / (10 * length(depthr))
+                    if background_epsilon2_factor == nothing
+                        background_epsilon2_factor = sum(filter(isfinite,1 ./ epsilon2[sel])) / (10 * length(depthr))
+                    end
                     @show "background_epsilon2_factor: $background_epsilon2_factor"
 
                     #@show background_len[3][1,1,:], vm
