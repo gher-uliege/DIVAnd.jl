@@ -159,6 +159,47 @@ obslat = 4*rand(nobs).^2
 
 x = (obslon,obslat)
 
+#=
+sel  = 1:1000000
+
+#@time weight = DIVAnd.weight_RtimesOne((obslon[sel], obslat[sel]), (0.1,0.1));
+# 164.468426 seconds on dragon2 and 32 CPUs
+
+
+#dup = @time DIVAnd.Quadtrees.checkduplicates((obslon[sel], obslat[sel], obsdepth[sel], obstime[sel]), obsvalue[sel], [0.1, 0.1, 0.5, 1/24], 0.01);
+
+sel1  = 1:2000000
+sel2  = (1:2000000) .+ sel1[end]
+
+
+dup = @time DIVAnd.Quadtrees.checkduplicates(
+    (obslon[sel1], obslat[sel1], obsdepth[sel1], obstime[sel1]), obsvalue[sel1],
+    (obslon[sel2], obslat[sel2], obsdepth[sel2], obstime[sel2]), obsvalue[sel2],
+    [0.1, 0.1, 0.5, 1/24], 0.01)
+
+# 2.160539 seconds (1.03 M allocations: 2.004 GiB, 53.94% gc time)
+# 1.883045 seconds (1.03 M allocations: 2.004 GiB) without GC
+
+obsname = "/CECI/home/users/a/b/abarth/Data/Kanwal/Data_and_notebook/Global_ocean_PFL_Temperature_December.nc"
+
+obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
+    Float64,
+    obsname,
+    "Temperature",
+)
+
+
+sel1  = 1:2000000
+sel2  = (1:2000000) .+ sel1[end]
+
+
+dup = @time DIVAnd.Quadtrees.checkduplicates(
+    (obslon[sel1], obslat[sel1], obsdepth[sel1], obstime[sel1]), obsvalue[sel1],
+    (obslon[sel2], obslat[sel2], obsdepth[sel2], obstime[sel2]), obsvalue[sel2],
+    [0.1, 0.1, 0.5, 1/24], 0.01)
+=#
+
+
 sel  = 1:10000
 sel = 1:length(obslon)
 len = (0.1,0.1)
@@ -172,3 +213,4 @@ ratio = sqrt(mean((weighti-weight).^2)) / sqrt(mean(weighti.^2))
 
 
 @test sqrt(mean((weighti-weight).^2)) < 0.3 * sqrt(mean(weighti.^2))
+
