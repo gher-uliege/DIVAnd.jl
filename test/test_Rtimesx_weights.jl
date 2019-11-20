@@ -42,7 +42,8 @@ function Rtimesx1!(coord, LS, x, Rx)
     for j = 1:ndata
         for i = 1:ndata
             d2 = dist2(coord[:, i], coord[:, j], len)
-            cov[i, j] = exp(-d2)
+            #cov[i, j] = exp(-d2)
+            cov[i, j] = DIVAnd.approximate_gaussian(-d2)
         end
     end
 
@@ -82,12 +83,13 @@ function Rtimesx2!(coord, len::NTuple{ndim,T}, w, Rx) where {T} where {ndim}
         @inbounds for j = 1:nindex
             ii = index_buffer[j]
 
-            dist = 0.
+            dist2 = 0.
             for j = 1:ndim
-                dist += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
+                dist2 += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
             end
 
-            cov = @fastmath exp(-dist)
+            #cov = @fastmath exp(-dist2)
+            cov = DIVAnd.approximate_gaussian(-dist2)
             Rx[i] += cov * w[ii]
         end
     end
@@ -128,12 +130,13 @@ function Rtimesx3!(coord, len::NTuple{ndim,T}, w, Rx) where {T} where {ndim}
         @inbounds for j = 1:nindex
             ii = index_buffer[j]
 
-            dist = 0.
+            dist2 = 0.
             for j = 1:ndim
-                dist += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
+                dist2 += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
             end
 
-            cov = exp(-dist)
+            #cov = exp(-dist2)
+            cov = DIVAnd.approximate_gaussian(-dist2)
             Rx[i] += cov * w[ii]
         end
     end

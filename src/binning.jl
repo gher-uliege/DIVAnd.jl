@@ -53,3 +53,29 @@ function binning(x::NTuple{1,T}, xv, v) where {T}
 
     return vb ./ count, count, vb
 end
+
+
+function binning(gridx::Tuple, x, v)
+    # unstaggered coordinate
+    gridx_unstagger = DIVAnd.unstagger.(gridx)
+    sz = length.(gridx)
+
+    vb = zeros(eltype(v), sz)
+    count = zeros(Int, sz)
+    nout = 0
+    n = length(gridx)
+
+    for j = 1:length(v)
+        ind = CartesianIndex(ntuple(l -> DIVAnd.findin(gridx_unstagger[l], x[l][j]), Val(n)))
+
+        if checkbounds(Bool,vb,ind)
+            vb[ind] = vb[ind] + v[j]
+            count[ind] += 1
+        else
+            nout += 1
+        end
+    end
+
+    return vb ./ count, count, vb, nout
+end
+
