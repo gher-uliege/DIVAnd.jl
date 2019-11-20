@@ -372,6 +372,9 @@ function diva3d(
             end
         end
 
+        if background == nothing
+            dbinfo[:background_profile] = zeros(kmax, length(TS))
+        end
 
         dbinfo[:factore] = zeros(niter_e, length(TS))
 
@@ -441,9 +444,15 @@ function diva3d(
                         end
                     end
 
+                    # simple estimation of background_epsilon2_factor so that in average
+                    # for every level there are 10 observations with an unit epsilon2.
+                    background_epsilon2_factor = sum(filter(isfinite,1 ./ epsilon2[sel])) / (10 * length(depthr))
+                    @show "background_epsilon2_factor: $background_epsilon2_factor"
+
                     #@show background_len[3][1,1,:], vm
                     #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm filterbackground
                     #@show "background saving"
+
 
                     fi, vaa = DIVAnd.DIVAnd_averaged_bg(
                         mask,
@@ -460,6 +469,8 @@ function diva3d(
 
                     fbackground = fi .+ vm
                     @debug "fbackground: $(fbackground[1,1,:])"
+                    dbinfo[:background_profile][:,timeindex] = fbackground[1,1,:]
+
                     #@show size(fbackground),fbackground[1,1,end]
                     #dbinfo[:background] = fbackground
                     fbackground, vaa

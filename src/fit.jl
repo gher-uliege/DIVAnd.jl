@@ -671,9 +671,9 @@ function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
             RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2,iseed)
         end
 
-    if (n > 10000) && (nsamp != 0)
-        @warn "Be patient big data set: $n"
-    end
+#    if (n > 10000) && (nsamp != 0)
+#        @warn "Be patient big data set: $n"
+#    end
 
     return fitlen(x::Tuple, d, weight, nsamp, iter; kwargs...)
 end

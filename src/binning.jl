@@ -34,7 +34,7 @@ function findin(x, c)
     return -1
 end
 
-
+#=
 function binning(x::NTuple{1,T}, xv, v) where {T}
     # unstaggered coordinate
     x_unstagger = unstagger(x[1])
@@ -53,7 +53,7 @@ function binning(x::NTuple{1,T}, xv, v) where {T}
 
     return vb ./ count, count, vb
 end
-
+=#
 
 function binning(gridx::Tuple, x, v)
     # unstaggered coordinate
