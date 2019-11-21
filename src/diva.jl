@@ -448,7 +448,7 @@ function diva3d(
                     if background_epsilon2_factor == nothing
                         background_epsilon2_factor = sum(filter(isfinite,1 ./ epsilon2[sel])) / (10 * length(depthr))
                     end
-                    @show "background_epsilon2_factor: $background_epsilon2_factor"
+                    @debug "background_epsilon2_factor: $background_epsilon2_factor"
 
                     #@show background_len[3][1,1,:], vm
                     #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm filterbackground

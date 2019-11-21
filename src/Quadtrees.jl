@@ -639,8 +639,6 @@ function checkduplicates(
 #    index_buffer = zeros(Int, Nobs1)
     index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
 
-    @show "foo4"
-    #
     @time @fastmath @inbounds Threads.@threads for i = 1:Nobs2
         index_buffer = @view index_buffer_all[:,Threads.threadid()]
 
@@ -649,8 +647,8 @@ function checkduplicates(
 #            xmax[j] = X2[j, i] + delta[j]
 #        end
 
-        xmin = ntuple(j -> X2[j, i] - delta[j],n)
-        xmax = ntuple(j -> X2[j, i] + delta[j],n)
+        xmin = ntuple(j -> X2[j, i] - delta[j],Val(n))
+        xmax = ntuple(j -> X2[j, i] + delta[j],Val(n))
 
         nindex = Quadtrees.within_buffer!(qt, xmin, xmax, index_buffer)
 
