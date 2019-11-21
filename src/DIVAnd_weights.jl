@@ -150,11 +150,11 @@ function weight_RtimesOne(x::NTuple{ndim,Vector{T}}, len) where {T} where {ndim}
 end
 
 
-function weight_RtimesOne_binning(x, len)
+function weight_RtimesOne_binning(x, len; refine = 10)
     n = length(x)
 
-    # grid finer than a factor of 10
-    dx = ntuple(i -> len[i]/10,Val(n))
+    # grid finer than a factor give by refine
+    dx = ntuple(i -> len[i]/refine,Val(n))
 
     gridx = ntuple(i -> minimum(x[i]):dx[i]:maximum(x[i])+dx[i], Val(n))
     sz = length.(gridx)
