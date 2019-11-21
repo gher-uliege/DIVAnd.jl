@@ -206,7 +206,6 @@ function diva3d(
         (x[1], x[2], Float64[0.], x[3])
     end
 
-
     # anamorphosis transform
     trans, invtrans = transform
 
@@ -243,6 +242,9 @@ function diva3d(
     end
 
     sz = size(mask)
+
+    # number of vertical levels
+    kmax = length(depthr)
 
     # change the depth of the observation
     if (zlevel == :floor) && (n == 4)
@@ -347,7 +349,6 @@ function diva3d(
         end
 
         if fithorzcorrlen
-            kmax = length(depthr)
             # horizontal info
             dbinfo[:fithorzlen] = Dict{Symbol,Any}(
                 :len => zeros(kmax, length(TS)),
@@ -359,8 +360,6 @@ function diva3d(
         end
 
         if fitvertcorrlen
-            kmax = length(depthr)
-
             if n == 4
                 # vertical info
                 dbinfo[:fitvertlen] = Dict{Symbol,Any}(
