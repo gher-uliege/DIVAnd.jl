@@ -209,7 +209,7 @@ DIVAnd.ncfile
 DIVAnd.writeslice
 DIVAnd.encodeWMSStyle
 DIVAnd.loadoriginators
-DIVAnd.DIVAnd_inegral
+DIVAnd.DIVAnd_integral
 DIVAnd.DIVAnd_scaleL
 ```
 
@@ -232,6 +232,52 @@ using DIVAnd;
 joinpath(dirname(pathof(DIVAnd)), "..")
 ```
 
+
+### Advection contraint
+
+Example of DIVAnd in 2 dimensions with advection contrain.
+
+```@example
+using DIVAnd, PyPlot
+
+# square domain in 2 dimensions from -1 to 1
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
+
+# location of the observations
+x = [.4]
+y = [.4]
+
+# observed value
+f = [1.]
+
+# velocity field and its strength for the advection constrain
+strength = 0.5
+u = strength * yi
+v = -strength * xi
+
+# normalized obs. error variance and correlation length
+epsilon2 = 1 / 200
+len = 0.2
+
+# call DIVAnd
+fi, s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2; velocity = (u,v))
+
+# plot the results
+subplot(1,2,1)
+plot(x,y,"rx")
+quiver(xi,yi,u,v)
+gca().set_aspect(1)
+title("velocity field")
+
+subplot(1,2,2)
+plot(x,y,"rx")
+pcolor(xi,yi,fi)
+gca().set_aspect(1)
+title("analysis")
+savefig("example-advection-2d.png"); nothing # hide
+```
+
+![](example-advection-2d.png)
 
 ## Performance considerations
 

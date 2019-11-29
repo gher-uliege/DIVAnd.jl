@@ -186,8 +186,11 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 
 # Optional input arguments specified as keyword arguments
 
-* `velocity`: velocity of advection constraint. The default is
-       no-advection constraint
+* `velocity`: velocity of the advection constraint. It is a tuple of n arrays and
+  each array represents a single velocity component. The individual array should have the
+  same size as the final grid. The first (second,..) element of the velocity
+  is the velocity compomenent along the first (second,...) dimension.
+  The default is no-advection constraint.
 
 * `alpha`: alpha is vector of coefficients multiplying various terms in the
        cost function. The first element multiplies the norm.
