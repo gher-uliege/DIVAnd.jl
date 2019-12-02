@@ -68,7 +68,7 @@ function Base.getindex(C::CovarIS, i::Int, j::Int)
     ej = zeros(eltype(C), size(C, 1))
     ej[j] = 1
 
-    return (ej'*(C*ei))[1]
+    return ej ⋅ (C*ei)
 end
 
 
