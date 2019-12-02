@@ -129,18 +129,21 @@ function select(TS::TimeSelectorYearListMonthList, index, obstime)
     s = falses(Int.(size(obstime)))
 
     # loop over all observation time instance
-    for i = 1:length(obstime)
+    @inbounds for i = 1:length(obstime)
         # s[i] is true if the observation is within the time range
         s[i] = yearlist[1] <= Dates.year(obstime[i]) <= yearlist[end]
 
-        # sm is true if the month is one of the months is monthlist
-        sm = false
-        for m in monthlist
-            sm = sm || (Dates.month(obstime[i]) == m)
-        end
+        if s[i]
+            obsmonth = Dates.month(obstime[i])
+            # sm is true if the month is one of the months is monthlist
+            sm = false
+            for m in monthlist
+                sm = sm || (obsmonth == m)
+            end
 
-        # keep an observation is year and month are suitable
-        s[i] = s[i] && sm
+            # keep an observation is year and month are suitable
+            s[i] = sm
+        end
     end
     return s
 end
