@@ -25,7 +25,8 @@ using Dates
 using DelimitedFiles
 using Test
 
-if v"1.0" <= VERSION < v"1.3"
+#if v"1.0" <= VERSION < v"1.3"
+if v"1.0" <= VERSION
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
     import Base: *
