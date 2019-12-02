@@ -141,7 +141,7 @@ function select(TS::TimeSelectorYearListMonthList, index, obstime)
                 sm = sm || (obsmonth == m)
             end
 
-            # keep an observation is year and month are suitable
+            # keep an observation if year and month are suitable
             s[i] = sm
         end
     end
