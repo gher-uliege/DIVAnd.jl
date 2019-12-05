@@ -1065,7 +1065,7 @@ function fithorzlen(
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
 
-        @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])"
+        @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k]) (preliminary)"
     end
 
     # handle layers with no data
@@ -1090,7 +1090,7 @@ function fithorzlen(
     end
 
     for k = 1:length(z)
-        @debug "Smoothed horz. correlation length at z=$(z[k]): $(lenoptf[k])"
+        @info "Smoothed horz. correlation length at z=$(z[k]): $(lenoptf[k])"
     end
 
 

@@ -40,7 +40,8 @@ end
     cfilled = ufill(c,valex)
 
 Replace values in `c` equal to `valex` by averages of surrounding points.
-
+`valex` should not be NaN; use `ufill(c,isfinite.(c))` or
+`ufill(c,.!isnan.(c))` instead.
 """
 function ufill(c::Array{T,3}, valex::Number) where {T}
     #JLD2.@save "/tmp/tmp-ufill.jld2" c valex
@@ -69,6 +70,10 @@ end
 
 function ufill(c::Array{T,2}, valex::Number) where {T}
     return ufill(reshape(c, (size(c, 1), size(c, 2), 1)), valex)[:, :, 1]
+end
+
+function ufill(c::Array{T,1}, valex::Number) where {T}
+    return ufill(reshape(c, (:, 1, 1)), valex)[:, 1, 1]
 end
 
 """

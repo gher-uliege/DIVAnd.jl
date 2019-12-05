@@ -91,6 +91,8 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
         gridindex[i] = NGind
     end
 
+    @info "Computing weights using $(Threads.nthreads()) CPU thread(s)"
+
     # Ok, now finally calculate covariances and application
 
     Threads.@threads for i = 1:ndata
@@ -215,4 +217,3 @@ function weight_RtimesOne_binning(x, len; refine = 10)
 
     return weighti
 end
-
