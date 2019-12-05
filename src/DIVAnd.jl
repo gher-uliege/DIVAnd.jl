@@ -513,6 +513,8 @@ include("DIVAnd_integral.jl")
 
 include("DIVAnd_superobs.jl")
 
+include("DIVAnd_diagapp.jl")
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
@@ -596,6 +598,8 @@ export sparse_stagger,
 export checkobs
 
 export DIVAnd_heatmap, DIVAnd_integral, DIVAnd_scaleL, DIVAnd_superobs
+
+export DIVAnd_diagapp
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient
