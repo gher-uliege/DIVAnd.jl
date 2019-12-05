@@ -3,7 +3,7 @@
 
      errormap=DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
 
-Calculates an appriximation to the error map exploiting the fact that inv(P) is available via a cholesky decomposition Q'C*C'Q where Q is a permutation matrix. The diagonal component i  is then z'*z where z= Q'C \ ei where ei is normally an array with zeros except in position i where it has a value of 1. Here we exploit that z in that case have only values in specific locations and hence if there is another 1 in ei at a very different location, we can make two calculation at the price of one by summing up the relevant parts of z'z only. And of course you can repeat the reasoning and covering the domain with well placed ones. Advantage compared to AEXERR: works with any number of data points. Should be particularly efficient in higher dimensions and situations where len are small compared to the domain size.
+Calculates an appriximation to the error map exploiting the fact that inv(P) is available via a cholesky decomposition Q'C*C'Q where Q is a permutation matrix. The diagonal component i  is then z'*z where z= inv(Q'C)  ei where ei is normally an array with zeros except in position i where it has a value of 1. Here we exploit that z in that case have only values in specific locations and hence if there is another 1 in ei at a very different location, we can make two calculation at the price of one by summing up the relevant parts of z'z only. And of course you can repeat the reasoning and covering the domain with well placed ones. Advantage compared to AEXERR: works with any number of data points. Should be particularly efficient in higher dimensions and situations where len are small compared to the domain size.
 
 
 # Input
@@ -34,6 +34,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
 	# restrict error calculation to the center part of the domain in z ?
 	# Idea optional input boolean matrix wheretocalculate. Start with first point found (and complete the eij) and mask those calculated. 
 	# proceed until completion of all points: DONE
+	# Still to do: match the strides to the desired calculation points if those are already subsampling !!!!
 	#########################################################
     ranges=DIVAnd_Lpmnrange(pmn,len)
     for k=1:nfields(pmn)
