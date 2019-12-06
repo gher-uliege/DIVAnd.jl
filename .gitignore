@@ -1,6 +1,7 @@
 *~
 *.bak
 *.cov
+*.mem
 /deps/build.log
 /deps/deps.jl
 /docs/build/

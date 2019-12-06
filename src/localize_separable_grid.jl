@@ -1,3 +1,53 @@
+
+
+function _localize_separable_grid_cyclic!(
+    xi::NTuple{n,AbstractArray},
+    x::NTuple{n,AbstractArray{T,n}},
+    iscyclic,
+    I
+) where {n} where {T}
+
+    # m is the number of arbitrarily distributed observations
+    mi = prod(size(xi[1]))
+
+    # sz is the size of the grid
+    sz = size(x[1])
+
+    # extent array
+    vi = ntuple(i -> 1:(sz[i]+iscyclic[i]), Val(n))
+    IJ = ndgrid(vi...)::NTuple{n,Array{Int,n}}
+
+    X = ntuple(i -> Vector{T}(undef, sz[i]+iscyclic[i]), Val(n))
+    for i = 1:n
+        for j = 1:sz[i]
+            X[i][j] = x[i][(j-1)*stride(x[i], i)+1]
+        end
+
+        if iscyclic[i]
+            X[i][end] = 2 * X[i][end-1] - X[i][end-2]
+        end
+    end
+
+    scheme = ntuple(i -> (iscyclic[i] ? Periodic() : Throw()), Val(n))
+
+    for i = 1:n
+        itp = extrapolate(interpolate(X, IJ[i], Gridded(Linear())), scheme)
+
+        # loop over all point
+        for j = 1:mi
+            try
+                xind = NTuple{n,T}(getindex.(xi, j))
+                I[i, j] = itp(xind...)
+            catch
+                # extrapolation
+                I[i,j] = -1
+            end
+        end
+    end
+
+    return I
+end
+
 # consider to reverse order x,mask,xi
 """
 Derive fractional indices on a separable grid.
@@ -19,6 +69,7 @@ function localize_separable_grid(
     xi::NTuple{n,AbstractArray},
     mask::AbstractArray{Bool,n},
     x::NTuple{n,AbstractArray{T,n}},
+    iscyclic = falses(n)
 ) where {n} where {T}
 
     # m is the number of arbitrarily distributed observations
@@ -39,14 +90,18 @@ function localize_separable_grid(
 
     IJ = ndgrid(vi...)::NTuple{n,Array{Int,n}}
 
-    for i = 1:n
-        # https://github.com/JuliaMath/Interpolations.jl/issues/237
-        itp = extrapolate(interpolate(X, IJ[i], Gridded(Linear())), -1.)
+    if any(iscyclic)
+        _localize_separable_grid_cyclic!(xi,x,iscyclic,I)
+    else
+        for i = 1:n
+            # https://github.com/JuliaMath/Interpolations.jl/issues/237
+            itp = extrapolate(interpolate(X, IJ[i], Gridded(Linear())), -1.)
 
-        # loop over all point
-        for j = 1:mi
-            ind = NTuple{n,T}(getindex.(xi, j))
-            I[i, j] = itp(ind...)
+            # loop over all point
+            for j = 1:mi
+                xind = NTuple{n,T}(getindex.(xi, j))
+                I[i, j] = itp(xind...)
+            end
         end
     end
 

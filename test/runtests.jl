@@ -60,6 +60,7 @@ include("gen_example_file.jl")
     include("test_2dvar_qc.jl")
 
     include("test_2dvar_outside.jl")
+    include("test_2dvar_periodic.jl")
 
     include("test_variableLandpmn.jl")
 
