@@ -36,7 +36,7 @@ function DIVAnd_qc(fi, s, method = 0)
 
     H = s.obsconstrain.H
     R = s.obsconstrain.R
-    yo = s.yo
+    yo = s.obsconstrain.yo
 
     obsin = .!s.obsout
 
