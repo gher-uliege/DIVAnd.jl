@@ -189,6 +189,8 @@ function DIVAnd_heatmap(
             for myi = 1:NP
 
                 if trytooptimize
+				#612JMB: try directly ?
+				#work1=Sopt.obsconstrain.H[myi,:]'
                     eiarr = zeros(size(inflation))
                     eiarr[myi] = 1
                     work1 = Sopt.obsconstrain.H' * eiarr
