@@ -43,7 +43,7 @@ function DIVAnd_qc(fi, s, method = 0)
     nd = length(s.obsout)
     invlam = mean(diag(R)[obsin])
 
-    d0d = s.yo[obsin] ⋅ s.yo[obsin]
+    d0d = s.obsconstrain.yo[obsin] ⋅ s.obsconstrain.yo[obsin]
     nrealdata = sum(obsin)
     meaneps2 = (d0d / nrealdata) * invlam / (1 + invlam)
 
