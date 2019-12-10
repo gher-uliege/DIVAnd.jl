@@ -137,8 +137,8 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
             residual = DIVAnd_residualobs(s,fi);
             obsin = .!s.obsout
             nrealdata = sum(obsin)
-            d0d = s.yo[obsin] ⋅ s.yo[obsin]
-            d0dmd1d = s.yo[obsin] ⋅ residual[obsin]
+            d0d = s.obsconstrain.yo[obsin] ⋅ s.obsconstrain.yo[obsin]
+            d0dmd1d = s.obsconstrain.yo[obsin] ⋅ residual[obsin]
 
             # Determine which method to use
 
