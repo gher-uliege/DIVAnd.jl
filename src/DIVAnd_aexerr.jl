@@ -113,6 +113,8 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     ncv = size(randindexes)[1]
 
     # add npongrind fake points onto the grid with zero value and very high R value
+	
+	
 
     ffake = deepcopy(f)
 
@@ -130,6 +132,10 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     # Interpolate B on the final grid with high snr
 
     # First get B, the error of the previous analysis with bad data at the data locations
+	
+	###############################################################
+	# TODO: if too many real points, subsample the following ???? 
+	# #############################################################
     Batdatapoints = DIVAnd_erroratdatapoints(s1)
 
     # Now use semi norm here ...

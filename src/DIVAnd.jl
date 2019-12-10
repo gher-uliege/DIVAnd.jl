@@ -515,6 +515,8 @@ include("DIVAnd_superobs.jl")
 
 include("DIVAnd_diagapp.jl")
 
+include("DIVAnd_scalecpme!.jl")
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
@@ -593,7 +595,8 @@ export sparse_stagger,
        DIVAnd_averaged_bg,
        DIVAnd_datainboundingbox,
        DIVAnd_cpme_go,
-       scaleseparation
+       scaleseparation,
+	   DIVAnd_scalecpme!
 
 export checkobs
 
