@@ -23,7 +23,7 @@ function DIVAnd_GCVKiiobs(s, nr = 30; FIELD = ())
      #@show nrealdata,ndata,size(s.obsconstrain.yo)
 
      #@show size(s.yo),size(((s.H)*statevector_pack(s.sv,(FIELD,))))
-        Kii = s.yo' * ((s.H) * statevector_pack(s.sv, (FIELD,))) / (s.yo' * s.yo)
+        Kii = s.obsconstrain.yo' * ((s.H) * statevector_pack(s.sv, (FIELD,))) / (s.obsconstrain.yo' * s.obsconstrain.yo)
 
         if nrealdata == 0
             Kii = 0.0
