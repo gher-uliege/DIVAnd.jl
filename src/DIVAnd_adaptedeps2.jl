@@ -25,7 +25,7 @@ function DIVAnd_adaptedeps2(s, fi)
     eps2 = zero(eltype(fi))    # mean of diagonal of R
     nrealdata = 0
 
-    for i = 1:length(s.yo)
+    for i = 1:length(s.obsconstrain.yo)
         if (!s.obsout[i]) && (!isinf(diagR[i]))
             d0d += s.obsconstrain.yo[i]^2
             d0dmd1d += s.obsconstrain.yo[i] * residual[i]
