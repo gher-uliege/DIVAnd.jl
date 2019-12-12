@@ -36,9 +36,11 @@ end
     epsilon2,
     varname;
     transform = DIVAnd.Anam.notransform(),
-    searchz = background_profile_searchz(depthr[3]),
+    searchz = background_profile_searchz(depthr),
 
-Compute the average background profile by avaring the observations
+Compute the average background profile by averaging the observations
+within a distance given by `searchz` and for each time instance defined in
+the time selector `TS`.
 """
 function average_background_profile(
     background_filename, grid_range, (obslon, obslat, obsdepth, obstime), obsvalue,
