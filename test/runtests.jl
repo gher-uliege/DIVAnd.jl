@@ -83,6 +83,7 @@ include("gen_example_file.jl")
     include("test_varanalysis.jl")
 
     include("test_averaged_bg.jl")
+    include("test_average_background_profile.jl")
     include("test_domain.jl")
 
     # SDN Vocabulary

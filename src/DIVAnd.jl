@@ -514,6 +514,7 @@ include("DIVAnd_integral.jl")
 
 include("DIVAnd_superobs.jl")
 
+include("average_background_profile.jl")
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
