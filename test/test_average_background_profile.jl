@@ -52,13 +52,12 @@ monthlists = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
 
 
 epsilon2 = ones(size(obsvalue))
-searchz = background_profile_searchz(depthr)
 
 TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 
 
-background_filename = "/tmp/toto.nc"
+background_filename = tempname()
 
 if isfile(background_filename)
     rm(background_filename)
