@@ -4,6 +4,8 @@
      errormap=DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
 
 Calculates an appriximation to the error map exploiting the fact that inv(P) is available via a cholesky decomposition Q'C*C'Q where Q is a permutation matrix. The diagonal component i  is then z'*z where z= inv(Q'C)  ei where ei is normally an array with zeros except in position i where it has a value of 1. Here we exploit that z in that case have only values in specific locations and hence if there is another 1 in ei at a very different location, we can make two calculation at the price of one by summing up the relevant parts of z'z only. And of course you can repeat the reasoning and covering the domain with well placed ones. Advantage compared to AEXERR: works with any number of data points. Should be particularly efficient in higher dimensions and situations where len are small compared to the domain size.
+# WARNING: if you provide the wheretocalculate array it WILL BE CHANGED IN PLACE
+
 
 
 # Input
@@ -52,6 +54,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
     diagerror=zeros(Float64,size(pmn[1]))*NaN
     tutuu=zeros(Float64,size(pmn[1]))    
     tutu=statevector_pack(sv,(eij,))
+	#@show size(tutu)
     z=zeros(Float64,size(P)[1])
     zs=zeros(Float64,size(P)[1])
     # Get the permutations to apply
@@ -74,6 +77,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
         eij[:].=0
         # and cover the domain with points at the mystride distances    
         eij[[I[j]:mystride[j]:ILA[j] for j = 1:ndims(diagerror)]...].=1
+		#@show size(eij)
         # Go to statevector
         tutu[:]=statevector_pack(sv,(eij,))
         # Get square root part of error
