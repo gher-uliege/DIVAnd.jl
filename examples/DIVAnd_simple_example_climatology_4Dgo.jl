@@ -7,7 +7,7 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-include("../src/override_ssmult.jl")
+
 include("./prep_dirs.jl")
 
 # final grid

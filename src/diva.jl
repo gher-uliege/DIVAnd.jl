@@ -253,11 +253,11 @@ function diva3d(
 
         bxi, byi, bi = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
 
-        itp = interpolate((bxi, byi), bi, Gridded(Linear()))
+        itp = extrapolate(interpolate((bxi, byi), bi, Gridded(Linear())),NaN)
 
         # shift the depth of the observations relative to the ocean floor
         for k = 1:length(depth)
-            depth[k] = itp[lon[k], lat[k]] - depth[k]
+            depth[k] = itp(lon[k], lat[k]) - depth[k]
         end
     end
 

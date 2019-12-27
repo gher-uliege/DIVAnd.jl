@@ -10,13 +10,10 @@ using DIVAnd
 using Compat: @info, range
 using PyPlot
 using NCDatasets
-if VERSION >= v"0.7"
-    using Dates
-    using Statistics
-    using Printf
-end
+using Dates
+using Statistics
+using Printf
 
-include("../src/override_ssmult.jl")
 include("./prep_dirs.jl")
 
 # if this script is in /some/path/DIVAnd.jl/examples, the data should be in
