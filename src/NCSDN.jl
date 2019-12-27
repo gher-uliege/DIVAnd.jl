@@ -4,7 +4,6 @@ using NCDatasets
 using Missings
 
 using Dates
-using Compat
 
 # import ODVspreadsheet:
 #     NO_QUALITY_CONTROL,
