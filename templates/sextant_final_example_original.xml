@@ -510,7 +510,7 @@
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>http://dx.doi.org/10.6092/f836dafd-a367-4c6e-997c-d8a53461c86f</gmd:URL>
+                <gmd:URL>https://doi.org/10.6092/f836dafd-a367-4c6e-997c-d8a53461c86f</gmd:URL>
               </gmd:linkage>
               <gmd:protocol>
                 <gco:CharacterString>WWW:DOWNLOAD-1.0-link--download</gco:CharacterString>
