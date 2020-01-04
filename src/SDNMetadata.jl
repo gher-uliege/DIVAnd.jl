@@ -806,7 +806,7 @@ function gettemplatevars(
     end
 
     DOI_URL = if doi != ""
-        "https://dx.doi.org/" * doi
+        "https://doi.org/" * doi
     else
         "na"
     end
