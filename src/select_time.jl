@@ -1,6 +1,6 @@
 
 
-struct AbstractTimeSelector end
+abstract type AbstractTimeSelector end
 
 
 
