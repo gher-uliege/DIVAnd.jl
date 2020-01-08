@@ -2,12 +2,10 @@
 
 module NCODV
 
+using Dates
 using NCDatasets
 using Missings
 import ..chararray2strings
-
-using Dates
-using Compat
 
 
 function varbyattrib_first(ds; kwargs...)

@@ -48,7 +48,8 @@ It is not recommended to download the source of `DIVAnd.jl` directly (using the 
 To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
 
 ```julia
-Pkg.update()
+using Pkg
+Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
 ```
 
 

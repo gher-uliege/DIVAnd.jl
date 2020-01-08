@@ -1,7 +1,6 @@
 module Quadtrees
 
 using Dates
-using Compat
 import Base.length
 
 """

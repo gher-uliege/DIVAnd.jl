@@ -1,6 +1,5 @@
 using Test
 import DIVAnd
-using Compat
 
 # Test CF names
 

@@ -7,7 +7,6 @@ using Dates
 using Printf
 using Statistics
 using DelimitedFiles
-using Compat
 using SpecialFunctions
 
 include("gen_example_file.jl")

@@ -22,7 +22,7 @@ function DIVAnd_filter3(A::AbstractArray, fillvalue, ntimes = 1)
         A
     end
 
-    RI = Compat.CartesianIndices(size(A))
+    RI = CartesianIndices(size(A))
 
     I1, Iend = first(RI), last(RI)
     stencil = one(CartesianIndex(I1))

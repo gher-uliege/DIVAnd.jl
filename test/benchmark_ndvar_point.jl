@@ -3,7 +3,6 @@
 
 using DIVAnd
 using Test
-using Compat
 
 # final grid
 #gridsize = (101,101)

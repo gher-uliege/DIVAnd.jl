@@ -45,8 +45,8 @@ function DIVAnd_superobs(x, val, nmax; weights = [], intensive = true)
     NPD = Int(ceil(nmax^(1.0 / ndim)))
     # Calculate coordinate range of observations
 
-    coordmin = Compat.minimum(coord, dims = 2)[:, 1]
-    coordmax = Compat.maximum(coord, dims = 2)[:, 1]
+    coordmin = minimum(coord, dims = 2)[:, 1]
+    coordmax = maximum(coord, dims = 2)[:, 1]
     range = coordmax - coordmin
     coordmin -= range * eps(eltype(coord))
     coordmax += range * eps(eltype(coord))

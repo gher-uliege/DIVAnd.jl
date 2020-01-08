@@ -1,7 +1,6 @@
 # Testing DIVAnd in 2 dimensions with advection.
 
 using Test
-using Compat
 import DIVAnd
 
 # grid of background field

@@ -46,7 +46,6 @@ if (v"1.0" <= VERSION) && (VERSION < v"1.1")
 end
 
 
-using Compat
 
 const EarthRadius = 6372795.477598 # m
 

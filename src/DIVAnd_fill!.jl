@@ -13,7 +13,7 @@ function DIVAnd_fill!(A::AbstractArray, B::AbstractArray, fillvalue)
     # central weight
     cw = 1
 
-    RI = Compat.CartesianIndices(size(A))
+    RI = CartesianIndices(size(A))
 
     I1, Iend = first(RI), last(RI)
     stencil = 3 * one(CartesianIndex(I1))
