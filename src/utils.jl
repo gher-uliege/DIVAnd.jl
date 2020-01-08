@@ -702,11 +702,7 @@ same grid as the analysis and was generated according to the provided time selec
 function backgroundfile(
     fname,
     varname,
-    TS::Union{
-        TimeSelectorYearListMonthList,
-        TimeSelectorRunningAverage,
-        AbstractTimeSelector,
-    },
+    TS::AbstractTimeSelector
 )
 
     ds = Dataset(fname)

@@ -30,7 +30,7 @@ TS = DIVAnd.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],
 ```
 
 """
-struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector}
+struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector} <: AbstractTimeSelector
     yearlists::T1
     monthlists::T2
 end
@@ -157,7 +157,7 @@ Observations at the i-th time instance will be selected
 if the dates is between `times[i]-w/2` and `time[i]+w/2` where
 `w` is the time window expressed as days.
 """
-struct TimeSelectorRunningAverage{T1<:AbstractVector,T2<:Number}
+struct TimeSelectorRunningAverage{T1<:AbstractVector,T2<:Number} <: AbstractTimeSelector
     times::T1 # central times
     window::T2 # in days
 end
