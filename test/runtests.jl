@@ -119,6 +119,7 @@ include("gen_example_file.jl")
 
     # Test utility functions
     include("test_obsstat.jl")
+    include("test_average_file.jl")
 
     # Test XML metadata description
     include("test_xml.jl")

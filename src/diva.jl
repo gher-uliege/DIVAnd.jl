@@ -135,6 +135,7 @@ function diva3d(
     minfield::Number = -Inf,
     maxfield::Number = Inf,
     surfextend = false,
+    velocity = (),
     kwargs...,
 )
 
@@ -575,6 +576,13 @@ function diva3d(
 
             kwargs_without_qcm = [(p, v) for (p, v) in kwargs if p !== :QCMETHOD]
 
+            velocity_tuple = if isa(velocity,Function)
+                veltime = [ DIVAnd.ctimes(TS)[timeindex] ]
+                velocity(xyi,veltime)
+            else
+                velocity
+            end
+
             for i = 1:niter_e
                 #@info "Estimating the optimal scale factor of epsilon2"
                 # error and QCMETHOD is only required at the last iterations
@@ -600,6 +608,7 @@ function diva3d(
                     moddim = moddim,
                     MEMTOFIT = memtofit,
                     kwargs2...,
+                    velocity = velocity_tuple # possibly override velocity in kwargs2
                 )
 
                 residuals[sel] = residual
