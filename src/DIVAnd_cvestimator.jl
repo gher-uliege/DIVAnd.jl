@@ -6,14 +6,14 @@ Computes the cross validation estimator
 where the ``\\hat{d}`` is the analysis not using a data point.
 """
 function DIVAnd_cvestimator(s, residual)
-    # Corrected to take into account only points in domain
+    # Take only points inside the domain into account
+    obsin = .!s.obsout
+    v1 = s.obsconstrain.R \ residual
+    v2 = s.obsconstrain.R \ ones(size(residual))
 
-    v1 = (1 .- s.obsout) .* (s.obsconstrain.R \ residual)
-    v2 = (1 .- s.obsout) .* (s.obsconstrain.R \ ones(size(residual)))
-
-    # operator a⋅b returns a scalar in julia version 0.5.0, 0.5.1 and 0.6-dev
+    # operator a⋅b returns a scalar
     # unlike a'*b
-    return (residual ⋅ v1) / (ones(size(residual)) ⋅ v2)
+    return (residual[obsin] ⋅ v1[obsin]) / sum(v2[obsin])
 end
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
