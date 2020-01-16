@@ -810,13 +810,15 @@ end
     fun = velocityfile(fname,(varnameu,varnamev),TSvelocity,scale)
     fun = velocityfile(fname,(varnameu,varnamev,varnamew),TSvelocity,scale)
 
-Return a function `fun` which is used in DIVAnd as a advection contrain.
-using the field defined in the NetCDF variable `varname` in the NetCDF file
-`fname`. It is assumed that the NetCDF variables has the variable
-`lon`, `lat` and `depth`. And that the NetCDF variable is defined on the
-same grid as the analysis and was generated according to the provided time selector
-`TSvelocity` (TimeSelectorYearListMonthList or TimeSelectorRunningAverage).
+Return a function `fun` which is used in DIVAnd as a advection constraint using
+fields defined in the NetCDF variable `varnameu`, `varnamev` and `varnamew` 
+(zonal, meridional and vertical velocity components) in the NetCDF file
+`fname`. If the parameter `varnamew` is omitted, the vertical velicity is neglected.
+It is assumed that the NetCDF variables has the variable
+`lon`, `lat` and `depth` and that the fields have been average according to the provided time selector
+`TSvelocity` (`TimeSelectorYearListMonthList` or `TimeSelectorRunningAverage`).
 
+See also `DIVAnd.average_files`.
 !!! note
 
     NetCDF _FillValues are treated as zeros.
