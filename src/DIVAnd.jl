@@ -9,7 +9,6 @@ import HTTP
 import Mustache
 import ZipFile
 using Missings
-using StatsBase
 #import JLD2
 
 using Printf
