@@ -30,7 +30,7 @@ ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
 DataStructures = "0.17"
-EzXML = "0.8, 0.9"
+EzXML = "0.8, 0.9, 1.1"
 HTTP = "0.8"
 Interpolations = "0.12"
 Missings = "0.4"
