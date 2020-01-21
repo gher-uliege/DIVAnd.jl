@@ -947,8 +947,13 @@ function fitlen(
     return varbak, RL, dbinfo
 end
 
-# this function used to be called forfit in fitlsn.f
+"""
+    err, var = misfit(distx, covar, covarweight, RL)
 
+This function used to be called forfit in fitlsn.f.
+`err` is the weighted mean square error
+`var` is the variance for a distance equal to zero.
+"""
 function misfit(distx, covar, covarweight, RL)
     n = length(covar)
     err = 0.
@@ -981,6 +986,9 @@ function misfit(distx, covar, covarweight, RL)
     return err, var
 end
 
+"""helper function for searchz"""
+_getparam(z,x::Number) = x
+_getparam(z,f::Function) = f(z)
 
 
 """
@@ -992,7 +1000,7 @@ longitude, latitude and depth) at the depth levels defined in `z`.
 
 Optional arguments:
  * `smoothz` (default 100): spatial filter for the correlation scale
- * `searchz` (default 50): vertical search distance
+ * `searchz` (default 50): vertical search distance (can also be a function of the depth)
  * `maxnsamp` (default 5000): maximum number of samples
  * `limitlen` (default false): limit correlation length by mean distance between
     observations
@@ -1015,7 +1023,7 @@ function fithorzlen(
     tolrel::T = 1e-4,
     smoothz::T = 100.,
     smoothk::T = 3.,
-    searchz::T = 50.,
+    searchz = 50.,
     progress = (iter, var, len, fitness) -> nothing,
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
     limitfun = (z, len) -> len,
@@ -1044,8 +1052,10 @@ function fithorzlen(
     Threads.@threads for k = 1:length(z)
     #for k = 1:length(z)
 
+        searchz_k = _getparam(z[k],searchz)
+
         sel = if length(x) == 3
-            (abs.(x[3] .- z[k]) .< searchz)
+            (abs.(x[3] .- z[k]) .< searchz_k)
         else
             trues(size(x[1]))
         end
@@ -1110,7 +1120,7 @@ function fitvertlen(
     z;
     smoothz::T = 100.,
     smoothk::T = 3.,
-    searchz::T = 10.,
+    searchz = 10.,
     searchxy::T = 1_000., # meters
     maxntries::Int = 10000,
     maxnsamp = 50,
@@ -1140,7 +1150,8 @@ function fitvertlen(
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
-        zindex = findall(abs.(zlevel2 .- x[3]) .< searchz)
+        searchz_k = _getparam(zlevel2,searchz)
+        zindex = findall(abs.(zlevel2 .- x[3]) .< searchz_k)
 
         if length(zindex) == 0
             @warn "No data near z = $zlevel2"
