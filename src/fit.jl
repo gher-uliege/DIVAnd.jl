@@ -1022,7 +1022,7 @@ function fithorzlen(
     z;
     tolrel::T = 1e-4,
     smoothz::T = 100.,
-    smoothk::T = 3.,
+    smoothk = 3,
     searchz = 50.,
     progress = (iter, var, len, fitness) -> nothing,
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
@@ -1030,6 +1030,7 @@ function fithorzlen(
     maxnsamp = 5000,
     limitlen = false,
     epsilon2 = ones(size(value)),
+    min_rqual = 0.5
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1048,6 +1049,7 @@ function fithorzlen(
     end
 
     weight = 1 ./ epsilon2
+    rqual = zeros(length(z))
 
     Threads.@threads for k = 1:length(z)
     #for k = 1:length(z)
@@ -1067,10 +1069,11 @@ function fithorzlen(
             xsel,
             v,
             weight[sel],
-            nsamp;
+            min(length(v),nsamp);
             distfun = distfun,
         )
 
+        rqual[k] = fitinfos[k][:rqual]
         if limitlen
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
@@ -1088,11 +1091,14 @@ function fithorzlen(
 
     # filter vertically
     lenoptf = copy(lenopt)
+    rqual[rqual .< min_rqual] .= 0
+    lenweight = max.(rqual,1e-9)
+
     if (smoothz > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(z, lenoptf, smoothz)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothz)
     end
     if (smoothk > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(1:length(z), lenoptf, smoothk)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothk)
     end
 
     for k = 1:length(z)
@@ -1128,6 +1134,7 @@ function fitvertlen(
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
     limitfun = (z, len) -> len,
     epsilon2 = ones(size(value)),
+    min_rqual = 0.5,
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1147,6 +1154,7 @@ function fitvertlen(
     count = (nsamp * (nsamp - 1)) ÷ 2
 
     weight = 1 ./ epsilon2
+    rqual = zeros(length(z))
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
@@ -1163,8 +1171,9 @@ function fitvertlen(
             #state = start(iter)
             #@code_warntype next(iter,state)
             #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],), value, weight, nsamp, iter)
+            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],),value,weight,nsamp,iter)
 
+            rqual[k] = fitinfos[k][:rqual]
             @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
         end
     end
@@ -1179,11 +1188,14 @@ function fitvertlen(
 
     # filter vertically
     lenoptf = copy(lenopt)
+    rqual[rqual .< min_rqual] .= 0
+    lenweight = max.(rqual,1e-9)
+
     if (smoothz > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(z, lenoptf, smoothz)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothz)
     end
     if (smoothk > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(1:length(z), lenoptf, smoothk)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothk)
     end
 
     for k = 1:length(z)

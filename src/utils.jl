@@ -539,6 +539,15 @@ function smoothfilter(x, f::Vector{T}, scale) where {T}
     return ff
 end
 
+"""
+All weights have to be positive (and different from zero).
+"""
+function smoothfilter_weighted(x, f::Vector{T}, w, scale) where {T}
+    wff = smoothfilter(x,w.*f,scale)
+    wf = smoothfilter(x,w,scale)
+    return wff ./ wf, wf
+end
+
 
 """
     field = DIVAnd.random(mask,pmn,len,Nens)
