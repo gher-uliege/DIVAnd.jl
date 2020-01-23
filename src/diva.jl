@@ -89,8 +89,8 @@ Any additional keywoard arguments understood by `DIVAndgo`/`DIVAndrun` can also 
 
 The output is a dictionary with the followings keys:
 
-* `:residuals`: the difference between the analysis (interpolated linearly to the
-location of the observation) and the observations. The
+* `:residuals`: the difference between the observations and the analysis (interpolated linearly to the
+location of the observation). The
 residual is NaN if the observations are not within the domain as defined by
 the mask and the coordinates of the observations `x`.
 * `:qcvalues`: quality control scores (if activated)
