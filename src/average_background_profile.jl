@@ -1,11 +1,16 @@
-function background_profile_searchz(depthr)
+function background_profile_searchz(depthr; factor = 1)
     kmax = length(depthr)
     searchz = Vector{NTuple{2,eltype(depthr)}}(undef,kmax)
 
     for k = 1:kmax
         k0 = max(1,k-1)
         k1 = min(kmax,k+1)
-        searchz[k] = ((depthr[k0] + depthr[k])/2,(depthr[k1] + depthr[k])/2)
+
+        zcenter = depthr[k0]/4 + depthr[k]/2 + depthr[k1]/4
+        Δz = factor * (depthr[k1] - depthr[k0])/4
+        searchz[k] = (zcenter - Δz, zcenter + Δz)
+        # factor = 1, we have
+        # searchz[k] = ((depthr[k0] + depthr[k])/2,(depthr[k1] + depthr[k])/2)
     end
     return searchz
 end
