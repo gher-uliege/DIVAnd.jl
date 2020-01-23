@@ -10,10 +10,13 @@ abstract type AbstractTimeSelector end
 
 The structure `TS` handles the time aggregation based on `yearlists` and
 `monthlists`. `yearlists` is a vector of ranges (containing start and end years),
-for example `[1980:1990,1990:2000,2000:2010]`.
+for example `[1980:1989,1990:1999,2000:2009]`.
 
 `monthlists` is a vector of two-element vector (containing start and end months), for
-example `[1:3,4:6,7:9,10:12]`
+example `[1:3,4:6,7:9,10:12]`.
+
+The upper bound of a `yearlist` and `monthlist` element is considered inclusive.
+The range of years of 2000:2009 consideres all years upto and including the year 2009.
 
 If a month range spans beyond December, then all Months must be specified, e.g.
 example `[2:4,5:6,7:9,[10,11,12,1]]` or `[2:4,5:6,7:9,[10:12;1]]`.
