@@ -72,14 +72,16 @@ function ncfile(
             deflatelevel = deflatelevel,
             checksum = checksum,
             chunksizes = chunksizes[1:length(dims)],
+            fillvalue = type_save(fillval),
+            attrib = OrderedDict(
+                "missing_value" => type_save(fillval)
+            )
         )
 
         for (k, v) in ncvarattrib
             ncvar.attrib[k] = v
         end
 
-        ncvar.attrib["_FillValue"] = type_save(fillval)
-        ncvar.attrib["missing_value"] = type_save(fillval)
 
         return ncvar
     end
@@ -469,10 +471,13 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
+            attrib = OrderedDict(
+                "units" => "degrees_north",
+                "standard_name" => "latitude",
+                "long_name" => "latitude",
+            )
+
         )
-        ncobslat.attrib["units"] = "degrees_north"
-        ncobslat.attrib["standard_name"] = "latitude"
-        ncobslat.attrib["long_name"] = "latitude"
 
         ncobstime = defVar(
             ds,
@@ -496,12 +501,14 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
+            attrib = OrderedDict(
+                "units" => "meters",
+                "positive" => "down",
+                "standard_name" => "depth",
+                "long_name" => "depth below sea level",
+            )
         )
 
-        ncobsdepth.attrib["units"] = "meters"
-        ncobsdepth.attrib["positive"] = "down"
-        ncobsdepth.attrib["standard_name"] = "depth"
-        ncobsdepth.attrib["long_name"] = "depth below sea level"
 
         ncobsid = defVar(
             ds,
@@ -511,9 +518,11 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [idlen, chunksize],
+            attrib = OrderedDict(
+                "long_name" => "observation identifier",
+                "coordinates" => "obstime obsdepth obslat obslon",
+            )
         )
-        ncobsid.attrib["long_name"] = "observation identifier"
-        ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
 
         ncobslon[:] = xy[1]
         ncobslat[:] = xy[2]

@@ -2,7 +2,8 @@ using NCDatasets
 using Missings
 using DIVAnd
 using Test
-
+using DataStructures
+using Dates
 
 #=
 fnames = [expanduser("~/Downloads/data_from_SDN_2017-11_TS_profiles_non-restricted_med.nc")]
@@ -29,77 +30,87 @@ ds.dim["STRING2"] = 2
 
 # Declare variables
 
+# Declare variables
 
-nclongitude = defVar(ds, "longitude", Float32, ("N_STATIONS",))
-nclongitude.attrib["long_name"] = "Longitude"
-nclongitude.attrib["standard_name"] = "longitude"
-nclongitude.attrib["units"] = "degrees_east"
-nclongitude.attrib["comment"] = ""
-nclongitude.attrib["C_format"] = "%.3f"
-nclongitude.attrib["FORTRAN_format"] = "F12.3"
-nclongitude.attrib["_FillValue"] = Float32(-1.0e10)
+nclongitude = defVar(ds,"longitude", Float32, ("N_STATIONS",), attrib = OrderedDict(
+    "long_name"                 => "Longitude",
+    "standard_name"             => "longitude",
+    "units"                     => "degrees_east",
+    "comment"                   => "",
+    "C_format"                  => "%.3f",
+    "FORTRAN_format"            => "F12.3",
+    "_FillValue"                => Float32(-1.0e10),
+))
 
-nclatitude = defVar(ds, "latitude", Float32, ("N_STATIONS",))
-nclatitude.attrib["long_name"] = "Latitude"
-nclatitude.attrib["standard_name"] = "latitude"
-nclatitude.attrib["units"] = "degrees_north"
-nclatitude.attrib["C_format"] = "%.3f"
-nclatitude.attrib["FORTRAN_format"] = "F12.3"
-nclatitude.attrib["_FillValue"] = Float32(-1.0e10)
+nclatitude = defVar(ds,"latitude", Float32, ("N_STATIONS",), attrib = OrderedDict(
+    "long_name"                 => "Latitude",
+    "standard_name"             => "latitude",
+    "units"                     => "degrees_north",
+    "C_format"                  => "%.3f",
+    "FORTRAN_format"            => "F12.3",
+    "_FillValue"                => Float32(-1.0e10),
+))
 
-ncmetavar4 = defVar(ds, "metavar4", Char, ("STRING2", "N_STATIONS"))
-ncmetavar4.attrib["long_name"] = "LOCAL_CDI_ID"
+ncmetavar4 = defVar(ds,"metavar4", Char, ("STRING2", "N_STATIONS"), attrib = OrderedDict(
+    "long_name"                 => "LOCAL_CDI_ID",
+))
 
-ncmetavar5 = defVar(ds, "metavar5", Int32, ("N_STATIONS",))
-ncmetavar5.attrib["long_name"] = "EDMO_CODE"
-ncmetavar5.attrib["C_format"] = "%.0f"
-ncmetavar5.attrib["FORTRAN_format"] = "F12.0"
-ncmetavar5.attrib["_FillValue"] = -2147483646
+ncmetavar5 = defVar(ds,"metavar5", Int32, ("N_STATIONS",), attrib = OrderedDict(
+    "long_name"                 => "EDMO_CODE",
+    "C_format"                  => "%.0f",
+    "FORTRAN_format"            => "F12.0",
+    "_FillValue"                => Int32(-2147483646),
+))
 
-ncdate_time = defVar(ds, "date_time", Float64, ("N_STATIONS",))
-ncdate_time.attrib["long_name"] = "Decimal Gregorian Days of the station"
-ncdate_time.attrib["standard_name"] = "time"
-ncdate_time.attrib["units"] = "days since 0190-01-01 00:00:00 UTC"
-ncdate_time.attrib["comment"] = "Relative Gregorian Days with decimal part"
-ncdate_time.attrib["C_format"] = "%.5f"
-ncdate_time.attrib["FORTRAN_format"] = "F12.5"
-ncdate_time.attrib["_FillValue"] = -1.0e10
+ncdate_time = defVar(ds,"date_time", Float64, ("N_STATIONS",), attrib = OrderedDict(
+    "long_name"                 => "Decimal Gregorian Days of the station",
+    "standard_name"             => "time",
+    "units"                     => "days since 0190-01-01 00:00:00 UTC",
+    "comment"                   => "Relative Gregorian Days with decimal part",
+    "C_format"                  => "%.5f",
+    "FORTRAN_format"            => "F12.5",
+    "_FillValue"                => -1.0e10,
+))
 
-ncvar1 = defVar(ds, "var1", Float32, ("N_SAMPLES", "N_STATIONS"))
-ncvar1.attrib["positive"] = "down"
-ncvar1.attrib["long_name"] = "Depth"
-ncvar1.attrib["units"] = "m"
-ncvar1.attrib["comment"] = "Codes: SDN:P01::ADEPZZ01 SDN:P06::ULAA"
-ncvar1.attrib["ancillary_variables"] = "var1_qc var1_err"
-ncvar1.attrib["C_format"] = "%.2f"
-ncvar1.attrib["FORTRAN_format"] = "F12.2"
-ncvar1.attrib["_FillValue"] = Float32(-1.0e10)
+ncvar1 = defVar(ds,"var1", Float32, ("N_SAMPLES", "N_STATIONS"), attrib = OrderedDict(
+    "positive"                  => "down",
+    "long_name"                 => "Depth",
+    "units"                     => "m",
+    "comment"                   => "Codes: SDN:P01::ADEPZZ01 SDN:P06::ULAA",
+    "ancillary_variables"       => "var1_qc var1_err",
+    "C_format"                  => "%.2f",
+    "FORTRAN_format"            => "F12.2",
+    "_FillValue"                => Float32(-1.0e10),
+))
 
-ncvar1_qc = defVar(ds, "var1_qc", Int8, ("N_SAMPLES", "N_STATIONS"))
-ncvar1_qc.attrib["long_name"] = "Quality flag of Depth"
-ncvar1_qc.attrib["standard_name"] = "status_flag"
-ncvar1_qc.attrib["comment"] = "SEADATANET - SeaDataNet quality codes"
-ncvar1_qc.attrib["flag_values"] = Int8[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 81]
-ncvar1_qc.attrib["flag_meanings"] = "no_quality_control good_value probably_good_value probably_bad_value bad_value changed_value value_below_detection value_in_excess interpolated_value missing_value value_phenomenon_uncertain value_below_limit_of_quantification"
-ncvar1_qc.attrib["_FillValue"] = Int8(57)
+ncvar1_qc = defVar(ds,"var1_qc", Int8, ("N_SAMPLES", "N_STATIONS"), attrib = OrderedDict(
+    "long_name"                 => "Quality flag of Depth",
+    "standard_name"             => "status_flag",
+    "comment"                   => "SEADATANET - SeaDataNet quality codes",
+    "flag_values"               => Int8[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 81],
+    "flag_meanings"             => "no_quality_control good_value probably_good_value probably_bad_value bad_value changed_value value_below_detection value_in_excess interpolated_value missing_value value_phenomenon_uncertain value_below_limit_of_quantification",
+    "_FillValue"                => Int8(57),
+))
 
+ncvar2 = defVar(ds,"var2", Float32, ("N_SAMPLES", "N_STATIONS"), attrib = OrderedDict(
+    "long_name"                 => "ITS-90 water temperature",
+    "units"                     => "degrees C",
+    "comment"                   => "Codes: SDN:P35::WATERTEMP SDN:P06::UPAA",
+    "ancillary_variables"       => "var2_qc var2_err",
+    "C_format"                  => "%.2f",
+    "FORTRAN_format"            => "F12.2",
+    "_FillValue"                => Float32(-1.0e10),
+))
 
-ncvar2 = defVar(ds, "var2", Float32, ("N_SAMPLES", "N_STATIONS"))
-ncvar2.attrib["long_name"] = "ITS-90 water temperature"
-ncvar2.attrib["units"] = "degrees C"
-ncvar2.attrib["comment"] = "Codes: SDN:P35::WATERTEMP SDN:P06::UPAA"
-ncvar2.attrib["ancillary_variables"] = "var2_qc var2_err"
-ncvar2.attrib["C_format"] = "%.2f"
-ncvar2.attrib["FORTRAN_format"] = "F12.2"
-ncvar2.attrib["_FillValue"] = Float32(-1.0e10)
+ncvar2_qc = defVar(ds,"var2_qc", Int8, ("N_SAMPLES", "N_STATIONS"), attrib = OrderedDict(
+    "long_name"                 => "Quality flag of ITS-90 water temperature",
+    "standard_name"             => "status_flag",
+    "comment"                   => "SEADATANET - SeaDataNet quality codes",
+    "flag_values"               => Int8[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 81],
+    "flag_meanings"             => "no_quality_control good_value probably_good_value probably_bad_value bad_value changed_value value_below_detection value_in_excess interpolated_value missing_value value_phenomenon_uncertain value_below_limit_of_quantification",
+    "_FillValue"                => Int8(57),
+))
 
-ncvar2_qc = defVar(ds, "var2_qc", Int8, ("N_SAMPLES", "N_STATIONS"))
-ncvar2_qc.attrib["long_name"] = "Quality flag of ITS-90 water temperature"
-ncvar2_qc.attrib["standard_name"] = "status_flag"
-ncvar2_qc.attrib["comment"] = "SEADATANET - SeaDataNet quality codes"
-ncvar2_qc.attrib["flag_values"] = Int8[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 81]
-ncvar2_qc.attrib["flag_meanings"] = "no_quality_control good_value probably_good_value probably_bad_value bad_value changed_value value_below_detection value_in_excess interpolated_value missing_value value_phenomenon_uncertain value_below_limit_of_quantification"
-ncvar2_qc.attrib["_FillValue"] = Int8(57)
 
 # Global attributes
 
