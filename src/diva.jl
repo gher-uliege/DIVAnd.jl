@@ -82,6 +82,8 @@ gridded background field and the observations minus the background field.
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
 * `coeff_derivative2` (vector of 3 floats): for every dimension where this value is non-zero, an additional term is added to the cost function penalizing the second derivative. A typical value of this parameter is `[0.,0.,1e-8]`.
+*  `surfextend`: create an additional layer on top of the surface layer so that the effective background error variance is more similar to the deep ocean.
+   `false` is the default value.
 
 Any additional keywoard arguments understood by `DIVAndgo`/`DIVAndrun` can also be used here
 (e.g. velocity constrain)
