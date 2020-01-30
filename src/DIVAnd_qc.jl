@@ -52,8 +52,8 @@ function DIVAnd_qc(fi, s, method = 0)
     qcval = zeros(nd)
 
     residual = DIVAnd_residualobs(s, fi)
-    residual[s.obsout] .= 0
-
+    #residual[s.obsout] .= 0
+#@show size(qval)
     if method == 0
         mymethod = 3
         if nrealdata < switchvalue1

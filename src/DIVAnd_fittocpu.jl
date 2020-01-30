@@ -38,8 +38,8 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     # How wide is the overlap in terms of number of length scales
     factoroverlap = 3.3
 
-    biggestproblemitern = [500 * 500 500 * 500 50 * 50 * 50 170 * 170 * 6 * 12] * fudgefac
-    biggestproblemdirectn = [200 * 200 200 * 200 50 * 50 * 40 50 * 50 * 10] * fudgefac
+    biggestproblemitern = [2000000   2000*2000 400*400*8   50*50*50*10] * fudgefac
+    biggestproblemdirectn = [1000000   800*800 200*200*8   50*50*50*5] * fudgefac
 
     biggestproblemiter = biggestproblemitern[min(n, 4)]
     biggestproblemdirect = biggestproblemdirectn[min(n, 4)]
@@ -72,7 +72,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     # For time: no windowing for the moment neither
 
     biggestproblem = biggestproblemiter
-
+  # @show biggestproblem
     higherdims = 1
 
     if n == 3
@@ -86,7 +86,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     end
 
     biggestproblem = biggestproblem / higherdims
-
+    @show biggestproblem
 
     # problemsize is the number additional grid point appended to
     # a subdomain to make the domains overlap
@@ -112,7 +112,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
 
         #
     end
-
+  #  @show problemsize
     #problemsize=problemsize/prod(latercsteps[1:2])
 
     # Take into account overhead due to multiple storage

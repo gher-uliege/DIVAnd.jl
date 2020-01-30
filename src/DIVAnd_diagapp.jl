@@ -37,6 +37,9 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
 	# Idea optional input boolean matrix wheretocalculate. Start with first point found (and complete the eij) and mask those calculated. 
 	# proceed until completion of all points: DONE
 	# Still to do: match the strides to the desired calculation points if those are already subsampling !!!!
+	# That would allow a subsampled parallel calculation. If you throw in the data points in case data coverage is low one should have a nice error calculation !!
+	# So take out the stride calculation or rather add a test if provided. Adding the calculation at SOME data points can be done in outer function. To exploit parallel aspect there, one would need to  find a way to deal with data in parallel (quadtree again ?)
+	# Proble? What if P is not factorized ? Not feasible anymore
 	#########################################################
     ranges=DIVAnd_Lpmnrange(pmn,len)
     for k=1:nfields(pmn)
