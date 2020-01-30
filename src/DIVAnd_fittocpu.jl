@@ -1,6 +1,6 @@
 """
 
-     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
+     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT;forcedirect=false);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps `csteps` for the preconditionners
@@ -19,7 +19,7 @@
 * `isdirect`: true is the direct solver is activated
 
 """
-function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
+function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forcedirect=false)
     #################################################################################
     # Number of dimensions
 
@@ -72,6 +72,9 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     # For time: no windowing for the moment neither
 
     biggestproblem = biggestproblemiter
+	if forcedirect
+	 biggestproblem = biggestproblemdirect
+	end
   # @show biggestproblem
     higherdims = 1
 
@@ -86,7 +89,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     end
 
     biggestproblem = biggestproblem / higherdims
-    @show biggestproblem
+  #  @show biggestproblem
 
     # problemsize is the number additional grid point appended to
     # a subdomain to make the domains overlap
@@ -161,7 +164,9 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
 
     ####################################
     #Force direct solver if you want by uncommenting next line
-    # isdirect = true
+	if forcedirect
+     isdirect = true
+	end
 
     return stepsize, overlapping, isdirect
 end
