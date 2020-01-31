@@ -1,6 +1,6 @@
 """
 
-     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT;forcedirect=false);
+     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT;forcedirect=false,overlapfactor=3.3);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps `csteps` for the preconditionners
@@ -11,6 +11,10 @@
 * `gridsize`: number of points in each direction (size(mask))
 * `latercsteps`: coarsening steps used later if a lower resolution model is used for preconditioning.
 * `moddim`: modulo for cyclic dimension (vector with n elements). Zero is used for non-cyclic dimensions.
+* `MEMTOFIT` : parameter describing how much memory is expected to be available in Gb
+* `forcedirect` : if true forces direct solver even if iterative solver might allow for larger tiles
+* `overlapfactor` : describes how many times the length scale is used for the overlapping. default is 3.3. use lower values ONLY for very good data coverage.
+
 
 # Output:
 
@@ -19,7 +23,7 @@
 * `isdirect`: true is the direct solver is activated
 
 """
-function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forcedirect=false)
+function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forcedirect=false,overlapfactor=3.3)
     #################################################################################
     # Number of dimensions
 
@@ -36,7 +40,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forc
     lfactor = 0.2
 
     # How wide is the overlap in terms of number of length scales
-    factoroverlap = 3.3
+    factoroverlap = overlapfactor
 
     biggestproblemitern = [2000000   2000*2000 400*400*8   50*50*50*10] * fudgefac
     biggestproblemdirectn = [1000000   800*800 200*200*8   50*50*50*5] * fudgefac

@@ -85,12 +85,18 @@ function DIVAnd_cutter(
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
     #@show gridsize
+	forcedirect=false
+	if solver==":auto" || solver ==":direct"
+		forcedirect=true
+	end
+	
     stepsize, overlapping, isdirect = DIVAnd_fittocpu(
         Lpmnrange,
         gridsize,
         csteps,
         moddim,
-        MEMTOFIT,
+        MEMTOFIT;
+		forcedirect=forcedirect
     )
     #@show stepsize,overlapping,isdirect
 
