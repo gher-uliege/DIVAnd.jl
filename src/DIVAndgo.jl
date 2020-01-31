@@ -15,6 +15,7 @@ meanepsilon2(epsilon2::Matrix) = mean(diag(epsilon2))
 *  `RTIMESONESCALES=` : if you provide a tuple of length scales, data are weighted differently depending on the numbers of neighbours they have. See `weight_RtimesOne` for details
 *  `QCMETHOD=` : if you provide a qc method parameter, quality flags are calculated. See `DIVAnd_cv` for details
 *  `solver` (default `:auto`:). :direct for the direct solver or :auto for automatic choice between the direct solver or the iterative solver.
+* `overlapfactor` : describes how many times the length scale is used for the overlapping. default is 3.3. use lower values ONLY for very good data coverage.
 
 # Output:
 *  `fi`: the analysed field
@@ -46,6 +47,7 @@ function DIVAndgo(
     QCMETHOD = (),
     RTIMESONESCALES = (),
     solver = :auto,
+	overlapfactor=3.3,
     filteranom = 2,
     filtererr = 3,
     otherargs...,
@@ -79,6 +81,7 @@ function DIVAndgo(
         moddim,
         MEMTOFIT;
         solver = solver,
+		overlapfactor=overlapfactor,
     )
 
     @debug "csteps $csteps"
