@@ -294,7 +294,7 @@ function DIVAndgo(
             end
 
             # residuals
-			@show size(winindex),size(finwindata),size(fidata[winindex])
+			#@show size(winindex),size(finwindata),size(fidata[winindex])
 			
             fidata[winindex] = fidata[winindex] + finwindata
 			
