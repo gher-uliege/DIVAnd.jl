@@ -26,7 +26,7 @@
 function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forcedirect=false,overlapfactor=3.3)
     #################################################################################
     # Number of dimensions
-
+#@show MEMTOFIT,overlapfactor
     n = size(Lpmnrange, 1)
     fudgefac = MEMTOFIT / 16.
 
