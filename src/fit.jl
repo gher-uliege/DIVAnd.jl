@@ -992,9 +992,9 @@ _getparam(z,f::Function) = f(z)
 
 
 """
-    lenz,dbinfo = DIVAnd.fithorzlen(x,value,z)
+    lenxy,dbinfo = DIVAnd.fithorzlen(x,value,z)
 
-Determines the horizontal correlation length `lenz` based on the
+Determines the horizontal correlation length `lenxy` based on the
 measurments `value` at the location `x` (tuple of 3 vectors corresponding to
 longitude, latitude and depth) at the depth levels defined in `z`.
 
