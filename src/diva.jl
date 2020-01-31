@@ -569,6 +569,7 @@ function diva3d(
                     errortype;
                     moddim = moddim,
                     MEMTOFIT = memtofit,
+					overlapfactor=overlapfactor,
                     kwargs2...,
                 )
 
