@@ -32,32 +32,52 @@ estimate of the R matrix.
 
 `yo` the observations (minus the background),
 `residual` the obserations minus the analysis,
-`diagR`, the diagonal of the obs. error covariance matrix and
+`diagR`, the diagonal of the rel. obs. error covariance matrix and
 `obsout` is true if an observation is out of the grid.
+
+For unscaled R, assuming background zero, Deroziers showed that:
+
+Exp[(yo - Hxa) ⋅ yo] = R
+Exp[yo ⋅ yo] = B + R
+
+
 """
 function DIVAnd_adaptedeps2(yo, residual, diagR, obsout)
     d0d = zero(eltype(yo))     # yo ⋅ yo
     d0dmd1d = zero(eltype(yo)) # (yo - Hxa) ⋅ yo
-    eps2 = zero(eltype(yo))    # mean of diagonal of R
+    eps2 = zero(eltype(yo))    # mean of diagonal of scaled R
+    inv_eps2 = zero(eltype(yo))    # mean of inv of the diagonal of scaled R
     nrealdata = 0
 
     for i = 1:length(yo)
-        if (!obsout[i]) && (!isinf(diagR[i]))
-            d0d += yo[i]^2
-            d0dmd1d += yo[i] * residual[i]
-            eps2 += diagR[i]
+        if !obsout[i]
+            d0d += yo[i]^2 / diagR[i]
+            d0dmd1d += yo[i] * residual[i] / diagR[i]
+            inv_eps2 += 1/diagR[i]
             nrealdata += 1
         end
     end
 
-    eps2 /= nrealdata
+    inv_eps2 /= nrealdata
 
     ll1 = d0d / (d0dmd1d) - 1
     eps1 = 1 / ll1
-    factor = eps1 / eps2
+    factor = eps1 * inv_eps2
+
+
+    if (factor == 0) || !isfinite(factor)
+        error("scalefactore has the value $factor")
+    end
 
     return factor
 end
+
+
+DIVAnd_adaptedeps2(yo, residual, diagR::Number, obsout) =
+    DIVAnd_adaptedeps2(yo, residual, fill(diagR,size(yo)), obsout)
+
+DIVAnd_adaptedeps2(yo, residual, R::Matrix, obsout) =
+    DIVAnd_adaptedeps2(yo, residual, diag(R), obsout)
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>

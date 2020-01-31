@@ -1,7 +1,3 @@
-meanepsilon2(epsilon2::Number) = epsilon2
-meanepsilon2(epsilon2::Vector) = mean(epsilon2)
-meanepsilon2(epsilon2::Matrix) = mean(diag(epsilon2))
-
 """
 
     fi, erri, residuals, qcvalues, scalefactore = DIVAndgo(mask,pmn,xi,x,f,len,epsilon2,errormethod; ...);
@@ -369,15 +365,9 @@ function DIVAndgo(
     ongrid = findall(x -> !isnan(x), fidata)
 
     # Add desroziers type of correction
-    #d0d = dot((1-s.obsout).*(s.yo),(s.yo));
-    d0d = dot(f[ongrid], f[ongrid])
-    #d0dmd1d = dot((1-s.obsout).*residual,(s.yo));
-    d0dmd1d = dot(fidata[ongrid], f[ongrid])
-    ll1 = d0d / (d0dmd1d) - 1
-    eps1 = 1 / ll1
-    eps2 = meanepsilon2(epsilon2)
+    scalefactore = DIVAnd_adaptedeps2(f, fidata, epsilon2, isnan.(fidata))
 
-    return fi_filtered, erri_filtered, fidata, qcdata, eps1 / eps2
+    return fi_filtered, erri_filtered, fidata, qcdata, scalefactore
 end
 
 # Copyright (C) 2008-2017 Alexander Barth <barth.alexander@gmail.com>
