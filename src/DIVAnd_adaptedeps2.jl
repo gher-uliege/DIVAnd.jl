@@ -25,7 +25,7 @@ end
 
 
 """
-    DIVAnd_adaptedeps2(yo, residual, diagR, obsout)
+    DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
 
 Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
 estimate of the R matrix.
@@ -33,7 +33,7 @@ estimate of the R matrix.
 `yo` the observations (minus the background),
 `residual` the obserations minus the analysis,
 `diagR`, the diagonal of the rel. obs. error covariance matrix and
-`obsout` is true if an observation is out of the grid.
+`ignoreobs` is true if an observation is out of the grid or should be ignored for other reasons.
 
 For unscaled R, assuming background zero, Deroziers showed that:
 
@@ -42,7 +42,7 @@ Exp[yo ⋅ yo] = B + R
 
 
 """
-function DIVAnd_adaptedeps2(yo, residual, diagR, obsout)
+function DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
     d0d = zero(eltype(yo))     # yo ⋅ yo
     d0dmd1d = zero(eltype(yo)) # (yo - Hxa) ⋅ yo
     eps2 = zero(eltype(yo))    # mean of diagonal of scaled R
@@ -50,7 +50,7 @@ function DIVAnd_adaptedeps2(yo, residual, diagR, obsout)
     nrealdata = 0
 
     for i = 1:length(yo)
-        if !obsout[i]
+        if !ignoreobs[i]
             d0d += yo[i]^2 / diagR[i]
             d0dmd1d += yo[i] * residual[i] / diagR[i]
             inv_eps2 += 1/diagR[i]
@@ -73,11 +73,11 @@ function DIVAnd_adaptedeps2(yo, residual, diagR, obsout)
 end
 
 
-DIVAnd_adaptedeps2(yo, residual, diagR::Number, obsout) =
-    DIVAnd_adaptedeps2(yo, residual, fill(diagR,size(yo)), obsout)
+DIVAnd_adaptedeps2(yo, residual, diagR::Number, ignoreobs) =
+    DIVAnd_adaptedeps2(yo, residual, fill(diagR,size(yo)), ignoreobs)
 
-DIVAnd_adaptedeps2(yo, residual, R::Matrix, obsout) =
-    DIVAnd_adaptedeps2(yo, residual, diag(R), obsout)
+DIVAnd_adaptedeps2(yo, residual, R::Matrix, ignoreobs) =
+    DIVAnd_adaptedeps2(yo, residual, diag(R), ignoreobs)
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>
 #                         Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>
