@@ -290,7 +290,10 @@ function DIVAndgo(
             end
 
             # residuals
+			@show size(winindex),size(finwindata),size(fidata[winindex])
+			
             fidata[winindex] = fidata[winindex] + finwindata
+			
             fidata_weight[winindex] = fidata_weight[winindex] .+ 1
 
             # quality control indicators

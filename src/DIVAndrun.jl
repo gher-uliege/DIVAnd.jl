@@ -63,11 +63,7 @@ function DIVAndrun(
         coeff_derivative2 = coeff_derivative2,
     )
 
-    # check inputs
-    if !any(mask[:])
-        @warn "No sea points in mask, will return NaN"
-        return fill(NaN, size(mask)), s
-    end
+    
 
     s.betap = 0
     s.primal = primal
@@ -88,6 +84,13 @@ function DIVAndrun(
     obscon = DIVAnd_obs(s, xi, x, f, R, fracindex)
 
     s = DIVAnd_addc(s, obscon)
+
+# check inputs moved here to keep trace of obs location in s 
+    if !any(mask[:])
+        @warn "No sea points in mask, will return NaN"
+        return fill(NaN, size(mask)), s
+    end
+
 
     # add advection constraint to cost function
     if !isempty(velocity)
