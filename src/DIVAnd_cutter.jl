@@ -11,6 +11,8 @@ the problem size
 * `Lpmnrange`:
 * `gridsize`: number of points in each direction (size(mask))
 * `moddim`:
+* `MEMTOFIT` 
+* `overlapfactor` : describes how many times the length scale is used for the overlapping. default is 3.3. use lower values ONLY for very good data coverage.
 
 # Output:
 
@@ -32,6 +34,7 @@ function DIVAnd_cutter(
     moddim,
     MEMTOFIT;
     solver = :auto,
+	overlapfactor=3.3,
 ) where {n}
     @debug "cutter", Lpmnrange, gridsize, moddim, MEMTOFIT, solver
     #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange,
@@ -85,12 +88,19 @@ function DIVAnd_cutter(
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
     #@show gridsize
+	forcedirect=false
+	if solver==":auto" || solver ==":direct"
+		forcedirect=true
+	end
+	
     stepsize, overlapping, isdirect = DIVAnd_fittocpu(
         Lpmnrange,
         gridsize,
         csteps,
         moddim,
-        MEMTOFIT,
+        MEMTOFIT;
+		forcedirect=forcedirect,
+		overlapfactor=overlapfactor
     )
     #@show stepsize,overlapping,isdirect
 

@@ -133,6 +133,7 @@ function diva3d(
     fithorz_param = Dict(),
     fitvert_param = Dict(),
     memtofit = 3,
+	overlapfactor=3.3,
     niter_e::Int = 1,
     minfield::Number = -Inf,
     maxfield::Number = Inf,
@@ -609,6 +610,7 @@ function diva3d(
                     errortype;
                     moddim = moddim,
                     MEMTOFIT = memtofit,
+					overlapfactor=overlapfactor,
                     kwargs2...,
                     velocity = velocity_tuple # possibly override velocity in kwargs2
                 )

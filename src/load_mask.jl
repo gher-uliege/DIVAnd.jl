@@ -69,6 +69,10 @@ function extract_bath(bath_name, isglobal, xi, yi)
 
         redx = dxi / rx
         redy = dyi / ry
+#JM
+        i0 = max(floor(Int,(xi[1]-dxi-X0)/rx)+1,1);
+        i1 = min(ceil(Int,(xi[end]+dxi-X0)/rx)+1,length(x));
+        i=i0:i1;
 
         # do not range check i0 and i1 now because of wrapping when bathymetry
         # is global

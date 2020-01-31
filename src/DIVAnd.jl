@@ -514,6 +514,10 @@ include("DIVAnd_superobs.jl")
 
 include("average_background_profile.jl")
 
+include("DIVAnd_diagapp.jl")
+
+include("DIVAnd_scalecpme!.jl")
+
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
 # statevector
@@ -591,11 +595,14 @@ export sparse_stagger,
        DIVAnd_averaged_bg,
        DIVAnd_datainboundingbox,
        DIVAnd_cpme_go,
-       scaleseparation
+       scaleseparation,
+	   DIVAnd_scalecpme!
 
 export checkobs
 
 export DIVAnd_heatmap, DIVAnd_integral, DIVAnd_scaleL, DIVAnd_superobs
+
+export DIVAnd_diagapp
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient

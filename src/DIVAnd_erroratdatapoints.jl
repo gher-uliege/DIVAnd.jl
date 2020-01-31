@@ -1,12 +1,24 @@
 """
-    errorvariance = DIVAnd_erroratdatapoints(s)
+    errorvariance = DIVAnd_erroratdatapoints(s;restrictedlist=[])
 
 Computes the error at the real data locations using the analysis structure s
 
+If a restricedlist is provided erros are only calculated at the indexes where restricedlist==true
 
 """
-function DIVAnd_erroratdatapoints(s)
-    return diagMtCM(s.P, s.obsconstrain.H')
+function DIVAnd_erroratdatapoints(s;restrictedlist=[])
+    if restrictedlist==[]
+		return diagMtCM(s.P, s.obsconstrain.H')
+	else
+	    ei=zeros(Float64,(size(restrictedlist)[1],1))
+		errorat=zeros(Float64,size(restrictedlist)[1])
+		for i in Iterators.filter(x->x[2]==true, enumerate(restrictedlist))
+			ei[:,1].=0
+			ei[i[1],1]=1
+			errorat[i[1]]=diagMtCM(s.P, s.obsconstrain.H'*ei)[1]
+		end
+		return errorat
+	end
 end
 
 # Copyright (C) 2008-2019 Alexander Barth <barth.alexander@gmail.com>

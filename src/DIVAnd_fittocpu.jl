@@ -1,6 +1,6 @@
 """
 
-     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim=[]);
+     stepsize,overlapping,isdirect = DIVAnd_fittocpu(Lpmnrange,gridsize,latercsteps,moddim,MEMTOFIT;forcedirect=false,overlapfactor=3.3);
 
 # Creates a list of windows for subsequent domain decomposition
 # Also calculates already the subsampling steps `csteps` for the preconditionners
@@ -11,6 +11,10 @@
 * `gridsize`: number of points in each direction (size(mask))
 * `latercsteps`: coarsening steps used later if a lower resolution model is used for preconditioning.
 * `moddim`: modulo for cyclic dimension (vector with n elements). Zero is used for non-cyclic dimensions.
+* `MEMTOFIT` : parameter describing how much memory is expected to be available in Gb
+* `forcedirect` : if true forces direct solver even if iterative solver might allow for larger tiles
+* `overlapfactor` : describes how many times the length scale is used for the overlapping. default is 3.3. use lower values ONLY for very good data coverage.
+
 
 # Output:
 
@@ -19,10 +23,10 @@
 * `isdirect`: true is the direct solver is activated
 
 """
-function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
+function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forcedirect=false,overlapfactor=3.3)
     #################################################################################
     # Number of dimensions
-
+#@show MEMTOFIT,overlapfactor
     n = size(Lpmnrange, 1)
     fudgefac = MEMTOFIT / 16.
 
@@ -36,10 +40,10 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     lfactor = 0.2
 
     # How wide is the overlap in terms of number of length scales
-    factoroverlap = 3.3
+    factoroverlap = overlapfactor
 
-    biggestproblemitern = [500 * 500 500 * 500 50 * 50 * 50 170 * 170 * 6 * 12] * fudgefac
-    biggestproblemdirectn = [200 * 200 200 * 200 50 * 50 * 40 50 * 50 * 10] * fudgefac
+    biggestproblemitern = [2000000   2000*2000 400*400*8   50*50*50*10] * fudgefac
+    biggestproblemdirectn = [1000000   800*800 200*200*8   50*50*50*5] * fudgefac
 
     biggestproblemiter = biggestproblemitern[min(n, 4)]
     biggestproblemdirect = biggestproblemdirectn[min(n, 4)]
@@ -72,7 +76,10 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     # For time: no windowing for the moment neither
 
     biggestproblem = biggestproblemiter
-
+	if forcedirect
+	 biggestproblem = biggestproblemdirect
+	end
+  # @show biggestproblem
     higherdims = 1
 
     if n == 3
@@ -86,7 +93,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
     end
 
     biggestproblem = biggestproblem / higherdims
-
+  #  @show biggestproblem
 
     # problemsize is the number additional grid point appended to
     # a subdomain to make the domains overlap
@@ -112,7 +119,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
 
         #
     end
-
+  #  @show problemsize
     #problemsize=problemsize/prod(latercsteps[1:2])
 
     # Take into account overhead due to multiple storage
@@ -161,7 +168,9 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT)
 
     ####################################
     #Force direct solver if you want by uncommenting next line
-    # isdirect = true
+	if forcedirect
+     isdirect = true
+	end
 
     return stepsize, overlapping, isdirect
 end

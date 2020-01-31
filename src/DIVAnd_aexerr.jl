@@ -102,17 +102,25 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     end
 
 
-    npongrid = Int(ceil(maximum([npgrid / 10^n, npneeded - ndata])))
+    #npongrid = Int(ceil(maximum([npgrid / 10^n, npneeded - ndata])))
+	#npongrid = Int(ceil(min(max(15^n, npneeded),npgrid)))
+	npongrid = Int(ceil(maximum([npgrid / 10^n, npneeded])))
 
     randindexes = ones(Int, npongrid)
 
     nsa = Int(ceil(npgrid / npongrid))
+	#@show npneeded,ndata,npgrid/10^n,npongrid,nsa
 
-    randindexes = collect(1:nsa:npgrid)
+# not sure that covers nicely the domain?? Check random idea?
+#    randindexes = collect(1:nsa:npgrid)
+	
+	randindexes=shuffle(collect(1:npgrid))[1:npongrid]
 
     ncv = size(randindexes)[1]
 
     # add npongrind fake points onto the grid with zero value and very high R value
+	
+	
 
     ffake = deepcopy(f)
 
@@ -123,35 +131,54 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     # Make an analysis with those fake points and very low snr to get B at those locations
 
 
-    epsilon2fake = 10_000.
+    epsilon2fake = 1.0E25
     f1, s1 = DIVAndrun(mask, pmn, xi, xfake, ffake, len, epsilon2fake; otherargs...)
 
 
     # Interpolate B on the final grid with high snr
 
     # First get B, the error of the previous analysis with bad data at the data locations
-    Batdatapoints = DIVAnd_erroratdatapoints(s1)
-
+	
+	###############################################################
+	# TODO: if too many real points, subsample the following ???? 
+	# Inline the function and subsample but keeping all fake-points?
+	# To kee the structure put 0 values for not calculated point and high error on them
+	#
+	restrictedlist=falses(size(ffake)[1])
+	restrictedlist[size(f)[1]+1:end].=true
+	# Limit the number of data points to the number of additional fake points
+	samples=shuffle(collect(1:size(f)[1]))[1:min(size(f)[1],npongrid)]
+	restrictedlist[samples].=true
+	
+	#restrictedlist[:].=true
+	#@show sum(restrictedlist[1:size(f)[1]]),sum(restrictedlist[size(f)[1]+1:end])
+	# #############################################################
+    Batdatapoints = DIVAnd_erroratdatapoints(s1;restrictedlist=restrictedlist)
+	epsilonforB=ones(Float64,size(ffake)[1]).*epsilon2fake
+	epsilonforB[restrictedlist].=1.0/100.0
+	Batdatapoints[.!restrictedlist].=1.0
+    Bmean=mean(Batdatapoints[restrictedlist])
     # Now use semi norm here ...
     m = Int(ceil(1 + n / 2))
     alpha = [binomial(m, k) for k = 0:m]
     alpha[1] = 0
 
 
-    # Analyse with semi-norm and larger length scales
+    # Analyse with semi-norm and larger length scales did not work better so back to original
     Bjmb, s1 = DIVAndrun(
         mask,
         pmn,
         xi,
         xfake,
-        Batdatapoints,
-        len * 2,
-        1 / 20;
-        alpha = alpha,
+        Batdatapoints.-Bmean,
+        len,
+        epsilonforB;
+       # alpha = alpha,
         otherargs...,
     )
 
-    Bjmb = max.(Bjmb, 0)
+    Bjmb = max.(Bjmb.+Bmean, 0.0)
+	#@show mean(Bjmb[.!isnan.(Bjmb)]),mean(Batdatapoints)
 
     # Now do the same with normal snr to get real error at the "data" points
     # incidentally fa and sa are almost the real analysis
@@ -159,11 +186,15 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     # @show issubtype(typeof(Rfake),Union{AbstractArray{Float64,1},AbstractArray{Float64,2}})
 
     fa, sa = DIVAndrun(mask, pmn, xi, xfake, ffake, len, Rfake; otherargs...)
-    Errdatapoints = DIVAnd_erroratdatapoints(sa)
-
+    Errdatapoints = DIVAnd_erroratdatapoints(sa;restrictedlist=restrictedlist)
+    #@show mean(Errdatapoints[restrictedlist]),mean(Errdatapoints[.!restrictedlist]),size(epsilonforB)
 
     # Now get error reduction terms
     ffake = Batdatapoints - Errdatapoints
+	
+	ffake[.!restrictedlist].=0.0
+	epsilonforB[restrictedlist].=1.0/100.0
+	#@show mean(ffake),mean(epsilonforB)
 
     # Interpolate error reduction term
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
@@ -176,14 +207,14 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
         xfake,
         ffake,
         len ./ 1.70766,
-        1.0 / 100.0;
+        epsilonforB;
         otherargs...,
     )
 
     # Calculate final error
     aexerr = max.(Bjmb - f1, 0)
 
-
+    #@show mean(aexerr[.!isnan.(aexerr)])
 
 
 

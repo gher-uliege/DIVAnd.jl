@@ -55,6 +55,8 @@ function DIVAnd_heatmap(
             intensive = false,
         )
        #@show size(inflationin),nmax,size(inflation)
+	   # TODO in future: implement in DIVAnd_superobs the calculation of spread of points in superobs and use it to increase/adapt the length scales accordingly 
+	   # to be tested with known solutions.
     end
 
 
@@ -187,9 +189,11 @@ function DIVAnd_heatmap(
             for myi = 1:NP
 
                 if trytooptimize
+				#612JMB: try directly ?
+				#work1=Sopt.obsconstrain.H[myi,:]'
                     eiarr = zeros(size(inflation))
                     eiarr[myi] = 1
-                    work1 = Sopt.H' * eiarr
+                    work1 = Sopt.obsconstrain.H' * eiarr
                     vv = Sopt.P.factors.PtL \ work1
                     vb = Sopt.P.factors.UP \ vv
                    # Possible place for slight performance improvement. Do the integral in state-space with volumes created before.
@@ -240,10 +244,10 @@ function DIVAnd_heatmap(
             if trytooptimize
                 dens2x = statevector_pack(svf, (dens2,))
             #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
-                selfvalueerr = (inflationsum .* Sopt.H * dens2x .-
+                selfvalueerr = (inflationsum .* Sopt.obsconstrain.H * dens2x .-
                                 inflation .* selfvalue) ./ (inflationsum .- inflation)
-                selfvalueerr[selfvalueerr.<0.0] .= 0.0
-
+                #selfvalueerr[selfvalueerr.<0.0] .= 0.0
+				selfvalueerr[selfvalueerr.<1.0E-38].=1.0E-38
                 logvalueerr = log.(selfvalueerr)
 
 
@@ -286,7 +290,7 @@ function DIVAnd_heatmap(
                     FI, = statevector_unpack(svf, vb)
                     integ = DIVAnd_integral(mask, pmn, FI)
                     vb = vb / integ
-                    xdens[myi] = sum(inflation .* (Sopt.H * vb))
+                    xdens[myi] = sum(inflation .* (Sopt.obsconstrain.H * vb))
                 end
                 dens2, = statevector_unpack(svf, xdens)
                 dens2 = dens2 / DIVAnd_integral(mask, pmn, dens2)
