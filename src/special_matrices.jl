@@ -63,9 +63,6 @@ Base.:*(C::CovarIS, M::Adjoint{Float64,SparseMatrixCSC{Float64,Int}}) = A_mul_B(
 
 
 function Base.getindex(C::CovarIS, i::Int, j::Int)
-
-
-
     ei = zeros(eltype(C), size(C, 1))
     ei[i] = 1
 
