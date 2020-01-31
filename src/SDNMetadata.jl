@@ -1052,7 +1052,56 @@ function divadoxml(
     )
 end
 
+"""
+    divadoxml_originators(cdilist,filepaths,xmlfilename;
+        errname = split(filepaths[1], ".nc")[1] * ".cdi_import_errors.csv",
+        ignore_errors = false)
 
+Produces the originators/contact XML fragment `xmlfilename` from the NetCDF files
+in `filepaths`. See `divadoxml` for an explication of the optinal arguments.
+
+## Example
+
+```julia
+using Glob
+download(DIVAnd.OriginatorEDMO_URL,"export.zip")
+run(`unzip export.zip`) # if unzip is installed
+cdilist = "export.csv";
+filepaths = glob("*/*/*silicate*nc")
+xmlfilename = "out.xml"
+ignore_errors = true
+DIVAnd.divadoxml_originators(cdilist,filepaths,xmlfilename;
+    ignore_errors = ignore_errors)
+```
+"""
+function divadoxml_originators(
+    cdilist,filepaths,
+    xmlfilename,
+    errname = split(filepaths[1], ".nc")[1] * ".cdi_import_errors.csv",
+    templatefile = joinpath(dirname(pathof(DIVAnd)),"..","templates","emodnet-chemistry-originators.mustache"),
+    ignore_errors = false
+)
+
+    ds = Dataset(filepaths[1], "r")
+    edmo_code = if haskey(ds.attrib, "institution_urn")
+        rmprefix.(ds.attrib["institution_urn"])
+    else
+        ds.attrib["institution_edmo_code"]
+    end
+    close(ds)
+
+    db = loadoriginators(cdilist)
+    originators = getoriginators(db, filepaths, errname, ignore_errors = ignore_errors)
+
+    contacts = [getedmoinfo(parse(Int, edmo_code), "author")]
+    append!(contacts, originators)
+
+    templateVars = Dict(
+        "contacts" => contacts
+    )
+
+    rendertemplate(templatefile, templateVars, xmlfilename)
+end
 
 """
     SDNObsMetadata(id)
