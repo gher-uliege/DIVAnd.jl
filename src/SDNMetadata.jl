@@ -1076,7 +1076,7 @@ DIVAnd.divadoxml_originators(cdilist,filepaths,xmlfilename;
 """
 function divadoxml_originators(
     cdilist,filepaths,
-    xmlfilename,
+    xmlfilename;
     errname = split(filepaths[1], ".nc")[1] * ".cdi_import_errors.csv",
     templatefile = joinpath(dirname(pathof(DIVAnd)),"..","templates","emodnet-chemistry-originators.mustache"),
     ignore_errors = false
