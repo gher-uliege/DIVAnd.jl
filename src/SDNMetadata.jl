@@ -859,7 +859,7 @@ function gettemplatevars(
             "DOI_URL" => DOI_URL,
         # URL for the global data set
             "WMS_dataset_getcap" => baseurl_wms *
-                                    "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+                                    "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
             "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
             "WMS_layers" => [],
             "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
@@ -899,7 +899,7 @@ function gettemplatevars(
                 templateVars["WMS_layers"],
                 Dict(
                     "getcap" => baseurl_wms *
-                                "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+                                "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
                     "name" => layer_name,
                     "description" => "WMS layer for " * description,
                 ),
