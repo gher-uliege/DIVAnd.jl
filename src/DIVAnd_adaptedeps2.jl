@@ -69,7 +69,7 @@ function DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
 
 
     if (factor == 0) || !isfinite(factor)
-        error("scalefactore has the value $factor")
+        warning("scalefactore has the value $factor")
     end
 
     return factor
