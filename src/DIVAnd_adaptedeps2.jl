@@ -35,12 +35,15 @@ estimate of the R matrix.
 `diagR`, the diagonal of the rel. obs. error covariance matrix and
 `ignoreobs` is true if an observation is out of the grid or should be ignored for other reasons.
 
-For unscaled R, assuming background zero, Deroziers showed that:
+For unscaled R and assuming that the background is zero, Deroziers showed that:
 
-Exp[(yo - Hxa) ⋅ yo] = R
-Exp[yo ⋅ yo] = B + R
+mean((yᵒ - Hxᵃ) ⋅ yᵒ) =  ϵ²
+mean(yᵒ ⋅ yᵒ) = σ² +  ϵ²
 
+mean(yᵒ ⋅ yᵒ) / mean((yᵒ - Hxᵃ) ⋅ yᵒ) = σ²/ϵ² + 1
+λ = σ²/ϵ² = 1 - mean(yᵒ ⋅ yᵒ) / mean((yᵒ - Hxᵃ) ⋅ yᵒ)
 
+ϵ² / σ² = 1 / λ
 """
 function DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
     d0d = zero(eltype(yo))     # yo ⋅ yo
