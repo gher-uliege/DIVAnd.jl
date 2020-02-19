@@ -648,7 +648,7 @@ function fitlen(x::Tuple, d, nsamp; kwargs...)
 end
 
 """
-  varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo =
+  varbak, RL, dbinfo =
      fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
 
 this function used to be called lfit in fitlsn.f

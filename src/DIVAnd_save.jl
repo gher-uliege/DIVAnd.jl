@@ -123,7 +123,7 @@ function ncfile(
     validmin = get(ncvarattrib, "valid_min", "")
     validmax = get(ncvarattrib, "valid_max", 0.)
 
-    fillval = NC_FILL_FLOAT
+    fillval = NCDatasets.fillvalue(Float32)
 
     # Dimensions
 
@@ -334,7 +334,7 @@ function writeslice(
     index;
     saveindex = ntuple(i -> :, ndims(fi)),
 )
-    fillval = NC_FILL_FLOAT
+    fillval = NCDatasets.fillvalue(Float32)
 
     tmp = copy(fi)
     tmp[isnan.(fi)] .= fillval
