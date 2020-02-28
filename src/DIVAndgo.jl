@@ -213,6 +213,10 @@ function DIVAndgo(
                 finwindata = DIVAnd_residual(s, fw)
 
                 if doqc
+				# If you are reading this part of the code and want to implement a better version with 
+				# a single random vector GCV approach, you would need to
+				#   run again DIVAndjog replacing the data with a random array to calculate an estimate of Kii
+				# and create a new method if DIVAnd_qc passing that value
                     @warn "QC not fully implemented in jogging, using rough estimate of Kii"
                     finwinqc = DIVAnd_qc(fw, s, 5)
                 end
@@ -359,6 +363,8 @@ function DIVAndgo(
 
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
     # it also makes the shared array possible to save in netCDF??
+	
+	
     fi_filtered = DIVAnd_filter3(fi, NaN, filteranom)
     erri_filtered = DIVAnd_filter3(erri, NaN, filtererr)
 

@@ -21,7 +21,11 @@ Calculates an appriximation to the error map exploiting the fact that inv(P) is 
 * `errormap` : array of the same dimensions as the analysis including the error variance at the point, relative to the background variance.
 
 """
-function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
+function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Hobs,Robs,Binv=false)
+
+# To change later
+    diagRobs=Robs
+    
     # Hardwired parameter to control the accuracy. Increase finesse to be closer to "exact" field
     finesse=1.0
     # Box size for an error calculation and associated half sizes for sums around the center point
@@ -47,6 +51,8 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
         halfstrides[k]=Int(ceil(mystrides[k]/2))
     end
     
+	
+	 
         
 # idea: calculate error not with ei but several ei summed up. If points distant enough, error is just the sum AROUND each points
 # if P=C*C'
@@ -59,7 +65,14 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
     tutu=statevector_pack(sv,(eij,))
 	#@show size(tutu)
     z=zeros(Float64,size(P)[1])
-    zs=zeros(Float64,size(P)[1])
+	zs=zeros(Float64,size(P)[1])
+	
+	if Binv
+	y=zeros(Float64,size(P)[1])
+	zy=zeros(Float64,size(P)[1])
+	diagB=zeros(Float64,size(pmn[1]))*NaN
+    tutuub=zeros(Float64,size(pmn[1]))    
+	end
     # Get the permutations to apply
     inversep=[findall(x->x==i,P.factors.p)[1] for i in 1:size(P)[1]]
     
@@ -85,16 +98,41 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])))
         tutu[:]=statevector_pack(sv,(eij,))
         # Get square root part of error
         z[:]=P.factors.PtL \tutu
+		
+		if Binv
+		y[:]=z[:]
+		for iter=1:0
+		# Forces diagonal part of R 
+				y[:]=z[:]+    P.factors.PtL\(Hobs'*(diagRobs.\(Hobs*(P.factors.LtP\y[inversep]))))
+		end
+		
+		end
+		# idea to get inB:
+		# y=z
+		# iterate 
+		# y=z+inv(L) H inv(R) Ht inv(U)  y[inversep]
+		# then diagnose as for z to get B components from z'y
+		# probably still some permutations to check ??
+		#
         # Now squared and on the original locations
         zs[:]=z[inversep].^2
+		if Binv
+		zy[:]=z.*y
+		end
         # Projected back to real space
-        tutuu[:],=statevector_unpack(sv,zs)      
+        tutuu[:],=statevector_unpack(sv,zs)    
+		if Binv
+        tutuub[:],=statevector_unpack(sv,zy)  
+		end		
         # Now each point of eij sums up the contribution aournd its box center
         for IG in findall(x->x==1,eij)
             ####################################
             # NEED TO TAKE INTO ACCOUNT MODDIM
             ####################################
             diagerror[IG]=sum(tutuu[max(IFI,IG-mystep):min(IG+mystep,ILA)])
+			if Binv
+			diagB[IG]=sum(tutuub[max(IFI,IG-mystep):min(IG+mystep,ILA)])
+			end
             
         end
 		wheretocalculate[eij.==1].=false

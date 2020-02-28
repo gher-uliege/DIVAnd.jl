@@ -11,7 +11,7 @@
 * `gridsize`: number of points in each direction (size(mask))
 * `latercsteps`: coarsening steps used later if a lower resolution model is used for preconditioning.
 * `moddim`: modulo for cyclic dimension (vector with n elements). Zero is used for non-cyclic dimensions.
-* `MEMTOFIT` : parameter describing how much memory is expected to be available in Gb
+* `memtofit` : parameter describing how much memory is expected to be available in Gb
 * `forcedirect` : if true forces direct solver even if iterative solver might allow for larger tiles
 * `overlapfactor` : describes how many times the length scale is used for the overlapping. default is 3.3. use lower values ONLY for very good data coverage.
 
@@ -23,12 +23,12 @@
 * `isdirect`: true is the direct solver is activated
 
 """
-function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forcedirect=false,overlapfactor=3.3)
+function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;forcedirect=false,overlapfactor=3.3)
     #################################################################################
     # Number of dimensions
-#@show MEMTOFIT,overlapfactor
+#@show memtofit,overlapfactor
     n = size(Lpmnrange, 1)
-    fudgefac = MEMTOFIT / 16.
+    fudgefac = memtofit / 16.
 
     if moddim == []
         moddim = zeros(n)
@@ -135,9 +135,9 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, MEMTOFIT;forc
     if epsilon <= 0
         if nwd > 0
             @warn "Problem size probably too big for the memory defined " *
-                  "(epsilon_fittocpu = $epsilon, problemsize = $problemsize, nwd = $nwd" *
+                  "(epsilon_fittocpu = $epsilon, problemsize = $problemsize, nwd = $nwd , " *
                   "overlapping = $overlapping). Will try to continue anyway. " *
-                  "Consider to increase MEMTOFIT."
+                  "Consider to increase memtofit."
         end
         epsilon = 1E-6
     end

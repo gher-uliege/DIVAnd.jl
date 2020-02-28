@@ -42,6 +42,7 @@ function DIVAnd_qc(fi, s, method = 0)
 
     nd = length(s.obsout)
     invlam = mean(diag(R)[obsin])
+	# adapt here with new version of adapted eps....
 
     d0d = s.obsconstrain.yo[obsin] ⋅ s.obsconstrain.yo[obsin]
     nrealdata = sum(obsin)
