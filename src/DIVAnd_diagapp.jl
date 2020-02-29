@@ -24,6 +24,12 @@ Calculates an appriximation to the error map exploiting the fact that inv(P) is 
 function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Hobs=(),Rmatrix=(),Binv=false,iterB=0)
 
 # To change later
+   diagRobs=()
+   y=()
+   zy=()
+   diagB=()
+   tutuub=()
+
    if Binv
    if Rmatrix == ()
         @warn "No R provided, assuming 1"
@@ -31,7 +37,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
         diagRobs = 1.0 .*ones(size(Hobs)[1])
     else
         if isa(Rmatrix, Number)
-            Rm = Rmatrix.*ones(size(Hobs)[1])
+            diagRobs = Rmatrix.*ones(size(Hobs)[1])
         else
             if ndims(Rmatrix) == 1
                 diagRobs = Rmatrix
@@ -122,7 +128,8 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
 		y[:]=z[:]
 		for iter=1:iterB
 		# Forces diagonal part of R 
-				y[:]=z[:]+    P.factors.PtL\(Hobs'*(diagRobs.\(Hobs*(P.factors.LtP\y[inversep]))))
+		
+				y[:]=z[:]+    P.factors.PtL\(Hobs'*(diagRobs.\(Hobs*(P.factors.UP\y[inversep]))))
 		end
 		
 		end
