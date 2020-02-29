@@ -21,10 +21,29 @@ Calculates an appriximation to the error map exploiting the fact that inv(P) is 
 * `errormap` : array of the same dimensions as the analysis including the error variance at the point, relative to the background variance.
 
 """
-function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Hobs,Robs,Binv=false)
+function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Hobs=(),Rmatrix=(),Binv=false,iterB=0)
 
 # To change later
-    diagRobs=Robs
+   if Binv
+   if Rmatrix == ()
+        @warn "No R provided, assuming 1"
+		
+        diagRobs = 1.0 .*ones(size(Hobs)[1])
+    else
+        if isa(Rmatrix, Number)
+            Rm = Rmatrix.*ones(size(Hobs)[1])
+        else
+            if ndims(Rmatrix) == 1
+                diagRobs = Rmatrix
+            else
+                diagRobs = diag(Rmatrix)
+            end
+
+        end
+    end
+	end
+
+    
     
     # Hardwired parameter to control the accuracy. Increase finesse to be closer to "exact" field
     finesse=1.0
@@ -101,7 +120,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
 		
 		if Binv
 		y[:]=z[:]
-		for iter=1:0
+		for iter=1:iterB
 		# Forces diagonal part of R 
 				y[:]=z[:]+    P.factors.PtL\(Hobs'*(diagRobs.\(Hobs*(P.factors.LtP\y[inversep]))))
 		end
@@ -117,7 +136,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
         # Now squared and on the original locations
         zs[:]=z[inversep].^2
 		if Binv
-		zy[:]=z.*y
+		zy[:]=z[inversep].*y[inversep]
 		end
         # Projected back to real space
         tutuu[:],=statevector_unpack(sv,zs)    
@@ -143,6 +162,9 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
     
     
     
-    
- return diagerror
+    if Binv
+	 return diagerror,diagB
+	else
+     return diagerror
+    end
 end
