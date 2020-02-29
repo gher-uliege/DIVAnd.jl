@@ -85,7 +85,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
     # in 2D needs to be adapted to cover the domain: pack unpack and sum on real domain ?
     # Allocate arrays once
     eij=zeros(Int,size(pmn[1]))
-    diagerror=zeros(Float64,size(pmn[1]))*NaN
+    diagerror=zeros(Float64,size(pmn[1])).*NaN
     tutuu=zeros(Float64,size(pmn[1]))    
     tutu=statevector_pack(sv,(eij,))
 	#@show size(tutu)
@@ -95,7 +95,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
 	if Binv
 	y=zeros(Float64,size(P)[1])
 	zy=zeros(Float64,size(P)[1])
-	diagB=zeros(Float64,size(pmn[1]))*NaN
+	diagB=zeros(Float64,size(pmn[1])).*NaN
     tutuub=zeros(Float64,size(pmn[1]))    
 	end
     # Get the permutations to apply
@@ -129,7 +129,7 @@ function DIVAnd_diagapp(P,pmn,len,sv;wheretocalculate=fill(true,size(pmn[1])),Ho
 		for iter=1:iterB
 		# Forces diagonal part of R 
 		
-				y[:]=z[:]+    P.factors.PtL\(Hobs'*(diagRobs.\(Hobs*(P.factors.UP\y[inversep]))))
+				y[:]=z[:]+    P.factors.PtL\(Hobs'*(diagRobs.\(Hobs*(P.factors.UP\y[:]))))
 		end
 		
 		end
