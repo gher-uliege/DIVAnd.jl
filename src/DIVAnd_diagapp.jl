@@ -19,7 +19,7 @@ Calculates an appriximation to the error map exploiting the fact that inv(P) is 
 * `Hobs`: s.obsconstrain.H only needed if Binv is true
 * `Rmatrix` : epsilon2 only needed if Binv is true
 * `Binv` : boolean forcing the calculation of diag(B) by an iterative correction to the estimate of diag(inv(P))
-* `iterB` : number of iterations in case B is calculated, the higher epsilon2 the better the iterations converge, si something like 100/epsilon2 ?
+* `iterB` : number of iterations in case B is calculated, the higher epsilon2 the better the iterations converge, so something like 100/epsilon2 ?
 
 # Output
 
