@@ -72,14 +72,16 @@ function ncfile(
             deflatelevel = deflatelevel,
             checksum = checksum,
             chunksizes = chunksizes[1:length(dims)],
+            fillvalue = type_save(fillval),
+            attrib = OrderedDict(
+                "missing_value" => type_save(fillval)
+            )
         )
 
         for (k, v) in ncvarattrib
             ncvar.attrib[k] = v
         end
 
-        ncvar.attrib["_FillValue"] = type_save(fillval)
-        ncvar.attrib["missing_value"] = type_save(fillval)
 
         return ncvar
     end
@@ -121,7 +123,7 @@ function ncfile(
     validmin = get(ncvarattrib, "valid_min", "")
     validmax = get(ncvarattrib, "valid_max", 0.)
 
-    fillval = NC_FILL_FLOAT
+    fillval = NCDatasets.fillvalue(Float32)
 
     # Dimensions
 
@@ -140,33 +142,33 @@ function ncfile(
 
     # Declare variables
 
-    nclon = defVar(ds, "lon", Float64, ("lon",), checksum = checksum)
-    nclon.attrib["units"] = "degrees_east"
-    nclon.attrib["standard_name"] = "longitude"
-    nclon.attrib["long_name"] = "longitude"
+    nclon = defVar(ds, "lon", Float64, ("lon",), checksum = checksum, attrib = OrderedDict(
+        "units" => "degrees_east",
+        "standard_name" => "longitude",
+        "long_name" => "longitude"))
 
 
-    nclat = defVar(ds, "lat", Float64, ("lat",), checksum = checksum)
-    nclat.attrib["units"] = "degrees_north"
-    nclat.attrib["standard_name"] = "latitude"
-    nclat.attrib["long_name"] = "latitude"
+    nclat = defVar(ds, "lat", Float64, ("lat",), checksum = checksum, attrib = OrderedDict(
+        "units" => "degrees_east",
+        "standard_name" => "longitude",
+        "long_name" => "longitude"))
 
 
     if idepth != -1
-        ncdepth = defVar(ds, "depth", Float64, ("depth",), checksum = checksum)
-        ncdepth.attrib["units"] = "meters"
-        ncdepth.attrib["positive"] = "down"
-        ncdepth.attrib["standard_name"] = "depth"
-        ncdepth.attrib["long_name"] = "depth below sea level"
+        ncdepth = defVar(ds, "depth", Float64, ("depth",), checksum = checksum, attrib = OrderedDict(
+            "units" => "meters",
+            "positive" => "down",
+            "standard_name" => "depth",
+            "long_name" => "depth below sea level"))
     end
 
     if itime != -1
-        nctime = defVar(ds, "time", Float64, ("time",), checksum = checksum)
-        nctime.attrib["units"] = "days since " *
-                                 Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS")
-        nctime.attrib["standard_name"] = "time"
-        nctime.attrib["long_name"] = "time"
-        nctime.attrib["calendar"] = "standard"
+        nctime = defVar(ds, "time", Float64, ("time",), checksum = checksum, attrib = OrderedDict(
+            "units" => "days since " * Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
+            "standard_name" => "time",
+            "long_name" => "time",
+            "calendar" => "standard",
+        ))
 
         if haskey(kw, :climatology_bounds)
             nctime.attrib["climatology"] = "climatology_bounds"
@@ -176,12 +178,11 @@ function ncfile(
                 Float64,
                 ("nv", "time"),
                 checksum = checksum,
-            )
-            ncclimatology_bounds.attrib["units"] = "days since " *
-                                                   Dates.format(
-                timeorigin,
-                "yyyy-mm-dd HH:MM:SS",
-            )
+                attrib = OrderedDict(
+                    "units" => "days since " * Dates.format(
+                        timeorigin,
+                        "yyyy-mm-dd HH:MM:SS",
+                    )))
         end
     end
 
@@ -238,6 +239,9 @@ function ncfile(
         # ncvar_err.attrib["_FillValue"] = type_save(fillval)
         # ncvar_err.attrib["missing_value"] = type_save(fillval)
 
+        # section 3.1 'The conforming unit for quantities that represent fractions, or parts of a whole, is "1".'
+        # https://web.archive.org/web/20171121154031/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html
+
         ncvar_relerr = defVar(
             ds,
             "$(varname)_relerr",
@@ -246,16 +250,14 @@ function ncfile(
             deflatelevel = deflatelevel,
             chunksizes = chunksizes,
             checksum = checksum,
-        )
-
-        # section 3.1 'The conforming unit for quantities that represent fractions, or parts of a whole, is "1".'
-        # https://web.archive.org/web/20171121154031/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html
-        ncvar_relerr.attrib["units"] = "1"
-        ncvar_relerr.attrib["long_name"] = "Relative error of $(longname)"
-        ncvar_relerr.attrib["valid_min"] = type_save(0.0)
-        ncvar_relerr.attrib["valid_max"] = type_save(1.0)
-        ncvar_relerr.attrib["_FillValue"] = type_save(fillval)
-        ncvar_relerr.attrib["missing_value"] = type_save(fillval)
+            attrib = OrderedDict(
+               "units" => "1",
+                "long_name" => "Relative error of $(longname)",
+                "valid_min" => type_save(0.0),
+                "valid_max" => type_save(1.0),
+                "_FillValue" => type_save(fillval),
+                "missing_value" => type_save(fillval),
+        ))
     end
 
 
@@ -332,7 +334,7 @@ function writeslice(
     index;
     saveindex = ntuple(i -> :, ndims(fi)),
 )
-    fillval = NC_FILL_FLOAT
+    fillval = NCDatasets.fillvalue(Float32)
 
     tmp = copy(fi)
     tmp[isnan.(fi)] .= fillval
@@ -456,10 +458,10 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
-        )
-        ncobslon.attrib["units"] = "degrees_east"
-        ncobslon.attrib["standard_name"] = "longitude"
-        ncobslon.attrib["long_name"] = "longitude"
+            attrib = OrderedDict(
+                "units" => "degrees_east",
+                "standard_name" => "longitude",
+                "long_name" => "longitude"))
 
         ncobslat = defVar(
             ds,
@@ -469,10 +471,13 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
+            attrib = OrderedDict(
+                "units" => "degrees_north",
+                "standard_name" => "latitude",
+                "long_name" => "latitude",
+            )
+
         )
-        ncobslat.attrib["units"] = "degrees_north"
-        ncobslat.attrib["standard_name"] = "latitude"
-        ncobslat.attrib["long_name"] = "latitude"
 
         ncobstime = defVar(
             ds,
@@ -482,12 +487,11 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
-        )
-        ncobstime.attrib["units"] = "days since " *
-                                    Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS")
-
-        ncobstime.attrib["standard_name"] = "time"
-        ncobstime.attrib["long_name"] = "time"
+            attrib = OrderedDict(
+                "units" => "days since " *
+                    Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
+                "standard_name" => "time",
+                "long_name" => "time"))
 
         ncobsdepth = defVar(
             ds,
@@ -497,12 +501,14 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
+            attrib = OrderedDict(
+                "units" => "meters",
+                "positive" => "down",
+                "standard_name" => "depth",
+                "long_name" => "depth below sea level",
+            )
         )
 
-        ncobsdepth.attrib["units"] = "meters"
-        ncobsdepth.attrib["positive"] = "down"
-        ncobsdepth.attrib["standard_name"] = "depth"
-        ncobsdepth.attrib["long_name"] = "depth below sea level"
 
         ncobsid = defVar(
             ds,
@@ -512,9 +518,11 @@ function saveobs(
             checksum = checksum,
             deflatelevel = deflatelevel,
             chunksizes = [idlen, chunksize],
+            attrib = OrderedDict(
+                "long_name" => "observation identifier",
+                "coordinates" => "obstime obsdepth obslat obslon",
+            )
         )
-        ncobsid.attrib["long_name"] = "observation identifier"
-        ncobsid.attrib["coordinates"] = "obstime obsdepth obslat obslon"
 
         ncobslon[:] = xy[1]
         ncobslat[:] = xy[2]

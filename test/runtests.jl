@@ -7,7 +7,6 @@ using Dates
 using Printf
 using Statistics
 using DelimitedFiles
-using Compat
 using SpecialFunctions
 
 include("gen_example_file.jl")
@@ -60,6 +59,7 @@ include("gen_example_file.jl")
     include("test_2dvar_qc.jl")
 
     include("test_2dvar_outside.jl")
+    include("test_2dvar_periodic.jl")
 
     include("test_variableLandpmn.jl")
 
@@ -82,6 +82,7 @@ include("gen_example_file.jl")
     include("test_varanalysis.jl")
 
     include("test_averaged_bg.jl")
+    include("test_average_background_profile.jl")
     include("test_domain.jl")
 
     # SDN Vocabulary
@@ -101,6 +102,8 @@ include("gen_example_file.jl")
     include("test_save.jl")
     include("test_loadobs.jl")
 
+    include("test_load_mask.jl")
+
     # Anamorphosis
     include("test_anam.jl")
 
@@ -116,6 +119,7 @@ include("gen_example_file.jl")
 
     # Test utility functions
     include("test_obsstat.jl")
+    include("test_average_file.jl")
 
     # Test XML metadata description
     include("test_xml.jl")

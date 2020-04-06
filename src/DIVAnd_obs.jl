@@ -24,7 +24,7 @@ function DIVAnd_obs(s, xi, x, yo::Vector{T}, R, I = zeros(T, 0, 0)) where {T}
     moddim = s.moddim
 
     if isempty(I)
-        I = localize_separable_grid(x, mask, xi)::Matrix{T}
+        I = localize_separable_grid(x, mask, xi, iscyclic)::Matrix{T}
     end
 
     H, out, outbbox = sparse_interp(mask, I, iscyclic)

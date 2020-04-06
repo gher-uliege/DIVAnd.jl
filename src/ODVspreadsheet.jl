@@ -1,7 +1,6 @@
 module ODVspreadsheet
 
 using Dates
-using Compat
 
 #using StringEncodings
 
@@ -109,7 +108,7 @@ function readODVspreadsheet(datafile)
                     @assert startswith(line, "//")
 
                     # split at < or >
-                    parts = Compat.split(line[3:end], r"[<|>]", keepempty = false)
+                    parts = split(line[3:end], r"[<|>]", keepempty = false)
                     tmp = Dict(k => v for (k, v) in zip(parts[1:3:end], parts[2:3:end]))
 
                     subject = tmp["subject"]
@@ -192,7 +191,7 @@ function readODVspreadsheet(datafile)
         ##@info "Size (in GB) of data matrix (OLD): " * string(sizeof(alldataold))
         i = 0
 
-        for row in Compat.eachline(f; keep = false)
+        for row in eachline(f; keep = false)
 
             if startswith(row, "//")
                 # ignore lines starting with e.g.

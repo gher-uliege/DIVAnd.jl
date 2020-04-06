@@ -9,6 +9,40 @@ point can be considered to be right next to the first longitude point.
 No interpolation is performed.
 
 **Convention:** b is positive in the water and negative in the air.
+
+The NetCDF file is expected to have the one dimensional variables `lon` and `lat` with the
+longitude (degrees East) and latitude (degrees North) and the two
+dimentional array `bat` with the digital terrain model
+(negative in water and positive above water). The order of the dimension
+should follow be: longitude and then latitude in
+[Column-major ordering](https://en.wikipedia.org/wiki/Row-_and_column-major_order)
+(or latitude and then longitude if the tool `ncdump` is used,
+which is based on Row-major ordering).
+
+Example of the output of `ncdump -h`:
+```
+netcdf gebco_30sec_8 {
+dimensions:
+	lat = 2702 ;
+	lon = 5400 ;
+variables:
+	double lat(lat) ;
+		lat:long_name = "Latitude" ;
+		lat:standard_name = "latitude" ;
+		lat:units = "degrees_north" ;
+	double lon(lon) ;
+		lon:long_name = "Longitude" ;
+		lon:standard_name = "longitude" ;
+		lon:units = "degrees_east" ;
+	float bat(lat, lon) ;
+		bat:long_name = "elevation above sea level" ;
+		bat:standard_name = "height" ;
+		bat:units = "meters" ;
+
+// global attributes:
+		:title = "GEBCO" ;
+}
+```
 """
 function extract_bath(bath_name, isglobal, xi, yi)
 
@@ -35,14 +69,19 @@ function extract_bath(bath_name, isglobal, xi, yi)
 
         redx = dxi / rx
         redy = dyi / ry
-#JM 
+#JM
         i0 = max(floor(Int,(xi[1]-dxi-X0)/rx)+1,1);
         i1 = min(ceil(Int,(xi[end]+dxi-X0)/rx)+1,length(x));
         i=i0:i1;
 
+        # do not range check i0 and i1 now because of wrapping when bathymetry
+        # is global
+        i0 = floor(Int,(xi[1]-dxi-X0)/rx) + 1
+        i1 = ceil(Int,(xi[end]+dxi-X0)/rx) + 1
+        i = i0:i1
+
         j0 = max(floor(Int,(yi[1]-dyi-Y0)/ry)+1,1);
         j1 = min(ceil(Int,(yi[end]+dyi-Y0)/ry)+1,length(y));
-
         j = j0:j1
         b = zeros(length(i), length(j))
 
@@ -57,8 +96,8 @@ function extract_bath(bath_name, isglobal, xi, yi)
                 ]
             end
         else
-            i = maximum([minimum(i) 1]):minimum([maximum(i) length(x)])
-            j = maximum([minimum(j) 1]):minimum([maximum(j) length(y)])
+            i = max(minimum(i),1):min(maximum(i),length(x))
+            j = max(minimum(j),1):min(maximum(j),length(y))
             b[:, :] = nc["bat"].var[i, j]
         end
 

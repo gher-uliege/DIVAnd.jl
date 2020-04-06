@@ -19,7 +19,7 @@ See also https://gher-ulg.github.io/DIVAnd-presentation/#1
 
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
-Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: DIVAnd-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](http://dx.doi.org/10.5194/gmd-7-225-2014), 2014.
+Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: DIVAnd-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](https://doi.org/10.5194/gmd-7-225-2014), 2014.
 
 (click [here](./data/DIVAnd.bib) for the BibTeX entry).
 
@@ -40,11 +40,6 @@ using Pkg
 Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
 ```
 
-For Julia 0.6, you can use the following:
-```julia
-Pkg.clone("https://github.com/gher-ulg/DIVAnd.jl") # only for Julia 0.6
-```
-
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
 
 
@@ -53,7 +48,8 @@ It is not recommended to download the source of `DIVAnd.jl` directly (using the 
 To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
 
 ```julia
-Pkg.update()
+using Pkg
+Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
 ```
 
 
@@ -139,6 +135,11 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
 Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
+
+
+## Note about the error fields
+
+`DIVAnd` allows the calculation of the analysis error variance, scaled by the background error variance. Though it can be calculated "exactly" using the diagonal of the error covariance matrix s.P, it is too costly and approximations are provided. Two version are recommended, `DIVAnd_cpme` for a quick estimate and `DIVAnd_aexerr` for a version closer the theoretical estimate (see [Beckers et al 2014](https://doi.org/10.1175/JTECH-D-13-00130.1) )
 
 ## Advanced usage
 

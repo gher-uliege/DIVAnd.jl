@@ -1,3 +1,27 @@
+using Base.Threads
+
+
+# https://web.archive.org/web/20191115112938/https://codingforspeed.com/using-faster-exponential-approximation/
+@inline function approximate_exp(x::T) where T
+    x = T(1) + x / T(256)
+    x *= x; x *= x; x *= x; x *= x;
+    x *= x; x *= x; x *= x; x *= x;
+    return max(x,T(0))
+end
+
+"""
+    x2 is x squared
+"""
+function approximate_gaussian(x2)
+    return @fastmath 1 / (1 + x2 + x2*x2)
+end
+
+@inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where ndim
+    return CartesianIndex(
+        ntuple( j -> min(max(round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1,1),sz[j]), Val(ndim))
+    )
+end
+
 """
     Rtimesx!(coord,LS,x,Rx)
 
@@ -12,8 +36,8 @@ Adapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90
 function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     ndata = size(coord, 2)
     len = [LS...]
-    coordmin = Compat.minimum(coord, dims = 2)[:, 1]
-    coordmax = Compat.maximum(coord, dims = 2)[:, 1]
+    coordmin = minimum(coord, dims = 2)[:, 1]
+    coordmax = maximum(coord, dims = 2)[:, 1]
 
     ilen = 1 ./ len
     ilenmax = 1 ./ (3 * len)
@@ -25,23 +49,22 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     coordmin -= range * eps(eltype(coord))
     coordmax += range * eps(eltype(coord))
 
-
     # Now number of grid points in each direction
-    sz = (round.(Int, (coordmax - coordmin) .* ilenmax) .+ 1...,)::NTuple{ndim,Int}
+    sz =  let coordmax=coordmax, coordmin=coordmin, ilenmax=ilenmax
+        ntuple(j -> (round(Int, (coordmax[j] - coordmin[j]) * ilenmax[j]) + 1),Val(ndim))
+    end
 
     # now allocate the arrays
     NP = zeros(Int, sz)
     NG = zeros(Int, ndim)
-    gridindex = zeros(Int, ndata, ndim)
+    gridindex = Vector{CartesianIndex{ndim}}(undef,ndata)
 
     # First dummy loop, identify the number of points which fall into
     # any bin of a regular grid
 
     for i = 1:ndata
-        for j = 1:ndim
-            NG[j] = round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1
-        end
-        NP[NG...] += 1
+        NGind = _grid_index(coord, i, coordmin, ilenmax, sz)
+        NP[NGind] += 1
     end
 
     # Now we can allocate the array which indexes points that fall into the grid
@@ -57,11 +80,7 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     NP[:] .= 0
 
     for i = 1:ndata
-        for j = 1:ndim
-            NG[j] = round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1
-        end
-
-        NGind = CartesianIndex{ndim}(NG...)
+        NGind = _grid_index(coord, i, coordmin, ilenmax, sz)
 
         NP[NGind] += 1
         NPP = NP[NGind]
@@ -69,36 +88,37 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
         IP[NGind][NPP] = i
 
         # For all points get index of grid bin where if falls
-        gridindex[i, :] = NG
+        gridindex[i] = NGind
     end
 
-    # Ok, now finally calculate covariances and application
-    Rx[:] .= 0
+    @info "Computing weights using $(Threads.nthreads()) CPU thread(s)"
 
-    for i = 1:ndata
+    # Ok, now finally calculate covariances and application
+
+    Threads.@threads for i = 1:ndata
+    #@inbounds for i = 1:ndata
         # Find grid indexes
-        NG = gridindex[i, :]
+        NGind = gridindex[i]
 
         # Now all boxes around this one
         Rx[i] = 0
 
-        istart = CartesianIndex((max.(1, NG .- 1)...,)::NTuple{ndim,Int})
-        iend = CartesianIndex((min.(sz, NG .+ 1)...,)::NTuple{ndim,Int})
 
-        for ind in CartesianIndices(ntuple(i -> istart[i]:iend[i], ndim)::NTuple{
+        @inbounds for ind in CartesianIndices(ntuple(j -> max(1,NGind[j]-1):min(sz[j],NGind[j]+1), ndim)::NTuple{
             ndim,
             UnitRange{Int},
         })
 
-            for ipoint = 1:NP[ind]
-                ii = IP[ind][ipoint]
-
+            @inbounds for ii in IP[ind]
                 dist = 0.
-                for j = 1:ndim
+                @inbounds for j = 1:ndim
                     dist += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
                 end
 
-                cov = exp(-dist)
+                #cov = @fastmath exp(-dist)
+                #cov = @fastmath approximate_exp(-dist)
+                cov = approximate_gaussian(dist)
+
                 Rx[i] += cov * x[ii]
             end
         end
@@ -117,7 +137,7 @@ representing the correlation length. `len[i]` is the correlation length in the
 i-th dimension.
 """
 function weight_RtimesOne(x::NTuple{ndim,Vector{T}}, len) where {T} where {ndim}
-    coord = hcat(x...)'
+    coord = copy(hcat(x...)')
 
     # geometric mean
     geomean(v) = prod(v)^(1 / length(v))
@@ -126,8 +146,74 @@ function weight_RtimesOne(x::NTuple{ndim,Vector{T}}, len) where {T} where {ndim}
     vec = ones(T, length(x[1]))
     Rvec = ones(T, length(x[1]))
 
-    #@code_warntype Rtimesx!(coord,LS,vec,Rvec)
     Rtimesx!(coord, LS, vec, Rvec)
 
     return 1 ./ Rvec
+end
+
+
+function weight_RtimesOne_binning(x, len; refine = 10)
+    n = length(x)
+
+    # grid finer than a factor give by refine
+    dx = ntuple(i -> len[i]/refine,Val(n))
+
+    gridx = ntuple(i -> minimum(x[i]):dx[i]:maximum(x[i])+dx[i], Val(n))
+    sz = length.(gridx)
+
+    v = ones(size(x[1]))
+    m2, count2, vb2, nout2 = binning(gridx, x, v)
+
+    mask = trues(sz)
+    pmn = ntuple(i -> ones(sz)/dx[1], Val(n))
+
+    c0 = Float64.(count2);
+    c = zeros(size(c0))
+
+    # adusted length
+    coef = sqrt(2)
+    len_adjusted = ntuple(i -> coef * len[i], Val(n))
+
+    # "diffusion" coefficient
+    nu = ntuple(i -> fill(len_adjusted[i].^2,sz),Val(n))
+
+    # compute inverses of cell volumne and staggered scaled coefficients
+    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
+
+    # maximum allowed time step
+    α0 = 1 / (2 * sum(ntuple(i -> maximum(pmn[i].^2 .* nu[i]),Val(n))))
+
+    # 10% safety margin
+    α = α0 / 1.1
+
+    # number of iterations 1/(2*α) (rounded)
+    nmax = round(Int, 1 / (2 * α))
+
+    # 4* L² α*nmax ≈ 2 L² = L'²
+    @debug "α0: $α0, α: $α, nmax: $nmax"
+
+    # ∂c/∂t =  ∇ ⋅ (D ∇ c)
+    # G(x,x',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x')ᵀ D⁻¹ (x -x')ᵀ / (4t))
+
+    # G(x,x',t) = det(D)^(-½) (4π t)^(-n/2)  exp( - (x -x')ᵀ D⁻¹ (x -x')ᵀ / (4t))
+
+    @debug "sum(c0): $(sum(c0))"
+
+    DIVAnd.diffusion!(ivol, nus, α, nmax, c0, c)
+
+    @debug "sum(c): $(sum(c))"
+
+    detD = prod(len_adjusted.^2)
+    t = α * nmax
+    c = c * sqrt((4π * t)^n / detD)
+
+    @debug "range of c: $(extrema(c))"
+
+    itp = LinearInterpolation(gridx,c,extrapolation_bc = NaN);
+    ci = itp.(x...)
+
+    weighti = 1 ./ ci
+    clamp!(weighti, 0, 1)
+
+    return weighti
 end

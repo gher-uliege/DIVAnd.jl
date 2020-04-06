@@ -9,8 +9,7 @@ import HTTP
 import Mustache
 import ZipFile
 using Missings
-using StatsBase
-#import JLD2, FileIO
+#import JLD2
 
 using Printf
 using LinearAlgebra
@@ -46,7 +45,6 @@ if (v"1.0" <= VERSION) && (VERSION < v"1.1")
 end
 
 
-using Compat
 
 const EarthRadius = 6372795.477598 # m
 
@@ -514,10 +512,11 @@ include("DIVAnd_integral.jl")
 
 include("DIVAnd_superobs.jl")
 
+include("average_background_profile.jl")
+
 include("DIVAnd_diagapp.jl")
 
 include("DIVAnd_scalecpme!.jl")
-
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 

@@ -1,5 +1,7 @@
 using Test
 using DelimitedFiles
+using Statistics
+using Random
 import DIVAnd
 
 # test data for basic statistics
@@ -167,3 +169,8 @@ fitlenz, dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertl
     epsilon2 = epsilon2,
 );
 @test median(fitlenz) ≈ lenz rtol = 0.5
+
+
+# RandomCoupels iterators
+
+@test collect( DIVAnd.RandomCoupels(1000,10,1234) ) == collect( DIVAnd.RandomCoupels(1000,10,1234) )

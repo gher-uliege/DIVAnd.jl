@@ -7,7 +7,7 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-include("../src/override_ssmult.jl")
+
 include("./prep_dirs.jl")
 
 # final grid
@@ -43,7 +43,7 @@ po = ones(size(xi)) / (zi[1,1,2,1]-zi[1,1,1,1]);
 pq = ones(size(xi)) / (ti[1,1,1,2]-ti[1,1,1,1]);
 
 # correlation length
-len = (8, 8, 1, 1);
+len = (8., 8., 1., 1.);
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 1.;

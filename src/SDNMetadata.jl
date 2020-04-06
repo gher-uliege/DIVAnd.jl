@@ -31,7 +31,7 @@ const PROJECTS = Dict(
     ),
 )
 
-const OriginatorEDMO_URL = "http://emodnet-chemistry.maris2.nl/download/export.zip"
+const OriginatorEDMO_URL = "https://emodnet-chemistry.maris.nl/download/export.zip"
 
 
 const layersep = "*"
@@ -187,7 +187,7 @@ function getedmoinfo(edmo_code, role)
 
     contact = Dict{String,String}(
         "EDMO_CODE" => string(edmo_code),
-        "EDMO_URL" => "http://seadatanet.maris2.nl/v_edmo/print.asp?n_code=$(edmo_code)",
+        "EDMO_URL" => "https://cdi.seadatanet.org/report/$(edmo_code)",
         "name" => DIVAnd.Vocab.name(entry),
         "phone" => DIVAnd.Vocab.phone(entry),
         "fax" => DIVAnd.Vocab.fax(entry),
@@ -806,7 +806,7 @@ function gettemplatevars(
     end
 
     DOI_URL = if doi != ""
-        "https://dx.doi.org/" * doi
+        "https://doi.org/" * doi
     else
         "na"
     end
@@ -859,7 +859,7 @@ function gettemplatevars(
             "DOI_URL" => DOI_URL,
         # URL for the global data set
             "WMS_dataset_getcap" => baseurl_wms *
-                                    "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+                                    "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
             "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
             "WMS_layers" => [],
             "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
@@ -899,7 +899,7 @@ function gettemplatevars(
                 templateVars["WMS_layers"],
                 Dict(
                     "getcap" => baseurl_wms *
-                                "?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0",
+                                "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
                     "name" => layer_name,
                     "description" => "WMS layer for " * description,
                 ),
@@ -1052,7 +1052,56 @@ function divadoxml(
     )
 end
 
+"""
+    divadoxml_originators(cdilist,filepaths,xmlfilename;
+        errname = split(filepaths[1], ".nc")[1] * ".cdi_import_errors.csv",
+        ignore_errors = false)
 
+Produces the originators/contact XML fragment `xmlfilename` from the NetCDF files
+in `filepaths`. See `divadoxml` for an explication of the optinal arguments.
+
+## Example
+
+```julia
+using Glob
+download(DIVAnd.OriginatorEDMO_URL,"export.zip")
+run(`unzip export.zip`) # if unzip is installed
+cdilist = "export.csv";
+filepaths = glob("*/*/*silicate*nc")
+xmlfilename = "out.xml"
+ignore_errors = true
+DIVAnd.divadoxml_originators(cdilist,filepaths,xmlfilename;
+    ignore_errors = ignore_errors)
+```
+"""
+function divadoxml_originators(
+    cdilist,filepaths,
+    xmlfilename;
+    errname = split(filepaths[1], ".nc")[1] * ".cdi_import_errors.csv",
+    templatefile = joinpath(dirname(pathof(DIVAnd)),"..","templates","emodnet-chemistry-originators.mustache"),
+    ignore_errors = false
+)
+
+    ds = Dataset(filepaths[1], "r")
+    edmo_code = if haskey(ds.attrib, "institution_urn")
+        rmprefix.(ds.attrib["institution_urn"])
+    else
+        ds.attrib["institution_edmo_code"]
+    end
+    close(ds)
+
+    db = loadoriginators(cdilist)
+    originators = getoriginators(db, filepaths, errname, ignore_errors = ignore_errors)
+
+    contacts = [getedmoinfo(parse(Int, edmo_code), "author")]
+    append!(contacts, originators)
+
+    templateVars = Dict(
+        "contacts" => contacts
+    )
+
+    rendertemplate(templatefile, templateVars, xmlfilename)
+end
 
 """
     SDNObsMetadata(id)
@@ -1063,12 +1112,7 @@ This works only in IJulia.
 """
 function SDNObsMetadata(id)
     edmo, local_CDI_ID = split(id, '-')
-    url = "http://seadatanet.maris2.nl/v_cdi_v3/print_wfs.asp" *
-          string(HTTP.URI(;
-        query = OrderedDict("popup" => "yes", "edmo" => edmo, "identifier" => local_CDI_ID)))
-
-    # work-around bug in HTTP
-    url = replace(url, "/print_wfs.asp:?" => "/print_wfs.asp?")
+    url = "https://cdi.seadatanet.org/report/edmo/$(edmo)/$(local_CDI_ID)"
 
     display(
         "text/html",

@@ -10,12 +10,9 @@ using Compat: @info, range
 using PyPlot
 using NCDatasets
 using Interpolations
-if VERSION >= v"0.7"
-    using Dates
-    using Printf
-end
+using Dates
+using Printf
 
-include("../src/override_ssmult.jl")
 include("./prep_dirs.jl")
 
 # if this script is in /some/path/DIVAnd.jl/examples, the data should be in
@@ -93,13 +90,13 @@ timeorigin = DateTime(1900,1,1,0,0,0)
 # bx,by,b = DIVAnd.extract_bath(bathname,false,lonr,latr);
 bxi,byi,bi = DIVAnd.load_bath(bathname,bathisglobal,lonr,latr)
 
-itp = interpolate((bxi,byi), bi, Gridded(Linear()))
+itp = extrapolate(interpolate((bxi,byi), bi, Gridded(Linear())),NaN)
 
 # shift the depth of the observations relative to the ocean floor
 aboveseafloor = similar(depth)
 
 for k = 1:length(depth)
-    aboveseafloor[k] = itp[lon[k],lat[k]] - depth[k]
+    aboveseafloor[k] = itp(lon[k],lat[k]) - depth[k]
 end
 
 

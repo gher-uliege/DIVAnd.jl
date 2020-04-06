@@ -1,7 +1,6 @@
 module Quadtrees
 
 using Dates
-using Compat
 import Base.length
 
 """
@@ -316,7 +315,10 @@ function rsplit!(qt::QT{T,TA,N}, max_cap = 10, min_size = zeros(N)) where {T,TA,
         allequal = true
 
         @inbounds for i = 2:size(qt.points, 2)
-            allequal = allequal & ((@view qt.points[:, i]) == (@view qt.points[:, 1]))
+            #allequal = allequal & ((@view qt.points[:, i]) == (@view qt.points[:, 1]))
+            @inbounds for j = 1:N
+                allequal = allequal & (qt.points[j, i] == qt.points[j, 1])
+            end
         end
 
         if allequal
@@ -607,19 +609,25 @@ function checkduplicates(
     value2,
     delta,
     deltavalue;
-    maxcap = 10_000,
-    label1 = collect(1:length(x1[1])),
-    factor = 5,
+#    maxcap = 10_000,
+#    label1 = collect(1:length(x1[1])),
+#    factor = 5,
 )
+    maxcap = 10_000
+    label1 = collect(1:length(x1[1]))
+    factor = 5
+
+
     X1 = catx(x1)
     X2 = catx(x2)
 
-    n = size(X1, 1)
+    #n = size(X1, 1)
+    n = length(x1)
     Nobs1 = size(X1, 2)
     Nobs2 = size(X2, 2)
 
-    qt = Quadtrees.QT(X1, label1)
-    Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
+    qt = @time Quadtrees.QT(X1, label1)::Quadtrees.QT{Float64,Int,n}
+    @time Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
     #@show qt
 
     duplicates = Vector{Vector{Int}}(undef, Nobs2)
@@ -627,13 +635,19 @@ function checkduplicates(
     xmin = zeros(n)
     xmax = zeros(n)
 
-    index_buffer = zeros(Int, Nobs1)
+#    index_buffer = zeros(Int, Nobs1)
+    index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
 
-    @fastmath @inbounds for i = 1:Nobs2
-        for j = 1:n
-            xmin[j] = X2[j, i] - delta[j]
-            xmax[j] = X2[j, i] + delta[j]
-        end
+    @time @fastmath @inbounds Threads.@threads for i = 1:Nobs2
+        index_buffer = @view index_buffer_all[:,Threads.threadid()]
+
+#        for j = 1:n
+#            xmin[j] = X2[j, i] - delta[j]
+#            xmax[j] = X2[j, i] + delta[j]
+#        end
+
+        xmin = ntuple(j -> X2[j, i] - delta[j],Val(n))
+        xmax = ntuple(j -> X2[j, i] + delta[j],Val(n))
 
         nindex = Quadtrees.within_buffer!(qt, xmin, xmax, index_buffer)
 

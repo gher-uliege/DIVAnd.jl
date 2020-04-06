@@ -5,11 +5,12 @@ os:
   - osx
 julia:
   - 1.0
-  - 1.2
+  - 1.3
 #  - nightly
-matrix:
-  allow_failures:
-    - julia: 1.2
+
+#matrix:
+#  allow_failures:
+#    - julia: 1.3
 #    - julia: nightly
 addons:
     apt: # apt-get for linux

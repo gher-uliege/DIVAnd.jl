@@ -1,6 +1,6 @@
 
 
-struct AbstractTimeSelector end
+abstract type AbstractTimeSelector end
 
 
 
@@ -10,10 +10,13 @@ struct AbstractTimeSelector end
 
 The structure `TS` handles the time aggregation based on `yearlists` and
 `monthlists`. `yearlists` is a vector of ranges (containing start and end years),
-for example `[1980:1990,1990:2000,2000:2010]`.
+for example `[1980:1989,1990:1999,2000:2009]`.
 
 `monthlists` is a vector of two-element vector (containing start and end months), for
-example `[1:3,4:6,7:9,10:12]`
+example `[1:3,4:6,7:9,10:12]`.
+
+The upper bound of a `yearlist` and `monthlist` element is considered inclusive.
+The range of years of 2000:2009 consideres all years upto and including the year 2009.
 
 If a month range spans beyond December, then all Months must be specified, e.g.
 example `[2:4,5:6,7:9,[10,11,12,1]]` or `[2:4,5:6,7:9,[10:12;1]]`.
@@ -30,7 +33,7 @@ TS = DIVAnd.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],
 ```
 
 """
-struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector}
+struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector} <: AbstractTimeSelector
     yearlists::T1
     monthlists::T2
 end
@@ -129,18 +132,21 @@ function select(TS::TimeSelectorYearListMonthList, index, obstime)
     s = falses(Int.(size(obstime)))
 
     # loop over all observation time instance
-    for i = 1:length(obstime)
+    @inbounds for i = 1:length(obstime)
         # s[i] is true if the observation is within the time range
         s[i] = yearlist[1] <= Dates.year(obstime[i]) <= yearlist[end]
 
-        # sm is true if the month is one of the months is monthlist
-        sm = false
-        for m in monthlist
-            sm = sm || (Dates.month(obstime[i]) == m)
-        end
+        if s[i]
+            obsmonth = Dates.month(obstime[i])
+            # sm is true if the month is one of the months is monthlist
+            sm = false
+            for m in monthlist
+                sm = sm || (obsmonth == m)
+            end
 
-        # keep an observation is year and month are suitable
-        s[i] = s[i] && sm
+            # keep an observation if year and month are suitable
+            s[i] = sm
+        end
     end
     return s
 end
@@ -154,7 +160,7 @@ Observations at the i-th time instance will be selected
 if the dates is between `times[i]-w/2` and `time[i]+w/2` where
 `w` is the time window expressed as days.
 """
-struct TimeSelectorRunningAverage{T1<:AbstractVector,T2<:Number}
+struct TimeSelectorRunningAverage{T1<:AbstractVector,T2<:Number} <: AbstractTimeSelector
     times::T1 # central times
     window::T2 # in days
 end

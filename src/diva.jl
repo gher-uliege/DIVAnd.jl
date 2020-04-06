@@ -61,8 +61,8 @@ to load the background from a call-back function (default `nothing`). The call-b
 `(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
 (possibly transformed) and `trans` the transformation function. The output of this function is the
 gridded background field and the observations minus the background field.
-* `background_espilon2_factor`: multiplication for `epsilon2` when computing a
-   vertical profile as a background estimate (default 10.). This parameter is not used
+* `background_epsilon2_factor`: multiplication for `epsilon2` when computing a
+   vertical profile as a background estimate (default: computed internally based on the amount of data). This parameter is not used
    when the parameter `background` or `background_lenz` is provided.
 * `background_lenz`: vertical correlation for background computation (default 20 m). This parameter is not used
    when the parameter `background` is provided.
@@ -82,16 +82,18 @@ gridded background field and the observations minus the background field.
    `epsilon2` using Desroziers et al. 2005 (doi: 10.1256/qj.05.108). The default
     is 1 (i.e. no optimization is done).
 * `coeff_derivative2` (vector of 3 floats): for every dimension where this value is non-zero, an additional term is added to the cost function penalizing the second derivative. A typical value of this parameter is `[0.,0.,1e-8]`.
+*  `surfextend`: create an additional layer on top of the surface layer so that the effective background error variance is more similar to the deep ocean.
+   `false` is the default value.
 
-Any additional keywoard arguments understood by `DIVAndgo` can also be used here
+Any additional keywoard arguments understood by `DIVAndgo`/`DIVAndrun` can also be used here
 (e.g. velocity constrain)
 
 
 The output is a dictionary with the followings keys:
 
-* `:residuals`: the difference between the analysis (interpolated linearly to the
-location of the observation) and the observations. The
-residual is NaN if the observations are not within the domain as defined by
+* `:residuals`: the difference between the observations and the analysis (interpolated linearly to the
+location of the observations). The
+residual is `NaN` if the observations are not within the domain as defined by
 the mask and the coordinates of the observations `x`.
 * `:qcvalues`: quality control scores (if activated)
 
@@ -120,7 +122,7 @@ function diva3d(
     distfun = distfun_m,
     mask = nothing,
     background = nothing,
-    background_epsilon2_factor::Float64 = 10.,
+    background_epsilon2_factor = nothing,
     background_lenz = nothing, # m
     background_len = nothing,
     background_lenz_factor = 4,
@@ -136,6 +138,7 @@ function diva3d(
     minfield::Number = -Inf,
     maxfield::Number = Inf,
     surfextend = false,
+    velocity = (),
     kwargs...,
 )
 
@@ -207,7 +210,6 @@ function diva3d(
         (x[1], x[2], Float64[0.], x[3])
     end
 
-
     # anamorphosis transform
     trans, invtrans = transform
 
@@ -245,6 +247,9 @@ function diva3d(
 
     sz = size(mask)
 
+    # number of vertical levels
+    kmax = length(depthr)
+
     # change the depth of the observation
     if (zlevel == :floor) && (n == 4)
         depth = copy(depth)
@@ -252,11 +257,11 @@ function diva3d(
 
         bxi, byi, bi = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
 
-        itp = interpolate((bxi, byi), bi, Gridded(Linear()))
+        itp = extrapolate(interpolate((bxi, byi), bi, Gridded(Linear())),NaN)
 
         # shift the depth of the observations relative to the ocean floor
         for k = 1:length(depth)
-            depth[k] = itp[lon[k], lat[k]] - depth[k]
+            depth[k] = itp(lon[k], lat[k]) - depth[k]
         end
     end
 
@@ -347,9 +352,18 @@ function diva3d(
             [true, true]
         end
 
-        if fitvertcorrlen
-            kmax = length(depthr)
+        if fithorzcorrlen
+            # horizontal info
+            dbinfo[:fithorzlen] = Dict{Symbol,Any}(
+                :len => zeros(kmax, length(TS)),
+                :lenf => zeros(kmax, length(TS)),
+                :var0 => zeros(kmax, length(TS)),
+                :fitinfos => Array{Dict{Symbol,Any},2}(undef, kmax, length(TS)),
+            )
 
+        end
+
+        if fitvertcorrlen
             if n == 4
                 # vertical info
                 dbinfo[:fitvertlen] = Dict{Symbol,Any}(
@@ -359,6 +373,10 @@ function diva3d(
                     :fitinfos => Array{Dict{Symbol,Any},2}(undef, kmax, length(TS)),
                 )
             end
+        end
+
+        if background == nothing
+            dbinfo[:background_profile] = zeros(kmax, length(TS))
         end
 
         dbinfo[:factore] = zeros(niter_e, length(TS))
@@ -420,9 +438,6 @@ function diva3d(
                     vm = mean(value_trans[isfinite.(value_trans)])
                     va = value_trans .- vm
 
-                    #@show background_len[3][1,1,:], vm
-                    #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm
-                    #@show "background saving"
                     # background profile
 
                     if n == 4
@@ -431,6 +446,18 @@ function diva3d(
                             background_len[3] .= 2 ./ pmn[3]
                         end
                     end
+
+                    # simple estimation of background_epsilon2_factor so that in average
+                    # for every level there are 10 observations with an unit epsilon2.
+                    if background_epsilon2_factor == nothing
+                        background_epsilon2_factor = sum(filter(isfinite,1 ./ epsilon2[sel])) / (10 * length(depthr))
+                    end
+                    @debug "background_epsilon2_factor: $background_epsilon2_factor"
+
+                    #@show background_len[3][1,1,:], vm
+                    #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm filterbackground
+                    #@show "background saving"
+
 
                     fi, vaa = DIVAnd.DIVAnd_averaged_bg(
                         mask,
@@ -447,6 +474,8 @@ function diva3d(
 
                     fbackground = fi .+ vm
                     @debug "fbackground: $(fbackground[1,1,:])"
+                    dbinfo[:background_profile][:,timeindex] = fbackground[1,1,:]
+
                     #@show size(fbackground),fbackground[1,1,end]
                     #dbinfo[:background] = fbackground
                     fbackground, vaa
@@ -484,6 +513,11 @@ function diva3d(
                     distfun = distfun,
                     fithorz_param_sel...,
                 )
+
+                dbinfo[:fithorzlen][:lenf][:, timeindex] = lenxy1
+                dbinfo[:fithorzlen][:len][:, timeindex] = infoxy[:len]
+                dbinfo[:fithorzlen][:var0][:, timeindex] = infoxy[:var0]
+                dbinfo[:fithorzlen][:fitinfos][:, timeindex] = infoxy[:fitinfos]
 
                 if n == 3
                     # propagate
@@ -545,6 +579,13 @@ function diva3d(
 
             kwargs_without_qcm = [(p, v) for (p, v) in kwargs if p !== :QCMETHOD]
 
+            velocity_tuple = if isa(velocity,Function)
+                veltime = [ DIVAnd.ctimes(TS)[timeindex] ]
+                velocity(xyi,veltime)
+            else
+                velocity
+            end
+
             for i = 1:niter_e
                 #@info "Estimating the optimal scale factor of epsilon2"
                 # error and QCMETHOD is only required at the last iterations
@@ -571,6 +612,7 @@ function diva3d(
                     MEMTOFIT = memtofit,
 					overlapfactor=overlapfactor,
                     kwargs2...,
+                    velocity = velocity_tuple # possibly override velocity in kwargs2
                 )
 
                 residuals[sel] = residual

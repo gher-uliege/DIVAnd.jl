@@ -1,7 +1,6 @@
 module Vocab
 
 using Base
-using Compat
 using EzXML
 import HTTP
 import Base.findfirst

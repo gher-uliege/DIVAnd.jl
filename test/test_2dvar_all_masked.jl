@@ -3,7 +3,6 @@
 
 using Test
 using DIVAnd
-using Compat
 
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 30))

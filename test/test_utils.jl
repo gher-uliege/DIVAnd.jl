@@ -1,5 +1,4 @@
 using Test
-using Compat
 using Random
 using Statistics
 using Dates

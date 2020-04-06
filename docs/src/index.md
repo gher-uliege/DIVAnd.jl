@@ -209,7 +209,7 @@ DIVAnd.ncfile
 DIVAnd.writeslice
 DIVAnd.encodeWMSStyle
 DIVAnd.loadoriginators
-DIVAnd.DIVAnd_inegral
+DIVAnd.DIVAnd_integral
 DIVAnd.DIVAnd_scaleL
 ```
 
@@ -232,6 +232,59 @@ using DIVAnd;
 joinpath(dirname(pathof(DIVAnd)), "..")
 ```
 
+
+### Advection contraint
+
+The functions `DIVAndrun`, `DIVAndgo` and `diva3d` can also use an advection constraint forcing the analysis to align with a vector field (e.g. a velocity field).
+The velocity field should be a
+tuple of n-elements. Every element of the tuple is a gridded array (defined at the same location than the target array) representing a single velocity component.
+For 3D analysis, the order of the dimensions is typically: longitude, latitude and depth. Like-wise the velocity components are
+zonal, meridional and vertical velocity. The three velocity components has to be scaled by
+a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in DIVAnd.jl to automate this process.
+
+For the two dimensional case, the velocity has just two components as shown in the example below.
+
+```@example
+using DIVAnd, PyPlot
+
+# square domain in 2 dimensions from -1 to 1
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
+
+# location of the observations
+x = [.4]
+y = [.4]
+
+# observed value
+f = [1.]
+
+# velocity field and its strength for the advection constrain
+strength = 0.5
+u = strength * yi
+v = -strength * xi
+
+# normalized obs. error variance and correlation length
+epsilon2 = 1 / 200
+len = 0.2
+
+# call DIVAnd
+fi, s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2; velocity = (u,v))
+
+# plot the results
+subplot(1,2,1)
+plot(x,y,"rx")
+quiver(xi,yi,u,v)
+gca().set_aspect(1)
+title("velocity field")
+
+subplot(1,2,2)
+plot(x,y,"rx")
+pcolor(xi,yi,fi)
+gca().set_aspect(1)
+title("analysis")
+savefig("example-advection-2d.png"); nothing # hide
+```
+
+![](example-advection-2d.png)
 
 ## Performance considerations
 
@@ -607,22 +660,6 @@ You can check the current working directory with:
 ```julia
 pwd()
 ```
-
-### METADATA cannot be updated in Julia 0.6
-
-`Pkg.update` fails with the error message `METADATA cannot be updated`.
-
-If you have git installed, you can issue the command:
-
-```bash
-cd ~/.julia/v0.6/METADATA
-git reset --hard
-```
-
-and then in Julia run `Pkg.update()` again.
-
-If this does not work, then, you can also delete `~/.julia` (<https://github.com/JuliaLang/julia/issues/18651#issuecomment-347579521>) and in Julia enter `Pkg.init(); Pkg.update()`.
-
 
 ### Convert error in `DIVAnd_obs`
 

@@ -560,21 +560,26 @@ end
 mutable struct RandomCoupels
     n::Int
     count::Int
+    iseed::Int
 end
 
-function Base.iterate(iter::RandomCoupels, state = 0)
-    if state == iter.count
+Base.length(iter::RandomCoupels) = iter.count
+
+function Base.iterate(iter::RandomCoupels, state = (0, MersenneTwister(iter.iseed)))
+    count,rng = state
+
+    if count == iter.count
         return nothing
     end
 
     # pick two random points
-    j = rand(1:iter.n)
+    j = rand(rng,1:iter.n)
     i = j
     while (i == j)
-        i = rand(1:iter.n)
+        i = rand(rng,1:iter.n)
     end
 
-    return ((i, j), state + 1)
+    return ((i, j), (count + 1, rng))
 end
 
 
@@ -643,7 +648,7 @@ function fitlen(x::Tuple, d, nsamp; kwargs...)
 end
 
 """
-  varbak,RL,distx,covar,fitcovar,stdcovar,dbinfo =
+  varbak, RL, dbinfo =
      fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
 
 this function used to be called lfit in fitlsn.f
@@ -652,6 +657,7 @@ this function used to be called lfit in fitlsn.f
 function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
     # number of samples
     n = length(d)
+    iseed = n
 
     iter =
         if (nsamp == 0)
@@ -662,12 +668,12 @@ function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
                 @warn "Strange to ask for more samples than available from data; will proceed"
             end
 
-            RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2)
+            RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2,iseed)
         end
 
-    if (n > 10000) && (nsamp != 0)
-        @warn "Be patient big data set: $n"
-    end
+#    if (n > 10000) && (nsamp != 0)
+#        @warn "Be patient big data set: $n"
+#    end
 
     return fitlen(x::Tuple, d, weight, nsamp, iter; kwargs...)
 end
@@ -787,7 +793,7 @@ function fitlen(
 
     covarweight = zeros(nbmax)
 
-    Random.seed!(n)
+    Random.seed!(iseed)
 
     for (i, j) in iter
         # compute the distance
@@ -941,8 +947,13 @@ function fitlen(
     return varbak, RL, dbinfo
 end
 
-# this function used to be called forfit in fitlsn.f
+"""
+    err, var = misfit(distx, covar, covarweight, RL)
 
+This function used to be called forfit in fitlsn.f.
+`err` is the weighted mean square error
+`var` is the variance for a distance equal to zero.
+"""
 function misfit(distx, covar, covarweight, RL)
     n = length(covar)
     err = 0.
@@ -975,18 +986,21 @@ function misfit(distx, covar, covarweight, RL)
     return err, var
 end
 
+"""helper function for searchz"""
+_getparam(z,x::Number) = x
+_getparam(z,f::Function) = f(z)
 
 
 """
-    lenz,dbinfo = DIVAnd.fithorzlen(x,value,z)
+    lenxy,dbinfo = DIVAnd.fithorzlen(x,value,z)
 
-Determines the horizontal correlation length `lenz` based on the
+Determines the horizontal correlation length `lenxy` based on the
 measurments `value` at the location `x` (tuple of 3 vectors corresponding to
 longitude, latitude and depth) at the depth levels defined in `z`.
 
 Optional arguments:
  * `smoothz` (default 100): spatial filter for the correlation scale
- * `searchz` (default 50): vertical search distance
+ * `searchz` (default 50): vertical search distance (can also be a function of the depth)
  * `maxnsamp` (default 5000): maximum number of samples
  * `limitlen` (default false): limit correlation length by mean distance between
     observations
@@ -1008,14 +1022,15 @@ function fithorzlen(
     z;
     tolrel::T = 1e-4,
     smoothz::T = 100.,
-    smoothk::T = 3.,
-    searchz::T = 50.,
+    smoothk = 3,
+    searchz = 50.,
     progress = (iter, var, len, fitness) -> nothing,
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
     limitfun = (z, len) -> len,
     maxnsamp = 5000,
     limitlen = false,
     epsilon2 = ones(size(value)),
+    min_rqual = 0.5
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1034,11 +1049,15 @@ function fithorzlen(
     end
 
     weight = 1 ./ epsilon2
+    rqual = zeros(length(z))
 
-    for k = 1:length(z)
+    Threads.@threads for k = 1:length(z)
+    #for k = 1:length(z)
+
+        searchz_k = _getparam(z[k],searchz)
 
         sel = if length(x) == 3
-            (abs.(x[3] .- z[k]) .< searchz)
+            (abs.(x[3] .- z[k]) .< searchz_k)
         else
             trues(size(x[1]))
         end
@@ -1050,15 +1069,16 @@ function fithorzlen(
             xsel,
             v,
             weight[sel],
-            nsamp;
+            min(length(v),nsamp);
             distfun = distfun,
         )
 
+        rqual[k] = fitinfos[k][:rqual]
         if limitlen
             lenopt[k] = max(lenopt[k], fitinfos[k][:meandist])
         end
 
-        @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k])"
+        @info "Data points at z=$(z[k]): $(length(v)), horz. correlation length: $(lenopt[k]) (preliminary)"
     end
 
     # handle layers with no data
@@ -1071,11 +1091,14 @@ function fithorzlen(
 
     # filter vertically
     lenoptf = copy(lenopt)
+    rqual[rqual .< min_rqual] .= 0
+    lenweight = max.(rqual,1e-9)
+
     if (smoothz > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(z, lenoptf, smoothz)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothz)
     end
     if (smoothk > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(1:length(z), lenoptf, smoothk)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothk)
     end
 
     for k = 1:length(z)
@@ -1083,7 +1106,7 @@ function fithorzlen(
     end
 
     for k = 1:length(z)
-        @debug "Smoothed horz. correlation length at z=$(z[k]): $(lenoptf[k])"
+        @info "Smoothed horz. correlation length at z=$(z[k]): $(lenoptf[k])"
     end
 
 
@@ -1103,7 +1126,7 @@ function fitvertlen(
     z;
     smoothz::T = 100.,
     smoothk::T = 3.,
-    searchz::T = 10.,
+    searchz = 10.,
     searchxy::T = 1_000., # meters
     maxntries::Int = 10000,
     maxnsamp = 50,
@@ -1111,6 +1134,7 @@ function fitvertlen(
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
     limitfun = (z, len) -> len,
     epsilon2 = ones(size(value)),
+    min_rqual = 0.5,
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1130,10 +1154,12 @@ function fitvertlen(
     count = (nsamp * (nsamp - 1)) ÷ 2
 
     weight = 1 ./ epsilon2
+    rqual = zeros(length(z))
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
-        zindex = findall(abs.(zlevel2 .- x[3]) .< searchz)
+        searchz_k = _getparam(zlevel2,searchz)
+        zindex = findall(abs.(zlevel2 .- x[3]) .< searchz_k)
 
         if length(zindex) == 0
             @warn "No data near z = $zlevel2"
@@ -1145,8 +1171,9 @@ function fitvertlen(
             #state = start(iter)
             #@code_warntype next(iter,state)
             #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],), value, weight, nsamp, iter)
+            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],),value,weight,nsamp,iter)
 
+            rqual[k] = fitinfos[k][:rqual]
             @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
         end
     end
@@ -1161,11 +1188,14 @@ function fitvertlen(
 
     # filter vertically
     lenoptf = copy(lenopt)
+    rqual[rqual .< min_rqual] .= 0
+    lenweight = max.(rqual,1e-9)
+
     if (smoothz > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(z, lenoptf, smoothz)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothz)
     end
     if (smoothk > 0) && (kmax > 1)
-        DIVAnd.smoothfilter!(1:length(z), lenoptf, smoothk)
+        lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothk)
     end
 
     for k = 1:length(z)
