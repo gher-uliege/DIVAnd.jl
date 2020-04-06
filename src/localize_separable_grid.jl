@@ -4,7 +4,7 @@ function _localize_separable_grid_cyclic!(
     xi::NTuple{n,AbstractArray},
     x::NTuple{n,AbstractArray{T,n}},
     iscyclic,
-    I
+    I,
 ) where {n} where {T}
 
     # m is the number of arbitrarily distributed observations
@@ -17,7 +17,7 @@ function _localize_separable_grid_cyclic!(
     vi = ntuple(i -> 1:(sz[i]+iscyclic[i]), Val(n))
     IJ = ndgrid(vi...)::NTuple{n,Array{Int,n}}
 
-    X = ntuple(i -> Vector{T}(undef, sz[i]+iscyclic[i]), Val(n))
+    X = ntuple(i -> Vector{T}(undef, sz[i] + iscyclic[i]), Val(n))
     for i = 1:n
         for j = 1:sz[i]
             X[i][j] = x[i][(j-1)*stride(x[i], i)+1]
@@ -40,7 +40,7 @@ function _localize_separable_grid_cyclic!(
                 I[i, j] = itp(xind...)
             catch
                 # extrapolation
-                I[i,j] = -1
+                I[i, j] = -1
             end
         end
     end
@@ -69,7 +69,7 @@ function localize_separable_grid(
     xi::NTuple{n,AbstractArray},
     mask::AbstractArray{Bool,n},
     x::NTuple{n,AbstractArray{T,n}},
-    iscyclic = falses(n)
+    iscyclic = falses(n),
 ) where {n} where {T}
 
     # m is the number of arbitrarily distributed observations
@@ -91,11 +91,11 @@ function localize_separable_grid(
     IJ = ndgrid(vi...)::NTuple{n,Array{Int,n}}
 
     if any(iscyclic)
-        _localize_separable_grid_cyclic!(xi,x,iscyclic,I)
+        _localize_separable_grid_cyclic!(xi, x, iscyclic, I)
     else
         for i = 1:n
             # https://github.com/JuliaMath/Interpolations.jl/issues/237
-            itp = extrapolate(interpolate(X, IJ[i], Gridded(Linear())), -1.)
+            itp = extrapolate(interpolate(X, IJ[i], Gridded(Linear())), -1.0)
 
             # loop over all point
             for j = 1:mi
@@ -112,7 +112,7 @@ function localize_separable_grid(
 
     # handle rounding errors
     # snap to domain bounding box if difference does not exceeds tol
-    tol = 50 * eps(1.)
+    tol = 50 * eps(1.0)
 
     for i = 1:n
         # upper bound

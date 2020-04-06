@@ -56,20 +56,19 @@ xi, yi, mis = load_mask(bathname, bathisglobal, lonr, latr, levels)
 
 lonr = -80:1:80
 latr = -9:1:9
-bx,by,b = load_bath(bathname,bathisglobal,lonr,latr);
+bx, by, b = load_bath(bathname, bathisglobal, lonr, latr);
 
 # issue 45
 dx = dy = 0.005
 lonr = 19.45:dx:20.675
 latr = 59.5:dy:59.9;
 
-bx,by,b = load_bath(bathname8,bathisglobal,lonr,latr)
-@test size(b) == (length(lonr),length(latr));
+bx, by, b = load_bath(bathname8, bathisglobal, lonr, latr)
+@test size(b) == (length(lonr), length(latr));
 
 
 # global with wrapping of longitude
 lonr = -180:1:180
 latr = -89:1:89
-bx,by,b = load_bath(bathname,bathisglobal,lonr,latr);
-@test size(b) == (length(lonr),length(latr));
-
+bx, by, b = load_bath(bathname, bathisglobal, lonr, latr);
+@test size(b) == (length(lonr), length(latr));

@@ -196,7 +196,7 @@ function load(
     z = if "DEPTH" in ds
         loadvar(ds, "DEPTH"; fillvalue = fillvalue, qualityflags = qualityflags)
     else
-            # assume 1 decibar is 1 meter
+        # assume 1 decibar is 1 meter
         loadvar(ds, "PRES"; fillvalue = fillvalue, qualityflags = qualityflags)
     end
 
@@ -249,12 +249,8 @@ function load(
 
     for fname in fnames
         #@show fname
-        data_, lon_, lat_, z_, time_, ids_ = load(
-            T,
-            fname,
-            param;
-            qualityflags = qualityflags,
-        )
+        data_, lon_, lat_, z_, time_, ids_ =
+            load(T, fname, param; qualityflags = qualityflags)
 
         append!(data, data_[:])
         append!(lon, lon_[:])

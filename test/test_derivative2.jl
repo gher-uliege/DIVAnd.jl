@@ -3,12 +3,12 @@
 using Test
 using DIVAnd
 
-scalefactor = (3., 3)
+scalefactor = (3.0, 3)
 
 # grid of background field
 
 #mask,(pm,pn),(xi,yi) = DIVAnd_rectdom(collect(-10:8.),collect(0:3.))
-mask, (pm, pn), (xi, yi) = DIVAnd_rectdom(collect(0:3.), collect(0:3.))
+mask, (pm, pn), (xi, yi) = DIVAnd_rectdom(collect(0:3.0), collect(0:3.0))
 mask[:, end-1:end] .= false
 mask[2, end-1] = true
 
@@ -18,7 +18,7 @@ epsilon = 1e-10;
 
 # grid of observations
 
-x, y = ndgrid([1., 3.], [0.99999])
+x, y = ndgrid([1.0, 3.0], [0.99999])
 
 v = copy(x) / maximum(x)
 #v = ones(size(x))
@@ -28,8 +28,8 @@ x = x[:]
 y = y[:]
 v = v[:]
 
-lenx = 300.;
-leny = 6.;
+lenx = 300.0;
+leny = 6.0;
 
 epsilon2 = 0.0001;
 
@@ -56,8 +56,10 @@ function derivative2!(dim, mask, pmn, len, va, D)
         for j = 1:sz[2]
             for i = 2:sz[1]-1
                 if mask[i-1, j] && mask[i, j] && mask[i+1, j]
-                    D[i, j] += len[1][i, j]^2 * pm[i, j]^2 *
-                               (va[i-1, j] - 2 * va[i, j] + va[i+1, j])
+                    D[i, j] +=
+                        len[1][i, j]^2 *
+                        pm[i, j]^2 *
+                        (va[i-1, j] - 2 * va[i, j] + va[i+1, j])
                 end
             end
         end
@@ -65,8 +67,10 @@ function derivative2!(dim, mask, pmn, len, va, D)
         for j = 2:sz[2]-1
             for i = 1:sz[1]
                 if mask[i, j-1] && mask[i, j] && mask[i, j+1]
-                    D[i, j] += len[2][i, j]^2 * pn[i, j]^2 *
-                               (va[i, j-1] - 2 * va[i, j] + va[i, j+1])
+                    D[i, j] +=
+                        len[2][i, j]^2 *
+                        pn[i, j]^2 *
+                        (va[i, j-1] - 2 * va[i, j] + va[i, j+1])
                 end
             end
         end

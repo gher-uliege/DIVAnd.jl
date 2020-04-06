@@ -8,36 +8,29 @@ fname = joinpath(dirname(@__FILE__), "..", "data", "sample_ODV.txt")
 
 odv = @test_logs (:info, r".*file: 1.*") match_mode = :any ODV.readODVspreadsheet(fname)
 T = Float64
-value, value_qv, lon, lat, depth, depth_qv, time, time_qv, EDMO, LOCAL_CDI_ID = ODV.loadprofile(
-    T,
-    odv,
-    1,
-    "SDN:P01::PSSTTS01",
-)
+value, value_qv, lon, lat, depth, depth_qv, time, time_qv, EDMO, LOCAL_CDI_ID =
+    ODV.loadprofile(T, odv, 1, "SDN:P01::PSSTTS01")
 
 @test EDMO[1] == "1234"
 
-value, value_qv, lon, lat, depth, depth_qv, time, time_qv, EDMO, LOCAL_CDI_ID = ODV.loadprofile(
-    T,
-    odv,
-    1,
-    "SDN:P01::SLCAAAZX",
-)
+value, value_qv, lon, lat, depth, depth_qv, time, time_qv, EDMO, LOCAL_CDI_ID =
+    ODV.loadprofile(T, odv, 1, "SDN:P01::SLCAAAZX")
 
 @test value[1] == 37.5
 @test EDMO[1] == "1234"
 
-fnames = [joinpath(dirname(@__FILE__), "..", "data", n) for n in [
-    "sample_ODV.txt",
-    "sample_ODV2.txt",
-]]
+fnames = [
+    joinpath(dirname(@__FILE__), "..", "data", n)
+    for n in ["sample_ODV.txt", "sample_ODV2.txt"]
+]
 
 P01names = ["SDN:P01::ODSDM021"]
-profiles, lons, lats, depths, times, ids = @test_logs (:info, r".*file: 1.*") match_mode = :any ODV.load(
-    T,
-    fnames,
-    P01names,
-)
+profiles,
+lons,
+lats,
+depths,
+times,
+ids = @test_logs (:info, r".*file: 1.*") match_mode = :any ODV.load(T, fnames, P01names)
 
 @test 30 in profiles
 @test 31 in profiles
@@ -45,25 +38,31 @@ profiles, lons, lats, depths, times, ids = @test_logs (:info, r".*file: 1.*") ma
 fname = joinpath(dirname(@__FILE__), "..", "data", "sample_ODV_aggregated.txt")
 datanames = ["Water body salinity"]
 
-profiles, lons, lats, depths, times, ids = @test_logs (:info, r".*file: 2.*") match_mode = :any ODV.load(
-    T,
-    [fname],
-    datanames,
-    nametype = :localname,
-)
+profiles, lons, lats, depths, times, ids =
+    @test_logs (:info, r".*file: 2.*") match_mode = :any ODV.load(
+        T,
+        [fname],
+        datanames,
+        nametype = :localname,
+    )
 @test length(profiles) > 0
 
 # test if data with bad depth information are discarded
 
 fname_qv = joinpath(dirname(@__FILE__), "..", "data", "sample_ODV_qv.txt")
-profiles, lons, lats, depths, times, ids = @test_logs (:info, r".*file: 2.*") match_mode = :any ODV.load(
+profiles,
+lons,
+lats,
+depths,
+times,
+ids = @test_logs (:info, r".*file: 2.*") match_mode = :any ODV.load(
     T,
     [fname_qv],
     ["SDN:P01::SLCAAAZX"],
 )
 
-@test 4. in depths # quality flag "good - 1"
-@test !(3. in depths) # quality flag "missing value - 9"
+@test 4.0 in depths # quality flag "good - 1"
+@test !(3.0 in depths) # quality flag "missing value - 9"
 
 # values from
 # https://web.archive.org/web/20171129142108/https://www.hermetic.ch/cal_stud/chron_jdate.htm

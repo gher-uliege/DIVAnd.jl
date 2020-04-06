@@ -73,8 +73,8 @@ function DIVAnd_operators(
 
         for i = 1:n
             S = sparse_stagger(sz, i, iscyclic[i])
-            s.isinterior_stag[i] = oper_pack(operatortype, s.mask_stag[i]) * S *
-                                   s.isinterior_unpacked[:]
+            s.isinterior_stag[i] =
+                oper_pack(operatortype, s.mask_stag[i]) * S * s.isinterior_unpacked[:]
 
             # the results of 's.Dx[i] * field' satisfies the bc is field does
             # there is need to reapply the bc on the result

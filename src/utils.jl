@@ -84,7 +84,7 @@ end
 function ufill(c::Array{T,N}, mask::AbstractArray{Bool}) where {N} where {T}
     c2 = copy(c)
     # better way
-    valex = T(-99999.)
+    valex = T(-99999.0)
     c2[.!mask] .= valex
 
     return ufill(c2, valex)
@@ -146,7 +146,6 @@ function ufill!(c, valexc, work, work2, iwork::Array{Int8,3}, iwork2::Array{Int8
         for k = 2:kmax+1
             for j = 2:jmax+1
                 for i = 2:imax+1
-
                     work2[i, j, k] = work[i, j, k]
                     iwork2[i, j, k] = iwork[i, j, k]
 
@@ -156,27 +155,45 @@ function ufill!(c, valexc, work, work2, iwork::Array{Int8,3}, iwork2::Array{Int8
                         isom = 0
 
                         if A1 != 0
-                            isom += A1 *
-                                    (+iwork[i+1, j, k] + iwork[i-1, j, k] +
-                                     iwork[i, j+1, k] + iwork[i, j-1, k])
+                            isom +=
+                                A1 * (
+                                    +iwork[i+1, j, k] +
+                                    iwork[i-1, j, k] +
+                                    iwork[i, j+1, k] +
+                                    iwork[i, j-1, k]
+                                )
                         end
 
                         if A2 != 0
-                            isom += A2 *
-                                    (iwork[i+1, j+1, k+1] + iwork[i+1, j+1, k-1] +
-                                     iwork[i+1, j-1, k+1] + iwork[i+1, j-1, k-1] +
-                                     iwork[i-1, j+1, k+1] + iwork[i-1, j+1, k-1] +
-                                     iwork[i-1, j-1, k+1] + iwork[i-1, j-1, k-1])
+                            isom +=
+                                A2 * (
+                                    iwork[i+1, j+1, k+1] +
+                                    iwork[i+1, j+1, k-1] +
+                                    iwork[i+1, j-1, k+1] +
+                                    iwork[i+1, j-1, k-1] +
+                                    iwork[i-1, j+1, k+1] +
+                                    iwork[i-1, j+1, k-1] +
+                                    iwork[i-1, j-1, k+1] +
+                                    iwork[i-1, j-1, k-1]
+                                )
                         end
 
                         if A3 != 0
-                            isom += A3 *
-                                    (iwork[i, j+1, k+1] + iwork[i, j+1, k-1] +
-                                     iwork[i, j-1, k+1] + iwork[i, j-1, k-1] +
-                                     iwork[i+1, j, k+1] + iwork[i+1, j, k-1] +
-                                     iwork[i-1, j, k+1] + iwork[i-1, j, k-1] +
-                                     iwork[i+1, j+1, k] + iwork[i+1, j-1, k] +
-                                     iwork[i-1, j+1, k] + iwork[i-1, j-1, k])
+                            isom +=
+                                A3 * (
+                                    iwork[i, j+1, k+1] +
+                                    iwork[i, j+1, k-1] +
+                                    iwork[i, j-1, k+1] +
+                                    iwork[i, j-1, k-1] +
+                                    iwork[i+1, j, k+1] +
+                                    iwork[i+1, j, k-1] +
+                                    iwork[i-1, j, k+1] +
+                                    iwork[i-1, j, k-1] +
+                                    iwork[i+1, j+1, k] +
+                                    iwork[i+1, j-1, k] +
+                                    iwork[i-1, j+1, k] +
+                                    iwork[i-1, j-1, k]
+                                )
                         end
 
                         if isom != 0
@@ -185,39 +202,45 @@ function ufill!(c, valexc, work, work2, iwork::Array{Int8,3}, iwork2::Array{Int8
                             # interpolate
 
                             if A1 != 0
-                                rsom += A1 *
-                                        (+iwork[i+1, j, k] * work[i+1, j, k] +
-                                         iwork[i-1, j, k] * work[i-1, j, k] +
-                                         iwork[i, j+1, k] * work[i, j+1, k] +
-                                         iwork[i, j-1, k] * work[i, j-1, k])
+                                rsom +=
+                                    A1 * (
+                                        +iwork[i+1, j, k] * work[i+1, j, k] +
+                                        iwork[i-1, j, k] * work[i-1, j, k] +
+                                        iwork[i, j+1, k] * work[i, j+1, k] +
+                                        iwork[i, j-1, k] * work[i, j-1, k]
+                                    )
                             end
 
                             if A2 != 0
-                                rsom += A2 *
-                                        (iwork[i+1, j+1, k+1] * work[i+1, j+1, k+1] +
-                                         iwork[i+1, j+1, k-1] * work[i+1, j+1, k-1] +
-                                         iwork[i+1, j-1, k+1] * work[i+1, j-1, k+1] +
-                                         iwork[i+1, j-1, k-1] * work[i+1, j-1, k-1] +
-                                         iwork[i-1, j+1, k+1] * work[i-1, j+1, k+1] +
-                                         iwork[i-1, j+1, k-1] * work[i-1, j+1, k-1] +
-                                         iwork[i-1, j-1, k+1] * work[i-1, j-1, k+1] +
-                                         iwork[i-1, j-1, k-1] * work[i-1, j-1, k-1])
+                                rsom +=
+                                    A2 * (
+                                        iwork[i+1, j+1, k+1] * work[i+1, j+1, k+1] +
+                                        iwork[i+1, j+1, k-1] * work[i+1, j+1, k-1] +
+                                        iwork[i+1, j-1, k+1] * work[i+1, j-1, k+1] +
+                                        iwork[i+1, j-1, k-1] * work[i+1, j-1, k-1] +
+                                        iwork[i-1, j+1, k+1] * work[i-1, j+1, k+1] +
+                                        iwork[i-1, j+1, k-1] * work[i-1, j+1, k-1] +
+                                        iwork[i-1, j-1, k+1] * work[i-1, j-1, k+1] +
+                                        iwork[i-1, j-1, k-1] * work[i-1, j-1, k-1]
+                                    )
                             end
 
                             if A3 != 0
-                                rsom += A3 *
-                                        (iwork[i, j+1, k+1] * work[i, j+1, k+1] +
-                                         iwork[i, j+1, k-1] * work[i, j+1, k-1] +
-                                         iwork[i, j-1, k+1] * work[i, j-1, k+1] +
-                                         iwork[i, j-1, k-1] * work[i, j-1, k-1] +
-                                         iwork[i+1, j, k+1] * work[i+1, j, k+1] +
-                                         iwork[i+1, j, k-1] * work[i+1, j, k-1] +
-                                         iwork[i-1, j, k+1] * work[i-1, j, k+1] +
-                                         iwork[i-1, j, k-1] * work[i-1, j, k-1] +
-                                         iwork[i+1, j+1, k] * work[i+1, j+1, k] +
-                                         iwork[i+1, j-1, k] * work[i+1, j-1, k] +
-                                         iwork[i-1, j+1, k] * work[i-1, j+1, k] +
-                                         iwork[i-1, j-1, k] * work[i-1, j-1, k])
+                                rsom +=
+                                    A3 * (
+                                        iwork[i, j+1, k+1] * work[i, j+1, k+1] +
+                                        iwork[i, j+1, k-1] * work[i, j+1, k-1] +
+                                        iwork[i, j-1, k+1] * work[i, j-1, k+1] +
+                                        iwork[i, j-1, k-1] * work[i, j-1, k-1] +
+                                        iwork[i+1, j, k+1] * work[i+1, j, k+1] +
+                                        iwork[i+1, j, k-1] * work[i+1, j, k-1] +
+                                        iwork[i-1, j, k+1] * work[i-1, j, k+1] +
+                                        iwork[i-1, j, k-1] * work[i-1, j, k-1] +
+                                        iwork[i+1, j+1, k] * work[i+1, j+1, k] +
+                                        iwork[i+1, j-1, k] * work[i+1, j-1, k] +
+                                        iwork[i-1, j+1, k] * work[i-1, j+1, k] +
+                                        iwork[i-1, j-1, k] * work[i-1, j-1, k]
+                                    )
                             end
 
                             work2[i, j, k] = rsom / isom
@@ -240,7 +263,7 @@ function ufill!(c, valexc, work, work2, iwork::Array{Int8,3}, iwork2::Array{Int8
 
     end
 
-# copy interior points
+    # copy interior points
     for k = 1:kmax
         for j = 1:jmax
             for i = 1:imax
@@ -258,10 +281,9 @@ neighborhood in N dimensions where N is the dimension of the boolean array
 `mask`.
 """
 function vonNeumannNeighborhood(mask::AbstractArray{Bool,N}) where {N}
-    return [CartesianIndex(ntuple(i -> (i == j ? s : 0), Val(N))) for j = 1:N for s in [
-        -1,
-        1,
-    ]]
+    return [
+        CartesianIndex(ntuple(i -> (i == j ? s : 0), Val(N))) for j = 1:N for s in [-1, 1]
+    ]
 end
 
 """
@@ -292,7 +314,6 @@ function floodfillpoint(
         for I in CI
             if m[I]
                 for dir in directions
-
                     i1 = I + dir
                     if checkbounds(Bool, m, i1)
                         if mask[i1] && !m[i1]
@@ -460,7 +481,7 @@ function lengraddepth(
     # gradient of h
     hx, hy = cgradient(pmn, h)
 
-    normgrad = sqrt.(hx.^2 + hy.^2)
+    normgrad = sqrt.(hx .^ 2 + hy .^ 2)
 
     # avoid divisions by zero
     h2 = max.(h2, hmin)
@@ -543,8 +564,8 @@ end
 All weights have to be positive (and different from zero).
 """
 function smoothfilter_weighted(x, f::Vector{T}, w, scale) where {T}
-    wff = smoothfilter(x,w.*f,scale)
-    wf = smoothfilter(x,w,scale)
+    wff = smoothfilter(x, w .* f, scale)
+    wf = smoothfilter(x, w, scale)
     return wff ./ wf, wf
 end
 
@@ -636,10 +657,8 @@ function interp!(
     @assert all([size(xc) == size(fi) for xc in xi])
 
     # tuple of vector with the varying parts
-    xivector = ntuple(j -> xi[j][[(i == j ? (:) : 1) for i = 1:N]...], N)::NTuple{
-        N,
-        Vector{T},
-    }
+    xivector =
+        ntuple(j -> xi[j][[(i == j ? (:) : 1) for i = 1:N]...], N)::NTuple{N,Vector{T}}
     interp!(xivector, fi, x, f)
 end
 
@@ -708,11 +727,7 @@ same grid as the analysis and was generated according to the provided time selec
 
     At all vertical levels, there should at least one sea point.
 """
-function backgroundfile(
-    fname,
-    varname,
-    TS::AbstractTimeSelector
-)
+function backgroundfile(fname, varname, TS::AbstractTimeSelector)
 
     ds = Dataset(fname)
     lon = nomissing(ds["lon"][:])
@@ -785,11 +800,8 @@ function hmerge(f, L)
     weight0 = Float64.(isfinite.(f))
 
     mask, pmn = DIVAnd.DIVAnd_rectdom(1:size(f, 1), 1:size(f, 2))
-    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(
-        mask,
-        pmn,
-        (ones(size(mask)), ones(size(mask))),
-    )
+    ivol, nus =
+        DIVAnd.DIVAnd_laplacian_prepare(mask, pmn, (ones(size(mask)), ones(size(mask))))
 
     α = 0.1
     nmax = round(Int, sqrt(L) / α)
@@ -806,7 +818,7 @@ function hmerge(f, L)
     end
     f[.!isfinite.(f)] .= 0
 
-    weight = weight.^2
+    weight = weight .^ 2
 
     f2 = (sum(weight .* f, dims = 3)./sum(weight, dims = 3))[:, :, 1]
 
@@ -832,12 +844,7 @@ See also `DIVAnd.average_files`.
 
     NetCDF _FillValues are treated as zeros.
 """
-function velocityfile(
-    fname,
-    varnames,
-    TSvelocity:: DIVAnd.AbstractTimeSelector,
-    scale
-)
+function velocityfile(fname, varnames, TSvelocity::DIVAnd.AbstractTimeSelector, scale)
 
     ds = Dataset(fname)
     lon = nomissing(ds["lon"][:])
@@ -845,7 +852,7 @@ function velocityfile(
     depth = nomissing(ds["depth"][:])
 
 
-    return function (xi::NTuple{N,AbstractArray{T,N}}, veltime) where N where T
+    return function (xi::NTuple{N,AbstractArray{T,N}}, veltime) where {N} where {T}
         # check which velocity estimate has the best overlap
         overlap = zeros(Int, length(TSvelocity))
         for timeindex = 1:length(TSvelocity)
@@ -869,17 +876,16 @@ function velocityfile(
         vn = T.(replace(tmpv, missing => zero(T)))
         vi = DIVAnd.interp(x, vn, xi)
 
-        wi =
-            if length(varnames) == 3
-                w = ds[varnames[3]]
-                tmpw = w[:, :, :, nvelocity]
-                wn = T.(replace(tmpw, missing => zero(T)))
-                DIVAnd.interp(x, vn, xi)
-            else
-                zeros(size(ui))
-            end
+        wi = if length(varnames) == 3
+            w = ds[varnames[3]]
+            tmpw = w[:, :, :, nvelocity]
+            wn = T.(replace(tmpw, missing => zero(T)))
+            DIVAnd.interp(x, vn, xi)
+        else
+            zeros(size(ui))
+        end
 
-        return (scale*ui,scale*vi,scale*wi)
+        return (scale * ui, scale * vi, scale * wi)
     end
 end
 
@@ -900,18 +906,24 @@ meanerr(obsconstrain) = mean(diag(obsconstrain.R)[isfinite.(diag(obsconstrain.R)
 Averaged the gridded variables `varnameu` from the NetCDF files from `filenames`
 over time following the time selector `TSvelocity`.
 """
-function average_files(filenames,varnameu::AbstractString,TSvelocity,outfilename,outvarname::AbstractString)
+function average_files(
+    filenames,
+    varnameu::AbstractString,
+    TSvelocity,
+    outfilename,
+    outvarname::AbstractString,
+)
     ds = Dataset(filenames; aggdim = "time")
 
-    lon = ds["lon"][:];
-    lat = ds["lat"][:];
-    depth = ds["depth"][:];
-    time = ds["time"][:];
+    lon = ds["lon"][:]
+    lat = ds["lat"][:]
+    depth = ds["depth"][:]
+    time = ds["time"][:]
 
-    u = ds[varnameu];
+    u = ds[varnameu]
 
     @info("average $varnameu")
-    meanu = average_field(time,u,TSvelocity)
+    meanu = average_field(time, u, TSvelocity)
 
     close(ds)
 
@@ -922,37 +934,53 @@ function average_files(filenames,varnameu::AbstractString,TSvelocity,outfilename
 
     fillvalue = NCDatasets.fillvalue(Float32)
 
-    Dataset(outfilename,mode, attrib = [
-        "history"                     => "generated by $(@__FILE__)",
-    ]) do ds
+    Dataset(outfilename, mode, attrib = ["history" => "generated by $(@__FILE__)"]) do ds
 
         if mode == "c"
             # Dimensions
 
-            ds.dim["time"] = size(meanu,4)
-            ds.dim["depth"] = size(meanu,3)
-            ds.dim["lat"] = size(meanu,2)
-            ds.dim["lon"] = size(meanu,1)
+            ds.dim["time"] = size(meanu, 4)
+            ds.dim["depth"] = size(meanu, 3)
+            ds.dim["lat"] = size(meanu, 2)
+            ds.dim["lon"] = size(meanu, 1)
 
             # Declare variables
-            ncdepth = defVar(ds,"depth", Float32, ("depth",), attrib = [
-                "units"                     => "m",
-                "long_name"                 => "depth",
-                "standard_name"             => "depth",
-                "positive"                  => "down",
-            ])
+            ncdepth = defVar(
+                ds,
+                "depth",
+                Float32,
+                ("depth",),
+                attrib = [
+                    "units" => "m",
+                    "long_name" => "depth",
+                    "standard_name" => "depth",
+                    "positive" => "down",
+                ],
+            )
 
-            nclon = defVar(ds,"lon", Float32, ("lon",), attrib = [
-                "units"                     => "degrees_east",
-                "long_name"                 => "longitude",
-                "standard_name"             => "longitude",
-            ])
+            nclon = defVar(
+                ds,
+                "lon",
+                Float32,
+                ("lon",),
+                attrib = [
+                    "units" => "degrees_east",
+                    "long_name" => "longitude",
+                    "standard_name" => "longitude",
+                ],
+            )
 
-            nclat = defVar(ds,"lat", Float32, ("lat",), attrib = [
-                "units"                     => "degrees_north",
-                "long_name"                 => "latitude",
-                "standard_name"             => "latitude",
-            ])
+            nclat = defVar(
+                ds,
+                "lat",
+                Float32,
+                ("lat",),
+                attrib = [
+                    "units" => "degrees_north",
+                    "long_name" => "latitude",
+                    "standard_name" => "latitude",
+                ],
+            )
 
             # nctime = defVar(ds,"time", Float64, ("time",), attrib = [
             #     "units"                     => "days since 1970-01-01 00:00:00",
@@ -968,36 +996,46 @@ function average_files(filenames,varnameu::AbstractString,TSvelocity,outfilename
             #nctime[:] = time
         end
 
-        ncu = defVar(ds,outvarname, Float32, ("lon", "lat", "depth", "time"), attrib = [
-            "_FillValue"                => fillvalue,
-        ])
-        ncu[:,:,:,:] = replace(meanu,NaN => missing)
+        ncu = defVar(
+            ds,
+            outvarname,
+            Float32,
+            ("lon", "lat", "depth", "time"),
+            attrib = ["_FillValue" => fillvalue],
+        )
+        ncu[:, :, :, :] = replace(meanu, NaN => missing)
 
     end # closing ds
     return nothing
 end
 
 
-function average_files(filenames,varnames::Tuple,TSvelocity,outfilename,outvarnames::Tuple)
-    for (varname,outvarname) in zip(varnames,outvarnames)
-        average_files(filenames,varname,TSvelocity,outfilename,outvarname)
+function average_files(
+    filenames,
+    varnames::Tuple,
+    TSvelocity,
+    outfilename,
+    outvarnames::Tuple,
+)
+    for (varname, outvarname) in zip(varnames, outvarnames)
+        average_files(filenames, varname, TSvelocity, outfilename, outvarname)
     end
 end
 
-function average_field(time,u,TSvelocity)
+function average_field(time, u, TSvelocity)
     sz = size(u)
-    meanu = zeros(sz[1],sz[2],sz[3],length(TSvelocity))
+    meanu = zeros(sz[1], sz[2], sz[3], length(TSvelocity))
 
     for n = 1:length(TSvelocity)
         @info("time instance $n of $(length(TSvelocity))")
         count = 0
 
-        for n2 in findall(DIVAnd.select(TSvelocity,n,time))
-            meanu[:,:,:,n] += nomissing(u[:,:,:,n2],NaN)
+        for n2 in findall(DIVAnd.select(TSvelocity, n, time))
+            meanu[:, :, :, n] += nomissing(u[:, :, :, n2], NaN)
             count += 1
         end
 
-        meanu[:,:,:,n] = meanu[:,:,:,n]/count
+        meanu[:, :, :, n] = meanu[:, :, :, n] / count
     end
     return meanu
 end

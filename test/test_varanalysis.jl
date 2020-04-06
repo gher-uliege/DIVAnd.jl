@@ -13,7 +13,7 @@ n = length(gridsize)
 
 # observations
 xy = ntuple(i -> [0.5], n)
-f = [1.]
+f = [1.0]
 
 
 # mask: all points are valid points
@@ -21,17 +21,18 @@ f = [1.]
 # pm is the inverse of the resolution along the 1st dimension,...
 
 
-mask, pmn, xyi = DIVAnd.DIVAnd_rectdom([range(0, stop = 1, length = s) for s in gridsize]...)
+mask, pmn, xyi =
+    DIVAnd.DIVAnd_rectdom([range(0, stop = 1, length = s) for s in gridsize]...)
 
 
 sv = DIVAnd.statevector((mask,))
 
 # correlation length
 #lenxy = ntuple(i -> 1.,n)
-lenxy = ntuple(i -> .1, n)
+lenxy = ntuple(i -> 0.1, n)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 
 # tolerance on the gradient A x - b

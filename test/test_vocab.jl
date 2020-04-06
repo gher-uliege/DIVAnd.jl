@@ -78,4 +78,3 @@ edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.resolve("SDN:EDMO::575"))
 
 edmoname = DIVAnd.Vocab.name(DIVAnd.Vocab.urn"SDN:EDMO::575")
 @test edmoname == "National Oceanographic Data Committee"
-

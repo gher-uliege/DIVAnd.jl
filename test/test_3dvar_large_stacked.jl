@@ -11,7 +11,8 @@ fun(x, y, z) = sin(6x) * cos(6y) * sin(6z)
 # grid of background field
 
 gridsize = (30, 30, 10)
-mask, (pm, pn, po), (xi, yi, zi) = DIVAnd_rectdom([range(0, stop = 1, length = s) for s in gridsize]...)
+mask, (pm, pn, po), (xi, yi, zi) =
+    DIVAnd_rectdom([range(0, stop = 1, length = s) for s in gridsize]...)
 
 fi_ref = fun.(xi, yi, zi)
 
@@ -27,7 +28,7 @@ x, y, z = ndgrid(
 f = fun.(x, y, z)
 
 # correlation length
-len = (fill(0.1, size(mask)), fill(0.1, size(mask)), fill(0., size(mask)))
+len = (fill(0.1, size(mask)), fill(0.1, size(mask)), fill(0.0, size(mask)))
 
 # obs. error variance normalized by the background error variance
 epsilon2 = 0.01;

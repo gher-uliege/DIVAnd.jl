@@ -27,7 +27,7 @@ function DIVAndrun(
     alphabc = 1.0,
     scale_len = true,
     btrunc = [],
-    MEMTOFIT = 16.,
+    MEMTOFIT = 16.0,
     topographyforfluxes = (),
     fluxes = (),
     epsfluxes = 0,
@@ -63,7 +63,7 @@ function DIVAndrun(
         coeff_derivative2 = coeff_derivative2,
     )
 
-    
+
 
     s.betap = 0
     s.primal = primal
@@ -85,7 +85,7 @@ function DIVAndrun(
 
     s = DIVAnd_addc(s, obscon)
 
-# check inputs moved here to keep trace of obs location in s 
+    # check inputs moved here to keep trace of obs location in s
     if !any(mask[:])
         @warn "No sea points in mask, will return NaN"
         return fill(NaN, size(mask)), s

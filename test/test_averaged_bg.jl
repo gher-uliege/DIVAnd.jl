@@ -11,10 +11,8 @@ z = randn(100)
 t = randn(100)
 f = z
 
-mask, (pm, pn, po, pq), (xi, yi, zi, ti) = DIVAnd_squaredom(
-    4,
-    range(-1, stop = 1, length = 5),
-)
+mask, (pm, pn, po, pq), (xi, yi, zi, ti) =
+    DIVAnd_squaredom(4, range(-1, stop = 1, length = 5))
 
 # correlation length
 len = 1
@@ -33,7 +31,7 @@ fi, fanom = DIVAnd_averaged_bg(
     [true, true, false, true],
 );
 
-@test fi[1,1,1,1] ≈ zi[1,1,1,1] atol=0.1
+@test fi[1, 1, 1, 1] ≈ zi[1, 1, 1, 1] atol = 0.1
 
 fi, fanom = DIVAnd_averaged_bg(
     mask,

@@ -9,12 +9,12 @@ epsilon = 1e-10;
 
 # grid of observations
 x = [0.5, 2.2]
-y = [0.5, .5]
-v = [1., 1.]
+y = [0.5, 0.5]
+v = [1.0, 1.0]
 
 
-lenx = .15;
-leny = .15;
+lenx = 0.15;
+leny = 0.15;
 
 epsilon2 = 0.05;
 
@@ -36,9 +36,9 @@ va2, s = DIVAndrun(
 @test va == va2
 
 
-x = [0.5, .9]
-y = [0.5, .5]
-v = [1., 1.]
+x = [0.5, 0.9]
+y = [0.5, 0.5]
+v = [1.0, 1.0]
 mask[end-40:end, :] .= false
 va, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), v, (lenx, leny), epsilon2)
 

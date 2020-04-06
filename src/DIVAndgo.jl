@@ -43,17 +43,17 @@ function DIVAndgo(
     QCMETHOD = (),
     RTIMESONESCALES = (),
     solver = :auto,
-	overlapfactor=3.3,
+    overlapfactor = 3.3,
     filteranom = 2,
     filtererr = 3,
     otherargs...,
 ) where {n}
-# function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme) where n
-#     moddim = zeros(n)
-#     velocity = ()
-#     MEMTOFIT = 16
-#     QCMETHOD = ()
-#     RTIMESONESCALES = ()
+    # function DIVAndgo(mask::AbstractArray{Bool,n},pmn,xi,x,f,Labs,epsilon2,errormethod=:cpme) where n
+    #     moddim = zeros(n)
+    #     velocity = ()
+    #     MEMTOFIT = 16
+    #     QCMETHOD = ()
+    #     RTIMESONESCALES = ()
 
     dothinning = RTIMESONESCALES != ()
     doqc = QCMETHOD != ()
@@ -77,7 +77,7 @@ function DIVAndgo(
         moddim,
         MEMTOFIT;
         solver = solver,
-		overlapfactor=overlapfactor,
+        overlapfactor = overlapfactor,
     )
 
     @debug "csteps $csteps"
@@ -165,12 +165,8 @@ function DIVAndgo(
 
         # Work only on data which fall into bounding box
 
-        xinwin, finwin, winindex, epsinwin = DIVAnd_datainboundingbox(
-            xiw,
-            x,
-            f;
-            Rmatrix = epsilon2,
-        )
+        xinwin, finwin, winindex, epsinwin =
+            DIVAnd_datainboundingbox(xiw, x, f; Rmatrix = epsilon2)
 
         if dothinning
             epsinwin = epsinwin ./ weight_RtimesOne(xinwin, RTIMESONESCALES)
@@ -209,10 +205,10 @@ function DIVAndgo(
                 finwindata = DIVAnd_residual(s, fw)
 
                 if doqc
-				# If you are reading this part of the code and want to implement a better version with 
-				# a single random vector GCV approach, you would need to
-				#   run again DIVAndjog replacing the data with a random array to calculate an estimate of Kii
-				# and create a new method if DIVAnd_qc passing that value
+                    # If you are reading this part of the code and want to implement a better version with
+                    # a single random vector GCV approach, you would need to
+                    #   run again DIVAndjog replacing the data with a random array to calculate an estimate of Kii
+                    # and create a new method if DIVAnd_qc passing that value
                     @warn "QC not fully implemented in jogging, using rough estimate of Kii"
                     finwinqc = DIVAnd_qc(fw, s, 5)
                 end
@@ -294,7 +290,7 @@ function DIVAndgo(
             end
 
             # residuals
-			#@show size(winindex),size(finwindata),size(fidata[winindex])
+            #@show size(winindex),size(finwindata),size(fidata[winindex])
             fidata[winindex] = fidata[winindex] + finwindata
             fidata_weight[winindex] = fidata_weight[winindex] .+ 1
 
@@ -311,7 +307,7 @@ function DIVAndgo(
             if errormethod == :exact
                 # EXERR: P only to points on the inner grid, not the overlapping one !
                 # Initialize errw everywhere,
-                errw = 0. * fw
+                errw = 0.0 * fw
                 # For packing, take the stavevector returned except when sum(csteps)>n
                 # in this case recreate a statevector
                 if sum(csteps) == n
@@ -341,7 +337,7 @@ function DIVAndgo(
             end
 
             if errormethod == :none
-                erri .= 1.
+                erri .= 1.0
             else
                 erri[windowpointsstore...] = errw[windowpointssol...]
             end
@@ -357,8 +353,8 @@ function DIVAndgo(
 
     # When finished apply an nd filtering to smooth possible edges, particularly in error fields.
     # it also makes the shared array possible to save in netCDF??
-	
-	
+
+
     fi_filtered = DIVAnd_filter3(fi, NaN, filteranom)
     erri_filtered = DIVAnd_filter3(erri, NaN, filtererr)
 

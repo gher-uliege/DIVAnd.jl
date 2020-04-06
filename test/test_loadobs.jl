@@ -27,4 +27,3 @@ value2, lon2, lat2, depth2, time2, ids2 = DIVAnd.loadobs(T, fname, "Salinity")
 @test ids == ids2
 
 rm(fname)
-

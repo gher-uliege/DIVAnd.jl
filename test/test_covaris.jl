@@ -36,7 +36,7 @@ function testprod(C, C2)
 end
 
 
-IS = sparse([2. 0.1; 0.1 2.])
+IS = sparse([2.0 0.1; 0.1 2.0])
 #IS = [2. 0; 0. 2.]
 
 n = 2;

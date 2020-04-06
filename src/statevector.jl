@@ -90,11 +90,10 @@ If var1, var2, ... have an additional trailing dimension, then this dimension is
 to represent the different ensemble members. In this case x is a matrix and its last dimension
 is the number of ensemble members.
 """
-function pack(sv::statevector{nvar_,N}, vars::NTuple{nvar_,Array{T,N}})::Vector{T} where {
-    nvar_,
-    N,
-    T,
-}
+function pack(
+    sv::statevector{nvar_,N},
+    vars::NTuple{nvar_,Array{T,N}},
+)::Vector{T} where {nvar_,N,T}
 
     k = size(vars[1], ndims(sv.mask[1]) + 1)
 
@@ -111,10 +110,10 @@ end
 
 
 
-function packens(sv::statevector{nvar_,N}, vars::NTuple{nvar_,Array{T,Np}})::Array{
-    T,
-    2,
-} where {nvar_,N,T,Np}
+function packens(
+    sv::statevector{nvar_,N},
+    vars::NTuple{nvar_,Array{T,Np}},
+)::Array{T,2} where {nvar_,N,T,Np}
 
     k = size(vars[1], ndims(sv.mask[1]) + 1)
 
@@ -170,20 +169,21 @@ function unpackens(sv::statevector{nvar_,N}, x::Array{T,2}, fillvalue = 0) where
 
     k = size(x, 2)
 
-    out = ntuple(
-        i -> begin
-            v = Array{T,N + 1}(undef, (sv.size[i]..., k))
-            v[:] .= fillvalue
+    out =
+        ntuple(
+            i -> begin
+                v = Array{T,N + 1}(undef, (sv.size[i]..., k))
+                v[:] .= fillvalue
 
-            ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
+                ind = (LinearIndices(sv.mask[i]))[findall(sv.mask[i])]
 
-            tmp = reshape(v, sv.numels_all[i], k)
-            tmp[ind, :] = x[sv.ind[i]+1:sv.ind[i+1], :]
+                tmp = reshape(v, sv.numels_all[i], k)
+                tmp[ind, :] = x[sv.ind[i]+1:sv.ind[i+1], :]
 
-            return v
-        end,
-        Val(nvar_),
-    )::NTuple{nvar_,Array{T,N + 1}}
+                return v
+            end,
+            Val(nvar_),
+        )::NTuple{nvar_,Array{T,N + 1}}
 
     return out
 end

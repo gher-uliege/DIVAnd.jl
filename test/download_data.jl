@@ -16,4 +16,3 @@ end
 if !isfile(obsname)
     download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download", obsname)
 end
-

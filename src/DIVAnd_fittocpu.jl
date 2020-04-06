@@ -23,12 +23,20 @@
 * `isdirect`: true is the direct solver is activated
 
 """
-function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;forcedirect=false,overlapfactor=3.3)
+function DIVAnd_fittocpu(
+    Lpmnrange,
+    gridsize,
+    latercsteps,
+    moddim,
+    memtofit = 16;
+    forcedirect = false,
+    overlapfactor = 3.3,
+)
     #################################################################################
     # Number of dimensions
-#@show memtofit,overlapfactor
+    #@show memtofit,overlapfactor
     n = size(Lpmnrange, 1)
-    fudgefac = memtofit / 16.
+    fudgefac = memtofit / 16.0
 
     if moddim == []
         moddim = zeros(n)
@@ -42,8 +50,8 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;f
     # How wide is the overlap in terms of number of length scales
     factoroverlap = overlapfactor
 
-    biggestproblemitern = [2000000   2000*2000 400*400*8   50*50*50*10] * fudgefac
-    biggestproblemdirectn = [1000000   800*800 200*200*8   50*50*50*5] * fudgefac
+    biggestproblemitern = [2000000 2000 * 2000 400 * 400 * 8 50 * 50 * 50 * 10] * fudgefac
+    biggestproblemdirectn = [1000000 800 * 800 200 * 200 * 8 50 * 50 * 50 * 5] * fudgefac
 
     biggestproblemiter = biggestproblemitern[min(n, 4)]
     biggestproblemdirect = biggestproblemdirectn[min(n, 4)]
@@ -76,10 +84,10 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;f
     # For time: no windowing for the moment neither
 
     biggestproblem = biggestproblemiter
-	if forcedirect
-	 biggestproblem = biggestproblemdirect
-	end
-  # @show biggestproblem
+    if forcedirect
+        biggestproblem = biggestproblemdirect
+    end
+    # @show biggestproblem
     higherdims = 1
 
     if n == 3
@@ -93,7 +101,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;f
     end
 
     biggestproblem = biggestproblem / higherdims
-  #  @show biggestproblem
+    #  @show biggestproblem
 
     # problemsize is the number additional grid point appended to
     # a subdomain to make the domains overlap
@@ -119,7 +127,7 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;f
 
         #
     end
-  #  @show problemsize
+    #  @show problemsize
     #problemsize=problemsize/prod(latercsteps[1:2])
 
     # Take into account overhead due to multiple storage
@@ -168,9 +176,9 @@ function DIVAnd_fittocpu(Lpmnrange, gridsize, latercsteps, moddim, memtofit=16;f
 
     ####################################
     #Force direct solver if you want by uncommenting next line
-	if forcedirect
-     isdirect = true
-	end
+    if forcedirect
+        isdirect = true
+    end
 
     return stepsize, overlapping, isdirect
 end

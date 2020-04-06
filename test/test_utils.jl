@@ -11,7 +11,7 @@ using DIVAnd
 x1, x2 = DIVAnd.ndgrid([1:2:20;], [1:3:30;])
 pm = ones(size(x1)) / 2
 pn = ones(size(x1)) / 3
-f = 2. * x1 + x2
+f = 2.0 * x1 + x2
 
 fx, fy = DIVAnd.cgradient((pm, pn), f)
 
@@ -24,7 +24,7 @@ pm = ones(size(x1)) / 2
 pn = ones(size(x1)) / 3
 po = ones(size(x1)) / 2
 
-f = 2. * x1 + x2 + 4. * x3
+f = 2.0 * x1 + x2 + 4.0 * x3
 
 fx, fy, fz = DIVAnd.cgradientn((pm, pn, po), f)
 
@@ -52,7 +52,7 @@ cf = DIVAnd.ufill(c, valex);
 
 mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_squaredom(2, range(-10, stop = 10, length = 100))
 h = 1000 * (tanh.(xi) .+ 1);
-L = 2.
+L = 2.0
 RL = DIVAnd.lengraddepth((pm, pn), h, L)
 
 @test maximum(RL) < 1 + 10 * eps(Float64)
@@ -70,7 +70,7 @@ f[(end+1)÷2] = 1
 filterscale = 10
 ff = DIVAnd.smoothfilter(z, f, filterscale)
 
-fref = (z[2] - z[1]) * exp.(-z.^2 / (2 * filterscale^2)) / sqrt(2 * π * filterscale^2)
+fref = (z[2] - z[1]) * exp.(-z .^ 2 / (2 * filterscale^2)) / sqrt(2 * π * filterscale^2)
 
 @test sum(fref) ≈ 1 atol = 1e-4
 @test sum(ff) ≈ 1 atol = 1e-4
@@ -79,13 +79,11 @@ fref = (z[2] - z[1]) * exp.(-z.^2 / (2 * filterscale^2)) / sqrt(2 * π * filters
 #clf(); plot(z,ff, label = "sol"); plot(z,fref,label = "ref"); legend()
 
 # random field
-mask, (pm, pn), (xi, yi) = DIVAnd_rectdom(
-    range(0, stop = 1, length = 100),
-    range(0, stop = 1, length = 110),
-)
+mask, (pm, pn), (xi, yi) =
+    DIVAnd_rectdom(range(0, stop = 1, length = 100), range(0, stop = 1, length = 110))
 
-lenx = .05;
-leny = .05;
+lenx = 0.05;
+leny = 0.05;
 Nens = 100
 pmn = (pm, pn)
 len = (lenx, leny)
@@ -98,20 +96,20 @@ field = DIVAnd.random(mask, pmn, len, Nens)
 
 # interpolation
 
-x1 = collect(1.:2:20)
-x2 = collect(1.:3:30)
+x1 = collect(1.0:2:20)
+x2 = collect(1.0:3:30)
 X1, X2 = DIVAnd.ndgrid(x1, x2)
-f = 2. * X1 + X2
+f = 2.0 * X1 + X2
 
-@test DIVAnd.interp((X1, X2), f, ([3.], [1.])) ≈ [7.]
-@test DIVAnd.interp((x1, x2), f, ([3.], [1.])) ≈ [7.]
+@test DIVAnd.interp((X1, X2), f, ([3.0], [1.0])) ≈ [7.0]
+@test DIVAnd.interp((x1, x2), f, ([3.0], [1.0])) ≈ [7.0]
 
 
 # weigts of observations
 
 # two observation close-by should have less weight than the 3rd observation
 # far away
-weight = DIVAnd.weight_RtimesOne(([0., 0.1, 2], [0., 0., 0.]), [1., 1.])
+weight = DIVAnd.weight_RtimesOne(([0.0, 0.1, 2], [0.0, 0.0, 0.0]), [1.0, 1.0])
 @test weight[1] < weight[3]
 
 

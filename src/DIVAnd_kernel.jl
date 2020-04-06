@@ -50,7 +50,7 @@ function DIVAnd_kernel(n, alpha)
         end
     end
 
-    len_scale, maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1, 1), 0., 100., eps)
+    len_scale, maxiter = fzero(x -> K(x) - SpecialFunctions.besselk(1, 1), 0.0, 100.0, eps)
 
     return mu, K, len_scale
 end
@@ -64,7 +64,7 @@ function DIVAnd_kernel_binom(n, m)
 
     if nu <= 0
         @warn "DIVAnd:nonorm ", "No normalization possible. Extend parameter alpha."
-        mu = 1.
+        mu = 1.0
     end
 
     return mu, K
@@ -75,9 +75,9 @@ function DIVAnd_rbesselk(nu, r)
     r = abs(r)
 
     if r == 0
-        K = 1.
+        K = 1.0
     else
-        K = 2 / gamma(nu) * ((r / 2).^nu .* SpecialFunctions.besselk.(nu, r))
+        K = 2 / gamma(nu) * ((r / 2) .^ nu .* SpecialFunctions.besselk.(nu, r))
     end
 
     return K
@@ -96,7 +96,7 @@ function fzero(f, x0, x1, eps; maxiter = 1000)
 
     fx0 = f(x0)
     fx1 = f(x1)
-    xc = (x0 + x1) / 2.
+    xc = (x0 + x1) / 2.0
     fxc = f(xc)
     niter = 0
 
@@ -113,7 +113,7 @@ function fzero(f, x0, x1, eps; maxiter = 1000)
             fx1 = fxc
         end
 
-        xc = (x0 + x1) / 2.
+        xc = (x0 + x1) / 2.0
         fxc = f(xc)
         niter += 1
     end

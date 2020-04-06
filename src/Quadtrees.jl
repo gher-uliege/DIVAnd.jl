@@ -26,14 +26,13 @@ QT(TA::DataType, min::Vector{T}, max::Vector{T}) where {T} =
 
 """create a quadtree
 """
-QT(points::AbstractArray{T,2}, attribs::AbstractVector{TA}) where {T,TA} =
-    QT(
-       QT{T,TA,size(points, 1)}[],
-       points,
-       minimum(points, dims = 2)[:],
-       maximum(points, dims = 2)[:],
-       attribs,
-    )
+QT(points::AbstractArray{T,2}, attribs::AbstractVector{TA}) where {T,TA} = QT(
+    QT{T,TA,size(points, 1)}[],
+    points,
+    minimum(points, dims = 2)[:],
+    maximum(points, dims = 2)[:],
+    attribs,
+)
 
 function QT(
     points::AbstractArray{T,2},
@@ -97,9 +96,9 @@ Test if the rectanges defined by x0,x1 and y0,y1 intersects/overlap
 """
 function intersect(x0, x1, y0, y1)
     n = size(x0, 1)
-#    if (n != length(x1)) || (n != length(y0)) || (n != length(y1))
-#        throw(ArgumentError("all arguments of intersect must have the same length"))
-#    end
+    #    if (n != length(x1)) || (n != length(y0)) || (n != length(y1))
+    #        throw(ArgumentError("all arguments of intersect must have the same length"))
+    #    end
 
     # https://stackoverflow.com/a/306332/3801401
     cond = true
@@ -498,8 +497,9 @@ function catx(x::Tuple)
     for i = 1:n
         if eltype(x[i]) <: DateTime
             for j = 1:Nobs
-                X[i, j] = Dates.Millisecond(x[i][j] - DateTime(1900, 1, 1)).value / 24 /
-                          60 / 60 / 1000
+                X[i, j] =
+                    Dates.Millisecond(x[i][j] - DateTime(1900, 1, 1)).value / 24 / 60 / 60 /
+                    1000
             end
         else
             X[i, :] = x[i]
@@ -534,8 +534,9 @@ function checkduplicates(
     for i = 1:n
         if eltype(x[i]) <: DateTime
             for j = 1:Nobs
-                X[i, j] = Dates.Millisecond(x[i][j] - DateTime(1900, 1, 1)).value / 24 /
-                          60 / 60 / 1000
+                X[i, j] =
+                    Dates.Millisecond(x[i][j] - DateTime(1900, 1, 1)).value / 24 / 60 / 60 /
+                    1000
             end
         else
             X[i, :] = x[i]
@@ -631,19 +632,19 @@ function checkduplicates(
     xmin = zeros(n)
     xmax = zeros(n)
 
-#    index_buffer = zeros(Int, Nobs1)
+    #    index_buffer = zeros(Int, Nobs1)
     index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
 
     @time @fastmath @inbounds Threads.@threads for i = 1:Nobs2
-        index_buffer = @view index_buffer_all[:,Threads.threadid()]
+        index_buffer = @view index_buffer_all[:, Threads.threadid()]
 
-#        for j = 1:n
-#            xmin[j] = X2[j, i] - delta[j]
-#            xmax[j] = X2[j, i] + delta[j]
-#        end
+        #        for j = 1:n
+        #            xmin[j] = X2[j, i] - delta[j]
+        #            xmax[j] = X2[j, i] + delta[j]
+        #        end
 
-        xmin = ntuple(j -> X2[j, i] - delta[j],Val(n))
-        xmax = ntuple(j -> X2[j, i] + delta[j],Val(n))
+        xmin = ntuple(j -> X2[j, i] - delta[j], Val(n))
+        xmax = ntuple(j -> X2[j, i] + delta[j], Val(n))
 
         nindex = Quadtrees.within_buffer!(qt, xmin, xmax, index_buffer)
 

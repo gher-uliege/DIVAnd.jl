@@ -6,11 +6,10 @@ method = "matfun"
 method = "varanalysis"
 
 for ndim = 2:4
-
-    sizes = [parse(Int, split(filename, r"[_.]")[4]) for filename in filter(
-        Regex("res_$(ndim)_$(method)_.*\.out"),
-        readdir(),
-    )]
+    sizes = [
+        parse(Int, split(filename, r"[_.]")[4])
+        for filename in filter(Regex("res_$(ndim)_$(method)_.*\.out"), readdir())
+    ]
     sort!(sizes)
 
     memory = zeros(length(sizes))
@@ -32,13 +31,13 @@ for ndim = 2:4
             end
         catch err
             @show err
-            memory[i] = 0.
+            memory[i] = 0.0
         end
 
         try
             runtime[i] = JSON.parsefile(fileout)["median"]
         catch
-            runtime[i] = 0.
+            runtime[i] = 0.0
         end
     end
 

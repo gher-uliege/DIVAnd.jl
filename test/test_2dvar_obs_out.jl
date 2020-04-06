@@ -5,7 +5,7 @@ using DIVAnd
 
 
 # grid of background field
-mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, 0.:1:2)
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, 0.0:1:2)
 mask .= false
 mask[2, 2] = true
 
@@ -14,24 +14,16 @@ epsilon = 1e-10;
 # grid of observations
 nobs = 10000
 x = fill(1.99, (nobs,))
-y = fill(1., (nobs,))
-v = fill(1., (nobs,))
+y = fill(1.0, (nobs,))
+v = fill(1.0, (nobs,))
 
-lenx = .15;
-leny = .15;
+lenx = 0.15;
+leny = 0.15;
 
 epsilon2 = 1;
 
-va, s = DIVAndrun(
-    mask,
-    (pm, pn),
-    (xi, yi),
-    (x, y),
-    v,
-    (lenx, leny),
-    epsilon2,
-    primal = true,
-)
+va, s =
+    DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), v, (lenx, leny), epsilon2, primal = true)
 
 @test va[2, 2] ≈ 1 atol = 1e-3
 

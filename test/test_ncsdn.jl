@@ -46,4 +46,3 @@ value, lon, lat, z, time, ids = NCSDN.load(
     param;
     qualityflags = [NCSDN.GOOD_VALUE, NCSDN.PROBABLY_GOOD_VALUE],
 )
-

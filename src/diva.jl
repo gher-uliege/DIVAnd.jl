@@ -133,7 +133,7 @@ function diva3d(
     fithorz_param = Dict(),
     fitvert_param = Dict(),
     memtofit = 3,
-	overlapfactor=3.3,
+    overlapfactor = 3.3,
     niter_e::Int = 1,
     minfield::Number = -Inf,
     maxfield::Number = Inf,
@@ -176,11 +176,12 @@ function diva3d(
         saveindex = (:, :, 2:length(xi[3]))
 
         if background_ext != nothing
-            background_ext = (args...; kwargs...) -> begin
-                fbackground, vaa = background(args...; kwargs...)
-                fbackground = cat(fbackground[:, :, 1], fbackground, dims = 3)
-                return fbackground, vaa
-            end
+            background_ext =
+                (args...; kwargs...) -> begin
+                    fbackground, vaa = background(args...; kwargs...)
+                    fbackground = cat(fbackground[:, :, 1], fbackground, dims = 3)
+                    return fbackground, vaa
+                end
         end
 
         #TODO extend background_len if present
@@ -194,7 +195,7 @@ function diva3d(
     lonr, latr, depthr, TS = if length(xi) == 4
         xi
     else
-        (xi[1], xi[2], Float64[0.], xi[3])
+        (xi[1], xi[2], Float64[0.0], xi[3])
     end
 
     checkdepth(depthr)
@@ -207,27 +208,28 @@ function diva3d(
     lon, lat, depth, time = if length(xi) == 4
         x
     else
-        (x[1], x[2], Float64[0.], x[3])
+        (x[1], x[2], Float64[0.0], x[3])
     end
 
     # anamorphosis transform
     trans, invtrans = transform
 
     # xi[end] is time, which is skipped for the definition of the domain
-    mask2, pmn, xyi =
-        if length(xi) == 4
-            DIVAnd.domain(bathname, bathisglobal, xi[1], xi[2], xi[3]; zlevel = zlevel)
-        else
-            DIVAnd.domain(bathname, bathisglobal, xi[1], xi[2])
-        end
+    mask2, pmn, xyi = if length(xi) == 4
+        DIVAnd.domain(bathname, bathisglobal, xi[1], xi[2], xi[3]; zlevel = zlevel)
+    else
+        DIVAnd.domain(bathname, bathisglobal, xi[1], xi[2])
+    end
 
     # allow to the user to override the mask
     if mask == nothing
         mask = mask2
     else
         if size(mask) != size(mask2)
-            error("expecting a mask of the size $(size(mask2)), " *
-                  "but got a mask of the size $(size(mask))")
+            error(
+                "expecting a mask of the size $(size(mask2)), " *
+                "but got a mask of the size $(size(mask))",
+            )
         end
         # use mask in the following and not mask2
     end
@@ -257,7 +259,7 @@ function diva3d(
 
         bxi, byi, bi = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
 
-        itp = extrapolate(interpolate((bxi, byi), bi, Gridded(Linear())),NaN)
+        itp = extrapolate(interpolate((bxi, byi), bi, Gridded(Linear())), NaN)
 
         # shift the depth of the observations relative to the ocean floor
         for k = 1:length(depth)
@@ -278,7 +280,7 @@ function diva3d(
             error("if len is () (the empty tuple) then fitcorrlen must be true")
         end
 
-            # unscaled copy
+        # unscaled copy
         ntuple(i -> ones(sz), n - 1)
     else
         map(x -> Float64.(x), len)
@@ -301,12 +303,12 @@ function diva3d(
                     background_len = (len[1], len[2], background_lenz_factor * len[3])
                 end
             end
-        # 3D analysis (lon,lat,time)
+            # 3D analysis (lon,lat,time)
         else
             if background_lenz !== nothing
                 background_len = (
-                    1., # unused
-                    1.,
+                    1.0, # unused
+                    1.0,
                 ) # unused
             end
             if len !== ()
@@ -325,7 +327,10 @@ function diva3d(
     dbinfo = Dict{Symbol,Any}()
 
     # days since timeorigin
-    timeclim = [Dates.Millisecond(tc - timeorigin).value / (1000 * 60 * 60 * 24) for tc in ctimes(TS)]
+    timeclim = [
+        Dates.Millisecond(tc - timeorigin).value / (1000 * 60 * 60 * 24)
+        for tc in ctimes(TS)
+    ]
     climatologybounds = climatology_bounds(TS)
 
     # create the NetCDF file
@@ -432,65 +437,65 @@ function diva3d(
             xsel = map(xc -> xc[sel], x[1:end-1])
 
             # @info "Computing background profile"
-            fbackground, vaa =
-                if background == nothing
-                    # spatial mean of observations
-                    vm = mean(value_trans[isfinite.(value_trans)])
-                    va = value_trans .- vm
+            fbackground, vaa = if background == nothing
+                # spatial mean of observations
+                vm = mean(value_trans[isfinite.(value_trans)])
+                va = value_trans .- vm
 
-                    # background profile
+                # background profile
 
-                    if n == 4
-                        if all(background_len[3] .== 0)
-                            @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
-                            background_len[3] .= 2 ./ pmn[3]
-                        end
+                if n == 4
+                    if all(background_len[3] .== 0)
+                        @debug "DIVAnd_averaged_bg use twice the resolution as vertical correlation"
+                        background_len[3] .= 2 ./ pmn[3]
                     end
-
-                    # simple estimation of background_epsilon2_factor so that in average
-                    # for every level there are 10 observations with an unit epsilon2.
-                    if background_epsilon2_factor == nothing
-                        background_epsilon2_factor = sum(filter(isfinite,1 ./ epsilon2[sel])) / (10 * length(depthr))
-                    end
-                    @debug "background_epsilon2_factor: $background_epsilon2_factor"
-
-                    #@show background_len[3][1,1,:], vm
-                    #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm filterbackground
-                    #@show "background saving"
-
-
-                    fi, vaa = DIVAnd.DIVAnd_averaged_bg(
-                        mask,
-                        pmn,
-                        xyi,
-                        xsel,
-                        va,
-                        background_len,
-                        epsilon2[sel] * background_epsilon2_factor,
-                        toaverage;
-                        moddim = moddim,
-                        filterbackground = filterbackground,
-                    )
-
-                    fbackground = fi .+ vm
-                    @debug "fbackground: $(fbackground[1,1,:])"
-                    dbinfo[:background_profile][:,timeindex] = fbackground[1,1,:]
-
-                    #@show size(fbackground),fbackground[1,1,end]
-                    #dbinfo[:background] = fbackground
-                    fbackground, vaa
-                else
-                    # anamorphosis transform must already be included to the
-                    # background
-                    background_ext(
-                        xsel,
-                        timeindex,
-                        value_trans,
-                        trans;
-                        selection = sel,
-                        obstime = time,
-                    )
                 end
+
+                # simple estimation of background_epsilon2_factor so that in average
+                # for every level there are 10 observations with an unit epsilon2.
+                if background_epsilon2_factor == nothing
+                    background_epsilon2_factor =
+                        sum(filter(isfinite, 1 ./ epsilon2[sel])) / (10 * length(depthr))
+                end
+                @debug "background_epsilon2_factor: $background_epsilon2_factor"
+
+                #@show background_len[3][1,1,:], vm
+                #JLD2.@save "/tmp/test_background.jld2" background_len mask pmn xyi xsel va epsilon2 sel background_epsilon2_factor toaverage  moddim vm filterbackground
+                #@show "background saving"
+
+
+                fi, vaa = DIVAnd.DIVAnd_averaged_bg(
+                    mask,
+                    pmn,
+                    xyi,
+                    xsel,
+                    va,
+                    background_len,
+                    epsilon2[sel] * background_epsilon2_factor,
+                    toaverage;
+                    moddim = moddim,
+                    filterbackground = filterbackground,
+                )
+
+                fbackground = fi .+ vm
+                @debug "fbackground: $(fbackground[1,1,:])"
+                dbinfo[:background_profile][:, timeindex] = fbackground[1, 1, :]
+
+                #@show size(fbackground),fbackground[1,1,end]
+                #dbinfo[:background] = fbackground
+                fbackground, vaa
+            else
+                # anamorphosis transform must already be included to the
+                # background
+                background_ext(
+                    xsel,
+                    timeindex,
+                    value_trans,
+                    trans;
+                    selection = sel,
+                    obstime = time,
+                )
+            end
 
             # the background is not computed for points outside of the domain
             # exclude those in vaa and xsel
@@ -573,15 +578,15 @@ function diva3d(
             # factore is the total (cumulative) scale factor for
             # espilon2 (Desroziers)
 
-            factore = 1.
+            factore = 1.0
             fi2 = zeros(sz)
             erri = zeros(sz)
 
             kwargs_without_qcm = [(p, v) for (p, v) in kwargs if p !== :QCMETHOD]
 
-            velocity_tuple = if isa(velocity,Function)
-                veltime = [ DIVAnd.ctimes(TS)[timeindex] ]
-                velocity(xyi,veltime)
+            velocity_tuple = if isa(velocity, Function)
+                veltime = [DIVAnd.ctimes(TS)[timeindex]]
+                velocity(xyi, veltime)
             else
                 velocity
             end
@@ -610,9 +615,9 @@ function diva3d(
                     errortype;
                     moddim = moddim,
                     MEMTOFIT = memtofit,
-					overlapfactor=overlapfactor,
+                    overlapfactor = overlapfactor,
                     kwargs2...,
-                    velocity = velocity_tuple # possibly override velocity in kwargs2
+                    velocity = velocity_tuple, # possibly override velocity in kwargs2
                 )
 
                 residuals[sel] = residual

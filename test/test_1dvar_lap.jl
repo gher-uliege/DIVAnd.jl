@@ -3,8 +3,8 @@
 # grid of background field
 xi = collect(range(0, stop = 1, length = 11))
 
-x = [.4; .6];
-f = [.4; .6];
+x = [0.4; 0.6];
+f = [0.4; 0.6];
 
 mask = trues(size(xi));
 #mask[[1,end]] = false;
@@ -36,8 +36,8 @@ Dsym2 = +([Dx[i]' * Dx[i] for i = 1:ndims(mask)]...)
 # works!
 display(Matrix(Dsym2))
 
-@show Dsym2 * xi[:].^2
-@show D * xi[:].^2
+@show Dsym2 * xi[:] .^ 2
+@show D * xi[:] .^ 2
 
 
 # variable resolution
@@ -65,8 +65,8 @@ display(Matrix(D))
 display(Matrix(Dsym2))
 
 # Dsym2 is not as precise
-@show Dsym2 * xi[:].^2
-@show D * xi[:].^2
+@show Dsym2 * xi[:] .^ 2
+@show D * xi[:] .^ 2
 
 nothing
 

@@ -133,7 +133,7 @@ include("gen_example_file.jl")
 
     include("test_binning.jl")
 
-     # Heatmap
+    # Heatmap
     include("test_heatmap.jl")
 
     # test DIVAnd_filter3

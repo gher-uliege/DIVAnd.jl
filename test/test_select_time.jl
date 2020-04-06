@@ -29,8 +29,9 @@ starttime = DIVAnd.timesstart(TS)
 
 sel = DIVAnd.select(TS, 1, obstime)
 
-@test all(years[1] - yearwindow / 2 .<= Dates.year.(obstime[sel]) .<=
-          years[1] + yearwindow / 2)
+@test all(
+    years[1] - yearwindow / 2 .<= Dates.year.(obstime[sel]) .<= years[1] + yearwindow / 2,
+)
 @test all(1 .<= Dates.month.(obstime[sel]) .<= 3)
 
 
@@ -87,8 +88,9 @@ endtime = DIVAnd.timesend(TS)
 
 sel = DIVAnd.select(TS, 1, obstime)
 
-@test all(years[1] - yearwindow / 2 .<= Dates.year.(obstime[sel]) .<=
-          years[1] + yearwindow / 2)
+@test all(
+    years[1] - yearwindow / 2 .<= Dates.year.(obstime[sel]) .<= years[1] + yearwindow / 2,
+)
 @test all(1 .<= Dates.month.(obstime[sel]) .<= 3)
 
 
@@ -107,8 +109,9 @@ starttime = DIVAnd.timesstart(TS)
 
 sel = DIVAnd.select(TS, 4, obstime)
 
-@test all(years[1] - yearwindow / 2 .<= Dates.year.(obstime[sel]) .<=
-          years[1] + yearwindow / 2)
+@test all(
+    years[1] - yearwindow / 2 .<= Dates.year.(obstime[sel]) .<= years[1] + yearwindow / 2,
+)
 obsmonth = Dates.month.(obstime[sel])
 
 @test all((10 .<= obsmonth .<= 12) .| (obsmonth .== 1))

@@ -10,4 +10,3 @@ x = 1:0.1:5
 
 @test DIVAnd.findin(x, 2.1234) == 12
 @test DIVAnd.findin(collect(x), 2.1234) == 12
-

@@ -36,16 +36,13 @@ metadata = OrderedDict(
     # http://seadatanet.maris2.nl/v_bodc_vocab_v2/search.asp?lib=C19
     # example: ["SDN:C19::3_1"]
     "area_keywords_urn" => ["SDN:C19::3_1"],
-
     "product_version" => "1.0",
 
     # NetCDF CF standard name
     # http://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html
     # example "standard_name" = "sea_water_temperature",
     "netcdf_standard_name" => "sea_water_temperature",
-
     "netcdf_long_name" => "sea water temperature",
-
     "netcdf_units" => "degree Celsius",
 
     # Abstract for the product
@@ -61,14 +58,8 @@ metadata = OrderedDict(
 
 filename = "test.nc"
 varname = "temp"
-ncglobalattrib, ncvarattrib = DIVAnd.SDNMetadata(
-    metadata,
-    filename,
-    varname,
-    1:10,
-    1:10;
-    field = ones(10, 10),
-)
+ncglobalattrib, ncvarattrib =
+    DIVAnd.SDNMetadata(metadata, filename, varname, 1:10, 1:10; field = ones(10, 10))
 
 @test ncvarattrib["units"] == "degree Celsius"
 @test typeof(ncglobalattrib["area_keywords"]) == String
@@ -84,5 +75,3 @@ ncglobalattrib, ncvarattrib = DIVAnd.SDNMetadata(
 )
 
 @test occursin("123", ncglobalattrib["preview"])
-
-

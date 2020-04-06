@@ -15,9 +15,9 @@ mj1 = 13
 
 mask[mi0:mi1, mj0:mj1] .= false
 
-x = [0.]
-y = [0.]
-f = [1.]
+x = [0.0]
+y = [0.0]
+f = [1.0]
 
 epsilon2 = 1 / 200
 len = 0.3

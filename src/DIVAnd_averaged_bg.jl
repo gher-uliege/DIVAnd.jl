@@ -116,7 +116,8 @@ function DIVAnd_averaged_bg(
 
     #print("save DIVAndrun")
     #JLD2.@save "/tmp/DIVAndrun.jld2" maskm pmnm xim xm f lenm epsilon2 moddimm
-    fm, sm = DIVAndrun(maskm, pmnm, xim, xm, f, lenm, epsilon2; moddim = moddimm, alphabc=0)
+    fm, sm =
+        DIVAndrun(maskm, pmnm, xim, xm, f, lenm, epsilon2; moddim = moddimm, alphabc = 0)
 
     fm = DIVAnd_filter3(fm, NaN, filterbackground)
 

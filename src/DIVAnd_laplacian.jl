@@ -56,23 +56,23 @@ function DIVAnd_laplacian(
 ) where {T,n}
     sz = size(mask)
 
-     # extraction operator of sea points
+    # extraction operator of sea points
     H = oper_pack(operatortype, mask)
 
-     # Already include final operation *H' on DD to reduce problem size so resized the matrix
-     # DD = spzeros(prod(sz),prod(sz))
+    # Already include final operation *H' on DD to reduce problem size so resized the matrix
+    # DD = spzeros(prod(sz),prod(sz))
     DD = spzeros(size(H, 2), size(H, 1))
 
     for i = 1:n
         if coeff_laplacian[i] != 0
-               # operator for staggering in dimension i
+            # operator for staggering in dimension i
             S = oper_stagger(operatortype, sz, i, iscyclic[i])
 
-               # d = 1 for interfaces surounded by water, zero otherwise
+            # d = 1 for interfaces surounded by water, zero otherwise
             d = zeros(Float64, size(S, 1))
-            d[(S*mask[:]).==1] .= 1.
+            d[(S*mask[:]).==1] .= 1.0
 
-               # metric
+            # metric
             for j = 1:n
                 tmp = S * pmn[j][:]
 
@@ -83,37 +83,38 @@ function DIVAnd_laplacian(
                 end
             end
 
-               # nu[i] "diffusion coefficient"  along dimension i
+            # nu[i] "diffusion coefficient"  along dimension i
 
             d = coeff_laplacian[i] * (d .* (S * nu[i][:]))
-               #d = d .* (S * nu[i][:])
+            #d = d .* (S * nu[i][:])
 
-               # Flux operators D
-               # zero at "coastline"
+            # Flux operators D
+            # zero at "coastline"
 
-               #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
-               # Already include final operation to reduce problem size in real problems with land mask
+            #D = oper_diag(operatortype,d) * oper_diff(operatortype,sz,i,iscyclic[i])
+            # Already include final operation to reduce problem size in real problems with land mask
 
-            D = oper_diag(operatortype, d) *
+            D =
+                oper_diag(operatortype, d) *
                 (oper_diff(operatortype, sz, i, iscyclic[i]) * H')
 
-               # add laplacian along dimension i
+            # add laplacian along dimension i
             if !iscyclic[i]
-                    # extx: extension operator
+                # extx: extension operator
                 tmp_szt = collect(sz)
                 tmp_szt[i] = tmp_szt[i] + 1
                 szt = NTuple{n,Int}(tmp_szt)
-                    #szt = ntuple(j -> (j == i ? size(mask,j)+1 : size(mask,j) ),Val(n))
+                #szt = ntuple(j -> (j == i ? size(mask,j)+1 : size(mask,j) ),Val(n))
 
                 extx = oper_trim(operatortype, szt, i)'
-                    # Tried to save an explicitely created intermediate matrix D
-                    #D = extx * D
-                    #DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
-                    #@show size(extx),size(D),typeof(extx),typeof(D)
-                    #@show extx
+                # Tried to save an explicitely created intermediate matrix D
+                #D = extx * D
+                #DD = DD + oper_diff(operatortype,szt,i,iscyclic[i]) * D
+                #@show size(extx),size(D),typeof(extx),typeof(D)
+                #@show extx
                 DD = DD + oper_diff(operatortype, szt, i, iscyclic[i]) * (extx * D)
             else
-                    # shift back one grid cell along dimension i
+                # shift back one grid cell along dimension i
                 D = oper_shift(operatortype, sz, i, iscyclic[i])' * D
                 DD = DD + oper_diff(operatortype, sz, i, iscyclic[i]) * D
             end
@@ -122,17 +123,17 @@ function DIVAnd_laplacian(
 
     ivol = .*(pmn...)
 
-     # Laplacian on regualar grid DD
+    # Laplacian on regualar grid DD
     DD = oper_diag(operatortype, ivol[:]) * DD
 
 
-     # Laplacian on grid with on sea points Lap
-     #Lap = H * DD * H'
-     # *H' already done before
+    # Laplacian on grid with on sea points Lap
+    #Lap = H * DD * H'
+    # *H' already done before
     Lap = H * DD
-     #@show Lap
-     # Possible test to force symmetric Laplacian
-     #    Lap=0.5*(Lap+Lap')
+    #@show Lap
+    # Possible test to force symmetric Laplacian
+    #    Lap=0.5*(Lap+Lap')
 
     return Lap
 end
@@ -152,44 +153,39 @@ for N = 1:6
 
             nus = ntuple(i -> zeros(T, sz), $N)::NTuple{$N,Array{T,$N}}
 
-               # This heavily uses macros to generate fast code
-               # In e.g. 3 dimensions
-               # (@nref $N tmp i) corresponds to tmp[i_1,i_2,i_3]
-               # (@nref $N nu_i l->(l==j?i_l+1:i_l)  corresponds to nu_i[i_1+1,i_2,i_3] if j==1
+            # This heavily uses macros to generate fast code
+            # In e.g. 3 dimensions
+            # (@nref $N tmp i) corresponds to tmp[i_1,i_2,i_3]
+            # (@nref $N nu_i l->(l==j?i_l+1:i_l)  corresponds to nu_i[i_1+1,i_2,i_3] if j==1
 
-               # loop over all dimensions to create
-               # nus[1] (nu stagger in the 1st dimension)
-               # nus[2] (nu stagger in the 2nd dimension)
-               # ...
+            # loop over all dimensions to create
+            # nus[1] (nu stagger in the 1st dimension)
+            # nus[2] (nu stagger in the 2nd dimension)
+            # ...
 
             @nexprs $N j -> begin
                 tmp = nus[j]
 
-               # loop over all spatio-temporal dimensions
+                # loop over all spatio-temporal dimensions
                 @nloops $N i k -> (k == j ? (1:sz[k]-1) : (1:sz[k])) begin
                     nu_i = nu[j]
-               # stagger nu
-               # e.g. 0.5 * (nu[1][2:end,:] + nu[1][1:end-1,:])
-                    (@nref $N tmp i) = 0.5 *
-                                       ((@nref $N nu_i l -> (l == j ? i_l + 1 : i_l)) +
-                                        (@nref $N nu_i i))
-               # e.g. (pmn[2][2:end,:]+pmn[2][1:end-1,:]) ./ (pmn[1][2:end,:]+pmn[1][1:end-1,:])
+                    # stagger nu
+                    # e.g. 0.5 * (nu[1][2:end,:] + nu[1][1:end-1,:])
+                    (@nref $N tmp i) = 0.5 * ((@nref $N nu_i l ->
+                        (l == j ? i_l + 1 : i_l)) + (@nref $N nu_i i))
+                    # e.g. (pmn[2][2:end,:]+pmn[2][1:end-1,:]) ./ (pmn[1][2:end,:]+pmn[1][1:end-1,:])
                     @nexprs $N m -> begin
                         pm_i = pmn[m]
                         if (m .== j)
-                            (@nref $N tmp i) *= 0.5 *
-                                                ((@nref $N pm_i l -> (l == j ? i_l + 1 :
-                                                                      i_l)) +
-                                                 (@nref $N pm_i i))
+                            (@nref $N tmp i) *= 0.5 * ((@nref $N pm_i l ->
+                                    (l == j ? i_l + 1 : i_l)) + (@nref $N pm_i i))
                         else
-                            (@nref $N tmp i) /= 0.5 *
-                                                ((@nref $N pm_i l -> (l == j ? i_l + 1 :
-                                                                      i_l)) +
-                                                 (@nref $N pm_i i))
+                            (@nref $N tmp i) /= 0.5 * ((@nref $N pm_i l ->
+                                    (l == j ? i_l + 1 : i_l)) + (@nref $N pm_i i))
                         end
 
-                        if !(@nref $N mask i) ||
-                           !(@nref $N mask l -> (l == j ? i_l + 1 : i_l))
+                        if !(@nref $N mask i) || !(@nref $N mask l ->
+                            (l == j ? i_l + 1 : i_l))
                             (@nref $N tmp i) = 0
                         end
                     end
@@ -207,7 +203,7 @@ for N = 1:6
             Lx::AbstractArray{T,$N},
         ) where {T}
             sz = size(x)
-            fill!(Lx,0)
+            fill!(Lx, 0)
 
             @inbounds @nloops $N i d -> 1:sz[d] begin
                 (@nref $N Lx i) = 0
@@ -215,19 +211,16 @@ for N = 1:6
                     tmp2 = nus[d1]
 
                     if i_d1 < sz[d1]
-                        @inbounds (@nref $N Lx i) += (@nref $N tmp2 i) *
-                                                     ((@nref $N x d2 -> (d2 == d1 ?
-                                                                         i_d2 + 1 : i_d2)) -
-                                                      (@nref $N x i))
+                        @inbounds (@nref $N Lx i) +=
+                            (@nref $N tmp2 i) * ((@nref $N x d2 ->
+                                (d2 == d1 ? i_d2 + 1 : i_d2)) - (@nref $N x i))
                     end
 
                     if i_d1 > 1
-                        @inbounds (@nref $N Lx i) -= (@nref $N tmp2 d2 -> (d2 == d1 ?
-                                                                           i_d2 - 1 :
-                                                                           i_d2)) *
-                                                     ((@nref $N x i) -
-                                                      (@nref $N x d2 -> (d2 == d1 ?
-                                                                         i_d2 - 1 : i_d2)))
+                        @inbounds (@nref $N Lx i) -=
+                            (@nref $N tmp2 d2 -> (d2 == d1 ? i_d2 - 1 : i_d2)) *
+                            ((@nref $N x i) - (@nref $N x d2 ->
+                                (d2 == d1 ? i_d2 - 1 : i_d2)))
                     end
                 end
                 (@nref $N Lx i) *= (@nref $N ivol i)
@@ -235,10 +228,11 @@ for N = 1:6
         end
 
 
-        function DIVAnd_laplacian_apply(ivol, nus, x::AbstractArray{T,$N})::AbstractArray{
-            T,
-            $N,
-        } where {T}
+        function DIVAnd_laplacian_apply(
+            ivol,
+            nus,
+            x::AbstractArray{T,$N},
+        )::AbstractArray{T,$N} where {T}
             Lx = similar(x)
             DIVAnd_laplacian_apply!(ivol, nus, x, Lx)
             return Lx
@@ -257,9 +251,13 @@ function _derivative2n!(dim, mask, pm, len, va, D, Rpre, n, Rpost)
         for i = 2:n-1
             for Ipre in Rpre
                 if mask[Ipre, i-1, Ipost] && mask[Ipre, i, Ipost] && mask[Ipre, i+1, Ipost]
-                    D[Ipre, i, Ipost] += len[Ipre, i, Ipost]^2 * pm[Ipre, i, Ipost]^2 *
-                                         (va[Ipre, i-1, Ipost] - 2 * va[Ipre, i, Ipost] +
-                                          va[Ipre, i+1, Ipost])
+                    D[Ipre, i, Ipost] +=
+                        len[Ipre, i, Ipost]^2 *
+                        pm[Ipre, i, Ipost]^2 *
+                        (
+                            va[Ipre, i-1, Ipost] - 2 * va[Ipre, i, Ipost] +
+                            va[Ipre, i+1, Ipost]
+                        )
                 end
             end
         end

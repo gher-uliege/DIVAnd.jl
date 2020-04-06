@@ -9,7 +9,7 @@
 function DIVAnd_filter3(A::AbstractArray, fillvalue, ntimes = 1)
     nd = ndims(A)
     # central weight
-    cw = 1.
+    cw = 1.0
 
     if ntimes == 0
         return A
@@ -37,16 +37,16 @@ function DIVAnd_filter3(A::AbstractArray, fillvalue, ntimes = 1)
             if !isequal(B[indI], fillvalue)
                 # https://github.com/JuliaLang/julia/issues/15276#issuecomment-297596373
                 # let block work-around
-                RJ =
-                    let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
-                        CartesianIndices(ntuple(
-                            i -> max(I1[i], indI[i] - stencil[i]):min(
-                                Iend[i],
-                                indI[i] + stencil[i],
-                            ),
-                            nd,
-                        ))
-                    end
+                RJ = let indI = indI, I1 = I1, Iend = Iend, stencil = stencil
+                    CartesianIndices(ntuple(
+                        i ->
+                            max(
+                                I1[i],
+                                indI[i] - stencil[i],
+                            ):min(Iend[i], indI[i] + stencil[i]),
+                        nd,
+                    ))
+                end
 
                 for indJ in RJ
                     if !isequal(B[indJ], fillvalue)
@@ -54,7 +54,7 @@ function DIVAnd_filter3(A::AbstractArray, fillvalue, ntimes = 1)
                         if indI == indJ
                             w += cw
                         else
-                            w += 1.
+                            w += 1.0
                         end
                     end
                     # end if not fill value

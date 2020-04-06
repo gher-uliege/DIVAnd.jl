@@ -10,10 +10,10 @@ import DIVAnd.Quadtrees
 Random.seed!(123)
 
 X = [
-    0 0;
-    1 0;
-    1 1;
-    0 1;
+    0 0
+    1 0
+    1 1
+    0 1
     0 0
 ]
 
@@ -26,14 +26,7 @@ attribs_res = DIVAnd.Quadtrees.within(qt, [0, 0], [0.1, 0.1])
 
 DIVAnd.Quadtrees.within(qt, [0, 0], [0.1, 0.1])
 
-@test [DIVAnd.Quadtrees.bitget(42, i) for i = 6:-1:1] == [
-    true,
-    false,
-    true,
-    false,
-    true,
-    false,
-]
+@test [DIVAnd.Quadtrees.bitget(42, i) for i = 6:-1:1] == [true, false, true, false, true, false]
 
 @test DIVAnd.Quadtrees.inside([0, 0], [1, 1], [0.5, 0.5]) == true
 @test DIVAnd.Quadtrees.inside([0, 0], [1, 1], [1.5, 1.5]) == false
@@ -48,7 +41,7 @@ DIVAnd.Quadtrees.within(qt, [0, 0], [0.1, 0.1])
 
 #@test_throws ArgumentError intersect([0,0],[1,1],[0.5,0.5],[2,2,3])
 
-qt = DIVAnd.Quadtrees.QT(Int, [0., 0.], [1., 1.])
+qt = DIVAnd.Quadtrees.QT(Int, [0.0, 0.0], [1.0, 1.0])
 DIVAnd.Quadtrees.add!(qt, [0.1, 0.1], 1)
 DIVAnd.Quadtrees.add!(qt, [0.2, 0.2], 2)
 DIVAnd.Quadtrees.add!(qt, [0.7, 0.7], 3)
@@ -91,7 +84,7 @@ attribs_res = DIVAnd.Quadtrees.within(qt2, xmin, xmax)
 
 
 # progressively add all points
-qt3 = DIVAnd.Quadtrees.QT(Int, [0., 0.], [1., 1.])
+qt3 = DIVAnd.Quadtrees.QT(Int, [0.0, 0.0], [1.0, 1.0])
 
 for i = 1:size(X, 2)
     DIVAnd.Quadtrees.add!(qt3, X[:, i], i)

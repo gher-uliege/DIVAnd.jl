@@ -157,7 +157,7 @@ function readODVspreadsheet(datafile)
 
         goodcols = setdiff(columnLabels, column2discard)
         # Get indices of the good columns
-        index2keep = findall((in)(goodcols,), columnLabels)
+        index2keep = findall((in)(goodcols), columnLabels)
 
         ncols2 = length(index2keep)
         # @info "No. of columns after selection: $ncols2"
@@ -168,7 +168,6 @@ function readODVspreadsheet(datafile)
         # count the lines "cleverly", without the comments
         # or the empty lines
         for row in eachline(f)
-
             if startswith(row, "//")
                 # ignore lines starting with e.g.
                 # //<History> ...
@@ -192,7 +191,6 @@ function readODVspreadsheet(datafile)
         i = 0
 
         for row in eachline(f; keep = false)
-
             if startswith(row, "//")
                 # ignore lines starting with e.g.
                 # //<History> ...
@@ -318,8 +316,10 @@ Return a list `list` of all local names mapping to the specified `P01name` in th
 ODV spreadsheet `sheet` without the prefix "SDN:LOCAL:".
 
 """
-localnames(sheet, P01name) =
-    String[replace(v, r"^SDN:LOCAL:" => "") for (v, d) in sheet.SDN_parameter_mapping if d["object"] == P01name]
+localnames(sheet, P01name) = String[
+    replace(v, r"^SDN:LOCAL:" => "")
+    for (v, d) in sheet.SDN_parameter_mapping if d["object"] == P01name
+]
 
 """
     list = localnames(sheet)
@@ -394,7 +394,7 @@ The time origin is _not_ noon (12:00) on Monday, January 1, 4713 BC as for the J
 """
 parsejd(t) =
     DateTime(2007, 2, 10) +
-    Dates.Millisecond(round(Int64, (t - 2454142.) * (24 * 60 * 60 * 1000)))
+    Dates.Millisecond(round(Int64, (t - 2454142.0) * (24 * 60 * 60 * 1000)))
 
 
 """
@@ -541,7 +541,7 @@ function loadprofile(
     qvlocalname = "QV:SEADATANET",
 )
     fillvalue = T(NaN)
-    filldate_jd = 0.
+    filldate_jd = 0.0
     filldate = parsejd(filldate_jd)
 
     profile = sheet.profileList[iprofile]
@@ -596,13 +596,8 @@ function loadprofile(
             qvlocalname = qvlocalname,
         )
     elseif "Depth" in locnames
-        depth[:], depth_qv[:] = loaddataqv(
-            sheet,
-            profile,
-            "Depth",
-            fillvalue;
-            qvlocalname = qvlocalname,
-        )
+        depth[:], depth_qv[:] =
+            loaddataqv(sheet, profile, "Depth", fillvalue; qvlocalname = qvlocalname)
         # if "Depth reference" in locnames
         #     depthref = loaddata(sheet,profile,"Depth reference","unknown")
 
@@ -622,33 +617,18 @@ function loadprofile(
     # chronological julian day
     if "SDN:P01::CJDY1101" in P01names
         locname_time = localnames(sheet, "SDN:P01::CJDY1101")[1]
-        timedata, time_qv = loaddataqv(
-            sheet,
-            profile,
-            locname_time,
-            filldate_jd;
-            qvlocalname = qvlocalname,
-        )
+        timedata, time_qv =
+            loaddataqv(sheet, profile, locname_time, filldate_jd; qvlocalname = qvlocalname)
         time = parsejd.(timedata)
     elseif "time_ISO8601" in locnames
-        time, time_qv = loaddataqv(
-            sheet,
-            profile,
-            "time_ISO8601",
-            filldate;
-            qvlocalname = qvlocalname,
-        )
+        time, time_qv =
+            loaddataqv(sheet, profile, "time_ISO8601", filldate; qvlocalname = qvlocalname)
     elseif "SDN:P01::DTUT8601" in P01names
         # ISO8601 format, e.g. yyyy-mm-ddThh:mm:ss.sss
 
         locname_time = localnames(sheet, "SDN:P01::DTUT8601")
-        time, time_qv = loaddataqv(
-            sheet,
-            profile,
-            locname_time,
-            filldate;
-            qvlocalname = qvlocalname,
-        )
+        time, time_qv =
+            loaddataqv(sheet, profile, locname_time, filldate; qvlocalname = qvlocalname)
     else
         # hopefully not necessary
         for header in [
@@ -659,13 +639,8 @@ function loadprofile(
             "yyyy-mm-dd",
         ]
             if header in locnames
-                time, time_qv = loaddataqv(
-                    sheet,
-                    profile,
-                    header,
-                    filldate;
-                    qvlocalname = qvlocalname,
-                )
+                time, time_qv =
+                    loaddataqv(sheet, profile, header, filldate; qvlocalname = qvlocalname)
                 break
             end
         end
@@ -766,7 +741,6 @@ function load(
 
 
     for fname in fnames
-
         sheet = readODVspreadsheet(fname)
         sheet_P01names = listSDNparams(sheet)
 
@@ -811,10 +785,10 @@ function load(
                     qvlocalname = qvlocalname,
                 )
 
-                    # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
+                # concatenate EDMO and LOCAL_CDI_ID separated by a hypthen
                 obsids = String[e * "-" * l for (e, l) in zip(EDMO, LOCAL_CDI_ID)]
 
-                    # select data matching quality flags
+                # select data matching quality flags
 
                 good_data = falses(size(data_qv))
                 for flag in qv_flags
@@ -857,11 +831,9 @@ function load(
     qv_flags = [GOOD_VALUE, PROBABLY_GOOD_VALUE],
     nametype = :P01,
 )
-    fnames = vcat([[joinpath(root, file) for file in files if endswith(file, ".txt")] for (
-        root,
-        dirs,
-        files,
-    ) in walkdir(dir)]...)
+    fnames = vcat([
+        [joinpath(root, file) for file in files if endswith(file, ".txt")] for (root, dirs, files) in walkdir(dir)
+    ]...)
     return load(T, fnames, datanames; qv_flags = qv_flags, nametype = nametype)
 end
 

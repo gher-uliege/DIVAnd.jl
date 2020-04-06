@@ -2,24 +2,31 @@ using Base.Threads
 
 
 # https://web.archive.org/web/20191115112938/https://codingforspeed.com/using-faster-exponential-approximation/
-@inline function approximate_exp(x::T) where T
+@inline function approximate_exp(x::T) where {T}
     x = T(1) + x / T(256)
-    x *= x; x *= x; x *= x; x *= x;
-    x *= x; x *= x; x *= x; x *= x;
-    return max(x,T(0))
+    x *= x
+    x *= x
+    x *= x
+    x *= x
+    x *= x
+    x *= x
+    x *= x
+    x *= x
+    return max(x, T(0))
 end
 
 """
     x2 is x squared
 """
 function approximate_gaussian(x2)
-    return @fastmath 1 / (1 + x2 + x2*x2)
+    return @fastmath 1 / (1 + x2 + x2 * x2)
 end
 
-@inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where ndim
-    return CartesianIndex(
-        ntuple( j -> min(max(round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1,1),sz[j]), Val(ndim))
-    )
+@inline function _grid_index(coord, i, coordmin, ilenmax, sz::NTuple{ndim,Int}) where {ndim}
+    return CartesianIndex(ntuple(
+        j -> min(max(round(Int, (coord[j, i] - coordmin[j]) * ilenmax[j]) + 1, 1), sz[j]),
+        Val(ndim),
+    ))
 end
 
 """
@@ -50,14 +57,14 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     coordmax += range * eps(eltype(coord))
 
     # Now number of grid points in each direction
-    sz =  let coordmax=coordmax, coordmin=coordmin, ilenmax=ilenmax
-        ntuple(j -> (round(Int, (coordmax[j] - coordmin[j]) * ilenmax[j]) + 1),Val(ndim))
+    sz = let coordmax = coordmax, coordmin = coordmin, ilenmax = ilenmax
+        ntuple(j -> (round(Int, (coordmax[j] - coordmin[j]) * ilenmax[j]) + 1), Val(ndim))
     end
 
     # now allocate the arrays
     NP = zeros(Int, sz)
     NG = zeros(Int, ndim)
-    gridindex = Vector{CartesianIndex{ndim}}(undef,ndata)
+    gridindex = Vector{CartesianIndex{ndim}}(undef, ndata)
 
     # First dummy loop, identify the number of points which fall into
     # any bin of a regular grid
@@ -96,7 +103,7 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     # Ok, now finally calculate covariances and application
 
     Threads.@threads for i = 1:ndata
-    #@inbounds for i = 1:ndata
+        #@inbounds for i = 1:ndata
         # Find grid indexes
         NGind = gridindex[i]
 
@@ -104,13 +111,14 @@ function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
         Rx[i] = 0
 
 
-        @inbounds for ind in CartesianIndices(ntuple(j -> max(1,NGind[j]-1):min(sz[j],NGind[j]+1), ndim)::NTuple{
-            ndim,
-            UnitRange{Int},
-        })
-
+        @inbounds for ind in CartesianIndices(
+            ntuple(
+                j -> max(1, NGind[j] - 1):min(sz[j], NGind[j] + 1),
+                ndim,
+            )::NTuple{ndim,UnitRange{Int}},
+        )
             @inbounds for ii in IP[ind]
-                dist = 0.
+                dist = 0.0
                 @inbounds for j = 1:ndim
                     dist += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
                 end
@@ -156,7 +164,7 @@ function weight_RtimesOne_binning(x, len; refine = 10)
     n = length(x)
 
     # grid finer than a factor give by refine
-    dx = ntuple(i -> len[i]/refine,Val(n))
+    dx = ntuple(i -> len[i] / refine, Val(n))
 
     gridx = ntuple(i -> minimum(x[i]):dx[i]:maximum(x[i])+dx[i], Val(n))
     sz = length.(gridx)
@@ -165,9 +173,9 @@ function weight_RtimesOne_binning(x, len; refine = 10)
     m2, count2, vb2, nout2 = binning(gridx, x, v)
 
     mask = trues(sz)
-    pmn = ntuple(i -> ones(sz)/dx[1], Val(n))
+    pmn = ntuple(i -> ones(sz) / dx[1], Val(n))
 
-    c0 = Float64.(count2);
+    c0 = Float64.(count2)
     c = zeros(size(c0))
 
     # adusted length
@@ -175,13 +183,13 @@ function weight_RtimesOne_binning(x, len; refine = 10)
     len_adjusted = ntuple(i -> coef * len[i], Val(n))
 
     # "diffusion" coefficient
-    nu = ntuple(i -> fill(len_adjusted[i].^2,sz),Val(n))
+    nu = ntuple(i -> fill(len_adjusted[i] .^ 2, sz), Val(n))
 
     # compute inverses of cell volumne and staggered scaled coefficients
-    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(mask,pmn,nu)
+    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(mask, pmn, nu)
 
     # maximum allowed time step
-    α0 = 1 / (2 * sum(ntuple(i -> maximum(pmn[i].^2 .* nu[i]),Val(n))))
+    α0 = 1 / (2 * sum(ntuple(i -> maximum(pmn[i] .^ 2 .* nu[i]), Val(n))))
 
     # 10% safety margin
     α = α0 / 1.1
@@ -203,13 +211,13 @@ function weight_RtimesOne_binning(x, len; refine = 10)
 
     @debug "sum(c): $(sum(c))"
 
-    detD = prod(len_adjusted.^2)
+    detD = prod(len_adjusted .^ 2)
     t = α * nmax
     c = c * sqrt((4π * t)^n / detD)
 
     @debug "range of c: $(extrema(c))"
 
-    itp = LinearInterpolation(gridx,c,extrapolation_bc = NaN);
+    itp = LinearInterpolation(gridx, c, extrapolation_bc = NaN)
     ci = itp.(x...)
 
     weighti = 1 ./ ci

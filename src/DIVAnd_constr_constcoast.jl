@@ -93,7 +93,7 @@ function sparse_gradcoast(mask)
     diffy = sparse_diff(sz, 2)
 
     H = [
-        sparse_pack(bu) * diffx * Hunpack;
+        sparse_pack(bu) * diffx * Hunpack
         sparse_pack(bv) * diffy * Hunpack
     ]
 

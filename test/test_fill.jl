@@ -16,11 +16,11 @@ cf = ufill(c, valex);
 @test sum(cf == valex) == 0
 
 
-A = [1., NaN, 2.]
+A = [1.0, NaN, 2.0]
 DIVAnd_fill!(A, NaN)
-@test A ≈ [1., 1.5, 2]
+@test A ≈ [1.0, 1.5, 2]
 
 
-A = [1., NaN, NaN, NaN, NaN]
+A = [1.0, NaN, NaN, NaN, NaN]
 DIVAnd_fill!(A, NaN)
 @test A ≈ ones(size(A))

@@ -56,7 +56,7 @@ function DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
         if !ignoreobs[i]
             d0d += yo[i]^2 / diagR[i]
             d0dmd1d += yo[i] * residual[i] / diagR[i]
-            inv_eps2 += 1/diagR[i]
+            inv_eps2 += 1 / diagR[i]
             nrealdata += 1
         end
     end
@@ -77,7 +77,7 @@ end
 
 
 DIVAnd_adaptedeps2(yo, residual, diagR::Number, ignoreobs) =
-    DIVAnd_adaptedeps2(yo, residual, fill(diagR,size(yo)), ignoreobs)
+    DIVAnd_adaptedeps2(yo, residual, fill(diagR, size(yo)), ignoreobs)
 
 DIVAnd_adaptedeps2(yo, residual, R::Matrix, ignoreobs) =
     DIVAnd_adaptedeps2(yo, residual, diag(R), ignoreobs)

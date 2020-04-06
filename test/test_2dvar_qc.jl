@@ -42,7 +42,7 @@ mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 20))
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 # fi is the interpolated field
 fi, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; alphabc = 0);

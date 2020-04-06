@@ -23,9 +23,7 @@ function myspmatmul_nnz(A::SparseMatrixCSC{Tv,Ti}, B::SparseMatrixCSC{Tv,Ti}) wh
     @inbounds begin
         xb = zeros(Ti, mA)
         for i = 1:nB
-
             for jp = colptrB[i]:(colptrB[i+1]-1)
-
                 j = rowvalB[jp]
                 for kp = colptrA[j]:(colptrA[j+1]-1)
                     k = rowvalA[kp]
@@ -150,5 +148,3 @@ function Base.:Ac_mul_B(A::SparseMatrixCSC{Float64,Int}, B::SparseMatrixCSC{Floa
         return C
     end
 end
-
-

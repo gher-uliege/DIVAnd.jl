@@ -125,7 +125,7 @@ function varanalysis(
     H = constrain.H
 
     Ld = T[mean(L) for L in len]
-    nu = ([L.^2 for L in len]...,)
+    nu = ([L .^ 2 for L in len]...,)
 
     # Building the Laplacian ∇ ⋅ (ν ∇ ϕ) where ν is the
     # correlation length-scale squared
@@ -138,7 +138,7 @@ function varanalysis(
     # ok
 
     #@show [maximum(pmn[i].^2 .* nu[i]) for i in 1:n]
-    α0 = 1 / (2 * sum([maximum(pmn[i].^2 .* nu[i]) for i = 1:n]))::T
+    α0 = 1 / (2 * sum([maximum(pmn[i] .^ 2 .* nu[i]) for i = 1:n]))::T
 
     # 10% safety margin
     α = α0 / 1.1
@@ -229,13 +229,8 @@ function varanalysis(
 
     #@show DIVAnd.checksym(s.sv.n,fun!)
 
-    xp, success, s.niter = DIVAnd.conjugategradient(
-        fun!,
-        b;
-        tol = tol,
-        maxit = maxit,
-        progress = progress,
-    )
+    xp, success, s.niter =
+        DIVAnd.conjugategradient(fun!, b; tol = tol, maxit = maxit, progress = progress)
 
     # tmpx = SB^½ * W^½ * xp
     decompB!(s.sv, β, ivol, nus, nmax, α, sW * xp, work1, work2, tmpx)
@@ -250,8 +245,8 @@ function varanalysis(
         decompBx = similar(x)
         DIVAnd.decompB!(s.sv, β, ivol, nus, nmax, α, x, work1, work2, decompBx)
 
-#        decompBx2 = (sW)^2 *  decompBx
-#        DIVAnd.decompB!(s.sv,β,ivol,nus,nmax,α,decompBx2,work1,work2,decompBx)
+        #        decompBx2 = (sW)^2 *  decompBx
+        #        DIVAnd.decompB!(s.sv,β,ivol,nus,nmax,α,decompBx2,work1,work2,decompBx)
 
         return decompBx
     end

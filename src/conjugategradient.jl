@@ -153,7 +153,7 @@ function conjugategradient(
     #gc()
     for k = 1:maxit
         # compute A*p
-          #@show k
+        #@show k
         fun!(p, Ap)
 
         # how far do we need to go in direction p?

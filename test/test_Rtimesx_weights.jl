@@ -7,24 +7,26 @@ using Base.Threads
 #using LibSpatialIndex
 #const SI = LibSpatialIndex
 
-coord = copy([
-    0.0853508 0.939756;
-    0.784134 0.080227;
-    0.999551 0.784304;
-    0.636594 0.7699;
-    0.357327 0.891722;
-    0.101827 0.856188;
-    0.862349 0.0555934;
-    0.992086 0.97036;
-    0.702955 0.591252;
-    0.685006 0.23132
-]')
+coord = copy(
+    [
+        0.0853508 0.939756
+        0.784134 0.080227
+        0.999551 0.784304
+        0.636594 0.7699
+        0.357327 0.891722
+        0.101827 0.856188
+        0.862349 0.0555934
+        0.992086 0.97036
+        0.702955 0.591252
+        0.685006 0.23132
+    ]',
+)
 
 #x = (coord[:,1],coord[:,2])
 
 LS = (0.1, 0.1)
 
-dist2(x, y, len) = sum(((x - y) ./ len).^2)
+dist2(x, y, len) = sum(((x - y) ./ len) .^ 2)
 
 ndata = size(coord, 2)
 x = ones(ndata)
@@ -70,20 +72,20 @@ function Rtimesx2!(coord, len::NTuple{ndim,T}, w, Rx) where {T} where {ndim}
     @show Threads.nthreads()
 
     @inbounds Threads.@threads for i = 1:Nobs
-        index_buffer = @view index_buffer_all[:,Threads.threadid()]
+        index_buffer = @view index_buffer_all[:, Threads.threadid()]
 
-        xmin = ntuple(j -> coord[j, i] - factor * len[j],Val(ndim))
-        xmax = ntuple(j -> coord[j, i] + factor * len[j],Val(ndim))
+        xmin = ntuple(j -> coord[j, i] - factor * len[j], Val(ndim))
+        xmax = ntuple(j -> coord[j, i] + factor * len[j], Val(ndim))
 
         nindex = DIVAnd.Quadtrees.within_buffer!(qt, xmin, xmax, index_buffer)
 
-        Rx[i] = 0.
+        Rx[i] = 0.0
 
         #for ii in @view index_buffer[1:nindex]
         @inbounds for j = 1:nindex
             ii = index_buffer[j]
 
-            dist2 = 0.
+            dist2 = 0.0
             for j = 1:ndim
                 dist2 += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
             end
@@ -124,13 +126,13 @@ function Rtimesx3!(coord, len::NTuple{ndim,T}, w, Rx) where {T} where {ndim}
         index_buffer = SI.intersects(rtree, xmin, xmax)
         nindex = length(index_buffer)
 
-        Rx[i] = 0.
+        Rx[i] = 0.0
 
         #for ii in @view index_buffer[1:nindex]
         @inbounds for j = 1:nindex
             ii = index_buffer[j]
 
-            dist2 = 0.
+            dist2 = 0.0
             for j = 1:ndim
                 dist2 += ((coord[j, i] - coord[j, ii]) * ilen[j])^2
             end
@@ -183,10 +185,10 @@ weight = DIVAnd.weight_RtimesOne((x, y), len)
 ndata = 70000
 ndim = 2
 
-ndata = 70000*2*2*2
+ndata = 70000 * 2 * 2 * 2
 ndim = 2
 
-ndata = 30000*2*2*2*2*2
+ndata = 30000 * 2 * 2 * 2 * 2 * 2
 ndim = 4
 
 coord = randn(ndim, ndata)

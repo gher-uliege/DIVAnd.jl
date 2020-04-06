@@ -22,7 +22,7 @@ dx = dy = 0.2
 lonr = 27:dx:42
 latr = 40:dy:47
 
-depthr = [0., 10, 100]
+depthr = [0.0, 10, 100]
 
 mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.domain(bathname, bathisglobal, lonr, latr, depthr)
 
@@ -30,14 +30,8 @@ mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.domain(bathname, bathisglobal, lonr, l
 @test sum(mask[:, :, 1]) >= sum(mask[:, :, 2]) >= sum(mask[:, :, 3])
 
 
-mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.domain(
-    bathname,
-    bathisglobal,
-    lonr,
-    latr,
-    depthr;
-    zlevel = :floor,
-)
+mask, (pm, pn, po), (xi, yi, zi) =
+    DIVAnd.domain(bathname, bathisglobal, lonr, latr, depthr; zlevel = :floor)
 
 # more than half of the points should be masked
 # (in fact, for this domain, all points are masked at the boundary)
@@ -45,16 +39,10 @@ mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.domain(
 
 
 
-@test DIVAnd.localresolution([0., 10., 20.]) ≈ [10., 10., 10.]
+@test DIVAnd.localresolution([0.0, 10.0, 20.0]) ≈ [10.0, 10.0, 10.0]
 
-@test DIVAnd.localresolution([0., 10., 20., 100, 200, 500]) ≈ [
-    10.0,
-    10.0,
-    45.0,
-    90.0,
-    200.0,
-    300.0,
-]
+@test DIVAnd.localresolution([0.0, 10.0, 20.0, 100, 200, 500]) ≈
+      [10.0, 10.0, 45.0, 90.0, 200.0, 300.0]
 
 
 

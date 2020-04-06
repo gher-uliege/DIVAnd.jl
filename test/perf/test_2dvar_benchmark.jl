@@ -70,14 +70,9 @@ function benchmark_nd_repeat(n, ng, ntimes; kwargs...)
 
     mad(x) = median(abs.(x - median(x)))
 
-    stat = Dict{String,Any}([(string(f), f(times)) for f in [
-        mean,
-        std,
-        median,
-        mad,
-        minimum,
-        maximum,
-    ]])
+    stat = Dict{String,Any}([
+        (string(f), f(times)) for f in [mean, std, median, mad, minimum, maximum]
+    ])
     stat["samples"] = length(times)
     stat["times"] = times
     stat["RMS"] = RMS
@@ -117,7 +112,7 @@ function rms(x, y)
     d = x - y
 
     m = .!isnan.(d)
-    r = mean(d[m].^2)
+    r = mean(d[m] .^ 2)
 
     r = sqrt.(r)
     return r

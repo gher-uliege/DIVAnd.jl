@@ -5,25 +5,19 @@ using Random
 import DIVAnd
 
 # test data for basic statistics
-x = [1., 2., 3., 4.]
-y = -[1., 2., 3., 4.]
+x = [1.0, 2.0, 3.0, 4.0]
+y = -[1.0, 2.0, 3.0, 4.0]
 sumx = sum(x)
-sumx2 = sum(x.^2)
+sumx2 = sum(x .^ 2)
 
 sumy = sum(y)
-sumy2 = sum(y.^2)
+sumy2 = sum(y .^ 2)
 
 sumxy = sum(x .* y)
 
 meanx, stdx = DIVAnd.stats(sumx, sumx2, length(x))
-meanx, meany, stdx, stdy, covar, corr = DIVAnd.stats(
-    sumx,
-    sumx2,
-    sumy,
-    sumy2,
-    sumxy,
-    length(x),
-)
+meanx, meany, stdx, stdy, covar, corr =
+    DIVAnd.stats(sumx, sumx2, sumy, sumy2, sumxy, length(x))
 
 @test meanx ≈ mean(x)
 @test stdx ≈ std(x)
@@ -36,8 +30,8 @@ mincount = 50
 
 mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_squaredom(2, range(0, stop = 1, length = 100))
 
-lenx = .05;
-leny = .05;
+lenx = 0.05;
+leny = 0.05;
 Nens = 1
 distbin = 0:0.02:0.3
 mincount = 100
@@ -59,7 +53,7 @@ L = range(minlen, stop = maxlen, length = 100);
 
 mu, K, len_scale = DIVAnd.DIVAnd_kernel(2, [1, 2, 1])
 
-J(L) = sum(((covar - var0opt * K.(distx * len_scale / L)) ./ stdcovar).^2)
+J(L) = sum(((covar - var0opt * K.(distx * len_scale / L)) ./ stdcovar) .^ 2)
 Jmin, imin = findmin(J.(L))
 lenopt = L[imin]
 
@@ -132,10 +126,8 @@ nsamp = 0
 =#
 
 
-mask, (pm, pn, po), (xi, yi, zi) = DIVAnd.DIVAnd_squaredom(
-    3,
-    range(0, stop = 1, length = 30),
-)
+mask, (pm, pn, po), (xi, yi, zi) =
+    DIVAnd.DIVAnd_squaredom(3, range(0, stop = 1, length = 30))
 
 lenx = leny = lenz = 0.2
 Nens = 1
@@ -146,9 +138,10 @@ z = [0.3, 0.5, 0.7]
 s = 1:7:length(field)
 x = (xi[s], yi[s], zi[s])
 v = field[s]
-epsilon2 = ones(length(x[3])) + x[3][:].^2
+epsilon2 = ones(length(x[3])) + x[3][:] .^ 2
 
-fitlenxy, dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fithorzlen(
+fitlenxy,
+dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fithorzlen(
     x,
     v,
     z;
@@ -160,9 +153,10 @@ fitlenxy, dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fithorz
 s = 1:3:length(field)
 x = (xi[s], yi[s], zi[s])
 v = field[s]
-epsilon2 = ones(length(x[3])) + x[3][:].^2
+epsilon2 = ones(length(x[3])) + x[3][:] .^ 2
 
-fitlenz, dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
+fitlenz,
+dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
     x,
     v,
     z;
@@ -173,4 +167,5 @@ fitlenz, dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertl
 
 # RandomCoupels iterators
 
-@test collect( DIVAnd.RandomCoupels(1000,10,1234) ) == collect( DIVAnd.RandomCoupels(1000,10,1234) )
+@test collect(DIVAnd.RandomCoupels(1000, 10, 1234)) ==
+      collect(DIVAnd.RandomCoupels(1000, 10, 1234))

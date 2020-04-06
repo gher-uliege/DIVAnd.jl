@@ -25,18 +25,67 @@ if !isfile(obsname)
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
-obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
-    Float64,
-    obsname,
-    "Salinity",
-)
+obsvalue, obslon, obslat, obsdepth, obstime, obsids =
+    DIVAnd.loadobs(Float64, obsname, "Salinity")
 
 
 
 dy = dx = 0.1
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
-depthr = [0.,5, 10, 15, 20, 25, 30, 40, 50, 66, 75, 85, 100, 112, 125, 135, 150, 175, 200, 225, 250, 275, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1600, 1750, 1850, 2000];
+depthr = [
+    0.0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    40,
+    50,
+    66,
+    75,
+    85,
+    100,
+    112,
+    125,
+    135,
+    150,
+    175,
+    200,
+    225,
+    250,
+    275,
+    300,
+    350,
+    400,
+    450,
+    500,
+    550,
+    600,
+    650,
+    700,
+    750,
+    800,
+    850,
+    900,
+    950,
+    1000,
+    1050,
+    1100,
+    1150,
+    1200,
+    1250,
+    1300,
+    1350,
+    1400,
+    1450,
+    1500,
+    1600,
+    1750,
+    1850,
+    2000,
+];
 
 
 years = 1993:1993
@@ -66,9 +115,13 @@ varname = "Salinity"
 
 
 DIVAnd.average_background_profile(
-    background_filename, (lonr,latr,depthr,TS), (obslon, obslat, obsdepth, obstime), obsvalue,
+    background_filename,
+    (lonr, latr, depthr, TS),
+    (obslon, obslat, obsdepth, obstime),
+    obsvalue,
     epsilon2,
-    varname)
+    varname,
+)
 
 @test isfile(background_filename)
 nothing

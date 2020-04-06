@@ -7,10 +7,10 @@ using DIVAnd
 len = 0.2;
 
 # value of the observations
-f = [1.]
+f = [1.0]
 
 # normalized error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 # dimension
 for n = 1:3
@@ -59,8 +59,8 @@ fi, s = DIVAndrun(
     len,
     epsilon2,
     primal = true,
-    coeff_derivative2 = [1., 1.],
-    coeff_laplacian = [0., 0.],
+    coeff_derivative2 = [1.0, 1.0],
+    coeff_laplacian = [0.0, 0.0],
 );
 @show maximum(fi)
 
@@ -85,8 +85,8 @@ fi, s = DIVAndrun(
     len,
     epsilon2,
     primal = true,
-    coeff_derivative2 = [1., 1., 1.],
-    coeff_laplacian = [0., 0., 0.],
+    coeff_derivative2 = [1.0, 1.0, 1.0],
+    coeff_laplacian = [0.0, 0.0, 0.0],
 );
 @show maximum(fi)
 
@@ -99,8 +99,8 @@ fi, s = DIVAndrun(
     len,
     epsilon2,
     primal = true,
-    coeff_derivative2 = [0., 0., 1.],
-    coeff_laplacian = [1., 1., 0.],
+    coeff_derivative2 = [0.0, 0.0, 1.0],
+    coeff_laplacian = [1.0, 1.0, 0.0],
 );
 @show maximum(fi)
 
@@ -114,8 +114,8 @@ fi, s = DIVAndrun(
     len,
     epsilon2,
     primal = true,
-    coeff_derivative2 = [0., 0., 0.1],
-    coeff_laplacian = [1., 1., 0.9],
+    coeff_derivative2 = [0.0, 0.0, 0.1],
+    coeff_laplacian = [1.0, 1.0, 0.9],
 );
 @show maximum(fi)
 

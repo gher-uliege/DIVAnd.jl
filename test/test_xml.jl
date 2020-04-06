@@ -13,7 +13,8 @@ db = Dict{Tuple{Int64,String},Tuple{Bool,Vector{Int64}}}(
 obsids = ["1-A", "2-B", "1000-A", "2-C"]
 
 
-originators, notfound = @test_logs (:info, r".*EDMO.*") match_mode = :any DIVAnd.get_originators_from_obsid(
+originators,
+notfound = @test_logs (:info, r".*EDMO.*") match_mode = :any DIVAnd.get_originators_from_obsid(
     db,
     obsids;
     ignore_errors = true,

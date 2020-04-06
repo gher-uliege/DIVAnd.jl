@@ -23,7 +23,7 @@ n = 2
 
 loni = [lon[i]]
 lati = [lat[j]]
-depthi = [10.]
+depthi = [10.0]
 timei = [time[n]]
 
 
@@ -47,5 +47,3 @@ background = DIVAnd.backgroundfile(fname, varname)
 vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 
 @test fi ≈ [0] atol = 1e-5
-
-

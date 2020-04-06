@@ -31,7 +31,7 @@ function DIVAnd_constr_fluxes(s, topographyforfluxes, fluxes, epsfluxes, pmnin)
 
     sz = size(mask)
 
-# JMB directly put the right number of constraints for the moment, one for each latitude.
+    # JMB directly put the right number of constraints for the moment, one for each latitude.
 
     jmjmax = [0, 0]
     if topographyforfluxes[1] != 0
@@ -48,12 +48,14 @@ function DIVAnd_constr_fluxes(s, topographyforfluxes, fluxes, epsfluxes, pmnin)
     end
 
 
-#     A = spzeros(s.sv.n,s.sv.n)
+    #     A = spzeros(s.sv.n,s.sv.n)
     A = spzeros(sum(jmjmax), s.sv.n)
     l = size(A, 1)
     yo = zeros(l)
-    R = Diagonal((mean(topographyforfluxes[1]) + mean(topographyforfluxes[2])) *
-                 epsfluxes .* ones(l))
+    R = Diagonal(
+        (mean(topographyforfluxes[1]) + mean(topographyforfluxes[2])) * epsfluxes .*
+        ones(l),
+    )
 
 
     joffset = 0
@@ -65,30 +67,35 @@ function DIVAnd_constr_fluxes(s, topographyforfluxes, fluxes, epsfluxes, pmnin)
 
 
         for j = 1:jmjmax[i]
-# JMB: Add here integrals by using pack of an array with dx at a given latitude
-# Take same shape as topo array
+            # JMB: Add here integrals by using pack of an array with dx at a given latitude
+            # Take same shape as topo array
             forintegral = zeros(size(d))
-# Use metrics
+            # Use metrics
             if i == 1
                 forintegral[:, j] = 1.0 ./ pmnin[1][:, j]
             else
                 forintegral[j, :] = 1.0 ./ pmnin[2][j, :]
             end
-#  Pack forintegral
-#
-#        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
+            #  Pack forintegral
+            #
+            #        A = A + sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i];
             packedline = statevector_pack(s.sv, (forintegral,))
 
-            jmw = packedline' * sparse_diag(d[mask]) * sparse_pack(mask) * S' *
-                  sparse_pack(m)' * s.Dx[i]
-           #@show sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i]
-           #@show mean(sparse_diag(d[mask]))
-           #@show size(jmw),size(A),size(A[j,:]),size(squeeze(jmw,1))
+            jmw =
+                packedline' *
+                sparse_diag(d[mask]) *
+                sparse_pack(mask) *
+                S' *
+                sparse_pack(m)' *
+                s.Dx[i]
+            #@show sparse_diag(d[mask]) * sparse_pack(mask) * S' * sparse_pack(m)' * s.Dx[i]
+            #@show mean(sparse_diag(d[mask]))
+            #@show size(jmw),size(A),size(A[j,:]),size(squeeze(jmw,1))
 
-           #@show squeeze(jmw,1),fluxes[i][j]
+            #@show squeeze(jmw,1),fluxes[i][j]
 
             A[j+joffset, :] = A[j+joffset, :] + jmw[1, :]
-           # test is kept in case flux signs are changed to x,y instead normal direction
+            # test is kept in case flux signs are changed to x,y instead normal direction
             if i == 1
                 yo[j+joffset] = -fluxes[i][j]
             else
@@ -104,7 +111,7 @@ function DIVAnd_constr_fluxes(s, topographyforfluxes, fluxes, epsfluxes, pmnin)
 
 
     end
-# end loop o j
+    # end loop o j
 
     H = A
 

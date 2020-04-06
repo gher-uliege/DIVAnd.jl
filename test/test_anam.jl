@@ -4,14 +4,15 @@ include("../src/anamorphosis.jl")
 
 # log/exp transform (with linear extension)
 
-threshold = 10.
+threshold = 10.0
 trans, invtrans = Anam.loglin(threshold)
 
 x = range(0.03, stop = 200, length = 100)
 x2 = invtrans.(trans.(x))
 
 @test x ≈ x2
-@test trans(threshold - 10 * eps(1.)) ≈ trans(threshold + 10 * eps(1.)) atol = 100 * eps(1.)
+@test trans(threshold - 10 * eps(1.0)) ≈ trans(threshold + 10 * eps(1.0)) atol =
+    100 * eps(1.0)
 
 # with offset
 
@@ -21,7 +22,8 @@ x = range(-0.03, stop = 200, length = 100)
 x2 = invtrans.(trans.(x))
 
 @test x ≈ x2
-@test trans(threshold - 10 * eps(1.)) ≈ trans(threshold + 10 * eps(1.)) atol = 100 * eps(1.)
+@test trans(threshold - 10 * eps(1.0)) ≈ trans(threshold + 10 * eps(1.0)) atol =
+    100 * eps(1.0)
 
 # logit transform
 

@@ -22,8 +22,8 @@ y = y[:]
 v = sin.(x * 6) .* cos.(y * 6)
 
 
-lenx = .15;
-leny = .15;
+lenx = 0.15;
+leny = 0.15;
 
 epsilon2 = 0.05;
 

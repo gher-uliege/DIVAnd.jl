@@ -35,8 +35,8 @@ function loadprof(
     nchunk = 10
     n_samples = size(ncvar, 1)
     n_stations = size(ncvar, 2)
-#    n_stations = 100000
-#    n_stations = 10000
+    #    n_stations = 100000
+    #    n_stations = 10000
     data = Vector{Vector{T}}(undef, n_stations)
     data_z = Vector{Vector{T}}(undef, n_stations)
 
@@ -64,10 +64,12 @@ function loadprof(
         for k = 1:clen
             iprofile = 0
             for l = 1:n_samples
-                if ((data_chunk[l, k] != fillval) &&
+                if (
+                    (data_chunk[l, k] != fillval) &&
                     (z_chunk[l, k] != fillval_z) &&
                     (flag_chunk[l, k] ∈ accepted_status_flag_values) &&
-                    (flag_z_chunk[l, k] ∈ accepted_status_flag_values_z))
+                    (flag_z_chunk[l, k] ∈ accepted_status_flag_values_z)
+                )
 
                     iprofile = iprofile + 1
                     profile[iprofile] = data_chunk[l, k]
@@ -106,12 +108,15 @@ function flatten_data(
     j = 0
 
     for i = 1:length(data)
-#    for i = 1:100
+        #    for i = 1:100
         jend = j + length(data[i])
         obsid = "$(EDMO_CODE[i])-$(LOCAL_CDI_ID[i])"
 
-        if (ismissing(obsproftime[i]) ||
-            ismissing(obsproflon[i]) || ismissing(obsproflat[i]))
+        if (
+            ismissing(obsproftime[i]) ||
+            ismissing(obsproflon[i]) ||
+            ismissing(obsproflat[i])
+        )
             sel[j+1:jend] .= false
         else
             flat_lon[j+1:jend] .= obsproflon[i]
@@ -123,11 +128,11 @@ function flatten_data(
     end
 
     return flat_data[sel],
-        flat_lon[sel],
-        flat_lat[sel],
-        flat_z[sel],
-        flat_time[sel],
-        flat_ids[sel]
+    flat_lon[sel],
+    flat_lat[sel],
+    flat_z[sel],
+    flat_time[sel],
+    flat_ids[sel]
 end
 
 function flagvalues(attrib, accepted_status_flags)
@@ -185,14 +190,10 @@ function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_valu
         ncv_ancillary = NCDatasets.ancillaryvariables(ncvar, "status_flag").var
         ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z, "status_flag").var
 
-        accepted_status_flag_values = flagvalues(
-            ncv_ancillary.attrib,
-            accepted_status_flags,
-        )
-        accepted_status_flag_values_z = flagvalues(
-            ncv_ancillary_z.attrib,
-            accepted_status_flags,
-        )
+        accepted_status_flag_values =
+            flagvalues(ncv_ancillary.attrib, accepted_status_flags)
+        accepted_status_flag_values_z =
+            flagvalues(ncv_ancillary_z.attrib, accepted_status_flags)
         @debug accepted_status_flag_values
 
         fillval = ncvar.attrib["_FillValue"]

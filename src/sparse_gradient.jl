@@ -24,16 +24,18 @@ different dimensions.
 
             out = ntuple(
                 i -> begin
-                         # staggering operator
+                    # staggering operator
                     S = oper_stagger($ot, sz, i, iscyclic[i])
 
-                         # mask for staggered variable
+                    # mask for staggered variable
                     m = (S * mask[:]) .== 1
 
                     d = m .* (S * pmn[i][:])
 
-                    return oper_pack($ot, m) * oper_diag($ot, d) *
-                           oper_diff($ot, sz, i, iscyclic[i]) * H'
+                    return oper_pack($ot, m) *
+                           oper_diag($ot, d) *
+                           oper_diff($ot, sz, i, iscyclic[i]) *
+                           H'
                 end,
                 Val(N),
             )

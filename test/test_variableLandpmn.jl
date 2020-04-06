@@ -11,16 +11,14 @@ f = ones(3)
 
 
 # final grid
-mask, (pm, pn), (xi, yi) = DIVAnd_rectdom(
-    range(0, stop = 6, length = 15),
-    range(0, stop = 5, length = 15),
-)
+mask, (pm, pn), (xi, yi) =
+    DIVAnd_rectdom(range(0, stop = 6, length = 15), range(0, stop = 5, length = 15))
 
 # correlation length
 len = 1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 # fi is the interpolated field
 fireg, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2);

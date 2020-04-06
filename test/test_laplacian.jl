@@ -38,7 +38,7 @@ for sz in [(20,), (100, 100), (20, 20, 20), (5, 5, 5, 5)]
     mask = trues(sz)
 
     ij = DIVAnd.ndgrid([Float64.(1:s) for s in sz]...)
-    x = ij[1].^2
+    x = ij[1] .^ 2
 
     if length(sz) == 2
         pmn = (ij[1], ij[2] + ij[1] / 10)

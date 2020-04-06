@@ -73,46 +73,46 @@ The `len` and `epsilon2` provided should be close the real one as the tests will
 
 
 """
-function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
+function DIVAnd_cv(mask, pmn, xi, x, f, len, epsilon2, nl, ne, method = 0; otherargs...)
 
     # check inputs
 
 
     # For the moment, hardwired values
-    switchvalue1=130;
-    switchvalue2=1000;
-    samplesforHK=75;
+    switchvalue1 = 130
+    switchvalue2 = 1000
+    samplesforHK = 75
     # with of window so sample in log scale, so order of magnitudes worder
     # For length scales, one order of magnitude; make sure the grid is fine enough
-    worderl=1.;
+    worderl = 1.0
     # For noise, almost two order of magnitutes
-    wordere=1.5;
+    wordere = 1.5
 
 
     # sample multiplication factor to optimise in log space
-    if nl>0
-        logfactorsl=collect(range(-worderl,stop=worderl,length=2*nl+1));
+    if nl > 0
+        logfactorsl = collect(range(-worderl, stop = worderl, length = 2 * nl + 1))
     else
-        logfactorsl=[0]
+        logfactorsl = [0]
     end
-    factorsl=10 .^ logfactorsl;
+    factorsl = 10 .^ logfactorsl
 
 
-    if ne>0
-        logfactorse=collect(range(-wordere,stop=wordere,length=2*ne+1));
+    if ne > 0
+        logfactorse = collect(range(-wordere, stop = wordere, length = 2 * ne + 1))
     else
-        logfactorse=[0]
+        logfactorse = [0]
     end
-    factorse=10 .^ logfactorse;
+    factorse = 10 .^ logfactorse
 
     # cvvalues at the locations
-    cvvalues=zeros((2*nl+1)*(2*ne+1));
+    cvvalues = zeros((2 * nl + 1) * (2 * ne + 1))
 
     # For later interpolation quality might vary
-    epsilon2in=zeros((2*nl+1)*(2*ne+1));
+    epsilon2in = zeros((2 * nl + 1) * (2 * ne + 1))
 
-    x2Ddata=zeros((2*nl+1)*(2*ne+1));
-    y2Ddata=zeros((2*nl+1)*(2*ne+1));
+    x2Ddata = zeros((2 * nl + 1) * (2 * ne + 1))
+    y2Ddata = zeros((2 * nl + 1) * (2 * ne + 1))
 
     # Define method used
     # 1: full CV
@@ -122,19 +122,27 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     # For automatic choice this will be done later once the exact number of useful data is known
 
 
-    d0d=0
-    d0dmd1d=0
-    ip=0
-    for i=1:size(factorsl)[1]
-        for j=1:size(factorse)[1]
+    d0d = 0
+    d0dmd1d = 0
+    ip = 0
+    for i = 1:size(factorsl)[1]
+        for j = 1:size(factorse)[1]
+            ip = ip + 1
+            x2Ddata[ip] = logfactorsl[i]
+            y2Ddata[ip] = logfactorse[j]
 
-            ip=ip+1
-            x2Ddata[ip]=logfactorsl[i];
-            y2Ddata[ip]=logfactorse[j];
 
-
-            fi,s =  DIVAndrun(mask,pmn,xi,x,f,len.*factorsl[i],epsilon2.*factorse[j]; otherargs...);
-            residual = DIVAnd_residualobs(s,fi);
+            fi, s = DIVAndrun(
+                mask,
+                pmn,
+                xi,
+                x,
+                f,
+                len .* factorsl[i],
+                epsilon2 .* factorse[j];
+                otherargs...,
+            )
+            residual = DIVAnd_residualobs(s, fi)
             obsin = .!s.obsout
             nrealdata = sum(obsin)
             d0d = s.obsconstrain.yo[obsin] ⋅ s.obsconstrain.yo[obsin]
@@ -142,26 +150,26 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
             # Determine which method to use
 
-            if method==0
+            if method == 0
 
-                mymethod=2
+                mymethod = 2
                 if nrealdata < switchvalue1
-                    mymethod=1
+                    mymethod = 1
                 end
                 if nrealdata > switchvalue2
-                    mymethod=3
+                    mymethod = 3
                 end
 
 
             else
-                mymethod=method
+                mymethod = method
             end
 
             # Check if more samples than data are asked switch to direct method
 
-            if mymethod==2
+            if mymethod == 2
                 if nrealdata < samplesforHK
-                    mymethod=1
+                    mymethod = 1
                 end
             end
 
@@ -172,43 +180,45 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
             # c
             # unique(collect(rand(1:1000,200)))[1:30]
 
-            if mymethod==1
-                cvval = DIVAnd_cvestimator(s,residual ./ (1 .- DIVAnd_diagHKobs(s)));
-                epsilon2in[ip] = 1/5000;
+            if mymethod == 1
+                cvval = DIVAnd_cvestimator(s, residual ./ (1 .- DIVAnd_diagHKobs(s)))
+                epsilon2in[ip] = 1 / 5000
             end
 
 
 
-            if mymethod==2
+            if mymethod == 2
                 # alternate version to test: sampling
                 # find(x -> x == 3,z)
                 #   onsea=find(x->x == 0,s.obsout);
-                onsea = findall(s.obsout.==0);
-                lonsea=length(onsea)
+                onsea = findall(s.obsout .== 0)
+                lonsea = length(onsea)
                 #   @warn "So",lonsea
                 # if optimisation is to be used, make sure to use the same reference random points
                 Random.seed!(nrealdata)
 
                 # otherwise you add noise to the cv field
-                indexlist1=unique(collect(rand(1:lonsea,50*samplesforHK)))[1:samplesforHK]
+                indexlist1 =
+                    unique(collect(rand(1:lonsea, 50 * samplesforHK)))[1:samplesforHK]
                 Random.seed!()
 
-                indexlist=onsea[indexlist1];
+                indexlist = onsea[indexlist1]
                 #   indexlist=collect(1:lonsea);
-                residualc=zeros(length(residual));
-                residualc[indexlist]=residual[indexlist]./(1 .- DIVAnd_diagHKobs(s,indexlist))
-                scalefac=float(nrealdata)/float(samplesforHK)
-                cvval=scalefac*DIVAnd_cvestimator(s,residualc)
-                epsilon2in[ip] = 1/5000;
+                residualc = zeros(length(residual))
+                residualc[indexlist] =
+                    residual[indexlist] ./ (1 .- DIVAnd_diagHKobs(s, indexlist))
+                scalefac = float(nrealdata) / float(samplesforHK)
+                cvval = scalefac * DIVAnd_cvestimator(s, residualc)
+                epsilon2in[ip] = 1 / 5000
             end
 
-            if mymethod==3
-                work=(1-DIVAnd_GCVKiiobs(s));
-                cvval=DIVAnd_cvestimator(s,residual./work);
-                epsilon2in[ip] = 1/2000/work^2;
+            if mymethod == 3
+                work = (1 - DIVAnd_GCVKiiobs(s))
+                cvval = DIVAnd_cvestimator(s, residual ./ work)
+                epsilon2in[ip] = 1 / 2000 / work^2
             end
 
-            cvvalues[ip]=cvval;
+            cvvalues[ip] = cvval
 
         end
     end
@@ -224,18 +234,18 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
     # multiplication factor for epsilon2 based on the Derozier adaptation idea
     # ll1= d0d/(d0d-d1d)-1
     #
-    if (ne==0 && nl==0)
+    if (ne == 0 && nl == 0)
         @warn "There is no parameter optimisation done (nl=$nl, ne=$ne)"
-        ll1= d0d/(d0dmd1d)-1;
-        eps1=1/ll1;
+        ll1 = d0d / (d0dmd1d) - 1
+        eps1 = 1 / ll1
         if ndims(epsilon2) == 0
-            eps2=epsilon2;
+            eps2 = epsilon2
         elseif ndims(epsilon2) == 1
-            eps2 = mean(epsilon2);
+            eps2 = mean(epsilon2)
         else
-            eps2 = mean(diag(epsilon2));
+            eps2 = mean(diag(epsilon2))
         end
-        return cvvalues[1],eps1/eps2
+        return cvvalues[1], eps1 / eps2
     end
 
 
@@ -247,75 +257,106 @@ function DIVAnd_cv(mask,pmn,xi,x,f,len,epsilon2,nl,ne,method=0; otherargs...)
 
 
 
-    if nl==0
+    if nl == 0
 
         # interpolate only on epsilon
-        epsilon2inter=collect(range(-wordere*1.1,stop=1.1*wordere,length=101))
+        epsilon2inter = collect(range(-wordere * 1.1, stop = 1.1 * wordere, length = 101))
         maskcv = trues(size(epsilon2inter))
-        pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2]-epsilon2inter[1])
-        lenin = wordere;
+        pmcv = ones(size(epsilon2inter)) / (epsilon2inter[2] - epsilon2inter[1])
+        lenin = wordere
 
-        m = Int(ceil(1+1/2))
-        alpha = [binomial(m,k) for k = 0:m];
-        alpha[1]=0;
+        m = Int(ceil(1 + 1 / 2))
+        alpha = [binomial(m, k) for k = 0:m]
+        alpha[1] = 0
 
-        cvinter,scv = DIVAndrun(maskcv,(pmcv,),(epsilon2inter,),(logfactorse,),cvvalues,lenin,epsilon2in;alpha=alpha,alphabc=0)
+        cvinter, scv = DIVAndrun(
+            maskcv,
+            (pmcv,),
+            (epsilon2inter,),
+            (logfactorse,),
+            cvvalues,
+            lenin,
+            epsilon2in;
+            alpha = alpha,
+            alphabc = 0,
+        )
 
 
-        bestvalue=findmin(cvinter)
-        posbestfactor=bestvalue[2]
-        cvval=bestvalue[1]
-        bestfactor=10^epsilon2inter[posbestfactor]
-        return bestfactor, cvval,cvvalues, logfactorse,cvinter,epsilon2inter
+        bestvalue = findmin(cvinter)
+        posbestfactor = bestvalue[2]
+        cvval = bestvalue[1]
+        bestfactor = 10^epsilon2inter[posbestfactor]
+        return bestfactor, cvval, cvvalues, logfactorse, cvinter, epsilon2inter
 
     end
 
-if ne==0
+    if ne == 0
 
-    # interpolate only on L
-    linter=collect(range(-worderl*1.1,stop=1.1*worderl,length=101))
-    maskcv = trues(size(linter))
-    pmcv = ones(size(linter)) / (linter[2]-linter[1])
-    lenin = worderl;
+        # interpolate only on L
+        linter = collect(range(-worderl * 1.1, stop = 1.1 * worderl, length = 101))
+        maskcv = trues(size(linter))
+        pmcv = ones(size(linter)) / (linter[2] - linter[1])
+        lenin = worderl
 
-    m = Int(ceil(1+1/2))
-    alpha = [binomial(m,k) for k = 0:m];
-    alpha[1]=0;
+        m = Int(ceil(1 + 1 / 2))
+        alpha = [binomial(m, k) for k = 0:m]
+        alpha[1] = 0
 
-    cvinter,scv = DIVAndrun(maskcv,(pmcv,),(linter,),(logfactorsl,),cvvalues,lenin,epsilon2in;alpha=alpha,alphabc=0)
+        cvinter, scv = DIVAndrun(
+            maskcv,
+            (pmcv,),
+            (linter,),
+            (logfactorsl,),
+            cvvalues,
+            lenin,
+            epsilon2in;
+            alpha = alpha,
+            alphabc = 0,
+        )
 
 
-    bestvalue=findmin(cvinter)
-    posbestfactor=bestvalue[2]
-    cvval=bestvalue[1]
-    bestfactor=10^linter[posbestfactor]
-    return bestfactor, cvval,cvvalues, logfactorsl,cvinter,linter
+        bestvalue = findmin(cvinter)
+        posbestfactor = bestvalue[2]
+        cvval = bestvalue[1]
+        bestfactor = 10^linter[posbestfactor]
+        return bestfactor, cvval, cvvalues, logfactorsl, cvinter, linter
 
 
-end
+    end
 
 
-# Otherwise 2D
+    # Otherwise 2D
 
-maskcv,(pm2D,pn2D),(xi2D,yi2D) = DIVAnd_rectdom(
-    range(-worderl*1.1,stop=worderl*1.1,length=71),
-    range(-wordere*1.1,stop=wordere*1.1,length=71))
+    maskcv, (pm2D, pn2D), (xi2D, yi2D) = DIVAnd_rectdom(
+        range(-worderl * 1.1, stop = worderl * 1.1, length = 71),
+        range(-wordere * 1.1, stop = wordere * 1.1, length = 71),
+    )
 
-# correlation length
-lenin = (worderl,wordere);
+    # correlation length
+    lenin = (worderl, wordere)
 
-m = Int(ceil(1+2/2))
-alpha = [binomial(m,k) for k = 0:m];
-alpha[1]=0;
+    m = Int(ceil(1 + 2 / 2))
+    alpha = [binomial(m, k) for k = 0:m]
+    alpha[1] = 0
 
-cvinter,scv = DIVAndrun(maskcv,(pm2D,pn2D),(xi2D,yi2D),(x2Ddata,y2Ddata),cvvalues,lenin,epsilon2in;alpha=alpha,alphabc=0)
+    cvinter, scv = DIVAndrun(
+        maskcv,
+        (pm2D, pn2D),
+        (xi2D, yi2D),
+        (x2Ddata, y2Ddata),
+        cvvalues,
+        lenin,
+        epsilon2in;
+        alpha = alpha,
+        alphabc = 0,
+    )
 
-bestvalue=findmin(cvinter)
-posbestfactor=bestvalue[2]
-cvval=bestvalue[1]
-bestfactorl=10^xi2D[posbestfactor]
-bestfactore=10^yi2D[posbestfactor]
-return bestfactorl,bestfactore, cvval,cvvalues, x2Ddata,y2Ddata,cvinter,xi2D,yi2D
+    bestvalue = findmin(cvinter)
+    posbestfactor = bestvalue[2]
+    cvval = bestvalue[1]
+    bestfactorl = 10^xi2D[posbestfactor]
+    bestfactore = 10^yi2D[posbestfactor]
+    return bestfactorl, bestfactore, cvval, cvvalues, x2Ddata, y2Ddata, cvinter, xi2D, yi2D
 
 
 

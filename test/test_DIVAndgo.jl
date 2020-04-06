@@ -9,19 +9,17 @@ using DIVAnd
 # observations
 x = [0.5];
 y = [0.5];
-f = [1.];
+f = [1.0];
 
 # final grid
-mask, (pm, pn), (xi, yi) = DIVAnd_rectdom(
-    range(0, stop = 1, length = 23),
-    range(0, stop = 1, length = 22),
-)
+mask, (pm, pn), (xi, yi) =
+    DIVAnd_rectdom(range(0, stop = 1, length = 23), range(0, stop = 1, length = 22))
 
 # correlation length
 len = 0.005;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 # fi is the interpolated field
 

@@ -8,13 +8,13 @@ mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0, stop = 1, length = 9))
 # grid of observations
 x = [0.5]
 y = [0.5]
-f = [1.]
+f = [1.0]
 
 # correlation length
 len = 0.6
 
 # normalized error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 function DIVAnd_error(args...)
     f, s = DIVAndrun(args...)
@@ -27,11 +27,11 @@ function DIVAnd_almostexacterror(args...)
 end
 
 errormethods = [
-                # consistent error (expensive)
+    # consistent error (expensive)
     DIVAnd_error,
-                # clever poor man's error
+    # clever poor man's error
     DIVAnd_cpme,
-                # almost exact error
+    # almost exact error
     DIVAnd_almostexacterror,
 ]
 

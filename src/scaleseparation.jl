@@ -37,10 +37,10 @@ function scaleseparation(K1andH1K1, K2andH2K2, d; niter = 10)
 
 
     #Allows for different state vector size; In total 3+2*niter analyses
-     # K1 should be related to the larger scales (or scales with high signal/noise ratios)
-     # see      Multi-scale optimal interpolation: application to DINEOF analysis spiced with a local optimal interpolation
-     #      http://hdl.handle.net/2268/165394
-     # the two fields can have different supports. Only the observational operators must provide the same data array
+    # K1 should be related to the larger scales (or scales with high signal/noise ratios)
+    # see      Multi-scale optimal interpolation: application to DINEOF analysis spiced with a local optimal interpolation
+    #      http://hdl.handle.net/2268/165394
+    # the two fields can have different supports. Only the observational operators must provide the same data array
 
     Phi1, w1 = K1andH1K1(d)
     H1Phi1 = deepcopy(w1)

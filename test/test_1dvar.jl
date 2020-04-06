@@ -4,8 +4,8 @@ using DIVAnd
 # grid of background field
 xi = collect(range(0, stop = 1, length = 21))
 
-x = [.4; .6];
-f = [.4; .6];
+x = [0.4; 0.6];
+f = [0.4; 0.6];
 
 mask = trues(size(xi));
 mask[[1, end]] .= false;

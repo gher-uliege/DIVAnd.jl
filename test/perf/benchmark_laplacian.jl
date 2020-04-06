@@ -19,7 +19,7 @@ for N = 1:6
             ivol = ones(T, sz)
 
             @nloops $N i d -> 1:sz[d] begin
-                (@nref $N ivol i) = 1.
+                (@nref $N ivol i) = 1.0
                 @nexprs $N m -> begin
                     (@nref $N ivol i) *= pmn[m][i_m]
                 end
@@ -55,8 +55,8 @@ for N = 1:6
                             (@nref $N tmp i) /= pm_i[i_m]
                         end
 
-                        if !(@nref $N mask i) ||
-                           !(@nref $N mask l -> (l == j ? i_l + 1 : i_l))
+                        if !(@nref $N mask i) || !(@nref $N mask l ->
+                            (l == j ? i_l + 1 : i_l))
                             (@nref $N tmp i) = 0
                         end
                     end
@@ -100,21 +100,17 @@ for N = 1:6
                     if (@nref $N mask i)
                         if i_d1 < sz[d1]
                             @inbounds if (@nref $N mask d2 -> (d2 == d1 ? i_d2 + 1 : i_d2))
-                                @inbounds (@nref $N Lx i) += tmp2[i_d1] *
-                                                             ((@nref $N x d2 -> (d2 == d1 ?
-                                                                                 i_d2 + 1 :
-                                                                                 i_d2)) -
-                                                              (@nref $N x i))
+                                @inbounds (@nref $N Lx i) +=
+                                    tmp2[i_d1] * ((@nref $N x d2 ->
+                                        (d2 == d1 ? i_d2 + 1 : i_d2)) - (@nref $N x i))
                             end
                         end
 
                         if i_d1 > 1
                             @inbounds if (@nref 2 mask d2 -> (d2 == d1 ? i_d2 - 1 : i_d2))
-                                @inbounds (@nref $N Lx i) -= tmp2[i_d1-1] *
-                                                             ((@nref $N x i) -
-                                                              (@nref $N x d2 -> (d2 == d1 ?
-                                                                                 i_d2 - 1 :
-                                                                                 i_d2)))
+                                @inbounds (@nref $N Lx i) -=
+                                    tmp2[i_d1-1] * ((@nref $N x i) - (@nref $N x d2 ->
+                                        (d2 == d1 ? i_d2 - 1 : i_d2)))
                             end
                         end
                     end
@@ -166,11 +162,9 @@ for N = 1:6
                                     end
                                 end
 
-                                @inbounds (@nref $N Lx i) += mytmp *
-                                                             ((@nref $N x d2 -> (d2 == d1 ?
-                                                                                 i_d2 + 1 :
-                                                                                 i_d2)) -
-                                                              (@nref $N x i))
+                                @inbounds (@nref $N Lx i) +=
+                                    mytmp * ((@nref $N x d2 ->
+                                        (d2 == d1 ? i_d2 + 1 : i_d2)) - (@nref $N x i))
                             end
                         end
 
@@ -188,11 +182,9 @@ for N = 1:6
                                 end
 
 
-                                @inbounds (@nref $N Lx i) -= mytmp *
-                                                             ((@nref $N x i) -
-                                                              (@nref $N x d2 -> (d2 == d1 ?
-                                                                                 i_d2 - 1 :
-                                                                                 i_d2)))
+                                @inbounds (@nref $N Lx i) -=
+                                    mytmp * ((@nref $N x i) - (@nref $N x d2 ->
+                                        (d2 == d1 ? i_d2 - 1 : i_d2)))
                             end
                         end
                     end
@@ -294,7 +286,7 @@ x = randn(sz)
 mask = trues(sz)
 
 ij = DIVAnd.ndgrid([Float64.(1:s) for s in sz]...)
-x = ij[1].^2
+x = ij[1] .^ 2
 
 if length(sz) == 20
     pmn = (ij[1], ij[2] + ij[1] / 10)
@@ -302,8 +294,8 @@ if length(sz) == 20
 
     mask[3:4, 3:4] = false
 else
-    pmnv = ntuple(i -> (i + 2.) * collect(1:sz[i]), length(sz))
-    nuv = ntuple(i -> (i + 2.) * collect(1:sz[i]).^2, length(sz))
+    pmnv = ntuple(i -> (i + 2.0) * collect(1:sz[i]), length(sz))
+    nuv = ntuple(i -> (i + 2.0) * collect(1:sz[i]) .^ 2, length(sz))
 
     pmn = DIVAnd.ndgrid(pmnv...)
     nu = DIVAnd.ndgrid(nuv...)

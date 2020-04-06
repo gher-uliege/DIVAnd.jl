@@ -47,11 +47,8 @@ if !isfile(obsname)
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
-obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
-    Float64,
-    obsname,
-    "Salinity",
-)
+obsvalue, obslon, obslat, obsdepth, obstime, obsids =
+    DIVAnd.loadobs(Float64, obsname, "Salinity")
 
 
 
@@ -63,10 +60,10 @@ nobs = 10000
 #nobs = 100000
 #nobs = 10000000
 
-obslon = 4*rand(nobs).^2
-obslat = 4*rand(nobs).^2
+obslon = 4 * rand(nobs) .^ 2
+obslat = 4 * rand(nobs) .^ 2
 
-x = (obslon,obslat)
+x = (obslon, obslat)
 
 #=
 sel  = 1:1000000
@@ -109,17 +106,16 @@ dup = @time DIVAnd.Quadtrees.checkduplicates(
 =#
 
 
-sel  = 1:10000
+sel = 1:10000
 sel = 1:length(obslon)
-len = (0.1,0.1)
-x = (obslon,obslat)
+len = (0.1, 0.1)
+x = (obslon, obslat)
 
 weight = @time DIVAnd.weight_RtimesOne(x, len);
 weighti = @time DIVAnd.weight_RtimesOne_binning(x, len)
 
-ratio = sqrt(mean((weighti-weight).^2)) / sqrt(mean(weighti.^2))
+ratio = sqrt(mean((weighti - weight) .^ 2)) / sqrt(mean(weighti .^ 2))
 @debug "weight ratio: $ratio"
 
 
-@test sqrt(mean((weighti-weight).^2)) < 0.3 * sqrt(mean(weighti.^2))
-
+@test sqrt(mean((weighti - weight) .^ 2)) < 0.3 * sqrt(mean(weighti .^ 2))

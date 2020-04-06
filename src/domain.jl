@@ -75,7 +75,7 @@ Generate a 2D geospatial domain based on the topography from the netCDF file
 function domain(bathname, bathisglobal, lonr, latr)
     mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_rectdom(lonr, latr)
 
-    mxi, myi, mask = DIVAnd.load_mask(bathname, bathisglobal, lonr, latr, 0.)
+    mxi, myi, mask = DIVAnd.load_mask(bathname, bathisglobal, lonr, latr, 0.0)
 
     pm, pn = DIVAnd.DIVAnd_metric(xi, yi)
 
@@ -104,13 +104,8 @@ function domain(bathname, bathisglobal, lonr, latr, depthr; zlevel = :surface)
     dy = latr[2] - latr[1]
 
     if zlevel == :surface
-        mxi, myi, mask[:, :, :] = DIVAnd.load_mask(
-            bathname,
-            bathisglobal,
-            lonr,
-            latr,
-            depthr,
-        )
+        mxi, myi, mask[:, :, :] =
+            DIVAnd.load_mask(bathname, bathisglobal, lonr, latr, depthr)
     else
         bxi, byi, bi = load_bath(bathname, bathisglobal, lonr, latr)
 
@@ -131,12 +126,8 @@ Generate a geospatial domain based on the topography from the netCDF file
 """
 function domain(bathname, bathisglobal, lonr, latr, depthr, timer)
 
-    mask, (pm, pn, po, pp), (xi, yi, zi, ti) = DIVAnd.DIVAnd_rectdom(
-        lonr,
-        latr,
-        depthr,
-        timer,
-    )
+    mask, (pm, pn, po, pp), (xi, yi, zi, ti) =
+        DIVAnd.DIVAnd_rectdom(lonr, latr, depthr, timer)
 
     pm[:, :, 1, 1], pn[:, :, 1, 1] = DIVAnd.DIVAnd_metric(xi[:, :, 1, 1], yi[:, :, 1, 1])
     for n = 1:size(pn, 4)

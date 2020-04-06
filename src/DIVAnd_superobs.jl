@@ -35,7 +35,7 @@ For the moment in this case sumw, varp are not meaningful. TODO: include in varp
 
 """
 function DIVAnd_superobs(x, val, nmax; weights = [], intensive = true)
-#
+    #
     # Array containing coordinates
     coord = hcat(x...)'
     # Number of data
@@ -118,7 +118,7 @@ function DIVAnd_superobs(x, val, nmax; weights = [], intensive = true)
     # Now simple average and variance calculation if "intensive variable"
     if intensive
         VPa = VPa ./ WPa
-        VARPa = VARPa ./ WPa .- VPa.^2
+        VARPa = VARPa ./ WPa .- VPa .^ 2
     end
 
     # Coordinates are always average values

@@ -23,24 +23,24 @@ Example of the output of `ncdump -h`:
 ```
 netcdf gebco_30sec_8 {
 dimensions:
-	lat = 2702 ;
-	lon = 5400 ;
+     lat = 2702 ;
+     lon = 5400 ;
 variables:
-	double lat(lat) ;
-		lat:long_name = "Latitude" ;
-		lat:standard_name = "latitude" ;
-		lat:units = "degrees_north" ;
-	double lon(lon) ;
-		lon:long_name = "Longitude" ;
-		lon:standard_name = "longitude" ;
-		lon:units = "degrees_east" ;
-	float bat(lat, lon) ;
-		bat:long_name = "elevation above sea level" ;
-		bat:standard_name = "height" ;
-		bat:units = "meters" ;
+     double lat(lat) ;
+          lat:long_name = "Latitude" ;
+          lat:standard_name = "latitude" ;
+          lat:units = "degrees_north" ;
+     double lon(lon) ;
+          lon:long_name = "Longitude" ;
+          lon:standard_name = "longitude" ;
+          lon:units = "degrees_east" ;
+     float bat(lat, lon) ;
+          bat:long_name = "elevation above sea level" ;
+          bat:standard_name = "height" ;
+          bat:units = "meters" ;
 
 // global attributes:
-		:title = "GEBCO" ;
+          :title = "GEBCO" ;
 }
 ```
 """
@@ -69,19 +69,19 @@ function extract_bath(bath_name, isglobal, xi, yi)
 
         redx = dxi / rx
         redy = dyi / ry
-#JM
-        i0 = max(floor(Int,(xi[1]-dxi-X0)/rx)+1,1);
-        i1 = min(ceil(Int,(xi[end]+dxi-X0)/rx)+1,length(x));
-        i=i0:i1;
+        #JM
+        i0 = max(floor(Int, (xi[1] - dxi - X0) / rx) + 1, 1)
+        i1 = min(ceil(Int, (xi[end] + dxi - X0) / rx) + 1, length(x))
+        i = i0:i1
 
         # do not range check i0 and i1 now because of wrapping when bathymetry
         # is global
-        i0 = floor(Int,(xi[1]-dxi-X0)/rx) + 1
-        i1 = ceil(Int,(xi[end]+dxi-X0)/rx) + 1
+        i0 = floor(Int, (xi[1] - dxi - X0) / rx) + 1
+        i1 = ceil(Int, (xi[end] + dxi - X0) / rx) + 1
         i = i0:i1
 
-        j0 = max(floor(Int,(yi[1]-dyi-Y0)/ry)+1,1);
-        j1 = min(ceil(Int,(yi[end]+dyi-Y0)/ry)+1,length(y));
+        j0 = max(floor(Int, (yi[1] - dyi - Y0) / ry) + 1, 1)
+        j1 = min(ceil(Int, (yi[end] + dyi - Y0) / ry) + 1, length(y))
         j = j0:j1
         b = zeros(length(i), length(j))
 
@@ -90,14 +90,12 @@ function extract_bath(bath_name, isglobal, xi, yi)
             jumps = [0; findall(abs.(i2[2:end] - i2[1:end-1]) .> 1); length(i2)]
 
             for l = 1:length(jumps)-1
-                b[(jumps[l]+1):jumps[l+1], :] = nc["bat"].var[
-                    i2[jumps[l]+1]:i2[jumps[l+1]],
-                    j,
-                ]
+                b[(jumps[l]+1):jumps[l+1], :] =
+                    nc["bat"].var[i2[jumps[l]+1]:i2[jumps[l+1]], j]
             end
         else
-            i = max(minimum(i),1):min(maximum(i),length(x))
-            j = max(minimum(j),1):min(maximum(j),length(y))
+            i = max(minimum(i), 1):min(maximum(i), length(x))
+            j = max(minimum(j), 1):min(maximum(j), length(y))
             b[:, :] = nc["bat"].var[i, j]
         end
 

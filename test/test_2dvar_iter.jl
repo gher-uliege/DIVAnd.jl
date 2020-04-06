@@ -18,10 +18,10 @@ y = y[:]
 v = sin.(x * 6) .* cos.(y * 6)
 
 # correlation length
-lenx = .15;
-leny = .15;
+lenx = 0.15;
+leny = 0.15;
 
-epsilon2 = 1.
+epsilon2 = 1.0
 
 # tolerance on the gradient A x - b
 tol = 1e-4

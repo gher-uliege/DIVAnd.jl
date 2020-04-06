@@ -18,5 +18,3 @@ output = lowercase(String(take!(buf)))
 
 @test occursin("inf", output)
 @test occursin("2", output)
-
-

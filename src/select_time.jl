@@ -33,7 +33,8 @@ TS = DIVAnd.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],
 ```
 
 """
-struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector} <: AbstractTimeSelector
+struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector} <:
+       AbstractTimeSelector
     yearlists::T1
     monthlists::T2
 end
@@ -53,7 +54,7 @@ function ctimes(TS::TimeSelectorYearListMonthList)
 
             # central time instance
             timecentral =
-                # day 16 of the central months
+            # day 16 of the central months
                 if length(monthrange) % 2 == 1
                     DateTime(yearc, monthrange[(end+1)÷2], 16, 0, 0, 0)
                 else
@@ -106,14 +107,8 @@ function timesend(TS::TimeSelectorYearListMonthList)
             @assert(length(monthrange) > 0)
 
             # end time instance
-            time0 = Dates.lastdayofmonth(DateTime(
-                yearrange[end],
-                monthrange[end],
-                1,
-                0,
-                0,
-                0,
-            ))
+            time0 =
+                Dates.lastdayofmonth(DateTime(yearrange[end], monthrange[end], 1, 0, 0, 0))
             push!(timeclim, time0)
         end
     end
@@ -181,9 +176,9 @@ function select(TS::TimeSelectorRunningAverage, index, obstime)
 
     # loop over all observation time instance
     for i = 1:length(obstime)
-        s[i] = abs(Dates.Millisecond(obstime[i] - TS.times[index]).value) <= 1000 * 24 *
-                                                                             60 * 60 *
-                                                                             TS.window
+        s[i] =
+            abs(Dates.Millisecond(obstime[i] - TS.times[index]).value) <=
+            1000 * 24 * 60 * 60 * TS.window
     end
 
     return s
@@ -215,15 +210,15 @@ all sub-intervals defined by this `i`-th time instance and
 instance.
 """
 function climatology_bounds(TS)
-# https://web.archive.org/web/20180326074452/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html
+    # https://web.archive.org/web/20180326074452/http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html
 
-# it has a climatology attribute, which names a variable with
-# dimensions (n,2), n being the dimension of the climatological time
-# axis. Using the units and calendar of the time coordinate variable,
-# element (i,0) of the climatology variable specifies the beginning of
-# the first subinterval and element (i,1) the end of the last
-# subinterval used to evaluate the climatological statistics with
-# index i in the time dimension.
+    # it has a climatology attribute, which names a variable with
+    # dimensions (n,2), n being the dimension of the climatological time
+    # axis. Using the units and calendar of the time coordinate variable,
+    # element (i,0) of the climatology variable specifies the beginning of
+    # the first subinterval and element (i,1) the end of the last
+    # subinterval used to evaluate the climatological statistics with
+    # index i in the time dimension.
 
     b = Array{DateTime}(undef, 2, length(TS))
     b[1, :] = timesstart(TS)

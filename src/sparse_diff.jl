@@ -45,7 +45,7 @@ Sparse operator for differentiation along dimension `m` for "collapsed" matrix
 of the size `sz1`. `cyclic` is true if domain is cyclic along dimension m.
 `false` is the default value
 """
-sparse_diff(sz1, m, cyclic = false) = _sparse_wsum(sz1, m, -1., 1., cyclic)
+sparse_diff(sz1, m, cyclic = false) = _sparse_wsum(sz1, m, -1.0, 1.0, cyclic)
 
 
 # Copyright (C) 2009,2012,2017 Alexander Barth <a.barth@ulg.ac.be>

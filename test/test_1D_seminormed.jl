@@ -30,7 +30,7 @@ pm = ones(size(xi)) / (xi[2] - xi[1]);
 len = 0.05;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.
+epsilon2 = 1.0
 
 m = Int(ceil(1 + 1 / 2))
 # alpha is the (m+1)th row of the Pascal triangle:

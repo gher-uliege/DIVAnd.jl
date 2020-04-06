@@ -38,17 +38,8 @@ function DIVAnd_cpme_go(mask, pmn, xi, x, f, Labs, epsilon2; otherargs...)
 
 
 
-    cpme, bidon, zut = DIVAndgo(
-        mask,
-        pmn,
-        xi,
-        x,
-        ones(size(f)),
-        len,
-        epsilon2,
-        :none;
-        otherargs...,
-    )
+    cpme, bidon, zut =
+        DIVAndgo(mask, pmn, xi, x, ones(size(f)), len, epsilon2, :none; otherargs...)
     @show size(cpme), size(bidon), size(zut)
     cpme = errorscale .* max.(-cpme .+ 1, 0)
 

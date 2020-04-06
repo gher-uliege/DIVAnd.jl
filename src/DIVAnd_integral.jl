@@ -27,7 +27,7 @@ function DIVAnd_integral(mask, pmn, fieldin)
 
     # Avoiding NaN problems and so on putting field not on the grid to zero
     field = fieldin
-    field[.!mask] .= 0.
+    field[.!mask] .= 0.0
 
 
 
@@ -52,5 +52,3 @@ end
 #
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, see <http://www.gnu.org/licenses/>.
-
-

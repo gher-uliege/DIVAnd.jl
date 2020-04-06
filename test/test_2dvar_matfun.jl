@@ -18,9 +18,9 @@ xy = ndgrid([range(epsilon, stop = 1 - epsilon, length = 10) for i = 1:n]...)
 v = fun([x[:] for x in xy]...);
 
 # correlation length
-len = .15;
+len = 0.15;
 
-epsilon2 = 1.
+epsilon2 = 1.0
 
 # tolerance on the gradient A x - b
 tol = 1e-4

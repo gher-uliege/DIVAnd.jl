@@ -12,7 +12,7 @@ function stats(sumx, sumx2, N)
     # var(x) = 1/(N-1) ( Σᵢ xᵢ²  -  N mean(x)² )
 
     meanx = sumx / N
-    stdx = sumx2 - N * meanx.^2
+    stdx = sumx2 - N * meanx .^ 2
 
     # de-bias std
     stdx = stdx / (N - 1)
@@ -154,14 +154,8 @@ function empiriccovar(
     end
 
     for i = 1:pmax
-        meanvi, meanvj, stdvi, stdvj, covar[i], corr[i] = stats(
-            sumvi[i],
-            sumvi2[i],
-            sumvj[i],
-            sumvj2[i],
-            sumvivj[i],
-            count[i],
-        )
+        meanvi, meanvj, stdvi, stdvj, covar[i], corr[i] =
+            stats(sumvi[i], sumvi2[i], sumvj[i], sumvj2[i], sumvivj[i], count[i])
         varx[i] = ((stdvi^2 + stdvj^2) * count[i]) / (2 * count[i] - 1)
 
         #meanx,stdx = stats(sumvi[i] + sumvj[i],sumvi2[i] + sumvj2[i],2*count[i])
@@ -252,7 +246,7 @@ function empiriccovarmean(
 
     #return distx,nm(covar),nm(corr), nm(varx), nm(count)
     return distx::Vector{T}, meancovar, meancorr, meanvarx, meancount, stdcovar
-#    stdcovar,meancount
+    #    stdcovar,meancount
 end
 
 """
@@ -320,9 +314,9 @@ function fit_isotropic(
     distbin::Vector{T},
     mincount::Int;
     alpha = DIVAnd.alpha_default(length(x)),
-    len::T = 1.,
+    len::T = 1.0,
     minlen::T = 1e-5,
-    maxlen::T = 10.,
+    maxlen::T = 10.0,
     tolrel::T = 1e-5,
     maxeval::Int = 10000,
     maxpoints::Int = 1000000,
@@ -362,7 +356,7 @@ function fit_isotropic(
 
     var0opt = covar[1]
     L = range(minlen, stop = maxlen, length = 10000)
-    J(L) = sum(((covar - var0opt * K.(distx * len_scale / L)) ./ stdcovar).^2)
+    J(L) = sum(((covar - var0opt * K.(distx * len_scale / L)) ./ stdcovar) .^ 2)
     Jmin, imin = findmin(J.(L))
     lenopt = L[imin]
 
@@ -444,9 +438,9 @@ function fit(
     maxlen = ones(length(x)),
     tolrel = 1e-4,
     lens0 = ones(length(x)),
-    var0 = 1.,
-    minvar0 = 0.,
-    maxvar0 = 2.,
+    var0 = 1.0,
+    minvar0 = 0.0,
+    maxvar0 = 2.0,
     maxpoints = 10000,
     nmean = 10,
     distfun = (xi, xj, lens) -> sqrt(sum(abs2, (xi - xj) ./ lens)),
@@ -566,17 +560,17 @@ end
 Base.length(iter::RandomCoupels) = iter.count
 
 function Base.iterate(iter::RandomCoupels, state = (0, MersenneTwister(iter.iseed)))
-    count,rng = state
+    count, rng = state
 
     if count == iter.count
         return nothing
     end
 
     # pick two random points
-    j = rand(rng,1:iter.n)
+    j = rand(rng, 1:iter.n)
     i = j
     while (i == j)
-        i = rand(rng,1:iter.n)
+        i = rand(rng, 1:iter.n)
     end
 
     return ((i, j), (count + 1, rng))
@@ -615,11 +609,13 @@ function _next(iter::VertRandomCoupels, state)
 
         for ntries2 = 1:iter.maxntries
             k = rand(1:length(iter.x[1]))
-            if ((distfun_m(
-                [iter.x[1][k], iter.x[2][k]],
-                [iter.x[1][j], iter.x[2][j]],
-            ) < iter.searchxy) && (j != k))
-#            if (distfun_m([iter.x[1][k],iter.x[2][k]],[iter.x[1][j],iter.x[2][j]]) < iter.searchxy)
+            if (
+                (
+                    distfun_m([iter.x[1][k], iter.x[2][k]], [iter.x[1][j], iter.x[2][j]]) <
+                    iter.searchxy
+                ) && (j != k)
+            )
+                #            if (distfun_m([iter.x[1][k],iter.x[2][k]],[iter.x[1][j],iter.x[2][j]]) < iter.searchxy)
                 jindex = k
                 break
             end
@@ -659,21 +655,20 @@ function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
     n = length(d)
     iseed = n
 
-    iter =
-        if (nsamp == 0)
-            AllCoupels(n)
-        else
-            @debug "will generate random couples"
-            if (nsamp > n)
-                @warn "Strange to ask for more samples than available from data; will proceed"
-            end
-
-            RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2,iseed)
+    iter = if (nsamp == 0)
+        AllCoupels(n)
+    else
+        @debug "will generate random couples"
+        if (nsamp > n)
+            @warn "Strange to ask for more samples than available from data; will proceed"
         end
 
-#    if (n > 10000) && (nsamp != 0)
-#        @warn "Be patient big data set: $n"
-#    end
+        RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2, iseed)
+    end
+
+    #    if (n > 10000) && (nsamp != 0)
+    #        @warn "Be patient big data set: $n"
+    #    end
 
     return fitlen(x::Tuple, d, weight, nsamp, iter; kwargs...)
 end
@@ -703,17 +698,17 @@ function fitlen(
     # per default operate on all data
     nop = n
 
-    rqual = 0.
-    maxdist = 0.
-    meandist = 0.
-    dist = 0.
-    rjjj = 0.
+    rqual = 0.0
+    maxdist = 0.0
+    meandist = 0.0
+    dist = 0.0
+    rjjj = 0.0
 
 
     # compute mean and variance using the weights
-    datamean = 0.
-    datavar = 0.
-    rn = 0.
+    datamean = 0.0
+    datavar = 0.0
+    rn = 0.0
 
     for i = 1:n
         datamean = datamean + d[i] * weight[i]
@@ -749,7 +744,7 @@ function fitlen(
     end
 
     if (nsamp == 0)
-        rjjj = rn * (rn - 1.) * 0.5
+        rjjj = rn * (rn - 1.0) * 0.5
     else
         rjjj = nsamp * (nsamp - 1) / 2
     end
@@ -762,9 +757,9 @@ function fitlen(
     @debug "Mean distance between points: $meandist"
 
     rnbins = if (nsamp == 0)
-        min(80., rn^2 / maxdist * meandist / 20.)
+        min(80.0, rn^2 / maxdist * meandist / 20.0)
     else
-        min(80., nsamp^2 / maxdist * meandist / 20.)
+        min(80.0, nsamp^2 / maxdist * meandist / 20.0)
     end
 
     @debug "Number of probable active bins: $rnbins"
@@ -807,15 +802,15 @@ function fitlen(
             error("dist $(dist) is larger than maxdist $(maxdist)")
         end
         nb = floor(Int, dist / ddist + 1)
-        covar[nb] = covar[nb] +
-                    (d[i] - datamean) * (d[j] - datamean) * weight[i] * weight[j]
+        covar[nb] =
+            covar[nb] + (d[i] - datamean) * (d[j] - datamean) * weight[i] * weight[j]
         w2[nb] = w2[nb] + ((d[i] - datamean) * (d[j] - datamean))^2 * weight[i] * weight[j]
         iw[nb] = iw[nb] + weight[i] * weight[j]
     end
 
-    covarweightmean = 0.
+    covarweightmean = 0.0
     for nn = 1:nbmax
-        covarweight[nn] = 0.
+        covarweight[nn] = 0.0
         # dirty fix JMB 05/11
         # https://github.com/gher-ulg/DIVA/commit/f193cd2f5a9c350634686c730e3aa8dc606c9f59#diff-78a6698fc2fa991d95a271faa2c25d19
         if (iw[nn] > 1)
@@ -850,7 +845,7 @@ function fitlen(
     end
 
     ncross = 5
-    RLz = -1.
+    RLz = -1.0
     for nn = 1:nbmax
         # if not working force simple use of variance
         if (iw[nn] != 0) && (covar[nn] < 0) && (nn > 4)
@@ -863,7 +858,7 @@ function fitlen(
     end
 
     # if no zero crossing, use minimum value of covar
-    if RLz == -1.
+    if RLz == -1.0
         ncross = findmin(covar)[2]
         RLz = ddist * ncross
         @debug "No zero crossing, use minimum value at a distance of $RLz"
@@ -885,7 +880,7 @@ function fitlen(
 
     distx = (0:nbmax-1) * dx
 
-   # only the distance range to be used for the optimization
+    # only the distance range to be used for the optimization
     distx_range = distx[range]
     covar_range = view(covar, range)
     covarweight_range = view(covarweight, range)
@@ -902,7 +897,7 @@ function fitlen(
     else
         for ii = 1:1000
             VARtest = variance      # 17/03/2015
-            RLtest = RLz / 10 + (ii - 1) * RLz / 500.
+            RLtest = RLz / 10 + (ii - 1) * RLz / 500.0
 
             err, VARtest = misfit(distx_range, covar_range, covarweight_range, RLtest)
 
@@ -917,7 +912,7 @@ function fitlen(
         @debug "Best fit: $RL $VAR"
         if (VAR > 0.9999 * variance)
             VAR = variance
-            SN = 10000.
+            SN = 10000.0
             varbak = VAR
         else
             SN = VAR / (variance - VAR + 1.E-10)
@@ -956,8 +951,8 @@ This function used to be called forfit in fitlsn.f.
 """
 function misfit(distx, covar, covarweight, RL)
     n = length(covar)
-    err = 0.
-    errb = 0.
+    err = 0.0
+    errb = 0.0
 
     # integrate the covariance and the theoretical correlation
     # over all distances
@@ -972,8 +967,8 @@ function misfit(distx, covar, covarweight, RL)
     var = err / errb
 
     # compute the missfit
-    err = 0.
-    ww3 = 0.
+    err = 0.0
+    ww3 = 0.0
 
     for i = 1:n
         eps = distx[i] / RL
@@ -987,8 +982,8 @@ function misfit(distx, covar, covarweight, RL)
 end
 
 """helper function for searchz"""
-_getparam(z,x::Number) = x
-_getparam(z,f::Function) = f(z)
+_getparam(z, x::Number) = x
+_getparam(z, f::Function) = f(z)
 
 
 """
@@ -1021,16 +1016,16 @@ function fithorzlen(
     value::Vector{T},
     z;
     tolrel::T = 1e-4,
-    smoothz::T = 100.,
+    smoothz::T = 100.0,
     smoothk = 3,
-    searchz = 50.,
+    searchz = 50.0,
     progress = (iter, var, len, fitness) -> nothing,
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
     limitfun = (z, len) -> len,
     maxnsamp = 5000,
     limitlen = false,
     epsilon2 = ones(size(value)),
-    min_rqual = 0.5
+    min_rqual = 0.5,
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1052,9 +1047,9 @@ function fithorzlen(
     rqual = zeros(length(z))
 
     Threads.@threads for k = 1:length(z)
-    #for k = 1:length(z)
+        #for k = 1:length(z)
 
-        searchz_k = _getparam(z[k],searchz)
+        searchz_k = _getparam(z[k], searchz)
 
         sel = if length(x) == 3
             (abs.(x[3] .- z[k]) .< searchz_k)
@@ -1065,13 +1060,8 @@ function fithorzlen(
         xsel = (x[1][sel], x[2][sel])
         v = value[sel] .- mean(value[sel])
 
-        var0opt[k], lenopt[k], fitinfos[k] = DIVAnd.fitlen(
-            xsel,
-            v,
-            weight[sel],
-            min(length(v),nsamp);
-            distfun = distfun,
-        )
+        var0opt[k], lenopt[k], fitinfos[k] =
+            DIVAnd.fitlen(xsel, v, weight[sel], min(length(v), nsamp); distfun = distfun)
 
         rqual[k] = fitinfos[k][:rqual]
         if limitlen
@@ -1091,8 +1081,8 @@ function fithorzlen(
 
     # filter vertically
     lenoptf = copy(lenopt)
-    rqual[rqual .< min_rqual] .= 0
-    lenweight = max.(rqual,1e-9)
+    rqual[rqual.<min_rqual] .= 0
+    lenweight = max.(rqual, 1e-9)
 
     if (smoothz > 0) && (kmax > 1)
         lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothz)
@@ -1124,10 +1114,10 @@ function fitvertlen(
     x,
     value::Vector{T},
     z;
-    smoothz::T = 100.,
-    smoothk::T = 3.,
-    searchz = 10.,
-    searchxy::T = 1_000., # meters
+    smoothz::T = 100.0,
+    smoothk::T = 3.0,
+    searchz = 10.0,
+    searchxy::T = 1_000.0, # meters
     maxntries::Int = 10000,
     maxnsamp = 50,
     progress = (iter, var, len, fitness) -> nothing,
@@ -1158,7 +1148,7 @@ function fitvertlen(
 
     for k = 1:length(z)
         zlevel2 = Float64(z[k])
-        searchz_k = _getparam(zlevel2,searchz)
+        searchz_k = _getparam(zlevel2, searchz)
         zindex = findall(abs.(zlevel2 .- x[3]) .< searchz_k)
 
         if length(zindex) == 0
@@ -1171,7 +1161,7 @@ function fitvertlen(
             #state = start(iter)
             #@code_warntype next(iter,state)
             #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],),value,weight,nsamp,iter)
+            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],), value, weight, nsamp, iter)
 
             rqual[k] = fitinfos[k][:rqual]
             @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
@@ -1188,8 +1178,8 @@ function fitvertlen(
 
     # filter vertically
     lenoptf = copy(lenopt)
-    rqual[rqual .< min_rqual] .= 0
-    lenweight = max.(rqual,1e-9)
+    rqual[rqual.<min_rqual] .= 0
+    lenweight = max.(rqual, 1e-9)
 
     if (smoothz > 0) && (kmax > 1)
         lenoptf, lenweight = DIVAnd.smoothfilter_weighted(z, lenoptf, lenweight, smoothz)

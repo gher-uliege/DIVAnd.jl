@@ -7,10 +7,8 @@ k = π
 fun(x, y, z, t) = sin(k * x) * sin(k * y) * sin(k * z) * sin(k * t)
 
 # grid of background field
-mask, (pm, pn, po, pp), (xi, yi, zi, ti) = DIVAnd_squaredom(
-    4,
-    range(0, stop = 1, length = 7),
-)
+mask, (pm, pn, po, pp), (xi, yi, zi, ti) =
+    DIVAnd_squaredom(4, range(0, stop = 1, length = 7))
 
 fi_ref = fun.(xi, yi, zi, ti)
 
@@ -42,7 +40,7 @@ epsilon2 = 0.1;
 fi, s = DIVAndrun(mask, (pm, pn, po, pp), (xi, yi, zi, ti), (x, y, z, t), f, len, epsilon2);
 
 # compute RMS to background field
-rms = sqrt(mean((fi_ref[:] - fi[:]).^2));
+rms = sqrt(mean((fi_ref[:] - fi[:]) .^ 2));
 
 # rms should be 0.0111807
 

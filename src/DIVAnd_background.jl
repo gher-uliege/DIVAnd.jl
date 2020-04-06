@@ -86,7 +86,7 @@ function DIVAnd_background(
         operatortype,
         mask,
         pmn,
-        ([L.^2 for L in Labs]...,),
+        ([L .^ 2 for L in Labs]...,),
         iscyclic,
         mapindex,
         Labs;
@@ -122,10 +122,10 @@ function DIVAnd_background(
 
 
 
-#if any(Ld <= 0)
-#   pmnd = mean(reshape(pmnp,[n sv.numels_all]),2)
-#   #Ln = Ln * prod(pmnd(Ld <= 0))
-#end
+    #if any(Ld <= 0)
+    #   pmnd = mean(reshape(pmnp,[n sv.numels_all]),2)
+    #   #Ln = Ln * prod(pmnd(Ld <= 0))
+    #end
 
     coeff = coeff * Ln # units length^n
 
@@ -133,7 +133,7 @@ function DIVAnd_background(
 
     pmnv[:, findall(Ld .== 0)] .= 1
 
-# staggered version of norm
+    # staggered version of norm
 
     for i = 1:n
         S = sparse_stagger(sz, i, iscyclic[i])
@@ -143,31 +143,31 @@ function DIVAnd_background(
         s.WEs[i] = oper_diag(operatortype, sqrt.(d))
     end
 
-# staggered version of norm scaled by length-scale
+    # staggered version of norm scaled by length-scale
 
-#s.Dxs = []
+    #s.Dxs = []
     for i = 1:n
-        Li2 = Labs[i][:].^2
+        Li2 = Labs[i][:] .^ 2
 
         S = sparse_stagger(sz, i, iscyclic[i])
 
-          # mask for staggered variable
+        # mask for staggered variable
         m = (S * mask[:]) .== 1
 
         tmp = sparse_pack(m) * sqrt.(S * Li2[:])
         s.WEss[i] = oper_diag(operatortype, tmp) * s.WEs[i]
-          #  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
+        #  s.Dxs[i] = sparse_diag(sqrt(tmp)) * s.Dx[i]
     end
 
-# adjust weight of halo points
+    # adjust weight of halo points
     if !isempty(mapindex)
-          # ignore halo points at the center of the cell
+        # ignore halo points at the center of the cell
 
         WE = oper_diag(operatortype, s.isinterior) * WE
 
-    # divide weight be two at the edged of halo-interior cell
-    # weight of the grid points between halo and interior points
-    # are 1/2 (as there are two) and interior points are 1
+        # divide weight be two at the edged of halo-interior cell
+        # weight of the grid points between halo and interior points
+        # are 1/2 (as there are two) and interior points are 1
         for i = 1:n
             s.WEs[i] = oper_diag(operatortype, sqrt.(s.isinterior_stag[i])) * s.WEs[i]
         end
@@ -175,10 +175,10 @@ function DIVAnd_background(
 
     s.WE = WE
     s.coeff = coeff
-     # number of dimensions
+    # number of dimensions
     s.n = n
 
-     # mean correlation legth
+    # mean correlation legth
     s.Ld = Ld
     s.coeff_derivative2 = coeff_derivative2
     s.coeff_laplacian = coeff_laplacian
@@ -194,18 +194,22 @@ function DIVAnd_background(
     # second order derivative background constraint without cross-terms
     pack = sparse_pack(mask)
     for i = 1:n
-        if coeff_derivative2[i] != 0.
-            S = sqrt(coeff_derivative2[i]) * s.WE * pack *
-                DIVAnd.sparse_derivative2n(i, mask, pmn, Labs) * pack'
+        if coeff_derivative2[i] != 0.0
+            S =
+                sqrt(coeff_derivative2[i]) *
+                s.WE *
+                pack *
+                DIVAnd.sparse_derivative2n(i, mask, pmn, Labs) *
+                pack'
             iB += S' * S
         end
     end
 
-     # inverse of background covariance matrix
+    # inverse of background covariance matrix
     s.iB = iB
 
 
-     #s.Ln = Ln
+    #s.Ln = Ln
 
     s.moddim = moddim
     s.iscyclic = iscyclic

@@ -44,11 +44,8 @@ if !isfile(obsname)
     obsname = download("https://dox.ulg.ac.be/index.php/s/PztJfSEnc8Cr3XN/download")
 end
 
-obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
-    Float64,
-    obsname,
-    "Salinity",
-)
+obsvalue, obslon, obslat, obsdepth, obstime, obsids =
+    DIVAnd.loadobs(Float64, obsname, "Salinity")
 
 # for testing only
 obsids[1] = "100-123"
@@ -60,7 +57,7 @@ obsids[4:end] .= "101-125"
 dx = dy = 0.5
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
-depthr = [0., 20., 30.]
+depthr = [0.0, 20.0, 30.0]
 epsilon2 = 0.01
 
 # put one point on land
@@ -74,7 +71,7 @@ obsvalue[index_NaN] = NaN
 
 # put an outlier
 index_outlier = 897299
-obsvalue[index_outlier] = 50.
+obsvalue[index_outlier] = 50.0
 
 
 surfextend = true
@@ -139,16 +136,13 @@ metadata = OrderedDict(
     # http://seadatanet.maris2.nl/v_bodc_vocab_v2/search.asp?lib=C19
     # example: ["SDN:C19::3_1"]
     "area_keywords_urn" => ["SDN:C19::3_3"],
-
     "product_version" => "1.0",
 
     # NetCDF CF standard name
     # http://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html
     # example "standard_name" = "sea_water_temperature",
     "netcdf_standard_name" => "sea_water_salinity",
-
     "netcdf_long_name" => "sea water salinity",
-
     "netcdf_units" => "1e-3",
 
     # Abstract for the product
@@ -199,10 +193,8 @@ project = "SeaDataCloud"
 xmlfilename = "test.xml"
 ignore_errors = true
 
-additionalcontacts = [
-    DIVAnd.getedmoinfo(1977, "originator"),
-    DIVAnd.getedmoinfo(4630, "originator"),
-]
+additionalcontacts =
+    [DIVAnd.getedmoinfo(1977, "originator"), DIVAnd.getedmoinfo(4630, "originator")]
 
 @test_logs (:info, r".*") match_mode = :any DIVAnd.divadoxml(
     filename,
@@ -256,7 +248,7 @@ dbinfo = @test_logs (:info, r".*") match_mode = :any DIVAnd.diva3d(
     fitcorrlen = true,
     background_len = (lenx, leny, lenz),
     fithorz_param = Dict(:maxnsamp => 500, :epsilon2 => ones(size(obsvalue))),
-    fitvert_param = Dict(:maxnsamp => 100,),
+    fitvert_param = Dict(:maxnsamp => 100),
     mask = mask,
     niter_e = 2,
     QCMETHOD = 0,
@@ -274,4 +266,3 @@ residuals = dbinfo[:residuals]
 @test qcvalue[index_outlier] > 9
 
 nothing
-

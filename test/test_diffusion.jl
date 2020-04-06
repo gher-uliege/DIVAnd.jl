@@ -27,11 +27,11 @@ sv = statevector((mask,))
 
 # correlation length
 #lenxy = ntuple(i -> 1.,n)
-lenxy = ntuple(i -> .1, n)
+lenxy = ntuple(i -> 0.1, n)
 lenxy = (0.1, 0.15)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 
 # tolerance on the gradient A x - b
@@ -48,7 +48,7 @@ tol = 1e-5
 # G(x,x',t) = (4πDt)^(-n/2)  exp( - |x -x'|² / (4Dt))
 
 Ld = [mean(L) for L in lenxy]
-nu = ([L.^2 for L in lenxy]...)
+nu = ([L .^ 2 for L in lenxy]...)
 D = DIVAnd_laplacian(Val{:sparse}, mask, pmn, nu, falses(4))
 
 
@@ -85,9 +85,13 @@ xi, yi = xyi
 
 
 
-ri = [sqrt((xi[i, j] - xi[50, 50])^2 / Ld[1]^2 + (yi[i, j] - yi[50, 50])^2 / Ld[2]^2) for i = 1:gridsize[1], j = 1:gridsize[2]]
-zit = exp(-ri.^2 / (4 * nmax2 * α)) ./
-      ((4 * π * nmax2 * α)^(n / 2) * prod(Ld) * ivol[50, 50])
+ri = [
+    sqrt((xi[i, j] - xi[50, 50])^2 / Ld[1]^2 + (yi[i, j] - yi[50, 50])^2 / Ld[2]^2)
+    for i = 1:gridsize[1], j = 1:gridsize[2]
+]
+zit =
+    exp(-ri .^ 2 / (4 * nmax2 * α)) ./
+    ((4 * π * nmax2 * α)^(n / 2) * prod(Ld) * ivol[50, 50])
 
 @show maximum(abs(zit - zi))
 @test_approx_eq_eps zit zi 1e-4

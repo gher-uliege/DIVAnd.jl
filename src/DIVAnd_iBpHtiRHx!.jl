@@ -10,14 +10,14 @@ function DIVAnd_iBpHtiRHx!(
 )
 
 
-# Initialize outside workobs1, workstate1, workstate2,iBx_
+    # Initialize outside workobs1, workstate1, workstate2,iBx_
 
 
-     #iBx=s.iB*x
+    #iBx=s.iB*x
     mul!(iBx::Array{Float64,1}, s.iB::SparseMatrixCSC{Float64,Int}, x::Array{Float64,1})
 
     if btrunc == []
-          #iBx[:]=iBx[:]+s.H'*(s.R \ (s.H * x))
+        #iBx[:]=iBx[:]+s.H'*(s.R \ (s.H * x))
         mul!(
             workobs1::Array{Float64,1},
             s.H::SparseMatrixCSC{Float64,Int},
@@ -50,7 +50,7 @@ function DIVAnd_iBpHtiRHx!(
         if mod(j, 2) == 0
 
 
-               #  D^k*x
+            #  D^k*x
             workstate1[:] = x[:]
             for kk = 1:k
                 mul!(
@@ -62,10 +62,10 @@ function DIVAnd_iBpHtiRHx!(
             end
 
 
-               # JMB Dirty Hack, stored Sum of (s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i])))) into s.WEss[1] before
+            # JMB Dirty Hack, stored Sum of (s.Dx[i]'*(s.WEss[i] *(s.WEss[i] *(s.Dx[i])))) into s.WEss[1] before
 
-                   #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
-                #                iBx_ = iBx_ + Dx'*(Dx*x);
+            #                Dx = s.WEss[i] * (s.Dx[i] * Dk);
+            #                iBx_ = iBx_ + Dx'*(Dx*x);
 
             mul!(
                 iBx_::Array{Float64,1},
@@ -75,7 +75,7 @@ function DIVAnd_iBpHtiRHx!(
 
 
             for kk = 1:k
-                    #iBx_=Dk'*iBx_
+                #iBx_=Dk'*iBx_
                 mul!(
                     workstate2::Array{Float64,1},
                     (s.D::SparseMatrixCSC{Float64,Int})',
@@ -88,7 +88,7 @@ function DIVAnd_iBpHtiRHx!(
         else
 
 
-           # WD = s.WE * s.D^(k+1);
+            # WD = s.WE * s.D^(k+1);
 
 
             workstate1[:] = x[:]
@@ -101,7 +101,7 @@ function DIVAnd_iBpHtiRHx!(
                 workstate1[:] = workstate2[:]
             end
 
-             #iBx_ = WD'*(WD*x);
+            #iBx_ = WD'*(WD*x);
 
             mul!(
                 workstate2::Array{Float64,1},
@@ -114,8 +114,8 @@ function DIVAnd_iBpHtiRHx!(
                 workstate2::Array{Float64,1},
             )
 
-                    # or better ?
-                    # workstate1[:]=(diag(s.WE).^2).*workstate1
+            # or better ?
+            # workstate1[:]=(diag(s.WE).^2).*workstate1
 
             for kk = 1:k+1
                 mul!(
@@ -131,7 +131,7 @@ function DIVAnd_iBpHtiRHx!(
 
 
         #iBx_ = iBx_/coeff;
-          #iBx = iBx + alpha[j] * iBx_
+        #iBx = iBx + alpha[j] * iBx_
 
         asurc = alpha[j] / coeff
         iBx = BLAS.axpy!(asurc, iBx_, iBx)
@@ -139,7 +139,7 @@ function DIVAnd_iBpHtiRHx!(
     end
 
 
-     #iBx[:]=iBx[:]+s.H'*(s.R \ (s.H * x))
+    #iBx[:]=iBx[:]+s.H'*(s.R \ (s.H * x))
     mul!(workobs1::Array{Float64,1}, s.H::SparseMatrixCSC{Float64,Int}, x::Array{Float64,1})
     workobs1[:] = s.R \ workobs1
     mul!(

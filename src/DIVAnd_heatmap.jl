@@ -40,7 +40,7 @@ function DIVAnd_heatmap(
     nmax = 10000,
     otherargs...,
 )
-#
+    #
     x = xin
     inflation = inflationin
     idx = []
@@ -54,16 +54,16 @@ function DIVAnd_heatmap(
             weights = inflationin,
             intensive = false,
         )
-       #@show size(inflationin),nmax,size(inflation)
-	   # TODO in future: implement in DIVAnd_superobs the calculation of spread of points in superobs and use it to increase/adapt the length scales accordingly 
-	   # to be tested with known solutions.
+        #@show size(inflationin),nmax,size(inflation)
+        # TODO in future: implement in DIVAnd_superobs the calculation of spread of points in superobs and use it to increase/adapt the length scales accordingly
+        # to be tested with known solutions.
     end
 
 
 
-# Create output array on the same grid as mask pmn and xi
+    # Create output array on the same grid as mask pmn and xi
     dens2 = zeros(Float64, size(mask))
-# Dimensionality of the problem and number of points
+    # Dimensionality of the problem and number of points
     DIMS = ndims(mask)
     NP = size(inflation)[1]
     NPI = sum(inflation)
@@ -78,7 +78,7 @@ function DIVAnd_heatmap(
 
     trytooptimize = optimizeheat
 
-# If automatic selection take the one with the lower number of covariances to calculate
+    # If automatic selection take the one with the lower number of covariances to calculate
     if myheatmapmethod == "Automatic"
 
         mymethod = "DataKernel"
@@ -101,31 +101,31 @@ function DIVAnd_heatmap(
     end
 
 
-#
+    #
     if Labs == 0
         # Estimate
-          # Empirial estimate Silverman's (1986) rule of thumb
+        # Empirial estimate Silverman's (1986) rule of thumb
 
         varx = zeros(Float64, DIMS)
-          #varxb=zeros(Float64,DIMS)
+        #varxb=zeros(Float64,DIMS)
         LF = zeros(Float64, DIMS)
         #fromgausstodivaL=[0.8099,0.62,0.62,0.62,0.62,0.62,0.62]
         for i = 1:DIMS
             meanxo = sum(inflation .* x[i]) / sum(inflation)
-            varx[i] = sum(inflation .* (x[i] .- meanxo).^2) / sum(inflation)
-               #meanxob=sum(x[i])/size(inflation)[1]
+            varx[i] = sum(inflation .* (x[i] .- meanxo) .^ 2) / sum(inflation)
+            #meanxob=sum(x[i])/size(inflation)[1]
             #varxb[i]=sum((x[i].-meanxob).^2)/size(inflation)[1]
-               #@show i,meanxo,varx[i],meanxob,varxb[i]
+            #@show i,meanxo,varx[i],meanxob,varxb[i]
             LF[i] = sqrt(varx[i]) / ((DIMS + 2.0) * NPI / 4.0)^(1.0 / (4.0 + DIMS))
-               #@show LF[i]
-               #LF[i]=sqrt(varxb[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
-               #@show LF[i]
+            #@show LF[i]
+            #LF[i]=sqrt(varxb[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
+            #@show LF[i]
 
         end
 
         if idx != []
-          #@show "was binned"
-          #@show LF.*idx
+            #@show "was binned"
+            #@show LF.*idx
             for i = 1:DIMS
                 if LF[i] * idx[i] < 1
                     @warn "Superobserving made length scale $(LF[i]) in direction $(i) estimate too small, forced to bin size $(1/idx[i])"
@@ -146,7 +146,7 @@ function DIVAnd_heatmap(
     Ltuple = LHEAT
 
 
-#
+    #
     inflationsum = 0
 
 
@@ -154,49 +154,39 @@ function DIVAnd_heatmap(
 
 
     for Literations = 1:1+Ladaptiveiterations
-
         inflationsum = 0
         dens2 .= 0.0
 
 
         xxx = Array{Any}(undef, DIMS)
         if trytooptimize
-        #@show "Try to calculate a decomposition"
+            #@show "Try to calculate a decomposition"
             #Decompose once and for all
-               #if mymethod=="DataKernel"
+            #if mymethod=="DataKernel"
             #FIopt,Sopt=DIVAnd.DIVAndrun(mask,pmn,xi,x,inflation,Ltuple, 1.0E10 ;otherargs...)
             #svf=statevector_init((mask,))
 
-               #end
-               #if mymethod=="GridKernel"
-            FIopt, Sopt = DIVAnd.DIVAndrun(
-                mask,
-                pmn,
-                xi,
-                x,
-                inflation,
-                Ltuple,
-                1.0E10;
-                otherargs...,
-            )
+            #end
+            #if mymethod=="GridKernel"
+            FIopt, Sopt =
+                DIVAnd.DIVAndrun(mask, pmn, xi, x, inflation, Ltuple, 1.0E10; otherargs...)
 
-               #end
+            #end
         end
 
-# VERSION A: covariance of one data point with grid points
+        # VERSION A: covariance of one data point with grid points
         if mymethod == "DataKernel"
 
             for myi = 1:NP
-
                 if trytooptimize
-				#612JMB: try directly ?
-				#work1=Sopt.obsconstrain.H[myi,:]'
+                    #612JMB: try directly ?
+                    #work1=Sopt.obsconstrain.H[myi,:]'
                     eiarr = zeros(size(inflation))
                     eiarr[myi] = 1
                     work1 = Sopt.obsconstrain.H' * eiarr
                     vv = Sopt.P.factors.PtL \ work1
                     vb = Sopt.P.factors.UP \ vv
-                   # Possible place for slight performance improvement. Do the integral in state-space with volumes created before.
+                    # Possible place for slight performance improvement. Do the integral in state-space with volumes created before.
                     FI, = statevector_unpack(svf, vb)
                     integ = DIVAnd_integral(mask, pmn, FI)
                     selfvalue[myi] = (work1 ⋅ vb) / integ
@@ -207,8 +197,8 @@ function DIVAnd_heatmap(
                     for ii = 1:DIMS
                         xxx[ii] = [x[ii][myi]]
                     end
-            #@show xxx,LF,size(xi[1]),size(pmn[1])
-            #  Use of WOODBURY and decomposed B in s could make it faster, done in the optimized version
+                    #@show xxx,LF,size(xi[1]),size(pmn[1])
+                    #  Use of WOODBURY and decomposed B in s could make it faster, done in the optimized version
                     FI, S = DIVAnd.DIVAndrun(
                         mask,
                         pmn,
@@ -220,18 +210,18 @@ function DIVAnd_heatmap(
                         otherargs...,
                     )
 
-    # Add here the constraint that each integral is one: accepts non unit values vi inflation to reflect mulitple observations
-    # Also accept errors on obs? But how ? In the integral so it has less influence on overall sum (which will be scaled again?)
-    #
+                    # Add here the constraint that each integral is one: accepts non unit values vi inflation to reflect mulitple observations
+                    # Also accept errors on obs? But how ? In the integral so it has less influence on overall sum (which will be scaled again?)
+                    #
                     integ = DIVAnd_integral(mask, pmn, FI)
-        #@show integ
+                    #@show integ
 
                 end
                 if integ != 0
                     dens2 = dens2 .+ inflation[myi] * FI / integ
                     inflationsum = inflationsum + inflation[myi]
-            #else
-            #    @show "?? Not on grid ?",integ,sum(FI),xxx
+                    #else
+                    #    @show "?? Not on grid ?",integ,sum(FI),xxx
                 end
 
 
@@ -243,45 +233,49 @@ function DIVAnd_heatmap(
 
             if trytooptimize
                 dens2x = statevector_pack(svf, (dens2,))
-            #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
-                selfvalueerr = (inflationsum .* Sopt.obsconstrain.H * dens2x .-
-                                inflation .* selfvalue) ./ (inflationsum .- inflation)
+                #@show sum(dens2),DIVAnd_integral(mask,pmn,dens2),NP,inflationsum
+                selfvalueerr =
+                    (
+                        inflationsum .* Sopt.obsconstrain.H * dens2x .-
+                        inflation .* selfvalue
+                    ) ./ (inflationsum .- inflation)
                 #selfvalueerr[selfvalueerr.<0.0] .= 0.0
-				selfvalueerr[selfvalueerr.<1.0E-38].=1.0E-38
+                selfvalueerr[selfvalueerr.<1.0E-38] .= 1.0E-38
                 logvalueerr = log.(selfvalueerr)
 
 
                 finalweights = inflation
-               #or
-               #finalweights=ones(Float64,size(inflation))
+                #or
+                #finalweights=ones(Float64,size(inflation))
 
                 finalweights[isnan.(selfvalueerr)] .= 0
                 finalsum = sum(finalweights)
                 selfvalueerr[isnan.(selfvalueerr)] .= 0
                 logvalueerr[isnan.(logvalueerr)] .= 0
-            #errestim=inflation.*(selfvalue-Sopt.H*dens2x)./(inflationsum.-inflation)
-               #@show DIVAnd_integral(mask,pmn,dens2.^2), DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(selfvalueerr)/inflationsum,sum(logvalueerr)
+                #errestim=inflation.*(selfvalue-Sopt.H*dens2x)./(inflationsum.-inflation)
+                #@show DIVAnd_integral(mask,pmn,dens2.^2), DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(selfvalueerr)/inflationsum,sum(logvalueerr)
 
                 LCV = sum(finalweights .* logvalueerr) / finalsum
-                LSCV = DIVAnd_integral(mask, pmn, dens2.^2) -
-                       2 * sum(finalweights .* selfvalueerr) / finalsum
-               #or
+                LSCV =
+                    DIVAnd_integral(mask, pmn, dens2 .^ 2) -
+                    2 * sum(finalweights .* selfvalueerr) / finalsum
+                #or
 
-               #LCV=sum(inflation.*logvalueerr)/inflationsum
-               #LSCV=DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(inflation.*selfvalueerr)/inflationsum
+                #LCV=sum(inflation.*logvalueerr)/inflationsum
+                #LSCV=DIVAnd_integral(mask,pmn,dens2.^2)-2*sum(inflation.*selfvalueerr)/inflationsum
 
             end
         end
 
 
-# VERSION B: covariance of one grid point with all data points
+        # VERSION B: covariance of one grid point with all data points
         if mymethod == "GridKernel"
 
             if trytooptimize
                 svsize = sum(mask .== true)
                 xdens = zeros(Float64, svsize)
                 xval = zeros(Float64, svsize)
-              #@show "OPti",svsize
+                #@show "OPti",svsize
                 for myi = 1:svsize
                     eiarr = zeros(Float64, svsize)
                     eiarr[myi] = 1.0
@@ -303,16 +297,15 @@ function DIVAnd_heatmap(
                 Raugmented = [Rinf..., 0.000001]
                 valaugmented = [inflation..., 1.0]
                 for myi in eachindex(mask)
-
                     if mask[myi]
-                    # Only on grid:
-                    # Add one virtual data point which is the grid point.
+                        # Only on grid:
+                        # Add one virtual data point which is the grid point.
                         for ii = 1:DIMS
                             xaugmented[ii] = [x[ii]..., xi[ii][myi]]
                         end
 
-                    # The real data points with infinite R
-                    # Use of WOODBURY and decomposed B in s could make it faster
+                        # The real data points with infinite R
+                        # Use of WOODBURY and decomposed B in s could make it faster
                         FI, s = DIVAnd.DIVAndrun(
                             mask,
                             pmn,
@@ -324,14 +317,14 @@ function DIVAnd_heatmap(
                             otherargs...,
                         )
 
-                    # Calculate normalization constant
+                        # Calculate normalization constant
                         integ = DIVAnd_integral(mask, pmn, FI)
-                    # After analysis, retrieve via S the analysis at those points and apply normalization constant
-                    # as well as inflation
+                        # After analysis, retrieve via S the analysis at those points and apply normalization constant
+                        # as well as inflation
                         bidon = (s.obsconstrain.H) * statevector_pack(s.sv, (FI,))
                         dens2[myi] = sum(bidon[1:end-1] .* inflation) / integ
 
-                    #@show myi,integ
+                        #@show myi,integ
 
 
                     end
@@ -388,5 +381,3 @@ end
 #
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, see <http://www.gnu.org/licenses/>.
-
-

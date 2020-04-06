@@ -103,7 +103,7 @@ function DIVAndjog(
             if methodpc == 1
                 diagshift = 0.0001
                 Labsccut = ([Labsc[i] * lmask[i] for i = 1:n]...,)
-                    # Run model with simplified norm
+                # Run model with simplified norm
                 fc, sc = DIVAndrun(
                     mask,
                     pmn,
@@ -125,26 +125,26 @@ function DIVAndjog(
                     figuess = fc
                 end
 
-                    # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
 
-                    # To compensate for the missing correlations in scP
-                    # tolerance on the gradient A x - b
+                # To compensate for the missing correlations in scP
+                # tolerance on the gradient A x - b
 
 
-                    # Preconditionner function
+                # Preconditionner function
                 function compPCa(iB, H, R)
                     function fun!(x, fx)
-                              #fx[:] = diagshift*x+scP*x;
+                        #fx[:] = diagshift*x+scP*x;
                         fx[:] = scP * x
                         fx[:] = BLAS.axpy!(diagshift, x, fx)
 
                     end
                     return fun!
                 end
-                    # Then run with normal resolution and preconditionner
+                # Then run with normal resolution and preconditionner
 
                 fi, si = DIVAndrun(
                     mask,
@@ -174,19 +174,19 @@ function DIVAndjog(
                 PC2 = 1
                 xguess = 1
                 if !(sc == 0)
-                         # TEST makes sure there are values in the coarse resolution solution
-                         # Take the fc coarse solution, pack to to statevector form
-                         # using sc.sv
-                         # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                         # Preconditionner core
+                    # Preconditionner core
                     PC2 = sc.P
                     xguess = statevector_pack(sc.sv, (fc,))
                 end
-                    # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
                 lmask1 = 0.0 .* lmask
                 lmask1[3:end] .= 1.0 ./ 1.42
 
@@ -194,26 +194,26 @@ function DIVAndjog(
                 PC1 = 1
                 sc = 0
                 if size(lmask)[2] > 2
-                    fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.; otherargs...)
+                    fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.0; otherargs...)
                 end
                 if !(sc == 0)
-                        # TEST makes sure there are values in the coarse resolution solution
-                        # Take the fc coarse solution, pack to to statevector form
-                        # using sc.sv
-                        # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                        # Preconditionner core
+                    # Preconditionner core
                     PC1 = sc.P
                 end
-                   # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
 
 
 
 
-                   # tolerance on the gradient A x - b
+                # tolerance on the gradient A x - b
 
 
 
@@ -263,7 +263,7 @@ function DIVAndjog(
 
 
             if methodpc == 3
-                   # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
+                # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
                 lmask1 = 0.0 .* lmask
                 lmask1[1:2] .= 1.0
                 Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
@@ -271,19 +271,19 @@ function DIVAndjog(
                 PC2 = 1
                 xguess = 1
                 if !(sc == 0)
-                         # TEST makes sure there are values in the coarse resolution solution
-                         # Take the fc coarse solution, pack to to statevector form
-                         # using sc.sv
-                         # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                         # Preconditionner core
+                    # Preconditionner core
                     PC2 = sc.P
                     xguess = statevector_pack(sc.sv, (fc,))
                 end
-                    # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
                 lmask1 = 0.0 .* lmask
                 lmask1[3:end] .= 1.0
                 Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
@@ -291,38 +291,39 @@ function DIVAndjog(
                 sc = 0
 
                 if size(lmask)[2] > 2
-                    fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.; otherargs...)
+                    fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.0; otherargs...)
                 end
 
                 if !(sc == 0)
-                        # TEST makes sure there are values in the coarse resolution solution
-                        # Take the fc coarse solution, pack to to statevector form
-                        # using sc.sv
-                        # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                        # Preconditionner core
+                    # Preconditionner core
                     PC1 = sc.P
                 end
-                   # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
 
-                   # tolerance on the gradient A x - b
+                # tolerance on the gradient A x - b
 
                 xguess = (PC1 * xguess)
                 xr = randn(size(xguess)[1], 1)
                 newsc = [1]
-                   #scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
+                #scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
                 if PC1 == 1
                     scalef = (xr' * ((PC2 * (xr)))) ./ (xr' * xr)
                 else
                     #               scalef=(xr'*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\xr))))./(xr'*xr)
-                    scalef = (xr' *
-                              (PC1.factors[:UP] \ (PC2 * (PC1.factors[:PtL] \ xr)))) ./
-                             (xr' * xr)
-                    newsc = (xr' * (PC1.factors[:UP] \ ((PC1.factors[:PtL] \ xr)))) ./
-                            (xr' * xr)
+                    scalef =
+                        (xr' * (PC1.factors[:UP] \ (PC2 * (PC1.factors[:PtL] \ xr)))) ./
+                        (xr' * xr)
+                    newsc =
+                        (xr' * (PC1.factors[:UP] \ ((PC1.factors[:PtL] \ xr)))) ./
+                        (xr' * xr)
 
                 end
                 scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
@@ -340,9 +341,9 @@ function DIVAndjog(
                 function compPC4bis(iB, H, R)
                     function fun!(x, fx)
                         #fx[:] = diagshift*x+scalef2*(PC1.factors[:PtL]\(PC2*(PC1.factors[:UP]\x)))
-                        fx[:] = diagshift * x +
-                                scalef2 *
-                                (PC1.factors[:UP] \ (PC2 * (PC1.factors[:PtL] \ x)))
+                        fx[:] =
+                            diagshift * x +
+                            scalef2 * (PC1.factors[:UP] \ (PC2 * (PC1.factors[:PtL] \ x)))
                     end
                     return fun!
                 end
@@ -394,7 +395,7 @@ function DIVAndjog(
 
 
             if methodpc == 4
-                   # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
+                # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
                 lmask1 = 0.0 .* lmask
                 lmask1[1:2] .= 1.0
                 Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
@@ -402,23 +403,23 @@ function DIVAndjog(
                 PC2 = 1
                 xguess = 1
                 if !(sc == 0)
-                         # TEST makes sure there are values in the coarse resolution solution
-                         # Take the fc coarse solution, pack to to statevector form
-                         # using sc.sv
-                         # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                         # Preconditionner core
+                    # Preconditionner core
                     PC2 = sc.P
                     xguess = statevector_pack(sc.sv, (fc,))
                 end
-                    # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
                 lmask1 = 0.0 .* lmask
                 lmask1[3:end] .= 1.0
                 Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
-                    # Try to get iB by using iterative solved stopped at one
+                # Try to get iB by using iterative solved stopped at one
                 maxiterb = 1
 
                 PC1 = 1
@@ -432,7 +433,7 @@ function DIVAndjog(
                         x,
                         f,
                         Labsccut,
-                        10000.;
+                        10000.0;
                         otherargs...,
                         tol = tol,
                         maxit = maxiterb,
@@ -441,32 +442,33 @@ function DIVAndjog(
                 end
                 PC1 = 1
                 if !(sc == 0)
-                        # TEST makes sure there are values in the coarse resolution solution
-                        # Take the fc coarse solution, pack to to statevector form
-                        # using sc.sv
-                        # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                        # Preconditionner core
+                    # Preconditionner core
                     PC1 = sc.iB
                 end
-                   # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
 
 
 
 
-                   # tolerance on the gradient A x - b
+                # tolerance on the gradient A x - b
 
 
 
 
 
                 xr = randn(size(xguess)[1], 1)
-                scalef = 0.5 * ((xr' * (PC1 * (PC2 * xr))) + (xr' * (PC2 * (PC1 * xr)))) ./
-                         (xr' * xr)
-                   #scalefter=(xr'*(PC2*xr))./(xr'*xr)
+                scalef =
+                    0.5 * ((xr' * (PC1 * (PC2 * xr))) + (xr' * (PC2 * (PC1 * xr)))) ./
+                    (xr' * xr)
+                #scalefter=(xr'*(PC2*xr))./(xr'*xr)
 
 
 
@@ -478,8 +480,8 @@ function DIVAndjog(
 
                 function compPC4ter(iB, H, R)
                     function fun!(x, fx)
-                        fx[:] = diagshift * x + PC2 * x -
-                                scalef2 * (PC2 * (PC1 * (PC2 * x)))
+                        fx[:] =
+                            diagshift * x + PC2 * x - scalef2 * (PC2 * (PC1 * (PC2 * x)))
                     end
                     return fun!
                 end
@@ -505,7 +507,7 @@ function DIVAndjog(
             end
 
             if methodpc == 5
-                   # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
+                # same idea is for 3 but instead of trying to find an L such that B2 is B use directly decomposition of B!
                 lmask1 = 0.0 .* lmask
                 lmask1[1:2] .= 1.0
                 Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
@@ -513,24 +515,24 @@ function DIVAndjog(
                 PC2 = 1
                 xguess = 1
                 if !(sc == 0)
-                         # TEST makes sure there are values in the coarse resolution solution
-                         # Take the fc coarse solution, pack to to statevector form
-                         # using sc.sv
-                         # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                         # Preconditionner core
+                    # Preconditionner core
                     PC2 = sc.P
                     xguess = statevector_pack(sc.sv, (fc,))
                 end
-                    # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
 
 
 
 
-                   # tolerance on the gradient A x - b
+                # tolerance on the gradient A x - b
 
 
 
@@ -570,10 +572,10 @@ function DIVAndjog(
             end
 
 
-               #               fs=statevector_pack(si.sv,(fi,));
-               #               fgs=statevector_pack(si.sv,(figuess,));
-               #               al=dot(fs,fgs)/dot(fgs,fgs)
-               #               @show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
+            #               fs=statevector_pack(si.sv,(fi,));
+            #               fgs=statevector_pack(si.sv,(figuess,));
+            #               al=dot(fs,fgs)/dot(fgs,fgs)
+            #               @show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
 
             return fi, si
         end
@@ -617,12 +619,14 @@ function DIVAndjog(
 
 
 
-        coarsegridpoints = ([sort(unique(push!(
-            collect(2:nsteps[i]:size(mask)[i] - 1),
-            size(mask)[i],
-            size(mask)[i] - 1,
-            1,
-        ))) for i = 1:n]...,)
+        coarsegridpoints = ([
+            sort(unique(push!(
+                collect(2:nsteps[i]:size(mask)[i]-1),
+                size(mask)[i],
+                size(mask)[i] - 1,
+                1,
+            ))) for i = 1:n
+        ]...,)
 
         # If last point not reached add last point and just forget about incorrect metric  there ?
 
@@ -641,7 +645,7 @@ function DIVAndjog(
                 maskf = mapslices(dvmaskexpand, maskf, dims = ii)
             end
         end
-          # One further expansion, but maybe check if updates on the fly are really the way to go ??
+        # One further expansion, but maybe check if updates on the fly are really the way to go ??
         for ii = n:-1:1
             if nsteps[ii] > 1
                 maskf = mapslices(dvmaskexpand, maskf, dims = ii)
@@ -742,16 +746,16 @@ function DIVAndjog(
         fi = 0
         si = 0
 
-          #Method 1
+        #Method 1
         if methodpccoarse == 1
 
             Labsccut = ([Labsc[i] * lmask[i] for i = 1:n]...,)
-               # try classic 2D
+            # try classic 2D
             lmask1 = 0.0 .* lmask
             lmask1[1:2] .= 1.0
             Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
 
-               #fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
+            #fc,sc=DIVAndrun(maskc,pmnc,xic,x,f,Labsccut,epsilon2; otherargsc...,alpha=alphapc,btrunc=2)
             fc, sc = DIVAndrun(maskc, pmnc, xic, x, f, Labsccut, epsilon2; otherargsc...)
 
             scP = 1
@@ -769,10 +773,10 @@ function DIVAndjog(
                 xguess = HI * statevector_pack(sc.sv, (fc,))
                 figuess, = statevector_unpack(svf, xguess)
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
 
 
@@ -785,62 +789,62 @@ function DIVAndjog(
             xguess = xguess * scalef2
             figuess, = statevector_unpack(svf, xguess)
 
-               # To compensate for the missing correlations in HI*scP*HI'
+            # To compensate for the missing correlations in HI*scP*HI'
 
             diagshift = 0.006 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
             diagshift = 0.03 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
             diagshift = 0.04 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
             diagshift = 0.02 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
 
-               #work1=0.*xguess # ::Array{Float64,1}
-               #work2=0.*xguess # ::Array{Float64,1}
-               #work3=0.*(HI'*xguess) # ::Array{Float64,1}
+            #work1=0.*xguess # ::Array{Float64,1}
+            #work2=0.*xguess # ::Array{Float64,1}
+            #work3=0.*(HI'*xguess) # ::Array{Float64,1}
             work3 = zeros(Float64, size(HI)[2])
             work3b = zeros(Float64, size(HI)[2])
             function compPC(iB, H, R)
-                   #work1=zeros(Float64,size(HI)[1])
-                   #work2=zeros(Float64,size(HI)[1])
+                #work1=zeros(Float64,size(HI)[1])
+                #work2=zeros(Float64,size(HI)[1])
 
-                   #Possible improvement, instead of linear interpolation vi HI:
-                   # HI' : unpack state vector, from the fine grid get grid points [coarsegridpoints...]
-                   #  pack the coarse grid, apply scP, unpack to coarse grid, initialize a fine grid solution with this coarse grid solution
-                   #  use DIVAnd_fill to fill the fine grid and finally pack the array
-                   # maybe even accept a filtering filling ?
-                   # But then with this approach the operator is not symmetric ?
+                #Possible improvement, instead of linear interpolation vi HI:
+                # HI' : unpack state vector, from the fine grid get grid points [coarsegridpoints...]
+                #  pack the coarse grid, apply scP, unpack to coarse grid, initialize a fine grid solution with this coarse grid solution
+                #  use DIVAnd_fill to fill the fine grid and finally pack the array
+                # maybe even accept a filtering filling ?
+                # But then with this approach the operator is not symmetric ?
                 function fun!(x::Array{Float64,1}, fx::Array{Float64,1})
-                         #@show size(x),typeof(HI),typeof(scP)
-                         #work1[:]=diagshift*x ::Array{Float64,1}
+                    #@show size(x),typeof(HI),typeof(scP)
+                    #work1[:]=diagshift*x ::Array{Float64,1}
 
                     mul!(
                         work3::Array{Float64,1},
                         (HI::SparseMatrixCSC{Float64,Int})',
                         x::Array{Float64,1},
                     )
-                         #work3[:]=HI'*x  ::Array{Float64,1}
+                    #work3[:]=HI'*x  ::Array{Float64,1}
                     if scP == 1
                         work3b = work3
                     else
                         work3b[:] = scP * work3::Array{Float64,1}
-                              # not yet defined for covariance
-                              #mul!(work3b::Array{Float64,1},scP,work3::Array{Float64,1})
+                        # not yet defined for covariance
+                        #mul!(work3b::Array{Float64,1},scP,work3::Array{Float64,1})
                     end
 
-                         #
+                    #
 
                     mul!(
                         fx::Array{Float64,1},
                         HI::SparseMatrixCSC{Float64,Int},
                         work3b::Array{Float64,1},
                     )
-                         #fx[:]=HI*work3b ::Array{Float64,1}
+                    #fx[:]=HI*work3b ::Array{Float64,1}
                     fx[:] = scalef2 * fx::Array{Float64,1}
-                         #fx[:]=work1+work2 ::Array{Float64,1}
-                         #mul!(fx,scalef2,fx)
+                    #fx[:]=work1+work2 ::Array{Float64,1}
+                    #mul!(fx,scalef2,fx)
                     fx[:] = BLAS.axpy!(diagshift, x, fx)
                     #fx[:] = diagshift*x+scalef2*HI*(scP*(HI'*x));
                 end
 
-                    #@time gc()
+                #@time gc()
                 return fun!
             end
             fi, si = DIVAndrun(
@@ -864,7 +868,7 @@ function DIVAndjog(
 
         end
 
-          #Method 2
+        #Method 2
         if methodpccoarse == 2
 
             Labsccut = Labsc
@@ -899,22 +903,22 @@ function DIVAndjog(
                 xguess = HI * statevector_pack(sc.sv, (fc,))
                 figuess, = statevector_unpack(svf, xguess)
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
             xr = randn(size(HI)[1], 1)
 
             scalef = (xr' * (HI * (HI' * xr))) ./ (xr' * xr)
-            scalef2 = 1. / scalef[1]
-            scalef2 = 1.
+            scalef2 = 1.0 / scalef[1]
+            scalef2 = 1.0
             xguess = xguess * scalef2
 
             figuess, = statevector_unpack(svf, xguess)
 
 
-               # To compensate for the missing correlations in HI*scP*HI'
+            # To compensate for the missing correlations in HI*scP*HI'
 
 
             diagshift = 0.006 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
@@ -946,7 +950,7 @@ function DIVAndjog(
 
 
 
-          #Method 3
+        #Method 3
         if methodpccoarse == 3
             lmask1 = 0.0 .* lmask
             lmask1[1:end] .= 1.0
@@ -968,59 +972,59 @@ function DIVAndjog(
                 PC2 = sc.P
                 xguess = statevector_pack(sc.sv, (fc,))
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
             PC1 = 1
             lmask1 = 0.0 .* lmask
-               #lmask1[3:end]=1/1.42;
+            #lmask1[3:end]=1/1.42;
             #Try 3D
             if n > 3
                 lmask1[3] = 1 / 1.42
                 Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
 
-                fc, sc = DIVAndrun(maskc, pmnc, xic, x, f, Labsccut, 10000.; otherargsc...)
+                fc, sc = DIVAndrun(maskc, pmnc, xic, x, f, Labsccut, 10000.0; otherargsc...)
 
 
                 if !(sc == 0)
-                         # TEST makes sure there are values in the coarse resolution solution
-                         # Take the fc coarse solution, pack to to statevector form
-                         # using sc.sv
-                         # Apply HI; this vector can also be used as a first guess for the PC
+                    # TEST makes sure there are values in the coarse resolution solution
+                    # Take the fc coarse solution, pack to to statevector form
+                    # using sc.sv
+                    # Apply HI; this vector can also be used as a first guess for the PC
 
-                         # Preconditionner core
+                    # Preconditionner core
                     PC1 = sc.P
                 end
-                   # Try to clean up some memory here
+                # Try to clean up some memory here
                 sc = 0
                 fc = 0
-                    #gc()
+                #gc()
             end
 
 
 
-               # tolerance on the gradient A x - b
+            # tolerance on the gradient A x - b
 
 
             diagshift = 0.001 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
 
 
             xguess = PC1 * (PC1 * xguess)
-               #xr=randn(size(HI)[1],1)
-               #scalef=(xr'*(HI*(PC1*(PC2*(PC1*(HI'*xr))))))./(xr'*xr)
+            #xr=randn(size(HI)[1],1)
+            #scalef=(xr'*(HI*(PC1*(PC2*(PC1*(HI'*xr))))))./(xr'*xr)
             xr = randn(size(HI)[2], 1)
             scalef = (xr' * ((PC1 * (PC2 * (PC1 * (xr)))))) ./ (xr' * xr)
-               #xr=randn(size(HI)[2],1)
+            #xr=randn(size(HI)[2],1)
             scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
-               #Maybe adapt scaling including HI ?
-               # xr=randn(size(HI)[1],1)
-               # xz=HI'*xr;
-               # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
-               # xz=randn(size(HI)[2],1)
-               # scalefter=(xz'*(PC2*xz))./(xz'*xz)
+            #Maybe adapt scaling including HI ?
+            # xr=randn(size(HI)[1],1)
+            # xz=HI'*xr;
+            # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
+            # xz=randn(size(HI)[2],1)
+            # scalefter=(xz'*(PC2*xz))./(xz'*xz)
 
 
             scalef2 = scalefter[1] / scalef[1]
@@ -1029,8 +1033,8 @@ function DIVAndjog(
 
             function compPC3(iB, H, R)
                 function fun!(x, fx)
-                    fx[:] = diagshift * x +
-                            scalef2 * (HI * (PC1 * (PC2 * (PC1 * (HI' * x)))))
+                    fx[:] =
+                        diagshift * x + scalef2 * (HI * (PC1 * (PC2 * (PC1 * (HI' * x)))))
                 end
                 return fun!
             end
@@ -1090,14 +1094,14 @@ function DIVAndjog(
                 PC2 = sc.P
                 xguess = statevector_pack(sc.sv, (fc,))
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
 
 
-               #Now B2D on fine resolution model !
+            #Now B2D on fine resolution model !
             Labsf = Labs
             if isa(Labs, Tuple)
                 Labsf = Labs
@@ -1113,17 +1117,8 @@ function DIVAndjog(
             Labsccut = ([Labsf[i] * lmask1[i] for i = 1:n]...,)
             sc = 0
             PC1a = 1
-            fc, sc = DIVAndrun(
-                mask,
-                pmn,
-                xi,
-                x,
-                f,
-                Labsccut,
-                10000.;
-                otherargs...,
-                btrunc = 3,
-            )
+            fc, sc =
+                DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.0; otherargs..., btrunc = 3)
             if !(sc == 0)
                 # TEST makes sure there are values in the coarse resolution solution
                 # Take the fc coarse solution, pack to to statevector form
@@ -1133,10 +1128,10 @@ function DIVAndjog(
                 # Preconditionner core
                 PC1a = sc.P
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
             lmask1 = 0.0 .* lmask
 
@@ -1144,17 +1139,8 @@ function DIVAndjog(
             Labsccut = ([Labsf[i] * lmask1[i] for i = 1:n]...,)
             sc = 0
             PC1b = 1
-            fc, sc = DIVAndrun(
-                mask,
-                pmn,
-                xi,
-                x,
-                f,
-                Labsccut,
-                10000.;
-                otherargs...,
-                btrunc = 3,
-            )
+            fc, sc =
+                DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.0; otherargs..., btrunc = 3)
             if !(sc == 0)
                 # TEST makes sure there are values in the coarse resolution solution
                 # Take the fc coarse solution, pack to to statevector form
@@ -1164,15 +1150,15 @@ function DIVAndjog(
                 # Preconditionner core
                 PC1b = sc.P
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
 
 
 
-               # tolerance on the gradient A x - b
+            # tolerance on the gradient A x - b
 
 
             diagshift = 0.006 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
@@ -1180,22 +1166,22 @@ function DIVAndjog(
 
             xguess = PC1a * (PC1b * (PC1b * (PC1a * (HI * xguess))))
             xr = randn(size(HI)[1], 1)
-            scalef = (xr' *
-                      (PC1a * (PC1b * (HI * (PC2 * (HI' * (PC1b * (PC1a * xr)))))))) ./
-                     (xr' * xr)
+            scalef =
+                (xr' * (PC1a * (PC1b * (HI * (PC2 * (HI' * (PC1b * (PC1a * xr)))))))) ./
+                (xr' * xr)
             xr = randn(size(HI)[2], 1)
             scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
-               #Maybe adapt scaling including HI ?
-               # xr=randn(size(HI)[1],1)
-               # xz=HI'*xr;
-               # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
-               # xz=randn(size(HI)[2],1)
-               # scalefter=(xz'*(PC2*xz))./(xz'*xz)
+            #Maybe adapt scaling including HI ?
+            # xr=randn(size(HI)[1],1)
+            # xz=HI'*xr;
+            # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
+            # xz=randn(size(HI)[2],1)
+            # scalefter=(xz'*(PC2*xz))./(xz'*xz)
 
 
             scalef2 = scalefter[1] / scalef[1]
-               # Because of btrunc in major norm
+            # Because of btrunc in major norm
             scalef2 = scalef2 * 0.16 * 1.1
             xguess = xguess * scalef2
             figuess, = statevector_unpack(svf, xguess)
@@ -1203,12 +1189,13 @@ function DIVAndjog(
 
             function compPC4b(iB, H, R)
                 function fun!(x, fx)
-                        #return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
-                        #return x -> diagshift*x+scalef2*(PC1*(HI*(PC2*(HI'*(PC1*x)))))
-                        #return x -> diagshift*x+scalef2*((HI*(PC2*(HI'*(x)))))
-                    fx[:] = diagshift * x +
-                            scalef2 *
-                            (PC1a * (PC1b * (HI * (PC2 * (HI' * (PC1b * (PC1a * x)))))))
+                    #return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
+                    #return x -> diagshift*x+scalef2*(PC1*(HI*(PC2*(HI'*(PC1*x)))))
+                    #return x -> diagshift*x+scalef2*((HI*(PC2*(HI'*(x)))))
+                    fx[:] =
+                        diagshift * x +
+                        scalef2 *
+                        (PC1a * (PC1b * (HI * (PC2 * (HI' * (PC1b * (PC1a * x)))))))
                 end
                 return fun!
             end
@@ -1251,10 +1238,10 @@ function DIVAndjog(
                 PC2 = sc.P
                 xguess = statevector_pack(sc.sv, (fc,))
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
             lmask1 = 0.0 .* lmask
             lmask1[3:end] .= 1.0 / 1.42
             Labsccut = ([Labsc[i] * lmask1[i] for i = 1:n]...,)
@@ -1262,7 +1249,7 @@ function DIVAndjog(
             sc = 0
 
             if size(lmask)[2] > 2
-                fc, sc = DIVAndrun(maskc, pmnc, xic, x, f, Labsccut, 10000.; otherargsc...)
+                fc, sc = DIVAndrun(maskc, pmnc, xic, x, f, Labsccut, 10000.0; otherargsc...)
             end
 
             if !(sc == 0)
@@ -1274,10 +1261,10 @@ function DIVAndjog(
                 # Preconditionner core
                 PC1 = sc.P
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
             #Now B2D on fine resolution model !
             if isa(Labs, Tuple)
@@ -1290,7 +1277,7 @@ function DIVAndjog(
             Labsccut = ([Labsf[i] * lmask1[i] for i = 1:n]...,)
             sc = 0
             PC1a = 1
-            fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.; otherargs...)
+            fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.0; otherargs...)
             if !(sc == 0)
                 # TEST makes sure there are values in the coarse resolution solution
                 # Take the fc coarse solution, pack to to statevector form
@@ -1300,17 +1287,17 @@ function DIVAndjog(
                 # Preconditionner core
                 PC1a = sc.P
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
             lmask1 = 0.0 .* lmask
             lmask1[2] = 1.0 / 1.42
             Labsccut = ([Labsf[i] * lmask1[i] for i = 1:n]...,)
             sc = 0
             PC1b = 1
-            fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.; otherargs...)
+            fc, sc = DIVAndrun(mask, pmn, xi, x, f, Labsccut, 10000.0; otherargs...)
             if !(sc == 0)
                 # TEST makes sure there are values in the coarse resolution solution
                 # Take the fc coarse solution, pack to to statevector form
@@ -1320,14 +1307,14 @@ function DIVAndjog(
                 # Preconditionner core
                 PC1b = sc.P
             end
-               # Try to clean up some memory here
+            # Try to clean up some memory here
             sc = 0
             fc = 0
-               #gc()
+            #gc()
 
 
 
-               # tolerance on the gradient A x - b
+            # tolerance on the gradient A x - b
 
 
             diagshift = 0.005 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
@@ -1335,22 +1322,26 @@ function DIVAndjog(
 
             xguess = (PC1b * (PC1a * (PC1a * (PC1b * (HI * (PC1 * (PC1 * xguess)))))))
             xr = randn(size(HI)[1], 1)
-            scalef = (xr' *
-                      (PC1a *
-                       (PC1b *
-                        (HI * (PC1 * (PC2 * (PC1 * (HI' * (PC1b * (PC1a * xr)))))))))) ./
-                     (xr' * xr)
-               #xr=randn(size(HI)[2],1)
-               #scalef=(xr'*((PC1*(PC2*(PC1*(xr))))))./(xr'*xr)
+            scalef =
+                (
+                    xr' * (
+                        PC1a * (
+                            PC1b *
+                            (HI * (PC1 * (PC2 * (PC1 * (HI' * (PC1b * (PC1a * xr)))))))
+                        )
+                    )
+                ) ./ (xr' * xr)
+            #xr=randn(size(HI)[2],1)
+            #scalef=(xr'*((PC1*(PC2*(PC1*(xr))))))./(xr'*xr)
             xr = randn(size(HI)[2], 1)
             scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
-               #Maybe adapt scaling including HI ?
-               # xr=randn(size(HI)[1],1)
-               # xz=HI'*xr;
-               # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
-               # xz=randn(size(HI)[2],1)
-               # scalefter=(xz'*(PC2*xz))./(xz'*xz)
+            #Maybe adapt scaling including HI ?
+            # xr=randn(size(HI)[1],1)
+            # xz=HI'*xr;
+            # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
+            # xz=randn(size(HI)[2],1)
+            # scalefter=(xz'*(PC2*xz))./(xz'*xz)
 
 
             scalef2 = scalefter[1] / scalef[1]
@@ -1362,12 +1353,15 @@ function DIVAndjog(
 
             function compPC5(iB, H, R)
                 function fun!(x, fx)
-                        #return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
-                    fx[:] = diagshift * x +
-                            scalef2 *
-                            (PC1a *
-                             (PC1b *
-                              (HI * (PC1 * (PC2 * (PC1 * (HI' * (PC1b * (PC1a * x)))))))))
+                    #return x -> diagshift*x-diagshift*(HI*(HI'*x))+scalef2*(HI*(PC1*(PC2*(PC1*(HI'*x)))))
+                    fx[:] =
+                        diagshift * x +
+                        scalef2 * (
+                            PC1a * (
+                                PC1b *
+                                (HI * (PC1 * (PC2 * (PC1 * (HI' * (PC1b * (PC1a * x)))))))
+                            )
+                        )
                 end
                 return fun!
 
@@ -1392,23 +1386,23 @@ function DIVAndjog(
 
 
             # posteriori=fi.*figuess
-               # Some ideas for error calculations
-               #fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = DIVAnd_pc_sqrtiB, fi0 =xguess)
-               #errfield=diagMtCM(sc.P,HI')
-               #erri,=statevector_unpack(si.sv,errfield)
-               # For error field based on coarse one, use DIVAnd_filter3 with ntimes=Int(ceil(mean(nsteps)))
-               # First test
-               # Possible optimization for a climatology production, for each tile return diagshift and niter with some random changes in diagshift and search
-               # for optimum. In particular if several climatology runs are produced (slight changed parameters), the preliminary runs, without error calculations for example
-               # could provide good estimates ?
+            # Some ideas for error calculations
+            #fi,si=DIVAndrun(mask,pmn,xi,x,f,Labs,epsilon2; otherargs...,pcargs...,inversion=:pcg,compPC = DIVAnd_pc_sqrtiB, fi0 =xguess)
+            #errfield=diagMtCM(sc.P,HI')
+            #erri,=statevector_unpack(si.sv,errfield)
+            # For error field based on coarse one, use DIVAnd_filter3 with ntimes=Int(ceil(mean(nsteps)))
+            # First test
+            # Possible optimization for a climatology production, for each tile return diagshift and niter with some random changes in diagshift and search
+            # for optimum. In particular if several climatology runs are produced (slight changed parameters), the preliminary runs, without error calculations for example
+            # could provide good estimates ?
 
         end
 
-          # A posteriori scaling of initial guess
-          #     fs=statevector_pack(si.sv,(fi,));
-          #     fgs=statevector_pack(si.sv,(figuess,));
-          #     al=dot(fs,fgs)/dot(fgs,fgs)
-          #     @show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
+        # A posteriori scaling of initial guess
+        #     fs=statevector_pack(si.sv,(fi,));
+        #     fgs=statevector_pack(si.sv,(figuess,));
+        #     al=dot(fs,fgs)/dot(fgs,fgs)
+        #     @show al,dot(fgs-fs,fgs-fs)/dot(fs,fs),dot(al*fgs-fs,al*fgs-fs)/dot(fs,fs)
 
 
 

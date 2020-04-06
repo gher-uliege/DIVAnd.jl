@@ -97,10 +97,8 @@ function SDNMetadata(
         elseif k == "search_keywords_urn"
             # Preferred label from SeaDataNet Parameter Discovery Vocabulary P02
             # example: Ammonium and ammonia concentration parameters in water bodies
-            ncglobalattrib["search_keywords"] = join(
-                Vocab.prefLabel.(Vocab.resolve.(v)),
-                "|",
-            )
+            ncglobalattrib["search_keywords"] =
+                join(Vocab.prefLabel.(Vocab.resolve.(v)), "|")
         elseif k == "area_keywords_urn"
             # Preferred label from SeaDataNet Vocabulary C19
             # example: Black Sea
@@ -110,11 +108,11 @@ function SDNMetadata(
             # example: SISMER-Atlantic Sea-Water_body_silicate-1.0-ANA
             ncglobalattrib["product_code"] = join(
                 [
-                 Vocab.abbreviated_name(institution),
-                 Vocab.prefLabel(area),
-                 Vocab.prefLabel(parameter),
-                 product_version,
-                 product_type,
+                    Vocab.abbreviated_name(institution),
+                    Vocab.prefLabel(area),
+                    Vocab.prefLabel(parameter),
+                    product_version,
+                    product_type,
                 ],
                 "-",
             )
@@ -141,7 +139,8 @@ function SDNMetadata(
         if (default_field_min == nothing) || (default_field_max == nothing)
             # default layer (first time instance and surface)
             default_field = field[:, :, end, 1]
-            default_field_min, default_field_max = extrema(default_field[.!isnan.(default_field)])
+            default_field_min, default_field_max =
+                extrema(default_field[.!isnan.(default_field)])
         end
 
         domain = Vocab.prefLabel(area)
@@ -166,10 +165,10 @@ function SDNMetadata(
         "units" => metadata["netcdf_units"],
         "standard_name" => metadata["netcdf_standard_name"],
         "long_name" => metadata["netcdf_long_name"],
-                              #  "sdn_parameter_urn" => sdn_parameter_urn,
-                              #  "sdn_parameter_name" => sdn_parameter_name,
-                              #  "sdn_uom_urn" => sdn_uom_urn,
-                              #  "sdn_uom_name" => sdn_uom_name,
+        #  "sdn_parameter_urn" => sdn_parameter_urn,
+        #  "sdn_parameter_name" => sdn_parameter_name,
+        #  "sdn_uom_urn" => sdn_uom_urn,
+        #  "sdn_uom_name" => sdn_uom_name,
     )
 
     return ncglobalattrib, ncvarattrib
@@ -231,12 +230,8 @@ end
 
 function loadoriginators(csvfile::IO)
     #data,headers = readdlm(csvfile,',', String; header = true) :: Tuple{Array{String,2},Vector{String}}
-    data::Array{String,2}, headers::Array{String,2} = readdlm(
-        csvfile,
-        ',',
-        String;
-        header = true,
-    )
+    data::Array{String,2}, headers::Array{String,2} =
+        readdlm(csvfile, ',', String; header = true)
 
     @assert headers[:] == ["active", "author_edmo", "cdi_identifier", "originator_edmo"]
 
@@ -262,7 +257,8 @@ function writeerrors(notfound, errname)
         writedlm(f, reshape(["edmo", "local_cdi", "message"], 1, 3))
 
         # keep only unique rows
-        data = sort(collect(Set([(v["edmo"], v["local_cdi"], v["status"]) for v in notfound])))
+        data =
+            sort(collect(Set([(v["edmo"], v["local_cdi"], v["status"]) for v in notfound])))
         #log(0,"write data")
         writedlm(f, data)
     end
@@ -297,11 +293,8 @@ function getoriginators(
 
     obsids = Iterators.flatten(loadandcheckobsid.(filepaths))
     errname = replace(filepaths[1], r".nc$" => "") * ".cdi_import_errors_test.csv"
-    originators, notfound = get_originators_from_obsid(
-        db,
-        obsids;
-        ignore_errors = ignore_errors,
-    )
+    originators, notfound =
+        get_originators_from_obsid(db, obsids; ignore_errors = ignore_errors)
 
     if length(notfound) > 0
         writeerrors(notfound, errname)
@@ -337,7 +330,8 @@ function get_originators_from_obsid(db, obsids; ignore_errors = false)
                 Dict{String,Any}(
                     "edmo" => author_edmo,
                     "local_cdi" => local_cdi,
-                    "status" => "CDI identifier is not present in CDI list ($(OriginatorEDMO_URL)). You might need to reload it.",
+                    "status" =>
+                        "CDI identifier is not present in CDI list ($(OriginatorEDMO_URL)). You might need to reload it.",
                 ),
             )
             continue
@@ -454,8 +448,8 @@ function previewURL(
             "vmin" => default_field_min,
             "vmax" => default_field_max,
         )),
-          #"elevation" => "-0.0",
-          #"time" => "03",
+        #"elevation" => "-0.0",
+        #"time" => "03",
         "transparent" => "true",
         "height" => "500",
         "width" => "800",
@@ -468,7 +462,7 @@ function previewURL(
 
     preview_url_query_string = string(HTTP.URI(; query = preview_url_query))
 
-     # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
+    # work-around for https://github.com/JuliaWeb/HTTP.jl/issues/323
     preview_url_query_string = replace(preview_url_query_string, r"^:" => "")
 
     preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
@@ -504,7 +498,7 @@ function previewURL(
         lat = ds["lat"][:]
         latr = [minimum(lat), maximum(lat)]
 
-         # prefer layer L1 for plotting if available
+        # prefer layer L1 for plotting if available
         varnameL1 = if haskey(ds, varname * "_L1")
             varname * "_L1"
         else
@@ -512,7 +506,7 @@ function previewURL(
         end
 
         # load default layer (first time instance and surface)
-         # (time depth) lat lon
+        # (time depth) lat lon
         var = ds[varnameL1]
         n_time = 1
         min_non_missing = 0
@@ -520,10 +514,10 @@ function previewURL(
 
         if ("time" in dimnames(var)) && ("depth" in dimnames(var))
             if size(var, 3) == 1
-                  # only one depth level
+                # only one depth level
                 field = var[:, :, 1, 1]
             else
-                  # find the time slice with the maximum data
+                # find the time slice with the maximum data
                 count_valid = zeros(Int, size(var, 4))
                 for n = 1:size(var, 4)
                     field = var[:, :, end, n]
@@ -536,13 +530,13 @@ function previewURL(
                 if n_time != 1
                     preview_url_time = WMStimeparam(ds["time"], n_time)
                 end
-                  #@debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+                #@debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
             end
         elseif "time" in dimnames(var)
-             # only time
+            # only time
             field = var[:, :, 1]
         else
-             # only depth
+            # only depth
             if size(var, 3) == 1
                 field = var[:, :, 1]
             else
@@ -619,13 +613,12 @@ function gettemplatevars(
     latr = [minimum(lat), maximum(lat)]
     dlat = (latr[end] - latr[1]) / (length(lat) - 1)
 
-    horizontal_resolution =
-        if abs(dlon - dlat) < 1e-4
-            dlat
-        else
-            @warn "warning: non uniform horizontal resolution $(dlon) $(dlat)"
-            sqrt(dlon * dlat)
-        end
+    horizontal_resolution = if abs(dlon - dlat) < 1e-4
+        dlat
+    else
+        @warn "warning: non uniform horizontal resolution $(dlon) $(dlat)"
+        sqrt(dlon * dlat)
+    end
 
     # "degree (or km)",
     horizontal_resolution_units = "degree"
@@ -648,7 +641,7 @@ function gettemplatevars(
     depth = if haskey(ds, "depth")
         ds["depth"][:]
     else
-        [0.]
+        [0.0]
     end
 
     doi = if haskey(ds.attrib, "doi")
@@ -729,7 +722,7 @@ function gettemplatevars(
     product_code = get(ds.attrib, "product_code", "")
 
 
-     # prefer layer L1 for plotting if available
+    # prefer layer L1 for plotting if available
     varnameL1 = if haskey(ds, varname * "_L1")
         varname * "_L1"
     else
@@ -830,22 +823,15 @@ function gettemplatevars(
     append!(contacts, additionalcontacts)
 
     bbox = join(
-        [string(templateVars[c]) for c in [
-            "longitude_min",
-            "latitude_min",
-            "longitude_max",
-            "latitude_max",
-        ]],
+        [
+            string(templateVars[c])
+            for c in ["longitude_min", "latitude_min", "longitude_max", "latitude_max"]
+        ],
         ',',
     )
 
-    preview_url = previewURL(
-        filepaths[previewindex],
-        varname,
-        project,
-        domain;
-        basemap = basemap,
-    )
+    preview_url =
+        previewURL(filepaths[previewindex], varname, project, domain; basemap = basemap)
 
     # Specify any input variables to the template as a dictionary.
     merge!(
@@ -857,15 +843,15 @@ function gettemplatevars(
             "L02_URL" => " http://vocab.nerc.ac.uk/collection/L02/current/006/",
             "L02_label" => "surface",
             "DOI_URL" => DOI_URL,
-        # URL for the global data set
-            "WMS_dataset_getcap" => baseurl_wms *
-                                    "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
+            # URL for the global data set
+            "WMS_dataset_getcap" =>
+                baseurl_wms * "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
             "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
             "WMS_layers" => [],
             "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
             "NetCDF_description" => "Link to download the following file: " * filename,
-#        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
-#        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
+            #        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
+            #        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
             "OPENDAP_URLs" => [],
             "contacts" => contacts,
         ),
@@ -898,8 +884,8 @@ function gettemplatevars(
             push!(
                 templateVars["WMS_layers"],
                 Dict(
-                    "getcap" => baseurl_wms *
-                                "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
+                    "getcap" =>
+                        baseurl_wms * "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
                     "name" => layer_name,
                     "description" => "WMS layer for " * description,
                 ),
@@ -907,8 +893,8 @@ function gettemplatevars(
         end
     end
 
-#    @debug println("templateVars",templateVars)
-#    @debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
+    #    @debug println("templateVars",templateVars)
+    #    @debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
     @debug "NetCDF_URL: $(templateVars["NetCDF_URL"])"
     @debug "WMS_layers: $(templateVars["WMS_layers"])"
 
@@ -1075,11 +1061,17 @@ DIVAnd.divadoxml_originators(cdilist,filepaths,xmlfilename;
 ```
 """
 function divadoxml_originators(
-    cdilist,filepaths,
+    cdilist,
+    filepaths,
     xmlfilename;
     errname = split(filepaths[1], ".nc")[1] * ".cdi_import_errors.csv",
-    templatefile = joinpath(dirname(pathof(DIVAnd)),"..","templates","emodnet-chemistry-originators.mustache"),
-    ignore_errors = false
+    templatefile = joinpath(
+        dirname(pathof(DIVAnd)),
+        "..",
+        "templates",
+        "emodnet-chemistry-originators.mustache",
+    ),
+    ignore_errors = false,
 )
 
     ds = Dataset(filepaths[1], "r")
@@ -1096,9 +1088,7 @@ function divadoxml_originators(
     contacts = [getedmoinfo(parse(Int, edmo_code), "author")]
     append!(contacts, originators)
 
-    templateVars = Dict(
-        "contacts" => contacts
-    )
+    templateVars = Dict("contacts" => contacts)
 
     rendertemplate(templatefile, templateVars, xmlfilename)
 end

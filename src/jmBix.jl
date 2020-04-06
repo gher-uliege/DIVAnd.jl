@@ -56,17 +56,17 @@ function jmBix(s, x::Array{Float64,1}; btrunc = [])
             #@show k
             #@time WD = s.WE * s.D^(k+1);
             sDkp = s.D^(k + 1)
-               #iBx_ = WD'*(WD*x);
+            #iBx_ = WD'*(WD*x);
 
             iBx_ = sDkp' * (s.WE * (s.WE * (sDkp * x)))
 
-               #Dk=s.WE * s.D^(k+1)
+            #Dk=s.WE * s.D^(k+1)
             #Dkx=Dk*x
             #iBx_ = Dk'*Dkx
         end
         asurc = alpha[j] / coeff
         #iBx_ = iBx_/coeff;
-          #iBx = iBx + alpha[j] * iBx_
+        #iBx = iBx + alpha[j] * iBx_
 
         iBx = BLAS.axpy!(asurc, iBx_, iBx)
 

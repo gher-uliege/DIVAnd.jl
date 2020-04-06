@@ -10,13 +10,13 @@ mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(0.0, stop = 1.0, length = 1
 # grid of observations
 x = [0.5]
 y = [0.5]
-f = [1.]
+f = [1.0]
 
 # correlation length
 len = 0.2
 
 # normalized error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 fi, s = DIVAnd.DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; alphabc = 0);
 

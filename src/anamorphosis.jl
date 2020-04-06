@@ -25,7 +25,7 @@ continous way.
 
 For any array `X`, we have: `X == invtrans.(trans.(X))`.
 """
-function loglin(t; epsilon = 0.)
+function loglin(t; epsilon = 0.0)
 
     function trans(x; position = ())
         if x < t
@@ -67,7 +67,7 @@ maps values within the interval from 0 and 1. This can be changed with the
 `min` and `max` parameters. Note that trans(min) = -∞ and trans(max) = +∞.
 The use safety-margin might be necessary.
 """
-function logit(; min = 0., max = 1.)
+function logit(; min = 0.0, max = 1.0)
 
     function trans(x; position = ())
         xs = (x - min) / (max - min)

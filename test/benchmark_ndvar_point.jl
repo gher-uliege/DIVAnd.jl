@@ -11,8 +11,8 @@ gridsize = (21, 21, 21)
 n = length(gridsize)
 
 # observations
-xy = ntuple(i -> [0.], n)
-f = [2.]
+xy = ntuple(i -> [0.0], n)
+f = [2.0]
 
 
 # mask: all points are valid points
@@ -28,9 +28,8 @@ sv = statevector((mask,))
 len = ntuple(i -> 0.2, n)
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 
 @time fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2)
 nothing
-

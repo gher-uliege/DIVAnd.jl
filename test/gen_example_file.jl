@@ -28,37 +28,67 @@ ds.dim["idlen"] = size(obsid, 1)
 
 # Declare variables
 
-ncobslon = defVar(ds,"obslon", Float32, ("observations",), attrib = OrderedDict(
-    "units"                     => "degrees_east",
-    "standard_name"             => "longitude",
-    "long_name"                 => "longitude",
-))
+ncobslon = defVar(
+    ds,
+    "obslon",
+    Float32,
+    ("observations",),
+    attrib = OrderedDict(
+        "units" => "degrees_east",
+        "standard_name" => "longitude",
+        "long_name" => "longitude",
+    ),
+)
 
-ncobslat = defVar(ds,"obslat", Float32, ("observations",), attrib = OrderedDict(
-    "units"                     => "degrees_north",
-    "standard_name"             => "latitude",
-    "long_name"                 => "latitude",
-))
+ncobslat = defVar(
+    ds,
+    "obslat",
+    Float32,
+    ("observations",),
+    attrib = OrderedDict(
+        "units" => "degrees_north",
+        "standard_name" => "latitude",
+        "long_name" => "latitude",
+    ),
+)
 
-ncobstime = defVar(ds,"obstime", Float64, ("observations",), attrib = OrderedDict(
-    "units"                     => "days since 1900-01-01 00:00:00",
-    "standard_name"             => "time",
-    "long_name"                 => "time",
-))
+ncobstime = defVar(
+    ds,
+    "obstime",
+    Float64,
+    ("observations",),
+    attrib = OrderedDict(
+        "units" => "days since 1900-01-01 00:00:00",
+        "standard_name" => "time",
+        "long_name" => "time",
+    ),
+)
 
-ncobsdepth = defVar(ds,"obsdepth", Float32, ("observations",), attrib = OrderedDict(
-    "units"                     => "meters",
-    "positive"                  => "down",
-    "standard_name"             => "depth",
-    "long_name"                 => "depth below sea level",
-))
+ncobsdepth = defVar(
+    ds,
+    "obsdepth",
+    Float32,
+    ("observations",),
+    attrib = OrderedDict(
+        "units" => "meters",
+        "positive" => "down",
+        "standard_name" => "depth",
+        "long_name" => "depth below sea level",
+    ),
+)
 
-ncobsid = defVar(ds,"obsid", Char, ("idlen", "observations"), attrib = OrderedDict(
-    "long_name"                 => "observation identifier",
-    "coordinates"               => "obstime obsdepth obslat obslon",
-))
+ncobsid = defVar(
+    ds,
+    "obsid",
+    Char,
+    ("idlen", "observations"),
+    attrib = OrderedDict(
+        "long_name" => "observation identifier",
+        "coordinates" => "obstime obsdepth obslat obslon",
+    ),
+)
 
-ncSalinity = defVar(ds,"Salinity", Float32, ("observations",))
+ncSalinity = defVar(ds, "Salinity", Float32, ("observations",))
 
 ncobslon[:] = obslon
 ncobslat[:] = obslat

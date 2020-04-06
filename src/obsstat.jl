@@ -47,7 +47,7 @@ function statpos(val, lon, lat)
         end
     end
     meanval = sumval ./ count
-    stdval = sumval2 ./ count - meanval.^2
+    stdval = sumval2 ./ count - meanval .^ 2
     stdval[stdval.<0] = 0
     stdval = sqrt.(stdval)
 

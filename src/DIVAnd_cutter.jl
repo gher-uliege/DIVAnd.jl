@@ -11,7 +11,7 @@ the problem size
 * `Lpmnrange`:
 * `gridsize`: number of points in each direction (size(mask))
 * `moddim`:
-* `MEMTOFIT` 
+* `MEMTOFIT`
 * `overlapfactor` : describes how many times the length scale is used for the overlapping. default is 3.3. use lower values ONLY for very good data coverage.
 
 # Output:
@@ -34,7 +34,7 @@ function DIVAnd_cutter(
     moddim,
     MEMTOFIT;
     solver = :auto,
-	overlapfactor=3.3,
+    overlapfactor = 3.3,
 ) where {n}
     @debug "cutter", Lpmnrange, gridsize, moddim, MEMTOFIT, solver
     #JLD.save("DIVAnd_cutter.jld", "Lpmnrange", Lpmnrange,
@@ -57,7 +57,7 @@ function DIVAnd_cutter(
         nsamp = Int(floor(Lpmnrange[i][1] / minimumpointsperlpc))
         if nsamp > 1
             csteps[i] = minimum([nsamp, 1])
-               #csteps[i]=minimum([nsamp,1])
+            #csteps[i]=minimum([nsamp,1])
         end
     end
 
@@ -88,19 +88,19 @@ function DIVAnd_cutter(
     # For time: if periodic, do windowing, otherwise as for x and y ?
 
     #@show gridsize
-	forcedirect=false
-	if solver==":auto" || solver ==":direct"
-		forcedirect=true
-	end
-	
+    forcedirect = false
+    if solver == ":auto" || solver == ":direct"
+        forcedirect = true
+    end
+
     stepsize, overlapping, isdirect = DIVAnd_fittocpu(
         Lpmnrange,
         gridsize,
         csteps,
         moddim,
         MEMTOFIT;
-		forcedirect=forcedirect,
-		overlapfactor=overlapfactor
+        forcedirect = forcedirect,
+        overlapfactor = overlapfactor,
     )
     #@show stepsize,overlapping,isdirect
 
@@ -155,7 +155,6 @@ function DIVAnd_cutter(
 
         #
         for nd = 1:n
-
             iw1[nd] = ij[nd]
 
             # For normal tiles take middle part

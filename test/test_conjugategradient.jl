@@ -2,7 +2,7 @@ using Test
 
 n = 10; # dimension
 
-S = [(i + j) / 100. for i = 1:n, j = 1:n]
+S = [(i + j) / 100.0 for i = 1:n, j = 1:n]
 b = ones(n);
 
 A = 10 * I + 0.01 * S * S'; # symmetric and positive defined matrix
@@ -42,4 +42,3 @@ x, cgsuccess, niter3 = DIVAnd.conjugategradient(fun!, b; kwargs..., pc! = pc_jac
 
 # check type-stability
 @inferred DIVAnd.conjugategradient(fun!, zeros(size(b)); kwargs..., pc! = pc_jacobi!)
-

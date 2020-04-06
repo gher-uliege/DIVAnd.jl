@@ -1,13 +1,13 @@
 function background_profile_searchz(depthr; factor = 1)
     kmax = length(depthr)
-    searchz = Vector{NTuple{2,eltype(depthr)}}(undef,kmax)
+    searchz = Vector{NTuple{2,eltype(depthr)}}(undef, kmax)
 
     for k = 1:kmax
-        k0 = max(1,k-1)
-        k1 = min(kmax,k+1)
+        k0 = max(1, k - 1)
+        k1 = min(kmax, k + 1)
 
-        zcenter = depthr[k0]/4 + depthr[k]/2 + depthr[k1]/4
-        Δz = factor * (depthr[k1] - depthr[k0])/4
+        zcenter = depthr[k0] / 4 + depthr[k] / 2 + depthr[k1] / 4
+        Δz = factor * (depthr[k1] - depthr[k0]) / 4
         searchz[k] = (zcenter - Δz, zcenter + Δz)
         # factor = 1, we have
         # searchz[k] = ((depthr[k0] + depthr[k])/2,(depthr[k1] + depthr[k])/2)
@@ -16,8 +16,11 @@ function background_profile_searchz(depthr; factor = 1)
 end
 
 function simple_background_profile(
-    obsdepth,obsvalue,depthr; epsilon2 = ones(size(obsvalue)),
-    searchz = background_profile_searchz(depthr)
+    obsdepth,
+    obsvalue,
+    depthr;
+    epsilon2 = ones(size(obsvalue)),
+    searchz = background_profile_searchz(depthr),
 )
 
     kmax = length(depthr)
@@ -25,7 +28,7 @@ function simple_background_profile(
     w = 1 ./ epsilon2
 
     for k = 1:kmax
-        z_min,z_max = searchz[k]
+        z_min, z_max = searchz[k]
 
         sel = (z_min .<= obsdepth .<= z_max) .& (isfinite.(obsvalue))
         profile[k] = mean(w[sel] .* obsvalue[sel]) / mean(w[sel])
@@ -48,21 +51,24 @@ within a distance given by `searchz` and for each time instance defined in
 the time selector `TS`.
 """
 function average_background_profile(
-    background_filename, grid_range, (obslon, obslat, obsdepth, obstime), obsvalue,
+    background_filename,
+    grid_range,
+    (obslon, obslat, obsdepth, obstime),
+    obsvalue,
     epsilon2,
     varname;
     transform = DIVAnd.Anam.notransform(),
     searchz = background_profile_searchz(grid_range[3]), # depthr
     chunksizes = [100, 100, 1, 1],
     checksum = :fletcher32,
-    deflatelevel = 5
+    deflatelevel = 5,
 )
 
-    (lonr,latr,depthr,TS) = grid_range
+    (lonr, latr, depthr, TS) = grid_range
     # anamorphosis transform
     trans, invtrans = transform
 
-    sz = (length(lonr),length(latr),length(depthr))
+    sz = (length(lonr), length(latr), length(depthr))
 
     ds = Dataset(background_filename, "c")
 
@@ -81,7 +87,7 @@ function average_background_profile(
         ("lon", "lat", "depth", "time"),
         deflatelevel = deflatelevel,
         checksum = checksum,
-        chunksizes = chunksizes
+        chunksizes = chunksizes,
     )
 
 
@@ -97,15 +103,17 @@ function average_background_profile(
         value_trans[.!isfinite.(value_trans)] .= NaN
 
         bp = simple_background_profile(
-            obsdepth[sel],value_trans,depthr;
+            obsdepth[sel],
+            value_trans,
+            depthr;
             epsilon2 = epsilon2[sel],
-            searchz = searchz
+            searchz = searchz,
         )
 
         background = zeros(sz)
-        background[:,:,:] .= reshape(bp,(1,1,:))
+        background[:, :, :] .= reshape(bp, (1, 1, :))
 
-        ncvar[:,:,:,timeindex] = background
+        ncvar[:, :, :, timeindex] = background
     end
 
     close(ds)

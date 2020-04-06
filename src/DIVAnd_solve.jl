@@ -17,7 +17,7 @@ Output:
   fi: analyzed field
 """
 function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = []) where {T,Ti,N,OT}
-#    btrunc=[]
+    #    btrunc=[]
 
     H = s.H
     sv = s.sv
@@ -38,7 +38,7 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = []) where 
             function fun!(x, fx)
 
 
-               #Probably not a good way to change function definition depending on types
+                #Probably not a good way to change function definition depending on types
                 if isa(s.iB, DIVAnd.MatFun{Int})
 
                     fx[:] = jmBix(s, x; btrunc = btrunc) + H' * (R \ (H * x))

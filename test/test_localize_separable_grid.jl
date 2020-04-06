@@ -2,7 +2,7 @@ using Test
 using DIVAnd
 
 gridindices = localize_separable_grid(([4],), trues((10,)), (2 * collect(1:10),))
-@test gridindices[1] ≈ 2.
+@test gridindices[1] ≈ 2.0
 
 # 2D with one point
 
@@ -25,13 +25,12 @@ mask = trues(size(x1))
 
 gridindices = localize_separable_grid(xi, mask, x)
 
-@test gridindices ≈ [1.5 2.0; 3. 5.]
+@test gridindices ≈ [1.5 2.0; 3.0 5.0]
 
 
 # 2D with 1 point outside
 
-x1, y1 = ndgrid(range(0.5, stop = 1, length = 50),
-                range(0., stop = 1, length = 30));
+x1, y1 = ndgrid(range(0.5, stop = 1, length = 50), range(0.0, stop = 1, length = 30));
 x = (x1, y1)
 xi = ([0.2], [0.5])
 mask = trues(size(x1))
@@ -39,17 +38,17 @@ gridindices = localize_separable_grid(xi, mask, x)
 @test gridindices[1] < 1
 
 
-x1, y1 = ndgrid(0.:10,0.:10)
+x1, y1 = ndgrid(0.0:10, 0.0:10)
 x = (x1, y1)
-iscyclic = (true,false)
-xi = ([10.5, 5.], [2.,20000])
+iscyclic = (true, false)
+xi = ([10.5, 5.0], [2.0, 20000])
 mask = trues(size(x1))
 gridindices = localize_separable_grid(xi, mask, x, iscyclic)
-@test gridindices[1,1] ≈ 11.5
-@test gridindices[2,1] ≈ 3
+@test gridindices[1, 1] ≈ 11.5
+@test gridindices[2, 1] ≈ 3
 
-@test gridindices[1,2] == -1
-@test gridindices[2,2] == -1
+@test gridindices[1, 2] == -1
+@test gridindices[2, 2] == -1
 
 
 #=

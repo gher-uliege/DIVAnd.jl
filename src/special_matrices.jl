@@ -66,14 +66,14 @@ function Base.getindex(C::CovarIS, i::Int, j::Int)
     ei = zeros(eltype(C), size(C, 1))
     ei[i] = 1
 
-	if C.factors == nothing || i != j
+    if C.factors == nothing || i != j
         ej = zeros(eltype(C), size(C, 1))
         ej[j] = 1
-        return ej ⋅ (C*ei)
-	else
-	    z=C.factors.PtL\ei
-	    return sum(z.^2)
-	end
+        return ej ⋅ (C * ei)
+    else
+        z = C.factors.PtL \ ei
+        return sum(z .^ 2)
+    end
 end
 
 
@@ -87,7 +87,7 @@ end
 function diagMtCM(C::CovarIS, M::AbstractMatrix{Float64})
     if C.factors != nothing
         PtL = C.factors.PtL
-        return sum((abs.(PtL \ M)).^2, dims = 1)[1, :]
+        return sum((abs.(PtL \ M)) .^ 2, dims = 1)[1, :]
     else
         return diag(M' * (C.IS \ M))
     end

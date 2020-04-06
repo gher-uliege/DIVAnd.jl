@@ -1,8 +1,8 @@
 using Test
 
-mask = rand(10, 10) .> .5;
-mask_u = rand(9, 10) .> .5;
-mask_v = rand(10, 9) .> .5;
+mask = rand(10, 10) .> 0.5;
+mask_u = rand(9, 10) .> 0.5;
+mask_v = rand(10, 9) .> 0.5;
 
 # a couple of point should always be unmasked
 mask[3, 5] = true

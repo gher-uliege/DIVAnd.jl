@@ -65,7 +65,7 @@ end
 # Ti: the type of integers
 # N: the number of dimensions
 mutable struct DIVAnd_struct{T,Ti,N,OT}
-#mutable struct DIVAnd_struct{T,Ti,N,OT} where T <: AbstractFloat where Ti <: Int where N where OT
+    #mutable struct DIVAnd_struct{T,Ti,N,OT} where T <: AbstractFloat where Ti <: Int where N where OT
     n::Ti
     neff::Ti
     coeff::T
@@ -124,7 +124,7 @@ end
 
 function DIVAnd_struct(::Type{OT}, mask::AbstractArray{Bool,n}) where {OT,n}
     neff = 0
-    coeff = 1.
+    coeff = 1.0
     moddim = Float64[]
     iscyclic = convert(Vector{Bool}, falses(n))
     alpha = Float64[]
@@ -155,7 +155,7 @@ function DIVAnd_struct(::Type{OT}, mask::AbstractArray{Bool,n}) where {OT,n}
     Dx = ([myempty(OT, (prod(sz), prod(sz))) for i = 1:n]...,)
     applybc = myempty(OT, (prod(sz), prod(sz)))
 
-    betap = 0.
+    betap = 0.0
     EOF_lambda = Float64[]
     primal = true
     factorize = true
@@ -305,24 +305,24 @@ end
 Produce a tuple of arrays of the correlation length `len` which can be either a scalar (homogeneous and isotropic case),
 a tuple of scalar (homogeneous case) or already a tuple of arrays (general case). The the later case the size of the arrays are veryfied.
 """
-function len_harmonize(len::T, mask::AbstractArray{Bool,N})::NTuple{
-    N,
-    Array{T,N},
-} where {T<:Number} where {N}
+function len_harmonize(
+    len::T,
+    mask::AbstractArray{Bool,N},
+)::NTuple{N,Array{T,N}} where {T<:Number} where {N}
     return ((fill(len, size(mask)) for i = 1:N)...,)
 end
 
-function len_harmonize(len::NTuple{N,T}, mask::AbstractArray{Bool,N})::NTuple{
-    N,
-    Array{T,N},
-} where {T<:Number} where {N}
+function len_harmonize(
+    len::NTuple{N,T},
+    mask::AbstractArray{Bool,N},
+)::NTuple{N,Array{T,N}} where {T<:Number} where {N}
     return ((fill(len[i], size(mask)) for i = 1:N)...,)
 end
 
-function len_harmonize(len::NTuple{N,AbstractArray{T,N}}, mask::AbstractArray{Bool,N})::NTuple{
-    N,
-    Array{T,N},
-} where {T<:Number} where {N}
+function len_harmonize(
+    len::NTuple{N,AbstractArray{T,N}},
+    mask::AbstractArray{Bool,N},
+)::NTuple{N,Array{T,N}} where {T<:Number} where {N}
     for i = 1:N
         if size(mask) != size(len[i])
             error("mask ($(formatsize(size(mask)))) and correlation length ($(formatsize(size(len[i])))) have incompatible size")
@@ -524,79 +524,79 @@ export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 export packens, unpackens
 
 export MatFun,
-       DIVAnd_obscovar,
-       DIVAnd_pc_sqrtiB,
-       DIVAnd_pc_none,
-       sparse_diag,
-       statevector,
-       pack,
-       unpack,
-       ind2sub,
-       sub2ind,
-       CovarHPHt,
-       oper_diag,
-       oper_stagger,
-       oper_diff,
-       oper_pack,
-       oper_trim,
-       oper_shift,
-       DIVAnd_save,
-       varanalysis,
-       dvmaskexpand,
-       jmBix,
-       DIVAnd_iBpHtiRHx!
+    DIVAnd_obscovar,
+    DIVAnd_pc_sqrtiB,
+    DIVAnd_pc_none,
+    sparse_diag,
+    statevector,
+    pack,
+    unpack,
+    ind2sub,
+    sub2ind,
+    CovarHPHt,
+    oper_diag,
+    oper_stagger,
+    oper_diff,
+    oper_pack,
+    oper_trim,
+    oper_shift,
+    DIVAnd_save,
+    varanalysis,
+    dvmaskexpand,
+    jmBix,
+    DIVAnd_iBpHtiRHx!
 
 export sparse_stagger,
-       sparse_diff,
-       localize_separable_grid,
-       ndgrid,
-       sparse_pack,
-       sparse_interp,
-       sparse_trim,
-       sparse_shift,
-       DIVAnd_gradient,
-       sparse_gradient,
-       DIVAnd_laplacian,
-       statevector_init,
-       statevector_pack,
-       statevector_unpack,
-       statevector_ind2sub,
-       statevector_sub2ind,
-       DIVAndrun,
-       DIVAnd_metric,
-       distance,
-       CovarIS,
-       factorize!,
-       DIVAnd_kernel,
-       DIVAnd_cpme,
-       DIVAnd_aexerr,
-       DIVAnd_GCVKii,
-       DIVAnd_diagHK,
-       DIVAnd_GCVKiiobs,
-       DIVAnd_diagHKobs,
-       diagMtCM,
-       diagLtCM,
-       DIVAnd_residual,
-       DIVAnd_residualobs,
-       DIVAnd_cvestimator,
-       DIVAnd_erroratdatapoints,
-       DIVAnd_cv,
-       DIVAnd_qc,
-       DIVAnd_adaptedeps2,
-       DIVAndgo,
-       DIVAndjog,
-       DIVAnd_sampler,
-       DIVAnd_filter3,
-       DIVAnd_fill!,
-       DIVAnd_Lpmnrange,
-       DIVAnd_cutter,
-       DIVAnd_fittocpu,
-       DIVAnd_bc_stretch,
-       DIVAnd_averaged_bg,
-       DIVAnd_datainboundingbox,
-       DIVAnd_cpme_go,
-       scaleseparation,
-	   DIVAnd_scalecpme!
+    sparse_diff,
+    localize_separable_grid,
+    ndgrid,
+    sparse_pack,
+    sparse_interp,
+    sparse_trim,
+    sparse_shift,
+    DIVAnd_gradient,
+    sparse_gradient,
+    DIVAnd_laplacian,
+    statevector_init,
+    statevector_pack,
+    statevector_unpack,
+    statevector_ind2sub,
+    statevector_sub2ind,
+    DIVAndrun,
+    DIVAnd_metric,
+    distance,
+    CovarIS,
+    factorize!,
+    DIVAnd_kernel,
+    DIVAnd_cpme,
+    DIVAnd_aexerr,
+    DIVAnd_GCVKii,
+    DIVAnd_diagHK,
+    DIVAnd_GCVKiiobs,
+    DIVAnd_diagHKobs,
+    diagMtCM,
+    diagLtCM,
+    DIVAnd_residual,
+    DIVAnd_residualobs,
+    DIVAnd_cvestimator,
+    DIVAnd_erroratdatapoints,
+    DIVAnd_cv,
+    DIVAnd_qc,
+    DIVAnd_adaptedeps2,
+    DIVAndgo,
+    DIVAndjog,
+    DIVAnd_sampler,
+    DIVAnd_filter3,
+    DIVAnd_fill!,
+    DIVAnd_Lpmnrange,
+    DIVAnd_cutter,
+    DIVAnd_fittocpu,
+    DIVAnd_bc_stretch,
+    DIVAnd_averaged_bg,
+    DIVAnd_datainboundingbox,
+    DIVAnd_cpme_go,
+    scaleseparation,
+    DIVAnd_scalecpme!
 
 export checkobs
 

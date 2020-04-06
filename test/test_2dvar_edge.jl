@@ -28,22 +28,14 @@ x = x[:]
 y = y[:]
 v = v[:]
 
-lenx = scalefactor * 100.;
-leny = scalefactor * 100.;
+lenx = scalefactor * 100.0;
+leny = scalefactor * 100.0;
 
 epsilon2 = 0.0001;
 
 #,err,s
-va, s = DIVAndrun(
-    mask,
-    (pm, pn),
-    (xi, yi),
-    (x, y),
-    v,
-    (lenx, leny),
-    epsilon2,
-    primal = true,
-)
+va, s =
+    DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), v, (lenx, leny), epsilon2, primal = true)
 
 @test any(abs.(va[isfinite.(va)]) .> 1)
 
@@ -58,7 +50,7 @@ va, s = DIVAndrun(
     epsilon2,
     primal = true,
     alphabc = 0,
-    coeff_derivative2 = [1., 1.],
+    coeff_derivative2 = [1.0, 1.0],
 );
 @test all(abs.(va[isfinite.(va)]) .< 1)
 

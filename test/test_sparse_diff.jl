@@ -108,7 +108,7 @@ for opertype in [Val{:sparse}, Val{:MatFun}]
     pm = ones(size(coordx1)) / 2
 
     DD = DIVAnd_laplacian(opertype, masktest, (pm,), ones(size(coordx1)), [false])
-    field = 2 * coordx1.^2
+    field = 2 * coordx1 .^ 2
     Df1 = 4
     Df2 = reshape(DD * field[:], size(masktest))
     Df2 = Df2[2:end-1]
@@ -143,15 +143,10 @@ for opertype in [Val{:sparse}, Val{:MatFun}]
     masktest = trues(size(coordx1))
     pm = ones(size(coordx1))
     pn = ones(size(coordx1))
-    DD = DIVAnd_laplacian(
-        opertype,
-        masktest,
-        (pm, pn),
-        ones(size(masktest)),
-        [false, false],
-    )
-    field = 2 * coordx1.^2 + coordx2
-    Df1 = 4.
+    DD =
+        DIVAnd_laplacian(opertype, masktest, (pm, pn), ones(size(masktest)), [false, false])
+    field = 2 * coordx1 .^ 2 + coordx2
+    Df1 = 4.0
     Df2 = reshape(DD * field[:], size(masktest))
     Df2 = Df2[2:end-1, 2:end-1]
 

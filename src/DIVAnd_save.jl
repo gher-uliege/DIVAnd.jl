@@ -73,9 +73,7 @@ function ncfile(
             checksum = checksum,
             chunksizes = chunksizes[1:length(dims)],
             fillvalue = type_save(fillval),
-            attrib = OrderedDict(
-                "missing_value" => type_save(fillval)
-            )
+            attrib = OrderedDict("missing_value" => type_save(fillval)),
         )
 
         for (k, v) in ncvarattrib
@@ -121,7 +119,7 @@ function ncfile(
     units = get(ncvarattrib, "units", "")
     longname = get(ncvarattrib, "long_name", "")
     validmin = get(ncvarattrib, "valid_min", "")
-    validmax = get(ncvarattrib, "valid_max", 0.)
+    validmax = get(ncvarattrib, "valid_max", 0.0)
 
     fillval = NCDatasets.fillvalue(Float32)
 
@@ -142,33 +140,64 @@ function ncfile(
 
     # Declare variables
 
-    nclon = defVar(ds, "lon", Float64, ("lon",), checksum = checksum, attrib = OrderedDict(
-        "units" => "degrees_east",
-        "standard_name" => "longitude",
-        "long_name" => "longitude"))
+    nclon = defVar(
+        ds,
+        "lon",
+        Float64,
+        ("lon",),
+        checksum = checksum,
+        attrib = OrderedDict(
+            "units" => "degrees_east",
+            "standard_name" => "longitude",
+            "long_name" => "longitude",
+        ),
+    )
 
 
-    nclat = defVar(ds, "lat", Float64, ("lat",), checksum = checksum, attrib = OrderedDict(
-        "units" => "degrees_east",
-        "standard_name" => "longitude",
-        "long_name" => "longitude"))
+    nclat = defVar(
+        ds,
+        "lat",
+        Float64,
+        ("lat",),
+        checksum = checksum,
+        attrib = OrderedDict(
+            "units" => "degrees_east",
+            "standard_name" => "longitude",
+            "long_name" => "longitude",
+        ),
+    )
 
 
     if idepth != -1
-        ncdepth = defVar(ds, "depth", Float64, ("depth",), checksum = checksum, attrib = OrderedDict(
-            "units" => "meters",
-            "positive" => "down",
-            "standard_name" => "depth",
-            "long_name" => "depth below sea level"))
+        ncdepth = defVar(
+            ds,
+            "depth",
+            Float64,
+            ("depth",),
+            checksum = checksum,
+            attrib = OrderedDict(
+                "units" => "meters",
+                "positive" => "down",
+                "standard_name" => "depth",
+                "long_name" => "depth below sea level",
+            ),
+        )
     end
 
     if itime != -1
-        nctime = defVar(ds, "time", Float64, ("time",), checksum = checksum, attrib = OrderedDict(
-            "units" => "days since " * Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
-            "standard_name" => "time",
-            "long_name" => "time",
-            "calendar" => "standard",
-        ))
+        nctime = defVar(
+            ds,
+            "time",
+            Float64,
+            ("time",),
+            checksum = checksum,
+            attrib = OrderedDict(
+                "units" => "days since " * Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
+                "standard_name" => "time",
+                "long_name" => "time",
+                "calendar" => "standard",
+            ),
+        )
 
         if haskey(kw, :climatology_bounds)
             nctime.attrib["climatology"] = "climatology_bounds"
@@ -179,10 +208,10 @@ function ncfile(
                 ("nv", "time"),
                 checksum = checksum,
                 attrib = OrderedDict(
-                    "units" => "days since " * Dates.format(
-                        timeorigin,
-                        "yyyy-mm-dd HH:MM:SS",
-                    )))
+                    "units" =>
+                        "days since " * Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
+                ),
+            )
         end
     end
 
@@ -219,12 +248,8 @@ function ncfile(
 
     if haskey(kw, :relerr)
         for (thresholds_name, thresholds_value) in thresholds
-
-            ncvar_Lx[thresholds_value] = def4D(
-                ds,
-                "$(varname)_$(thresholds_name)",
-                ncvarattrib,
-            )
+            ncvar_Lx[thresholds_value] =
+                def4D(ds, "$(varname)_$(thresholds_name)", ncvarattrib)
             ncvar_Lx[thresholds_value].attrib["long_name"] = "$(longname) masked using relative error threshold $(thresholds_value)"
 
             #ncvar_deepest_Lx = def3D(ds,"$(varname)_deepest_$(thresholds_name)",ncvarattrib)
@@ -251,13 +276,14 @@ function ncfile(
             chunksizes = chunksizes,
             checksum = checksum,
             attrib = OrderedDict(
-               "units" => "1",
+                "units" => "1",
                 "long_name" => "Relative error of $(longname)",
                 "valid_min" => type_save(0.0),
                 "valid_max" => type_save(1.0),
                 "_FillValue" => type_save(fillval),
                 "missing_value" => type_save(fillval),
-        ))
+            ),
+        )
     end
 
 
@@ -461,7 +487,9 @@ function saveobs(
             attrib = OrderedDict(
                 "units" => "degrees_east",
                 "standard_name" => "longitude",
-                "long_name" => "longitude"))
+                "long_name" => "longitude",
+            ),
+        )
 
         ncobslat = defVar(
             ds,
@@ -475,8 +503,7 @@ function saveobs(
                 "units" => "degrees_north",
                 "standard_name" => "latitude",
                 "long_name" => "latitude",
-            )
-
+            ),
         )
 
         ncobstime = defVar(
@@ -488,10 +515,11 @@ function saveobs(
             deflatelevel = deflatelevel,
             chunksizes = [chunksize],
             attrib = OrderedDict(
-                "units" => "days since " *
-                    Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
+                "units" => "days since " * Dates.format(timeorigin, "yyyy-mm-dd HH:MM:SS"),
                 "standard_name" => "time",
-                "long_name" => "time"))
+                "long_name" => "time",
+            ),
+        )
 
         ncobsdepth = defVar(
             ds,
@@ -506,7 +534,7 @@ function saveobs(
                 "positive" => "down",
                 "standard_name" => "depth",
                 "long_name" => "depth below sea level",
-            )
+            ),
         )
 
 
@@ -521,7 +549,7 @@ function saveobs(
             attrib = OrderedDict(
                 "long_name" => "observation identifier",
                 "coordinates" => "obstime obsdepth obslat obslon",
-            )
+            ),
         )
 
         ncobslon[:] = xy[1]

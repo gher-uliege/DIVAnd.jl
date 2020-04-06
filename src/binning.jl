@@ -66,9 +66,10 @@ function binning(gridx::Tuple, x, v)
     n = length(gridx)
 
     for j = 1:length(v)
-        ind = CartesianIndex(ntuple(l -> DIVAnd.findin(gridx_unstagger[l], x[l][j]), Val(n)))
+        ind =
+            CartesianIndex(ntuple(l -> DIVAnd.findin(gridx_unstagger[l], x[l][j]), Val(n)))
 
-        if checkbounds(Bool,vb,ind)
+        if checkbounds(Bool, vb, ind)
             vb[ind] = vb[ind] + v[j]
             count[ind] += 1
         else
@@ -78,4 +79,3 @@ function binning(gridx::Tuple, x, v)
 
     return vb ./ count, count, vb, nout
 end
-

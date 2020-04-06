@@ -20,8 +20,8 @@ y = y[:]
 v = sin.(6x) .* cos.(6y)
 
 # correlation length
-lenx = .15;
-leny = .15;
+lenx = 0.15;
+leny = 0.15;
 
 """naive analysis using full matrices"""
 function naive_analysis(s, v)
@@ -37,16 +37,8 @@ end
 # diagonal R with constant diagonal elements
 
 epsilon2 = 0.05;
-xa, s = DIVAndrun(
-    mask,
-    (pm, pn),
-    (xi, yi),
-    (x, y),
-    v,
-    (lenx, leny),
-    epsilon2,
-    primal = true,
-)
+xa, s =
+    DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), v, (lenx, leny), epsilon2, primal = true)
 diagP, = statevector_unpack(s.sv, diag(s.P))
 xa_check, diagP_check = naive_analysis(s, v)
 @test xa ≈ xa_check

@@ -42,7 +42,7 @@ function DIVAnd_qc(fi, s, method = 0)
 
     nd = length(s.obsout)
     invlam = mean(diag(R)[obsin])
-	# adapt here with new version of adapted eps....
+    # adapt here with new version of adapted eps....
 
     d0d = s.obsconstrain.yo[obsin] ⋅ s.obsconstrain.yo[obsin]
     nrealdata = sum(obsin)
@@ -54,7 +54,7 @@ function DIVAnd_qc(fi, s, method = 0)
 
     residual = DIVAnd_residualobs(s, fi)
     #residual[s.obsout] .= 0
-#@show size(qval)
+    #@show size(qval)
     if method == 0
         mymethod = 3
         if nrealdata < switchvalue1
@@ -67,19 +67,19 @@ function DIVAnd_qc(fi, s, method = 0)
     @debug "QC method: $mymethod"
 
     if mymethod == 1
-        qcval .= residual.^2 ./
-                 (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_diagHKobs(s)))
+        qcval .=
+            residual .^ 2 ./ (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_diagHKobs(s)))
     elseif mymethod == 3
-        qcval .= residual.^2 ./
-                 (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)))
+        qcval .=
+            residual .^ 2 ./ (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)))
     elseif mymethod == 4
         cvval = 1
-        qcval .= residual.^2 ./
-                 (cvval * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)).^2)
+        qcval .=
+            residual .^ 2 ./ (cvval * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)) .^ 2)
     elseif mymethod == 5
-        qcval .= residual.^2 ./
-                 (meaneps2 * (diag(R) / invlam) .*
-                  (1 .- DIVAnd_GCVKiiobs(s, -1; FIELD = fi)))
+        qcval .=
+            residual .^ 2 ./
+            (meaneps2 * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s, -1; FIELD = fi)))
     else
         @warn "DIVAnd_qc not defined for method  $method"
     end

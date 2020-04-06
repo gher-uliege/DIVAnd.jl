@@ -61,7 +61,7 @@ function DIVAnd_background_components(
             # normalized by surface
 
             for i = 1:n
-               # OPTIMIZATION: Do not calculate in directions where L is zero
+                # OPTIMIZATION: Do not calculate in directions where L is zero
                 if s.Ld[i] > 0
                     Dx = s.WEss[i] * s.Dx[i] * D^k
                     iB_ = iB_ + Dx' * Dx
@@ -94,7 +94,7 @@ function DIVAnd_background_components(
     # iB is adimensional
 
     #
-# JMB Dirty hack 15/05: now s.WEss[1] contains the sum of all terms
+    # JMB Dirty hack 15/05: now s.WEss[1] contains the sum of all terms
     s.WEss[1] = s.Dx[1]' * (s.WEss[1] * (s.WEss[1] * (s.Dx[1])))
     for i = 2:n
         if s.Ld[i] > 0

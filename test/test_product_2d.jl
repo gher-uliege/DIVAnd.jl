@@ -44,11 +44,8 @@ end
 
 obsname = joinpath(dirname(@__FILE__), "..", "data", "sample-file.nc")
 
-obsvalue, obslon, obslat, obsdepth, obstime, obsids = DIVAnd.loadobs(
-    Float64,
-    obsname,
-    "Salinity",
-)
+obsvalue, obslon, obslat, obsdepth, obstime, obsids =
+    DIVAnd.loadobs(Float64, obsname, "Salinity")
 
 sel = obsdepth .< 10
 
@@ -121,16 +118,13 @@ metadata = OrderedDict(
     # http://seadatanet.maris2.nl/v_bodc_vocab_v2/search.asp?lib=C19
     # example: ["SDN:C19::3_1"]
     "area_keywords_urn" => ["SDN:C19::3_3"],
-
     "product_version" => "1.0",
 
     # NetCDF CF standard name
     # http://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html
     # example "standard_name" = "sea_water_temperature",
     "netcdf_standard_name" => "sea_water_salinity",
-
     "netcdf_long_name" => "sea water salinity",
-
     "netcdf_units" => "1e-3",
 
     # Abstract for the product

@@ -5,9 +5,9 @@ using Test
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
 
-x = [.4]
-y = [.4]
-f = [1.]
+x = [0.4]
+y = [0.4]
+f = [1.0]
 
 a = 5;
 u = a * yi;
