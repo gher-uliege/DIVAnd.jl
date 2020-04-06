@@ -609,14 +609,10 @@ function checkduplicates(
     value2,
     delta,
     deltavalue;
-#    maxcap = 10_000,
-#    label1 = collect(1:length(x1[1])),
-#    factor = 5,
+    maxcap = 10_000,
+    label1 = collect(1:length(x1[1])),
+    factor = 5,
 )
-    maxcap = 10_000
-    label1 = collect(1:length(x1[1]))
-    factor = 5
-
 
     X1 = catx(x1)
     X2 = catx(x2)
