@@ -70,6 +70,12 @@ function DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
 
     if (factor == 0) || !isfinite(factor)
         @warn("scalefactore has the value $factor")
+
+        @info("number of current observations: $(length(yo))")
+        @info("number of ignored observations: $(sum(ignoreobs)) "
+              * "(typically havigng a NaN value or outside of the domain) ")
+        @info("mean of diagR: $(mean(diagR))")
+        @info("minimum of diagR: $(minimum(diagR))")
     end
 
     return factor
