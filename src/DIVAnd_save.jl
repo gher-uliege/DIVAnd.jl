@@ -161,9 +161,9 @@ function ncfile(
         ("lat",),
         checksum = checksum,
         attrib = OrderedDict(
-            "units" => "degrees_east",
-            "standard_name" => "longitude",
-            "long_name" => "longitude",
+            "units" => "degrees_north",
+            "standard_name" => "latitude",
+            "long_name" => "latitude",
         ),
     )
 
