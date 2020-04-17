@@ -951,7 +951,7 @@ If the data is present in a subfolder (e.g. "Winter") later on the OceanBrowser
 webserver, the `filepath` should also contain this subfolder (e.g.
 "Winter/somefile.nc"). The local directories should mirror the directory
 structure on OceanBrowser. Relative paths should be used, and if the Julia code isn't right above the NetCDF
-files, use cd("<path>") before each setting the files paramter which use paths relative to this path.
+files, use cd("<path>") before each setting the files parameter which use paths relative to this path.
 
 `additionalcontacts` is a list of dictionaries with additional condact
 information to be added in the XML file. Elements are typically create by the
