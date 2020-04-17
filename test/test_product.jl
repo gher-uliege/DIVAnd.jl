@@ -190,7 +190,7 @@ DIVAnd.saveobs(filename, (obslon, obslat, obsdepth, obstime), obsids)
 
 
 project = "SeaDataCloud"
-xmlfilename = "test.xml"
+xmlfilename = tempname()
 ignore_errors = true
 
 additionalcontacts =
@@ -264,5 +264,10 @@ residuals = dbinfo[:residuals]
 @test !used[index_NaN]
 @test all(isfinite.(qcvalue[used]))
 @test qcvalue[index_outlier] > 9
+
+rm(xmlfilename)
+rm(errname)
+rm(filename)
+rm(filename2)
 
 nothing

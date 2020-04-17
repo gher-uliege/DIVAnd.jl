@@ -151,3 +151,5 @@ metadata = OrderedDict(
     bathisglobal = bathisglobal,
     background_len = (lenx, leny),
 )
+
+rm(filename)
