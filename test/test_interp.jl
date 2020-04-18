@@ -47,3 +47,5 @@ background = DIVAnd.backgroundfile(fname, varname)
 vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 
 @test fi ≈ [0] atol = 1e-5
+
+rm(fname)

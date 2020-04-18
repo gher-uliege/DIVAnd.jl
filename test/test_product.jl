@@ -267,7 +267,8 @@ residuals = dbinfo[:residuals]
 
 rm(xmlfilename)
 rm(errname)
-rm(filename)
+# file will be used in test_interp.jl
+#rm(filename)
 rm(filename2)
 
 nothing
