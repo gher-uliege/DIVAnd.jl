@@ -14,7 +14,6 @@ function DIVAnd_save(filename, mask::AbstractArray{Bool,N}, varname, fi) where {
             varname,
             Float32,
             ("lon", "lat", "depth", "time"),
-            checksum = checksum,
         )
         ncvar[:, :, :, :] = fi
     end
