@@ -1,6 +1,8 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 
+#SBATCH --mem-per-cpu=8000
+
 using DIVAnd
 using Compat: @info, range
 using PyPlot
