@@ -112,7 +112,7 @@ function localize_separable_grid(
 
     # handle rounding errors
     # snap to domain bounding box if difference does not exceeds tol
-    tol = 50 * eps(1.0)
+    tol = 50 * eps(T)
 
     for i = 1:n
         # upper bound
