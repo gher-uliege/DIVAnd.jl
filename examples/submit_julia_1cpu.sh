@@ -5,19 +5,14 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=4000
 
-module load  EasyBuild  Python/3.5.1-foss-2016a
-
 export script="$1"
-echo script $script
+echo Running script $script
 
 bt0=$(date +%s)
 
 unset DISPLAY
-#printenv
 
-julia <<EOF
-include("$script")
-EOF
+julia "$script"
 
 bt1=$(date +%s)
 
