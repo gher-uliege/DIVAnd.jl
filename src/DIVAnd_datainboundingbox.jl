@@ -40,9 +40,10 @@ function DIVAnd_datainboundingbox(xi, x, f; Rmatrix = ())
     for j = 1:size(x[1], 1)
         for i = 1:n
             # JMB: To avoid a point taken by tile be on the boundary and not seen by divandrun to produce a NaN, use a slightly severe test ?
-            #if !(minxi[i] <= x[i][j] <= maxxi[i])
-            dxx = (maxxi[i] - minxi[i]) * 0.0000000001
-            if !(minxi[i] + dxx < x[i][j] < maxxi[i] - dxx)
+            # Alex: Can be too strict for surface data. Maybe it is not necessary anymore after commit 8af890d1cf06fda8f2520bb01a28b5b5128051bc
+            if !(minxi[i] <= x[i][j] <= maxxi[i])
+            #dxx = (maxxi[i] - minxi[i]) * 0.0000000001
+            #if !(minxi[i] + dxx < x[i][j] < maxxi[i] - dxx)
                 sel[j] = false
                 break
             end
