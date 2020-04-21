@@ -161,7 +161,7 @@ Internally the observations are also implemented as constraint defined in this w
 
 On the server, launch the notebook with:
 ```bash
-~/.julia/v0.6/Conda/deps/usr/bin/jupyter-notebook --no-browser --ip='0.0.0.0' --port=8888
+jupyter-notebook --no-browser --ip='0.0.0.0' --port=8888
 ```
 where the path to `jupyter-notebook` might have to be adapted, depending on your installation. The `ip` and `port` parameters can also be modified.
 
