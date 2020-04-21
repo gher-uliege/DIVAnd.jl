@@ -1,6 +1,5 @@
 
 using DIVAnd
-using Compat: @info, range
 using PyPlot
 using Random
 

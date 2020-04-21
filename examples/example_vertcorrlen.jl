@@ -3,7 +3,6 @@ using Test
 using Random
 using Dates
 using DIVAnd
-using Compat: @info, range
 using PyPlot
 
 varname = "Salinity"

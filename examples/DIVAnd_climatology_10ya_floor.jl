@@ -6,7 +6,6 @@ Perform an analysis with a 10-year window from the sea floor
 #SBATCH --mem-per-cpu=8000
 
 using DIVAnd
-using Compat: @info, range
 using PyPlot
 using NCDatasets
 using Interpolations

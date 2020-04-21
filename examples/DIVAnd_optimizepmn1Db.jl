@@ -1,6 +1,5 @@
 #
 using DIVAnd
-using Compat: @info, range, argmin
 using PyPlot
 using LinearAlgebra
 using Statistics

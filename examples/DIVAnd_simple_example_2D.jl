@@ -2,9 +2,7 @@
 # with observations from an analytical function.
 
 using DIVAnd
-using Compat: @info, range
 using PyPlot
-using Compat: @info, range
 
 include("./prep_dirs.jl")
 

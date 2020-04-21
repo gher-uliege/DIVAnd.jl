@@ -11,7 +11,6 @@
 # Then the same but with data at the border
 
 using DIVAnd
-using Compat: @info, range, argmin
 using PyPlot
 using LinearAlgebra
 using Statistics

@@ -1,6 +1,5 @@
 using PyPlot
 using DIVAnd
-using Compat: @info, range
 
 include("./prep_dirs.jl")
 

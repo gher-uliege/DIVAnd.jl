@@ -1,7 +1,6 @@
 using NCDatasets
 using Missings
 using DIVAnd
-using Compat: @info, range
 
 NCSDN = DIVAnd.NCSDN
 

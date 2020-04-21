@@ -3,7 +3,6 @@ using Random
 using Statistics
 using Dates
 using DIVAnd
-using Compat: @info, range
 using PyPlot
 using BenchmarkTools
 

@@ -4,7 +4,6 @@
 #SBATCH --mem-per-cpu=8000
 
 using DIVAnd
-using Compat: @info, range
 using PyPlot
 using Statistics
 
