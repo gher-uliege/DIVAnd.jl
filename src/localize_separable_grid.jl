@@ -1,4 +1,8 @@
 
+# For floating point coordinates, the tolerance is 50 ϵ,
+# for integer and other types it is 0.
+tolerance(::Type{T}) where T <: AbstractFloat = 50*eps(T)
+tolerance(T) = 0
 
 function _localize_separable_grid_cyclic!(
     xi::NTuple{n,AbstractArray},
@@ -112,7 +116,7 @@ function localize_separable_grid(
 
     # handle rounding errors
     # snap to domain bounding box if difference does not exceeds tol
-    tol = 50 * eps(T)
+    tol = tolerance(T)
 
     for i = 1:n
         # upper bound
