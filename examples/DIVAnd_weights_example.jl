@@ -2,18 +2,12 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-if VERSION >= v"0.7"
-    using Random
-end
+using Random
 
 include("./prep_dirs.jl")
 
 # fix seed of random number generator
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(12345)
-else
-   srand(12345)
-end
+Random.seed!(12345)
 
 # observations
 # uniformly distributed data with a cluster at (0.2,0.3)

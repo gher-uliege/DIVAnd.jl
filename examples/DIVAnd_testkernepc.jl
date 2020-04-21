@@ -7,9 +7,7 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-if VERSION >= v"0.7"
-    using Statistics
-end
+using Statistics
 
 include("./prep_dirs.jl")
 

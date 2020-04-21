@@ -4,9 +4,7 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-if VERSION >= v"0.7"
-    using Statistics
-end
+using Statistics
 
 # function to interpolate
 fun(x,y) = sin.(6x) * cos.(6y)

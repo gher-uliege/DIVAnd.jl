@@ -4,17 +4,12 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-if VERSION >= v"0.7"
-    using Random
-end
+using Random
 
 include("./prep_dirs.jl")
 
-if VERSION >= v"0.7"
-   Random.seed!(1234)
-else
-   srand(1234)
-end
+Random.seed!(1234)
+
 # observations
 nobs = 90
 x = rand(nobs);

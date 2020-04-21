@@ -1,11 +1,7 @@
-if VERSION >= v"0.7.0-beta.0"
-    using Test
-    using Random
-    using Statistics
-    using Dates
-else
-    using Base.Test
-end
+using Test
+using Random
+using Statistics
+using Dates
 using DIVAnd
 using Compat: @info, range
 using PyPlot
@@ -50,11 +46,7 @@ legend()
 # 3D
 # general fit in 3D without transformation
 
-if VERSION >= v"0.7.0-beta.0"
-   Random.seed!(12345)
-else
-   srand(12345)
-end
+Random.seed!(12345)
 
 sel = Dates.month.(time) .== 1;
 

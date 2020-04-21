@@ -19,16 +19,3 @@ if isdir(outputdir)
 else
     mkdir(outputdir)
 end
-
-
-
-# work-around for PyPlot
-# https://github.com/JuliaPy/PyPlot.jl/issues/362
-if VERSION >= v"0.7"
-    import LinearAlgebra
-    import PyPlot: pcolor
-
-    pcolor(x::AbstractRange, y::AbstractRange, z::LinearAlgebra.Adjoint{Float64,Array{Float64,2}}; kwargs...) = pcolor(x,y,copy(z); kwargs...)
-    pcolor(x,y,z::LinearAlgebra.Adjoint{Float64,Array{Float64,2}}; kwargs...) = pcolor(x,y,copy(z); kwargs...)
-    pcolor(z::LinearAlgebra.Adjoint{Float64,Array{Float64,2}}; kwargs...) = pcolor(copy(z); kwargs...)
-end

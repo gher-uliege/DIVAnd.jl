@@ -4,16 +4,11 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-if VERSION >= v"0.7"
-    using Random
-end
+using Random
 
 # observations
-if VERSION >= v"0.7"
-   Random.seed!(1234)
-else
-   srand(1234)
-end
+Random.seed!(1234)
+
 # some points outside of box to check how this is dealt with
 x = -0.1 .+ 1.2*rand(300);
 y = -0.1 .* 1.2*rand(300);

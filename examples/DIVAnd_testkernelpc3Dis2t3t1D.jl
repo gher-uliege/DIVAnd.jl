@@ -4,23 +4,17 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-if VERSION >= v"0.7"
-    using Random
-    using Statistics
-    using LinearAlgebra
-end
-
+using Random
+using Statistics
+using LinearAlgebra
 
 x=[0]
 y=[0]
 z=[0]
 f=[1]
 
-if VERSION >= v"0.7"
-   Random.seed!(1)
-else
-   srand(1)
-end
+Random.seed!(1)
+
 nobs=2
 x=randn(nobs)
 y=randn(nobs)
