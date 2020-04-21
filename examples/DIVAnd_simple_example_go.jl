@@ -1,4 +1,4 @@
-#SBATCH --mem-per-cpu=8000
+#SBATCH --mem-per-cpu=16000
 
 
 # A simple example of DIVAnd in 2 dimensions
@@ -7,20 +7,14 @@
 using DIVAnd
 using Compat: @info, range
 using PyPlot
-
-if VERSION >= v"0.7"
-    using LinearAlgebra
-    using Random
-    using Statistics
-end
+using LinearAlgebra
+using Random
+using Statistics
 
 include("./prep_dirs.jl")
 
-if VERSION >= v"0.7"
-   Random.seed!(1234)
-else
-   srand(1234)
-end
+Random.seed!(1234)
+
 # observations
 nobs=100
 x = 0.01 .+ 0.98*rand(nobs);
