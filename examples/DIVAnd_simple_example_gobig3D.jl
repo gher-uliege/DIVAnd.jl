@@ -1,4 +1,4 @@
-#SBATCH --mem-per-cpu=16000
+#SBATCH --mem-per-cpu=20000
 
 
 # A simple example of DIVAnd in 3 dimensions
