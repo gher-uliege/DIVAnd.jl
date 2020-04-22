@@ -40,7 +40,7 @@ end
 @time obsval,obslon,obslat,obsdepth,obstime,obsid = ODVspreadsheet.load(Float64,[datafile],
                            ["Water body salinity"]; nametype = :localname );
 
-bathname = "./data/gebco_30sec_4.nc"
+bathname = "./Adriatic/gebco_30sec_4.nc"
 if !isfile(bathname)
     download("https://dox.ulg.ac.be/index.php/s/U0pqyXhcQrXjEUX/download",bathname)
 else
