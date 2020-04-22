@@ -48,4 +48,5 @@ vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 
 @test fi ≈ [0] atol = 1e-5
 
-rm(fname)
+#removing the file creates issues on Windows
+#rm(fname)
