@@ -730,12 +730,20 @@ same grid as the analysis and was generated according to the provided time selec
 function backgroundfile(fname, varname, TS::AbstractTimeSelector)
 
     ds = Dataset(fname)
+    v = ds[varname]
+
     lon = nomissing(ds["lon"][:])
     lat = nomissing(ds["lat"][:])
-    depth = nomissing(ds["depth"][:])
 
-    v = ds[varname]
-    x = (lon, lat, depth)
+    hasdepth = haskey(ds,"depth")
+
+    if hasdepth
+        depth = nomissing(ds["depth"][:])
+        x = (lon, lat, depth)
+    else
+        x = (lon, lat)
+    end
+
     TSbackground = TS
 
     return function (xi, n, value, trans; selection = [], obstime = nothing)
@@ -750,8 +758,14 @@ function backgroundfile(fname, varname, TS::AbstractTimeSelector)
 
         @info "analysis time index $n uses the backgrond time index $nbackground"
 
-        vn = zeros(size(v[:, :, :, nbackground]))
-        vn .= map((x -> ismissing(x) ? NaN : x), v[:, :, :, nbackground])
+        if hasdepth
+            v_nbackground = v[:, :, :, nbackground]
+        else
+            v_nbackground = v[:, :, nbackground]
+        end
+
+        vn = zeros(size(v_nbackground))
+        vn .= map((x -> ismissing(x) ? NaN : x), v_nbackground)
 
         vn .= trans.(DIVAnd.ufill(vn, .!isnan.(vn)))
         fi = DIVAnd.interp(x, vn, xi)
