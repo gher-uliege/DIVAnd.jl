@@ -412,10 +412,13 @@ function save(filename, xyi::NTuple{N,AbstractVector}, fi, varname; kwargs...) w
 
     kw = Dict(kwargs)
     # write the whole array
-    index = (:,)
+    index = ntuple(i -> :, ndims(fi))
 
     Dataset(filename, "c") do ds
-        ncvar, ncvar_relerr, ncvar_Lx = ncfile(ds, filename, xyi, varname; kwargs...)
+        ncvar, ncvar_relerr, ncvar_Lx = ncfile(
+            ds, filename, xyi, varname;
+            saveindex = ntuple(i -> :, ndims(fi)), kwargs...,)
+
         writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, get(kw, :relerr, nothing), index)
     end
 
