@@ -26,3 +26,14 @@ close(ds)
 
 @test fi2[mask] == fi[mask]
 @test .!ismissing.(fi2) == mask
+
+rm(filename)
+
+# issue 68
+
+filename = tempname()
+fi = zeros(100,110)
+DIVAnd.save(filename, (collect(range(0,stop=1,length=100)),
+                       collect(range(0,stop=1,length=110))),
+            fi, "interpolated_field")
+rm(filename)
