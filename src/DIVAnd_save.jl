@@ -345,9 +345,9 @@ end
 
 
 """
-    ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
+    writeslice(ncvar, ncvar_relerr, ncvar_Lx, fi, relerr, index)
 
-White a slice of data in a NetCDF given by the index `index`. The variable
+Write a slice of data in a netCDF file given by the index `index`. The variable
 `relerr` can be nothing.
 """
 function writeslice(
@@ -432,7 +432,7 @@ end
                    timeorigin = DateTime(1900,1,1,0,0,0),
                    used = trues(size(ids)),
                    )
-Save the location and time of the observation in the netCDF file `filename` and
+Save the location and time of the observations in the netCDF file `filename` and
 their identifier `ids`. `xy` is a tuple with the vectors longitude, latitude,
 depth and time (as a vector of `DateTime`).
 
