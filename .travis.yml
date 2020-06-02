@@ -6,12 +6,14 @@ os:
 julia:
   - 1.0
   - 1.4
+  - 1.5
 #  - nightly
 
-#matrix:
-#  allow_failures:
-#    - julia: 1.4
-#    - julia: nightly
+matrix:
+  allow_failures:
+    - julia: 1.5
+    - julia: nightly
+
 addons:
     apt: # apt-get for linux
         packages:
