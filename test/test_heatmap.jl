@@ -22,19 +22,19 @@ inflation = ones(size(xo))
 dens1D, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 0; Ladaptiveiterations = 0)
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.03390607052933598
+@test dens1D[2] ≈ 0.03390607052933598 rtol=0.1
 dens1D, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 1; Ladaptiveiterations = 0)
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.053735329940045436
+@test dens1D[2] ≈ 0.053735329940045436 rtol=0.1
 dens1D1, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 1; Ladaptiveiterations = 1)
 #@show dens1D1[2]
-@test dens1D1[2] ≈ 0.03222559084580536
+@test dens1D1[2] ≈ 0.03222559084580536 rtol=0.1
 dens1D1, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 1; Ladaptiveiterations = 2)
 #@show dens1D1[2]
-@test dens1D1[2] ≈ 0.038056634649593586
+@test dens1D1[2] ≈ 0.038056634649593586 rtol=0.1
 dens1D1nopt, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -46,7 +46,7 @@ dens1D1nopt, LHM, LCV, LSCV = DIVAnd_heatmap(
     optimizeheat = false,
 )
 #@show dens1D1nopt[2]
-@test dens1D1nopt[2] ≈ 0.03805663463970936
+@test dens1D1nopt[2] ≈ 0.03805663463970936 rtol=0.1
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -58,7 +58,7 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     myheatmapmethod = "DataKernel",
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.053735329940045436
+@test dens1D[2] ≈ 0.053735329940045436 rtol=0.1
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -70,7 +70,7 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     myheatmapmethod = "GridKernel",
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.05661676688382721
+@test dens1D[2] ≈ 0.05661676688382721 rtol=0.1
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -82,7 +82,7 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     myheatmapmethod = "Automatic",
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.05661676688382721
+@test dens1D[2] ≈ 0.05661676688382721 rtol=0.1
 
 
 Random.seed!(1)
@@ -100,7 +100,7 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     nmax = 100,
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.033593831115271915
+@test dens1D[2] ≈ 0.033593831115271915 rtol=0.1
 
 
 newcoord, newval, sumw, varp, idx = DIVAnd_superobs((xo,), inflation, 100)
