@@ -16,7 +16,7 @@ function DIVAnd_fill!(A::AbstractArray, B::AbstractArray, fillvalue)
     RI = CartesianIndices(size(A))
 
     I1, Iend = first(RI), last(RI)
-    stencil = 3 * one(CartesianIndex(I1))
+    stencil = 3 * oneunit(CartesianIndex(I1))
 
     for nn = 1:ntimes
         for indI in RI

@@ -32,6 +32,11 @@ if v"1.0" <= VERSION
     Base.:*(A::SparseArrays.SparseMatrixCSC, B::BitArray) = A * Int8.(B)
 end
 
+if VERSION <= v"1.4"
+    import Base: oneunit
+    Base.oneunit(i::CartesianIndex) = one(i)
+end
+
 # surpress any logging info for testing
 macro nologs(expr)
     return :(@test_logs (:info, r".*") (:warn, r".*") match_mode = :any $expr)
