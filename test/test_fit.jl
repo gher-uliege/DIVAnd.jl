@@ -100,10 +100,10 @@ varbak, RL, dbinfo = DIVAnd.fitlen((x, y), d, weight, nsamp)
 # fluctuations are large for different seeds
 
 
-@test 1.233239751232584 ≈ RL rtol = 0.1
-@test 2.8684064643392313 ≈ dbinfo[:sn] rtol = 0.1
-@test 30.67060450819036 ≈ varbak rtol = 0.1
-@test 0.7779495857989941 ≈ dbinfo[:rqual] rtol = 0.1
+@test 1.233239751232584 ≈ RL rtol = 0.3
+@test 2.8684064643392313 ≈ dbinfo[:sn] rtol = 0.5
+@test 30.67060450819036 ≈ varbak rtol = 0.2
+@test 0.7779495857989941 ≈ dbinfo[:rqual] rtol = 0.2
 
 
 #=
