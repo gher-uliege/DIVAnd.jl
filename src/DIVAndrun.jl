@@ -217,7 +217,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
      zone (sometimes called a ghost zone or halo) for cyclic dimensions.
      For example if the first dimension
      is cyclic, then the grid point corresponding to `mask[1,j]` should be
-     between `mask[end,1]` (left neighbor) and `mask[2,j]` (right neighbor).
+     between `mask[end,j]` (left neighbor) and `mask[2,j]` (right neighbor).
 
 * `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
