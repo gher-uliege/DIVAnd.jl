@@ -39,3 +39,11 @@ NCDatasets = "0.10"
 SpecialFunctions = "0.8, 0.10"
 ZipFile = "0.8, 0.9"
 julia = "0.7, 1"
+
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
+
+[targets]
+test = ["Test", "StableRNGs"]
