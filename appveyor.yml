@@ -17,8 +17,9 @@ matrix:
 branches:
   only:
     - master
-    - Alex
+    - Alex    
     - /Alex-.*/
+    - /julia.*/ 
     - /release-.*/
 
 notifications:
