@@ -37,6 +37,8 @@ using SpecialFunctions
 
     include("test_2dvar_iter.jl")
 
+    include("test_2dvar_jog.jl")
+
     include("test_2dvar_error.jl")
 
     include("test_2dvar_all_masked.jl")
@@ -166,10 +168,6 @@ end
 
 @testset "DIVAnd-laplacian" begin
     include("test_laplacian.jl")
-end
-
-@testset "DIVAnd-jog" begin
-    include("test_2dvar_jog.jl")
 end
 
 @testset "DIVAnd-kernel" begin

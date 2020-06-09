@@ -29,6 +29,9 @@ fi_ref, s = DIVAnd.DIVAndrun(
 )
 
 for i = 1:5
+    local fi
+    local s
+
     fi, s = DIVAnd.DIVAndjog(
         mask,
         (pm, pn),
@@ -47,6 +50,9 @@ for i = 1:5
 end
 
 for ii = 1:5
+    local fi
+    local s
+
     fi, s = DIVAnd.DIVAndjog(
         mask,
         (pm, pn),
