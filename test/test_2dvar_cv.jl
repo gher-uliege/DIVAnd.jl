@@ -1,23 +1,27 @@
 # A simple example of DIVAnd in 2 dimensions
 # with observations from an analytical function.
 
+using DIVAnd
+using Random
 using Test
 
 # true error variance of observation
 epsilon2_true = 1.0
 
-Random.seed!(1234)
+rng = Random.GLOBAL_RNG
+
+Random.seed!(rng,1234)
 # observations
 nobs = 99
-x = rand(nobs);
-y = rand(nobs);
+x = rand(rng,nobs);
+y = rand(rng,nobs);
 
 # true length-scale
 len_true = 0.5
 f = sin.(π * x / len_true) .* cos.(π * y / len_true);
 
 # add noise
-f = f + sqrt(epsilon2_true) * randn(nobs);
+f = f + sqrt(epsilon2_true) * randn(rng,nobs);
 
 # final grid
 mask, (pm, pn), (xi, yi) =
@@ -44,6 +48,7 @@ for imeth = 0:3
             3,
             imeth;
             alphabc = 0,
+            rng = rng,
         )
 
     @test 0.5 < bestfactore * epsilon2 / epsilon2_true <= 2
@@ -66,6 +71,7 @@ for imeth = 0:3
         3,
         imeth;
         alphabc = 0,
+        rng = rng,
     )
     @test 1.0 < bestfactor < 1.3
     #@test 0.3 < bestfactorl*len/len_true < 3
@@ -88,6 +94,7 @@ for imeth = 0:3
         0,
         imeth;
         alphabc = 0,
+        rng = rng,
     )
     #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     #@test 0.3 < bestfactorl*len/len_true < 3
@@ -113,6 +120,7 @@ for imeth = 0:3
             0,
             imeth;
             alphabc = 0,
+            rng = rng,
         )
 
     #@show bestfactor

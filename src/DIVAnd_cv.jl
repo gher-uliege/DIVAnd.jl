@@ -73,7 +73,8 @@ The `len` and `epsilon2` provided should be close the real one as the tests will
 
 
 """
-function DIVAnd_cv(mask, pmn, xi, x, f, len, epsilon2, nl, ne, method = 0; otherargs...)
+function DIVAnd_cv(mask, pmn, xi, x, f, len, epsilon2, nl, ne, method = 0;
+                   rng =  Random.GLOBAL_RNG, otherargs...)
 
     # check inputs
 
@@ -195,12 +196,12 @@ function DIVAnd_cv(mask, pmn, xi, x, f, len, epsilon2, nl, ne, method = 0; other
                 lonsea = length(onsea)
                 #   @warn "So",lonsea
                 # if optimisation is to be used, make sure to use the same reference random points
-                Random.seed!(nrealdata)
+                Random.seed!(rng,nrealdata)
 
                 # otherwise you add noise to the cv field
                 indexlist1 =
                     unique(collect(rand(1:lonsea, 50 * samplesforHK)))[1:samplesforHK]
-                Random.seed!()
+                Random.seed!(rng)
 
                 indexlist = onsea[indexlist1]
                 #   indexlist=collect(1:lonsea);
