@@ -2,10 +2,11 @@ using DIVAnd
 using Statistics
 using DelimitedFiles
 using LinearAlgebra
-using Random
+using StableRNGs
 using Test
 
-Random.seed!(1)
+rng = StableRNG(123)
+
 NX1D = 10
 LX1D = 8
 xleft1D = -4
@@ -15,26 +16,26 @@ xg1D = xleft1D+dx1D/2:dx1D:xleft1D+LX1D
 mask1D, pm1D, xi1D = DIVAnd.DIVAnd_rectdom(xg1D)
 
 
-
-xo = randn(15)
+xo = randn(rng,15)
 inflation = ones(size(xo))
 
 dens1D, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 0; Ladaptiveiterations = 0)
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.03390607052933598 rtol=0.1
+@test dens1D[2] ≈ 0.044159476289162794
 dens1D, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 1; Ladaptiveiterations = 0)
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.053735329940045436 rtol=0.1
+@test dens1D[2] ≈ 0.07755365831866519
 dens1D1, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 1; Ladaptiveiterations = 1)
 #@show dens1D1[2]
-@test dens1D1[2] ≈ 0.03222559084580536 rtol=0.1
+@test dens1D1[2] ≈ 0.04053154215065698
 dens1D1, LHM, LCV, LSCV =
     DIVAnd_heatmap(mask1D, pm1D, xi1D, (xo,), inflation, 1; Ladaptiveiterations = 2)
 #@show dens1D1[2]
-@test dens1D1[2] ≈ 0.038056634649593586 rtol=0.1
+@test dens1D1[2] ≈ 0.04051685827347506
+
 dens1D1nopt, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -46,7 +47,8 @@ dens1D1nopt, LHM, LCV, LSCV = DIVAnd_heatmap(
     optimizeheat = false,
 )
 #@show dens1D1nopt[2]
-@test dens1D1nopt[2] ≈ 0.03805663463970936 rtol=0.1
+@test dens1D1nopt[2] ≈ 0.040516858263351725
+
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -58,7 +60,8 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     myheatmapmethod = "DataKernel",
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.053735329940045436 rtol=0.1
+@test dens1D[2] ≈ 0.07755365831866519
+
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -70,7 +73,8 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     myheatmapmethod = "GridKernel",
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.05661676688382721 rtol=0.1
+@test dens1D[2] ≈ 0.08265490032692697
+
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     mask1D,
     pm1D,
@@ -82,11 +86,11 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     myheatmapmethod = "Automatic",
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.05661676688382721 rtol=0.1
+@test dens1D[2] ≈ 0.08265490032692697
 
 
-Random.seed!(1)
-xo = randn(150)
+rng = StableRNG(123)
+xo = randn(rng,150)
 inflation = ones(size(xo))
 
 dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
@@ -100,7 +104,7 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     nmax = 100,
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.033593831115271915 rtol=0.1
+@test dens1D[2] ≈ 0.022670544314773736
 
 
 newcoord, newval, sumw, varp, idx = DIVAnd_superobs((xo,), inflation, 100)
@@ -108,4 +112,4 @@ newcoord, newval, sumw, varp, idx = DIVAnd_superobs((xo,), inflation, 100)
 
 newcoord, newval, sumw, varp, idx =
     DIVAnd_superobs((xo,), inflation, 100; intensive = false)
-@test newval[7] ≈ 2.0
+@test newval[7] ≈ 3.0
