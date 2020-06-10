@@ -35,6 +35,10 @@ epsilon2 = 0.01;
 
 
 for alphabc in [0, 1]
+    local fi
+    local fi2
+    local s
+
     # fi is the interpolated field
     fi, s = DIVAndrun(
         mask,
