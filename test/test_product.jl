@@ -4,6 +4,7 @@ using DelimitedFiles
 using DataStructures
 using Missings
 using NCDatasets
+using Interpolations
 
 #
 varname = "Salinity"
@@ -97,9 +98,8 @@ TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 varname = "Salinity"
 
-# File name based on the variable (but all spaces are replaced by _)
-filename = "Water_body_$(replace(varname,' ' => '_')).4Danl.nc"
-
+# File name
+filename = tempname()
 
 metadata = OrderedDict(
     # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-Chemistry, ...)
@@ -196,6 +196,8 @@ ignore_errors = true
 additionalcontacts =
     [DIVAnd.getedmoinfo(1977, "originator"), DIVAnd.getedmoinfo(4630, "originator")]
 
+errname = split(filename, ".nc")[1] * ".cdi_import_errors.csv"
+
 @test_logs (:info, r".*") match_mode = :any DIVAnd.divadoxml(
     filename,
     varname,
@@ -205,8 +207,6 @@ additionalcontacts =
     ignore_errors = ignore_errors,
     additionalcontacts = additionalcontacts,
 )
-
-errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
 
 errdata, header = readdlm(errname, '\t'; header = true)
 
@@ -226,7 +226,7 @@ keyword_code = split(metadata["parameter_keyword_urn"], ':')[end]
 
 # new analysis with background from file
 
-filename2 = "Water_body_$(replace(varname,' ' => '_'))2.4Danl.nc"
+filename2 = tempname()
 if isfile(filename2)
     rm(filename2) # delete the previous analysis
 end
@@ -267,8 +267,50 @@ residuals = dbinfo[:residuals]
 
 rm(xmlfilename)
 rm(errname)
-# file will be used in test_interp.jl
-#rm(filename)
 rm(filename2)
+
+# interpolation test
+
+varname = "Salinity"
+
+ds = Dataset(filename)
+lon = nomissing(ds["lon"][:])
+lat = nomissing(ds["lat"][:])
+depth = nomissing(ds["depth"][:])
+time = nomissing(ds["time"][:])
+
+v = ds["Salinity"][:, :, :, :]
+close(ds)
+
+i = 3
+j = 2
+k = 2
+n = 2
+
+loni = [lon[i]]
+lati = [lat[j]]
+depthi = [10.0]
+timei = [time[n]]
+
+
+x = (lon, lat, depth)
+xi = (loni, lati, depthi)
+
+vn = zeros(size(v[:, :, :, n]))
+vn[:] = map((x -> ismissing(x) ? NaN : x), v[:, :, :, n]);
+
+fi = DIVAnd.interp(x, vn, xi)
+
+
+firef = [(v[i, j, 1, n] + v[i, j, 2, n]) / 2]
+@test fi ≈ firef
+
+background = DIVAnd.backgroundfile(filename, varname)
+vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
+
+@test fi ≈ [0] atol = 1e-5
+
+#removing the file creates issues on Windows
+#rm(filename)
 
 nothing

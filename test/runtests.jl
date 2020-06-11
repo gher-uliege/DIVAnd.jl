@@ -122,9 +122,6 @@ using SpecialFunctions
     include("test_product.jl")
     include("test_product_2d.jl")
 
-    # interpolate background from a NetCDF file
-    include("test_interp.jl")
-
     include("test_binning.jl")
 
     # Heatmap
