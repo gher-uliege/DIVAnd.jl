@@ -136,8 +136,6 @@ function flatten_data(
 end
 
 function flagvalues(attrib, accepted_status_flags)
-    accepted_status_flags = ["good_value", "probably_good_value"]
-
     flag_values = attrib["flag_values"]
     flag_meanings = attrib["flag_meanings"]::String
     if typeof(flag_meanings) <: AbstractString
