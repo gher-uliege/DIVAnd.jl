@@ -165,6 +165,16 @@ Load all profiles in the file `fname` corresponding to netCDF variable with the
 `long_name` attribute equal to the parameter `long_name`. `qv_flags` is a list of strings
 with the quality flags to be kept. `obsids` is a vector of strings with the
 EDMO code and local CDI id concatenated by a hyphen.
+
+The variable with the following standard_name should exits:
+* longitude
+* latitude
+* time
+
+As well as the variable with the following long_name:
+* LOCAL_CDI_ID
+* EDMO_code or EDMO_CODE
+* Depth
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"])
 
