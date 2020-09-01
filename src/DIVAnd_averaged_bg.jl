@@ -36,7 +36,7 @@ function DIVAnd_averaged_bg(
 
 
     if sum(toaverage) == n
-        vm = mean(f)
+        vm = mean(f[findall(!isnan,f)])
         fma = fill(vm, size(mask))
         faanom = f .- vm
         return fma, faanom
