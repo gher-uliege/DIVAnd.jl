@@ -181,6 +181,7 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
     ncglobalattrib = ncglobalattrib,
     mask = mask,
     surfextend = surfextend,
+    stat_per_timeslice = true,
 )
 
 obsused = dbinfo[:used]
@@ -253,6 +254,7 @@ dbinfo = @test_logs (:info, r".*") match_mode = :any DIVAnd.diva3d(
     niter_e = 2,
     QCMETHOD = 0,
     surfextend = surfextend,
+    stat_per_timeslice = true,
 )
 
 qcvalue = dbinfo[:qcvalues]

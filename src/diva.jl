@@ -84,6 +84,8 @@ gridded background field and the observations minus the background field.
 * `coeff_derivative2` (vector of 3 floats): for every dimension where this value is non-zero, an additional term is added to the cost function penalizing the second derivative. A typical value of this parameter is `[0.,0.,1e-8]`.
 *  `surfextend`: create an additional layer on top of the surface layer so that the effective background error variance is more similar to the deep ocean.
    `false` is the default value.
+*  `stat_per_timeslice` (default false): if true, then the residual values (and possibly qcvalues) are also returned by time slices which is useful if the time slices overlap (see example below).
+
 
 Any additional keywoard arguments understood by `DIVAndgo`/`DIVAndrun` can also be used here
 (e.g. velocity constrain)
@@ -96,6 +98,24 @@ location of the observations). The
 residual is `NaN` if the observations are not within the domain as defined by
 the mask and the coordinates of the observations `x`.
 * `:qcvalues`: quality control scores (if activated)
+
+
+## Example
+
+Example on how to aggredate the residuals per time slice and to retain the
+maximum residual:
+
+```julia
+selection_per_timeslice = dbinfo[:selection_per_timeslice]
+residuals_per_timeslice = dbinfo[:residuals_per_timeslice]
+selection_per_timeslice = dbinfo[:selection_per_timeslice]
+
+max_residuals = fill(-Inf,length(value))
+for n = 1:length(selection_per_timeslice)
+   sel = selection_per_timeslice[n]
+   max_residuals[sel] = max.(max_residuals[sel],residuals_per_timeslice[n])
+end
+```
 
 !!! note
 
@@ -139,6 +159,7 @@ function diva3d(
     maxfield::Number = Inf,
     surfextend = false,
     velocity = (),
+    stat_per_timeslice = false,
     kwargs...,
 )
 
@@ -325,6 +346,15 @@ function diva3d(
 
     # fit fitting
     dbinfo = Dict{Symbol,Any}()
+
+    if stat_per_timeslice
+        dbinfo[:selection_per_timeslice] = Vector{Vector{Bool}}(undef,length(TS))
+        dbinfo[:residuals_per_timeslice] = Vector{Vector{Float64}}(undef,length(TS))
+
+        if haskey(Dict(kwargs), :QCMETHOD)
+            dbinfo[:qcvalues_per_timeslice] = Vector{Vector{Float64}}(undef,length(TS))
+        end
+    end
 
     # days since timeorigin
     timeclim = [
@@ -623,10 +653,18 @@ function diva3d(
                 residuals[sel] = residual
                 factore = scalefactore * factore
 
+                if stat_per_timeslice
+                    dbinfo[:selection_per_timeslice][timeindex] = sel
+                    dbinfo[:residuals_per_timeslice][timeindex] = residual
+                end
+
                 dbinfo[:factore][i, timeindex] = factore
 
                 if qcdata != ()
                     qcvalues[sel] = qcdata
+                    if haskey(dbinfo,:qcvalues_per_timeslice)
+                        dbinfo[:qcvalues_per_timeslice][timeindex] = qcdata
+                    end
                 end
             end
 
