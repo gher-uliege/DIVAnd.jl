@@ -131,6 +131,9 @@ function DIVAnd_background(
 
     pmnv = hcat([pm[:] for pm in pmn]...)
 
+    #old
+    #@show mean.(Ld)
+    #@show 1 ./ mean.(pmn)
     pmnv[:, findall(Ld .== 0)] .= 1
 
     # staggered version of norm

@@ -1,11 +1,12 @@
 import DIVAnd
-using Test
 using DelimitedFiles
 using DataStructures
+using Interpolations
 using Missings
 using NCDatasets
+using Test
 
-#
+
 varname = "Salinity"
 filename = "WOD-Salinity.nc"
 
@@ -97,9 +98,7 @@ TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 varname = "Salinity"
 
-# File name based on the variable (but all spaces are replaced by _)
-filename = "Water_body_$(replace(varname,' ' => '_')).4Danl.nc"
-
+filename = tempname()
 
 metadata = OrderedDict(
     # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-Chemistry, ...)
@@ -226,7 +225,7 @@ keyword_code = split(metadata["parameter_keyword_urn"], ':')[end]
 
 # new analysis with background from file
 
-filename2 = "Water_body_$(replace(varname,' ' => '_'))2.4Danl.nc"
+filename2 = tempname()
 if isfile(filename2)
     rm(filename2) # delete the previous analysis
 end
@@ -267,8 +266,57 @@ residuals = dbinfo[:residuals]
 
 rm(xmlfilename)
 rm(errname)
+rm(filename2)
+
 # file will be used in test_interp.jl
 #rm(filename)
-rm(filename2)
+
+# ------------------
+# interpolate background from a NetCDF file
+
+# reuse previously created file fname
+varname = "Salinity"
+
+ds = Dataset(fname)
+lon = nomissing(ds["lon"][:])
+lat = nomissing(ds["lat"][:])
+depth = nomissing(ds["depth"][:])
+time = nomissing(ds["time"][:])
+
+v = ds["Salinity"][:, :, :, :]
+close(ds)
+
+i = 3
+j = 2
+k = 2
+n = 2
+
+loni = [lon[i]]
+lati = [lat[j]]
+depthi = [10.0]
+timei = [time[n]]
+
+
+x = (lon, lat, depth)
+xi = (loni, lati, depthi)
+
+vn = zeros(size(v[:, :, :, n]))
+vn[:] = map((x -> ismissing(x) ? NaN : x), v[:, :, :, n]);
+
+fi = DIVAnd.interp(x, vn, xi)
+
+
+firef = [(v[i, j, 1, n] + v[i, j, 2, n]) / 2]
+@test fi ≈ firef
+
+background = DIVAnd.backgroundfile(fname, varname)
+vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
+
+@test fi ≈ [0] atol = 1e-5
+
+#removing the file creates issues on Windows
+#rm(fname)
+
+
 
 nothing

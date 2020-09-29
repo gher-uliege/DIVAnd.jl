@@ -33,8 +33,9 @@ len = (fill(0.1, size(mask)), fill(0.1, size(mask)), fill(0.0, size(mask)))
 # obs. error variance normalized by the background error variance
 epsilon2 = 0.01;
 
+alphabc = 0
 
-for alphabc in [0, 1]
+#for alphabc in [0, 1]
     # fi is the interpolated field
     fi, s = DIVAndrun(
         mask,
@@ -60,8 +61,10 @@ for alphabc in [0, 1]
             alphabc = alphabc,
         )
     end
-    @test fi ≈ fi2
-end
+    @show fi[12,12,3]
+    @show fi2[12,12,3]
+#    @test fi ≈ fi2
+#end
 
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

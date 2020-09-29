@@ -67,7 +67,7 @@ function DIVAnd_background_components(
                     iB_ = iB_ + Dx' * Dx
                 end
             end
-
+            #@show sum(abs, alpha[j] * iB_)
         else
             # constrain of derivative with even order (j-1)
             # (laplacian, biharmonic,...)
