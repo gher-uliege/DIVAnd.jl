@@ -274,10 +274,10 @@ rm(filename2)
 # ------------------
 # interpolate background from a NetCDF file
 
-# reuse previously created file fname
+# reuse previously created file filename
 varname = "Salinity"
 
-ds = Dataset(fname)
+ds = Dataset(filename)
 lon = nomissing(ds["lon"][:])
 lat = nomissing(ds["lat"][:])
 depth = nomissing(ds["depth"][:])
@@ -309,7 +309,7 @@ fi = DIVAnd.interp(x, vn, xi)
 firef = [(v[i, j, 1, n] + v[i, j, 2, n]) / 2]
 @test fi ≈ firef
 
-background = DIVAnd.backgroundfile(fname, varname)
+background = DIVAnd.backgroundfile(filename, varname)
 vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 
 @test fi ≈ [0] atol = 1e-5
