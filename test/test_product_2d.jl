@@ -62,13 +62,7 @@ monthlists = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
 TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 varname = "Salinity"
-
-# File name based on the variable (but all spaces are replaced by _)
-filename = "Water_body_$(replace(varname,' ' => '_')).3Danl.nc"
-
-if isfile(filename)
-    rm(filename)
-end
+filename = tempname()
 
 metadata = OrderedDict(
     # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-Chemistry, ...)

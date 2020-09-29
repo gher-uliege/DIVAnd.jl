@@ -5,7 +5,7 @@ using Interpolations
 using Missings
 using NCDatasets
 using Test
-
+using Interpolations
 
 varname = "Salinity"
 filename = "WOD-Salinity.nc"
@@ -98,6 +98,7 @@ TS = DIVAnd.TimeSelectorYW(years, year_window, monthlists)
 
 varname = "Salinity"
 
+# File name
 filename = tempname()
 
 metadata = OrderedDict(
@@ -180,6 +181,7 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
     ncglobalattrib = ncglobalattrib,
     mask = mask,
     surfextend = surfextend,
+    stat_per_timeslice = true,
 )
 
 obsused = dbinfo[:used]
@@ -195,6 +197,8 @@ ignore_errors = true
 additionalcontacts =
     [DIVAnd.getedmoinfo(1977, "originator"), DIVAnd.getedmoinfo(4630, "originator")]
 
+errname = split(filename, ".nc")[1] * ".cdi_import_errors.csv"
+
 @test_logs (:info, r".*") match_mode = :any DIVAnd.divadoxml(
     filename,
     varname,
@@ -204,8 +208,6 @@ additionalcontacts =
     ignore_errors = ignore_errors,
     additionalcontacts = additionalcontacts,
 )
-
-errname = "$(replace(filename,r"\.nc$" => "")).cdi_import_errors_test.csv"
 
 errdata, header = readdlm(errname, '\t'; header = true)
 
@@ -252,6 +254,7 @@ dbinfo = @test_logs (:info, r".*") match_mode = :any DIVAnd.diva3d(
     niter_e = 2,
     QCMETHOD = 0,
     surfextend = surfextend,
+    stat_per_timeslice = true,
 )
 
 qcvalue = dbinfo[:qcvalues]
@@ -267,9 +270,6 @@ residuals = dbinfo[:residuals]
 rm(xmlfilename)
 rm(errname)
 rm(filename2)
-
-# file will be used in test_interp.jl
-#rm(filename)
 
 # ------------------
 # interpolate background from a NetCDF file
@@ -314,9 +314,8 @@ vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 
 @test fi ≈ [0] atol = 1e-5
 
+
 #removing the file creates issues on Windows
-#rm(fname)
-
-
+#rm(filename)
 
 nothing

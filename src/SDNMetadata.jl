@@ -292,7 +292,7 @@ function getoriginators(
 )
 
     obsids = Iterators.flatten(loadandcheckobsid.(filepaths))
-    errname = replace(filepaths[1], r".nc$" => "") * ".cdi_import_errors_test.csv"
+
     originators, notfound =
         get_originators_from_obsid(db, obsids; ignore_errors = ignore_errors)
 

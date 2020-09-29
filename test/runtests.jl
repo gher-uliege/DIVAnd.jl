@@ -22,7 +22,6 @@ using SpecialFunctions
     include("test_conjugategradient.jl")
 
     include("test_sparse_diff.jl")
-    include("test_laplacian.jl")
     include("test_localize_separable_grid.jl")
 
     include("test_statevector.jl")
@@ -37,8 +36,6 @@ using SpecialFunctions
     include("test_2dvar_constcoast.jl")
 
     include("test_2dvar_iter.jl")
-
-    include("test_2dvar_jog.jl")
 
     include("test_2dvar_error.jl")
 
@@ -72,8 +69,6 @@ using SpecialFunctions
 
     include("test_DIVAndgo.jl")
 
-    # test kernel
-    include("test_kernel.jl")
 
     include("test_fzero.jl")
 
@@ -164,4 +159,17 @@ using SpecialFunctions
     @test K(len_scale) ≈ SpecialFunctions.besselk(1, 1) atol = 1e-6
     mu, K, len_scale = DIVAnd_kernel(2, [0, 3, 3, 1])
     @test K(len_scale) ≈ SpecialFunctions.besselk(1, 1) atol = 1e-6
+end
+
+@testset "DIVAnd-laplacian" begin
+    include("test_laplacian.jl")
+end
+
+@testset "DIVAnd-jog" begin
+    include("test_2dvar_jog.jl")
+end
+
+@testset "DIVAnd-kernel" begin
+    # test kernel
+    include("test_kernel.jl")
 end

@@ -35,7 +35,11 @@ epsilon2 = 0.01;
 
 alphabc = 0
 
-#for alphabc in [0, 1]
+for alphabc in [0, 1]
+    local fi
+    local fi2
+    local s
+
     # fi is the interpolated field
     fi, s = DIVAndrun(
         mask,
@@ -64,7 +68,7 @@ alphabc = 0
     @show fi[12,12,3]
     @show fi2[12,12,3]
 #    @test fi ≈ fi2
-#end
+end
 
 
 # Copyright (C) 2014,2017 Alexander Barth <a.barth@ulg.ac.be>

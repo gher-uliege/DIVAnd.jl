@@ -307,7 +307,7 @@ function ncfile(
     # Global attributes
 
     ds.attrib["Conventions"] = "CF-1.6"
-    ds.attrib["title"] = "DIVA 4D analysis of $(longname)"
+    ds.attrib["title"] = "DIVAnd analysis of $(longname)"
     ds.attrib["file_name"] = filename
     ds.attrib["product_id"] = string(uuid1())
     ds.attrib["date"] = Dates.format(now(), "yyyy-mm-ddTHH:MM:SS")
@@ -464,10 +464,16 @@ function saveobs(
     # chunksizes should not exceed the number of observations
     chunksize = min(chunksize, length(ids))
 
-    idlen = maximum(length.(ids))
-    obsids = fill('\0', (idlen, length(ids)))
+    # convert vector of string to list of bytes (UInt8) to
+    # prevent a convertions to Array{Char,N}
+
+    idlen = maximum(lastindex.(ids))
+    obsids = zeros(UInt8,idlen, length(ids))
     for i = 1:length(ids)
-        obsids[1:length(ids[i]), i] = Vector{Char}(ids[i])
+        id_uint8 = unsafe_wrap(Vector{UInt8},ids[i])
+        for j = 1:length(id_uint8)
+           obsids[j, i] = id_uint8[j]
+        end
     end
 
     mode = (isfile(filename) ? "a" : "c")
@@ -560,7 +566,8 @@ function saveobs(
         # convertion is done in NCDatasets
         #ncobstime[:] = Dates.value.(Dates.Millisecond.(xy[4] - timeorigin)) / (24*60*60*1000.)
         ncobstime[:] = xy[4]
-        ncobsid[:] = obsids
+        #ncobsid[:] = obsids
+        NCDatasets.nc_put_var(ds.ncid,ncobsid.var.varid,obsids)
     end
 
     return nothing

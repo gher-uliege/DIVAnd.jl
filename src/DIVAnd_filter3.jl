@@ -25,7 +25,7 @@ function DIVAnd_filter3(A::AbstractArray, fillvalue, ntimes = 1)
     RI = CartesianIndices(size(A))
 
     I1, Iend = first(RI), last(RI)
-    stencil = one(CartesianIndex(I1))
+    stencil = oneunit(CartesianIndex(I1))
 
     for nn = 1:ntimes
         for indI in RI

@@ -1,6 +1,7 @@
 # Testing DIVAnd in 2 dimensions with advection.
 
 using Test
+using Random
 import DIVAnd
 
 # grid of background field
@@ -16,6 +17,8 @@ v = -a * xi;
 epsilon2 = 1 / 200
 len = 0.4
 
+Random.seed!(1234);
+
 fi_ref, s = DIVAnd.DIVAndrun(
     mask,
     (pm, pn),
@@ -29,6 +32,9 @@ fi_ref, s = DIVAnd.DIVAndrun(
 )
 
 for i = 1:5
+    local s
+    local fi
+
     fi, s = DIVAnd.DIVAndjog(
         mask,
         (pm, pn),
@@ -43,10 +49,15 @@ for i = 1:5
         velocity = (u, v),
         alphabc = 0,
     )
+
+    #@show i, extrema(fi - fi_ref)
     @test fi ≈ fi_ref rtol = 1e-3
 end
 
 for ii = 1:5
+    local s
+    local fi
+
     fi, s = DIVAnd.DIVAndjog(
         mask,
         (pm, pn),

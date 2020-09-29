@@ -30,9 +30,9 @@ function loadprof(
     ncz::NCDatasets.Variable{Tz,2},
     flag_z::NCDatasets.Variable{Tflagz,2},
     fillval_z,
-    accepted_status_flag_values_z,
-) where {T,Tz,Tflag,Tflagz}
+    accepted_status_flag_values_z;
     nchunk = 10
+) where {T,Tz,Tflag,Tflagz}
     n_samples = size(ncvar, 1)
     n_stations = size(ncvar, 2)
     #    n_stations = 100000
@@ -49,9 +49,13 @@ function loadprof(
     profile = Vector{T}(undef, n_samples)
     profile_z = Vector{T}(undef, n_samples)
 
+    t0 = Base.time()
     @inbounds for i = 1:nchunk:n_stations
-        if ((i - 1) % (nchunk * 1000) == 0) && (n_stations > 2 * nchunk)
+        t1 = Base.time()
+        #if ((i - 1) % (nchunk * 1000) == 0) && (n_stations > 2 * nchunk)
+        if t1 - t0 > 2
             println("$(i-1) out of $n_stations - $(100*(i-1)/n_stations) %")
+            t0 = t1
         end
         nc = i:min(i + nchunk - 1, n_stations)
         clen = length(nc)
@@ -136,8 +140,6 @@ function flatten_data(
 end
 
 function flagvalues(attrib, accepted_status_flags)
-    accepted_status_flags = ["good_value", "probably_good_value"]
-
     flag_values = attrib["flag_values"]
     flag_meanings = attrib["flag_meanings"]::String
     if typeof(flag_meanings) <: AbstractString
@@ -159,20 +161,55 @@ end
 
 """
     obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname,long_name;
-         qv_flags = ["good_value","probably_good_value"])
+         qv_flags = ["good_value","probably_good_value"],
+         nchunk = 10
+)
 
 Load all profiles in the file `fname` corresponding to netCDF variable with the
 `long_name` attribute equal to the parameter `long_name`. `qv_flags` is a list of strings
 with the quality flags to be kept. `obsids` is a vector of strings with the
 EDMO code and local CDI id concatenated by a hyphen.
+
+`nchunk` is the number of profiles read at a time. Large values of `nchunk` can increase
+performance but requirer also more memory.
+
+The variable with the following standard_name should exits:
+* longitude
+* latitude
+* time
+
+As well as the variable with the following long_name:
+* LOCAL_CDI_ID
+* EDMO_code or EDMO_CODE
+* Depth
 """
-function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"])
+function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
+         nchunk = 10)
 
     accepted_status_flags = qv_flags
 
     Dataset(fname) do ds
-        ncvar_LOCAL_CDI_ID = varbyattrib_first(ds, long_name = "LOCAL_CDI_ID")
-        LOCAL_CDI_ID = chararray2strings(ncvar_LOCAL_CDI_ID.var[:])
+        nstations = Int(ds.dim["N_STATIONS"])
+        LOCAL_CDI_ID = fill("",nstations)
+
+        if length(varbyattrib(ds, long_name = "LOCAL_CDI_ID")) == 0
+            @warn "No variable with the long_name attribute \'LOCAL_CDI_ID\' in $fname found. We use the empty string for LOCAL_CDI_ID instead."
+        else
+            ncvar_LOCAL_CDI_ID = varbyattrib_first(ds, long_name = "LOCAL_CDI_ID")
+
+            if ndims(ncvar_LOCAL_CDI_ID) == 2
+                LOCAL_CDI_ID = chararray2strings(ncvar_LOCAL_CDI_ID.var[:])
+            else
+                @warn """The variable with the long_name attribute \'LOCAL_CDI_ID\' is expected to have two dimensions. For example the output of 'ncdump -h' of $fname should contain:
+[...]
+    char metavar4(N_STATIONS, STRING36) ;
+                metavar4:long_name = "LOCAL_CDI_ID" ;
+[...]
+
+We use the empty string for LOCAL_CDI_ID instead.
+    """
+            end
+        end
 
         EDMO_CODE = if length(varbyattrib(ds; long_name = "EDMO_code")) > 0
             varbyattrib_first(ds, long_name = "EDMO_code")[:]
@@ -206,7 +243,8 @@ function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_valu
             ncvar_z.var,
             ncv_ancillary_z,
             fillval_z,
-            accepted_status_flag_values_z,
+            accepted_status_flag_values_z;
+            nchunk = nchunk
         )
 
         obsvalue, obslon, obslat, obsdepth, obstime, obsids = flatten_data(

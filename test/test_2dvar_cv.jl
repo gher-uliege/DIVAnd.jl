@@ -46,7 +46,7 @@ for imeth = 0:3
             alphabc = 0,
         )
 
-    @test 0.5 < bestfactore * epsilon2 / epsilon2_true <= 2
+    @test 0.5 < bestfactore * epsilon2 / epsilon2_true <= 2.5
     @test 0.3 < bestfactorl * len / len_true < 3
 
     #@show bestfactore*epsilon2
@@ -67,7 +67,7 @@ for imeth = 0:3
         imeth;
         alphabc = 0,
     )
-    @test 1.0 < bestfactor < 1.3
+    @test 1.0 < bestfactor < 1.4
     #@test 0.3 < bestfactorl*len/len_true < 3
 
     #@show bestfactor
@@ -92,7 +92,7 @@ for imeth = 0:3
     #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     #@test 0.3 < bestfactorl*len/len_true < 3
 
-    @test 1.5 < bestfactor < 1.8
+    @test 1.5 < bestfactor < 2.1
 
     #@show bestfactor
     #@show bestfactore*epsilon2
