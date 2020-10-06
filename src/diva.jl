@@ -85,7 +85,7 @@ gridded background field and the observations minus the background field.
 *  `surfextend`: create an additional layer on top of the surface layer so that the effective background error variance is more similar to the deep ocean.
    `false` is the default value.
 *  `stat_per_timeslice` (default false): if true, then the residual values (and possibly qcvalues) are also returned by time slices which is useful if the time slices overlap (see example below).
-
+*   `error_thresholds` (default `[("L1", 0.3), ("L2", 0.5)]`). This is a list of tuples with the applied error thresholds and the variable names suffixes. If the variable is named e. g. `"Salinity"`, then the variables `"Salinity_L1"` (resp.  `"Salinity_L2"`) will be created where the analysis is masked if the relative error exceeds 0.3 (resp. 0.5).
 
 Any additional keywoard arguments understood by `DIVAndgo`/`DIVAndrun` can also be used here
 (e.g. velocity constrain)
@@ -160,6 +160,7 @@ function diva3d(
     surfextend = false,
     velocity = (),
     stat_per_timeslice = false,
+    error_thresholds = [("L1", 0.3), ("L2", 0.5)],
     kwargs...,
 )
 
@@ -376,6 +377,7 @@ function diva3d(
             ncglobalattrib = ncglobalattrib,
             climatology_bounds = climatologybounds,
             saveindex = saveindex,
+            thresholds = error_thresholds,
             relerr = true,
         )
 

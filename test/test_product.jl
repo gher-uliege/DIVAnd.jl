@@ -182,6 +182,7 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
     mask = mask,
     surfextend = surfextend,
     stat_per_timeslice = true,
+    error_thresholds = [("L1", 0.3), ("L2", 0.5), ("L3", 0.1)],
 )
 
 obsused = dbinfo[:used]
@@ -216,7 +217,11 @@ errdata, header = readdlm(errname, '\t'; header = true)
 @test errdata[2] == "missing"
 
 # check if editing of the mask was successful
-@test ismissing(Dataset(filename)["Salinity"][3, 3, 1, 1])
+ds = Dataset(filename)
+@test ismissing(ds["Salinity"][3, 3, 1, 1])
+@test haskey(ds,"Salinity_L3")
+
+close(ds)
 
 xmlstr = read(xmlfilename, String);
 
