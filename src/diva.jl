@@ -718,6 +718,8 @@ function diva3d(
             # write to file
             sync(ds)
 
+            # this is a good time to release unused memory
+            GC.gc()
         end # time loop
 
     end # implictly closing the NetCDF file
