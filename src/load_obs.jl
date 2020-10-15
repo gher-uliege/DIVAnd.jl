@@ -70,30 +70,59 @@ function chararray2strings(obsids::Matrix{Char})
 end
 
 
-function array2strings(obsids::Matrix{UInt8})
-    obsid = Vector{String}(undef, size(obsids, 2))
+function array2strings!(obsids::AbstractMatrix{UInt8},obsid)
+    len,nobs = size(obsids)
 
-    for i = 1:size(obsids, 2)
+    previous_id = zeros(UInt8,len)
+    previous_obsid = ""
+
+    for i = 1:nobs
         id = view(obsids, :, i)
-        index = findfirst(c -> c == 0, id)
 
-        hasnonull = index == nothing
-
-        obsid[i] = if hasnonull
-            String(Char.(id))
+        if (id == previous_id) && (i > 1)
+            # reuse previous ids to save memory
+            obsid[i] = previous_obsid
         else
-            String(Char.(view(id, 1:index-1)))
+            # create a new string
+            index = findfirst(c -> c == 0, id)
+
+            hasnonull = index == nothing
+
+            previous_obsid = if hasnonull
+                String(Char.(id))
+            else
+                String(Char.(view(id, 1:index-1)))
+            end
+            obsid[i] = previous_obsid
+            previous_id .= id
         end
+
     end
 
     return obsid
 end
 
-function loadobsid(ds, varname = "obsid")
-    #return chararray2strings(ds[varname].var[:,:])
-    data = Array{UInt8,2}(undef, size(ds["obsid"]))
-    NCDatasets.load!(ds["obsid"].var, data, :, :)
-    return array2strings(data)
+function array2strings(obsids::AbstractMatrix{UInt8})
+    obsid = Vector{String}(undef, size(obsids, 2))
+    return array2strings!(obsids,obsid)
+end
+
+
+function loadobsid(ds, varname = "obsid"; chunksize = 1_000_000)
+    len,nobs = size(ds["obsid"]) :: Tuple{Int,Int}
+    obsids = Vector{String}(undef,nobs)
+
+    data = Array{UInt8,2}(undef, (len,chunksize))
+
+    for j = 1:chunksize:nobs
+        i = j:min(j+chunksize-1,nobs)
+        k = i .- (j-1)
+
+        data .= 0
+        NCDatasets.load!(ds["obsid"].var, view(data,:,k), :, i)
+        array2strings!(view(data,:,k),view(obsids,i))
+    end
+    return obsids
 end
 
 
@@ -106,7 +135,7 @@ time ("obstime") and identifiers ("obsids") will also be loaded.
 Numeric output arguments will have the type `T`.
 
 """
-function loadobs(T, filename, varname)
+function loadobs(T, filename, varname; chunksize = 1_000_000)
 
     Dataset(filename, "r") do ds
         time = nomissing(ds["obstime"][:])::Vector{DateTime}
@@ -116,7 +145,7 @@ function loadobs(T, filename, varname)
         depth = Vector{T}(nomissing(ds["obsdepth"][:], NaN))
         value = Vector{T}(nomissing(ds[varname][:], NaN))
 
-        obsid = loadobsid(ds, "obsid")
+        obsid = loadobsid(ds, "obsid"; chunksize = chunksize)
 
         return value, lon, lat, depth, time, obsid
     end
