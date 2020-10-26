@@ -3,11 +3,10 @@ language: julia
 os:
   - linux
   - osx
+
 julia:
   - 1.0
-  - 1.4
   - 1.5
-#  - nightly
 
 addons:
     apt: # apt-get for linux
@@ -26,7 +25,7 @@ after_success:
 jobs:
   include:
     - stage: "Documentation"
-      julia: 1.0
+      julia: 1.5
       os: linux
       script:
         - julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
