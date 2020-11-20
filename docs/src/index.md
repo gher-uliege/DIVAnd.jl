@@ -380,7 +380,7 @@ DIVAnd.divadoxml(
 
 
 
-## Fequently asked questions
+## Frequently asked questions
 
 ### Which data points are used for the analysis?
 
@@ -456,6 +456,30 @@ vessel), then the analysis can be biased toward the high-resolution data. The fu
 * Use the option `fieldmin = 0.0` of `diva3d`
 
 If the parameter `epsilon` of `DIVAnd.Anam.loglin` is larger than zero (which is necessary if some measurements are exactly zero), then the smallest value that analysis can have is `-epsilon`. Therefore the option `fieldmin` is still required to avoid negative values.
+
+
+### How can I speed up analysis using observations which always have the same coordinates?
+
+In this situation, the measurements are always done at the same locations, but the measurements are repeated over time or different variables are measured at those positions. It is possible to take into the already computed matrices so that the subsequent analysis can be exectured much faster.
+
+Let's assume the observations are available on `np` locations and repeated `nt` times, so that `obsval` is an array of size `np X nt`.
+
+The first analysis is performed using:
+```julia
+@time fi1,s = DIVAndrun((mask),(pm,pn),
+    (xi,yi),(obslon,obslat),Float64.(obsval[:,1]),len,epsilon2);
+```
+then, for the `nt` other analysis, we use the structure `s`, computed in the previous step, as follows:
+```julia
+fpi = s.P * (s.H' * (s.R \ obsval[:,i]))
+f_with_mask = unpack(s.sv, fpi, NaN)
+```
+where i=1, ..., nt.      
+
+The `unpack` function _unpacks_ the vector `fpi` into the different variables var1, var2, ... `s.sv` is the statevector and `NaN` is the fill value.
+
+
+
 
 
 ## API changes
