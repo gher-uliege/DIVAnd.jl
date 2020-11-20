@@ -478,7 +478,7 @@ where i=1, ..., nt.
 
 The `unpack` function _unpacks_ the vector `fpi` into the different variables var1, var2, ... `s.sv` is the statevector and `NaN` is the fill value.
 
-Check the [example][../../examples/DIVAnd_example_fixed_obs.jl]
+Check the [example](../../examples/DIVAnd_example_fixed_obs.jl).
 
 
 
