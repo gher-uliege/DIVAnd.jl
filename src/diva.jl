@@ -364,6 +364,9 @@ function diva3d(
     ]
     climatologybounds = climatology_bounds(TS)
 
+
+    compute_background_epsilon2_factor = background_epsilon2_factor == nothing
+
     # create the NetCDF file
     # make sure that the file is closed even if there is an error
     @info "Creating netCDF file"
@@ -485,7 +488,7 @@ function diva3d(
 
                 # simple estimation of background_epsilon2_factor so that in average
                 # for every level there are 10 observations with an unit epsilon2.
-                if background_epsilon2_factor == nothing
+                if compute_background_epsilon2_factor
                     background_epsilon2_factor =
                         sum(filter(isfinite, 1 ./ epsilon2[sel])) / (10 * length(depthr))
                 end
