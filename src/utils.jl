@@ -514,7 +514,8 @@ function smoothfilter!(x, f::Vector{T}, scale) where {T}
     #@show xf
     ν = sqrt(scale)
     Δx_min = minimum(xf[2:end] - xf[1:end-1])
-    #@show Δx_min
+
+    @debug "Δx_min = $Δx_min"
 
     Δt_max = Δx_min^2 / (2 * ν)
     Δt = 0.5 * Δt_max
@@ -523,6 +524,8 @@ function smoothfilter!(x, f::Vector{T}, scale) where {T}
     # 4 niter * Δt * ν  = 2 scale^2
     # niter = scale^2 / (2 * Δt * ν)
     niter = ceil(Int, scale^2 / (2 * Δt * ν))
+
+    @debug "niter = $niter"
 
     flux = zeros(T, sz[1] + 1)
 
