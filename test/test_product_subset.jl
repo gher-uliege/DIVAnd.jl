@@ -60,16 +60,13 @@ sz = (length(lonr), length(latr), length(depthr))
 
 lenx = fill(200_000, sz)
 leny = fill(200_000, sz)
-lenz = [10 + depthr[k] / 15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
+lenz = [50 + depthr[k] / 15 for i = 1:sz[1], j = 1:sz[2], k = 1:sz[3]]
 
 yearlist = [1990:2000]
 
-# winter: January-March    1,2,3
-# spring: April-June       4,5,6
-# summer: July-September   7,8,9
-# autumn: October-December 10,11,12
-
-monthlists = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
+#monthlists = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
+monthlists = [[i] for i = 1:12]
+#monthlists = [[1],[2]]
 TS = DIVAnd.TimeSelectorYearListMonthList(yearlist, monthlists)
 
 varname = "Salinity"
@@ -84,6 +81,7 @@ if isfile(filename)
 end
 
 dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
+#dbinfo = DIVAnd.diva3d(
     (lonr, latr, depthr, TS),
     (obslon, obslat, obsdepth, obstime),
     obsvalue,
@@ -99,7 +97,8 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
 
 # make a analysis with the subset
 
-monthlists_subset = [monthlists[1]];
+index_subset = 2
+monthlists_subset = [monthlists[index_subset]];
 TS_subset = DIVAnd.TimeSelectorYearListMonthList(yearlist, monthlists_subset)
 
 
@@ -110,7 +109,8 @@ if isfile(filename_subset)
     rm(filename_subset) # delete the previous analysis
 end
 
-dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
+dbinfo_subset = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
+#dbinfo_subset = DIVAnd.diva3d(
     (lonr, latr, depthr, TS_subset),
     (obslon, obslat, obsdepth, obstime),
     obsvalue,
@@ -133,5 +133,5 @@ S_subset = NCDataset(filename_subset) do ds
     ds[varname][:,:,:,:];
 end
 
-# check if the first time instance is the same
-@test all(S[:,:,:,1] .=== S_subset)
+# check if the first time instances are the same
+@test all(S[:,:,:,index_subset] .=== S_subset)
