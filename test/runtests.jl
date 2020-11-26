@@ -120,6 +120,7 @@ using SpecialFunctions
 
     # Test product generation
     include("test_product.jl")
+    include("test_product_subset.jl")
     include("test_product_2d.jl")
 
     include("test_binning.jl")
