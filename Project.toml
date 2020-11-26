@@ -3,7 +3,7 @@ uuid = "efc8151c-67de-5a8f-9a35-d8f54746ae9d"
 keywords = ["interpolation", "data analysis", "spatial data analysis", "oceanography"]
 license = "GPL2+"
 desc = "DIVAnd performs an n-dimensional variational analysis of arbitrarily located observations"
-version = "2.6.3"
+version = "2.6.4"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
@@ -31,12 +31,12 @@ ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 [compat]
 DataStructures = "0.17, 0.18"
 EzXML = "0.8, 0.9, 1.1"
-HTTP = "0.8"
-Interpolations = "0.12"
+HTTP = "0.8, 0.9"
+Interpolations = "0.12, 0.13"
 Missings = "0.4"
 Mustache = "1"
-NCDatasets = "0.10"
-SpecialFunctions = "0.8, 0.10"
+NCDatasets = "0.10, 0.11"
+SpecialFunctions = "0.8, 0.10, 1.0"
 ZipFile = "0.8, 0.9"
 julia = "0.7, 1"
 

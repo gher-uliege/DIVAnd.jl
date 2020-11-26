@@ -1,9 +1,8 @@
 # DIVAnd
 
-[![Build Status Linux and macOS](https://travis-ci.org/gher-ulg/DIVAnd.jl.svg?branch=master)](https://travis-ci.org/gher-ulg/DIVAnd.jl)
+[![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
 [![Build Status Windows](https://ci.appveyor.com/api/projects/status/github/gher-ulg/DIVAnd.jl?branch=master&svg=true)](https://ci.appveyor.com/project/Alexander-Barth/DIVAnd-jl)
 
-[![Coverage Status](https://coveralls.io/repos/gher-ulg/DIVAnd.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/gher-ulg/DIVAnd.jl?branch=master)
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 
 <!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)-->
@@ -32,7 +31,7 @@ Under Linux you will also need the packages `make`, `gcc` and `netcdf` which you
 apt-get install make gcc libnetcdf-dev netcdf-bin
 ```
 
-You need [Julia](http://julialang.org) (version 1.0 or 1.4) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 1.4 or 1.5) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia

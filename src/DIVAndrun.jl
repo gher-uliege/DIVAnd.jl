@@ -193,6 +193,9 @@ For oceanographic application, this is the land-sea mask where sea is true and l
   each array represents a single velocity component. The individual array should have the
   same size as the final grid. The first (second,..) element of the velocity
   is the velocity compomenent along the first (second,...) dimension.
+  The `velocity` has the units of a length-scale. If this parameter is derived
+  from ocean currents, then the later must be multiplied by a factor
+  (to be determined for example by cross-validation) and this factor has the units of a time-scale.
   The default is no-advection constraint.
 
 * `alpha`: alpha is vector of coefficients multiplying various terms in the

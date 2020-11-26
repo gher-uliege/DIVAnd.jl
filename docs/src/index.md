@@ -233,7 +233,7 @@ joinpath(dirname(pathof(DIVAnd)), "..")
 ```
 
 
-### Advection contraint
+### Advection constraint
 
 The functions `DIVAndrun`, `DIVAndgo` and `diva3d` can also use an advection constraint forcing the analysis to align with a vector field (e.g. a velocity field).
 The velocity field should be a
@@ -291,11 +291,11 @@ savefig("example-advection-2d.png"); nothing # hide
 
 ### Tuning the domain decomposition
 
-The functions `diva3d` and `DIVAndgo` split the domain into overlapping subdomains to reduce the required amount of memory. In some circumstances (in particular few vertical levels), this can unnecessarily degrade the performance. The CPU time of the analysis can be improved by increasing the `diva3d` option `memtofit` from 3 (default) to higher values (as long as one does not run out of memory). If this parameter is set to a very high value then the domain decomposition is effectively disabled.
+The functions `diva3d` and `DIVAndgo` split the domain into overlapping sub-domains to reduce the required amount of memory. In some circumstances (in particular few vertical levels), this can unnecessarily degrade the performance. The CPU time of the analysis can be improved by increasing the `diva3d` option `memtofit` from 3 (default) to higher values (as long as one does not run out of memory). If this parameter is set to a very high value then the domain decomposition is effectively disabled.
 
 ### Multiple CPU system
 
-Per default julia tries to use all CPUs on your system when doing matrix operations. The number of CPUs is controlled by the call to `BLAS.set_num_threads`. Using multiple CPUs can result in overhead and it can be beneficial to reduce the number of CPUs:
+Per default Julia tries to use all CPUs on your system when doing matrix operations. The number of CPUs is controlled by the call to `BLAS.set_num_threads`. Using multiple CPUs can result in overhead and it can be beneficial to reduce the number of CPUs:
 
 ```julia
 BLAS.set_num_threads(2)
@@ -303,7 +303,7 @@ BLAS.set_num_threads(2)
 
 ## Debugging message
 
-In Julia 1.0 debugging message can be activated using the following Julia command:
+From Julia 1.0 on, debugging messages can be activated using the following Julia command:
 
 ```julia
 ENV["JULIA_DEBUG"] = "DIVAnd"
@@ -315,10 +315,10 @@ See also https://docs.julialang.org/en/v1/stdlib/Logging/index.html#Environment-
 ## Correlation length
 
 The estimation of the correlation length in the function `diva3d` can be activated with the option
-`fitcorrlen` for the horizontal and vertical correlaton. The parameter `len` should then
+`fitcorrlen` for the horizontal and vertical correlation. The parameter `len` should then
 an empty tuple (`()`) or a tuple of arrays equal to one. The actually used correlation length is a product
-between the prodived values of the array `len` and the estimated correlation length by fitting. Setting `fitcorrlen`
-to true means thus that the intepretation of the parameters changes from absolution correlation
+between the provided values of the array `len` and the estimated correlation length by fitting. Setting `fitcorrlen`
+to true means thus that the interpretation of the parameters changes from absolution correlation
 length to relative correlation length.
 
 The estimation of the horizontal and vertical correlation can also be activated selectively by just setting
@@ -345,10 +345,10 @@ obsvalue,obslon,obslat,obsdepth,obstime,obsid = WorldOceanDatabase.load(Float64,
    basedir,varname; prefixid = prefixid);
 ```
 
-In the module PhysOcean, we implemented the function ARGO.load which can load data following the ARGO format and in particular the CORA dataset.
+In the module `PhysOcean`, we implemented the function ARGO.load which can load data following the ARGO format and in particular the CORA dataset.
 In fact, even if CORA is distributed through CMEMS, the netCDF files in CORA do not follow the same format than the other in situ netCDF files from CMEMS.
 Therefore the function `CMEMS.load` can not be used for the CORA dataset.
-ARGO.load also supports the option prefixid.
+`ARGO.load` also supports the option prefixid.
 
 
 ```julia
@@ -359,7 +359,7 @@ obsvalue,obslon,obslat,obsdepth,obstime,obsids = ARGO.load(Float64,
    filenames,varname; prefixid = "4630-")
 ```
 
-In divadoxml we added the new argument additionalcontacts which allows to acknowledge other datasets which are not in the MARIS database:
+In divadoxml we added the new argument additionalcontacts which allows one to acknowledge other datasets which are not in the MARIS database:
 
 ```julia
 using DIVAnd
@@ -380,7 +380,7 @@ DIVAnd.divadoxml(
 
 
 
-## Fequently asked questions
+## Frequently asked questions
 
 ### Which data points are used for the analysis?
 
@@ -388,7 +388,7 @@ An individual data point is used if all following conditions are met:
 1. longitude/latitude is inside the domain and not adjacent to a land point
 2. the depth is within the depth range of the domain
 3. the time is within the temporal range
-4. if an anamorphosis transform is used, it should correspond to a finite transformed value
+4. if an _anamorphosis_ transform is used, it should correspond to a finite transformed value
 5. during the loading, the corresponding quality flag is among the accepted quality flags
 
 Note that for points 1.-3. the finite precision of floating point numbers can affect the results.
@@ -403,7 +403,7 @@ The solution is to either refine the vertical resolution or to increase the vert
 ### How do I limit the estimated horizontal and vertical correlation length in DIVAnd?
 
 It can be necessary to limit the estimated correlation length to an acceptable range. The function (called `limitfun`) can be
-applied to the estimated correlation to make such adjustment. This function takes as argument the estimated correlation length and the depth
+applied to the estimated correlation to make such adjustment. This function takes as arguments the estimated correlation length and the depth
 and returns the adjusted correlation length. For example the following function forces the horizontal correlation length to be between 50 km
 and 200 km (independently of the depth).
 
@@ -441,29 +441,53 @@ A similar option has also be added for the vertical correlation length.
 
 The actual used correlation lengths is the product between the estimated one (by fitting) and the
 arrays in the parameter `len` (if provided). The function `lengraddepth` can be used to create a reduced correlation length near the bathymetry.
-(https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/17-relative-correlation-length.ipynb)
+(https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/5-AdvancedTopics/17-relative-correlation-length.ipynb)
 
 ### How can I handle data set of very different resolution?
 
-If data from a high-resolution data (e.g. profiling float, dense time serie) set is
+If data from a high-resolution dataset (e.g. profiling float, dense time series) is
 combined with data with a low spatial resolution (e.g. profiles from a research
-vessel), then the analysis can be biased toward the high-resolution data. The function `weight_RtimesOne(x,len)` can be used to reduce the weight of the high-resoliution data (https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/13-processing-parameter-optimization.ipynb). Alternative methods are averaging data in bins ("binning") or simply sub-sampling the data.
+vessel), then the analysis can be biased toward the high-resolution data. The function `weight_RtimesOne(x,len)` can be used to reduce the weight of the high-resolution data (https://github.com/gher-ulg/Diva-Workshops/blob/master/notebooks/13-processing-parameter-optimization.ipynb). Alternative methods are averaging data in bins ("binning") or simply sub-sampling the data.
 
 ### My parameter represent a concentration and I get unrealistic negative values
 
 
-* You can use an anamorphosis transform, in particular `DIVAnd.Anam.loglin`. The idea is that the transformed variable is close to a Gaussian distribution that the original variable.
+* You can use an anamorphosis transform, in particular `DIVAnd.Anam.loglin`. The idea is that the transformed variable is closer to a Gaussian distribution that the original variable.
 * Use the option `fieldmin = 0.0` of `diva3d`
 
 If the parameter `epsilon` of `DIVAnd.Anam.loglin` is larger than zero (which is necessary if some measurements are exactly zero), then the smallest value that analysis can have is `-epsilon`. Therefore the option `fieldmin` is still required to avoid negative values.
 
 
+### How can I speed up analysis using observations which always have the same coordinates?
+
+In this situation, the measurements are always done at the same locations, but the measurements are repeated over time or different variables are measured at those positions. It is possible to take into the already computed matrices so that the subsequent analysis can be executed much faster.
+
+Let's assume the observations are available on `np` locations and repeated `nt` times, so that `obsval` is an array of size `np X nt`.
+
+The first analysis is performed using:
+```julia
+@time fi1,s = DIVAndrun((mask),(pm,pn),
+    (xi,yi),(obslon,obslat),Float64.(obsval[:,1]),len,epsilon2);
+```
+then, for the `nt` other analysis, we use the structure `s`, computed in the previous step, as follows:
+```julia
+fpi = s.P * (s.H' * (s.R \ obsval[:,i]))
+f_with_mask = unpack(s.sv, fpi, NaN)
+```
+where i=1, ..., nt.      
+
+The `unpack` function _unpacks_ the vector `fpi` into the different variables var1, var2, ... `s.sv` is the statevector and `NaN` is the fill value.
+
+Check the [example](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/DIVAnd_example_fixed_obs.jl).
+
+
+
 ## API changes
 
-We do are best to avoid changing the API, but sometimes it is unfortunately necessary.
+We do our best to avoid changing the API, but sometimes it is unfortunately necessary.
 
 * 2019-06-24: `DIVAnd.fit_isotropic` and `DIVAnd.fit` are removed and replaced by `DIVAnd.fithorzlen` and `DIVAnd.fitvertlen`.
-* 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preceedence will now be given for `background_lenz`.
+* 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preference will now be given for `background_lenz`.
 * 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
 * 2018-06-18: The options `nmean` and `distbin` of `fithorzlen` and `fitvertlen` have been removed. The functions now choose appropriate values for these parameters automatically.
 
@@ -484,8 +508,8 @@ Pkg.add("Documenter")
 
 
 If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.
-Julia calls the local copy of the packge list `METADATA`.
-For example to retry the installation of EzXML issue the following command:
+Julia calls the local copy of the package list `METADATA`.
+For example to retry the installation of `EzXML` issue the following command:
 
 ```julia
 using Pkg
@@ -553,7 +577,7 @@ You can put this line in a file `.juliarc.jl` placed in your home directory (the
 
 ### Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
 
-Cloning METADATA or downloading a julia packages fails with:
+Cloning METADATA or downloading a Julia packages fails with:
 
 ```
 GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )
@@ -565,7 +589,7 @@ The problem is that Windows 7 and Windows Server 2012 uses outdated encryption p
 ### MbedTLS.jl does not install on Windows 7
 
 
-The installion of `MbedTLS.jl` fails with the error message:
+The installation of `MbedTLS.jl` fails with the error message:
 
 ```
 INFO: Building MbedTLS
@@ -639,7 +663,7 @@ exec /path/to/bin/julia "$@"
 ```
 
 by replacing `/path/to/bin/julia` to the full path of your installation directory.
-The script should be marked executable and it can be included in your Linux search [`PATH` environement variable](http://www.linfo.org/path_env_var.html). Julia can then be started by calling directly this script.
+The script should be marked executable and it can be included in your Linux search [`PATH` environment variable](http://www.linfo.org/path_env_var.html). Julia can then be started by calling directly this script.
 
 
 
@@ -653,7 +677,7 @@ automatic download failed (error: 2147500036)
 
 The test suite will download some sample data. You need to have internet access and run the test function from a directory with write access.
 
-You can change the directory to your home directory with the julia command `cd(homedir())`.
+You can change the directory to your home directory with the Julia command `cd(homedir())`.
 
 You can check the current working directory with:
 

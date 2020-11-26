@@ -111,7 +111,6 @@ function DIVAnd_background(
 
     # norm taking only dimension into account with non-zero correlation
     # WE: units length^(neff/2)
-
     d = .*(pmn[Ld.>0]...)
 
     WE = oper_diag(operatortype, statevector_pack(sv, (1 ./ sqrt.(d),))[:, 1])
