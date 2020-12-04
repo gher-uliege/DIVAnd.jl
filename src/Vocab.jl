@@ -131,8 +131,13 @@ mutable struct Concept
 end
 
 function Concept(url::AbstractString)
+    # Content Negotiation
+    # http://vocab.nerc.ac.uk/
     @debug "get concept: $url"
-    r = HTTP.get(url)
+    headers = [
+        "Accept" => "application/rdf+xml"
+    ]
+    r = HTTP.get(url,headers)
     xdoc = parsexml(String(r.body))
 
     node = findfirst("skos:Concept", root(xdoc), namespaces)
@@ -231,7 +236,10 @@ function findbylabel(
     collection::Vocab.Collection,
     labels::Vector{T},
 ) where {T<:AbstractString}
-    r = HTTP.get(collection.baseurl)
+    headers = [
+        "Accept" => "application/rdf+xml"
+    ]
+    r = HTTP.get(collection.baseurl,headers)
     xdoc = EzXML.parsexml(String(r.body))
     concepts = Vocab.Concept.(findall("//skos:Concept", root(xdoc), Vocab.namespaces))
     alllabels = Vocab.prefLabel.(concepts)
