@@ -26,16 +26,16 @@ netCDF file `filename` under the variable `varname`.
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field).
 `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
-* `filename`: The output netCDF filename.
+* `filename`: the output netCDF filename.
 
-* `varname`: The name of the variable (used in the netCDF file).
+* `varname`: the name of the variable (used in the netCDF file).
 
 ## Optional input arguments:
 
 * `bathname`: path to the netCDF bathymetry (default ../../DIVAnd-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
 * `bathisglobal`: true (default) is the bathymetry is a global data set
-* `plotres`: Call-back routine for plotting ((timeindex,sel,fit,erri) -> nothing)
-* `timeorigin`: Time origin (default DateTime(1900,1,1,0,0,0))
+* `plotres`: call-back routine for plotting ((timeindex,sel,fit,erri) -> nothing)
+* `timeorigin`: time origin (default `DateTime(1900,1,1,0,0,0)`)
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. Halo points should
      not be included for cyclic dimensions. For example if the first dimension
