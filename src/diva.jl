@@ -32,7 +32,7 @@ netCDF file `filename` under the variable `varname`.
 
 ## Optional input arguments:
 
-* `bathname`: path to the netCDF bathymetry (default ../../DIVAnd-example-data/Global/Bathymetry/gebco_30sec_16.nc relative to this source file)
+* `bathname`: path to the netCDF bathymetry (default `../../DIVAnd-example-data/Global/Bathymetry/gebco_30sec_16.nc` relative to this source file)
 * `bathisglobal`: true (default) is the bathymetry is a global data set
 * `plotres`: call-back routine for plotting ((timeindex,sel,fit,erri) -> nothing)
 * `timeorigin`: time origin (default `DateTime(1900,1,1,0,0,0)`)
