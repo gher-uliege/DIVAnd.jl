@@ -21,18 +21,12 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-Under Linux you will also need the packages `make`, `gcc` and `netcdf` which you can install under Debian/Ubuntu with:
-
-```bash
-apt-get install make gcc libnetcdf-dev netcdf-bin
-```
-
 You need [Julia](http://julialang.org) (version 1.4 or 1.5) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
 using Pkg
-Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+Pkg.add("DIVAnd")
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
@@ -44,7 +38,7 @@ To update DIVAnd, run the following command and restart Julia (or restart the ju
 
 ```julia
 using Pkg
-Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+Pkg.update("DIVAnd")
 ```
 
 
