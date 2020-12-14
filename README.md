@@ -50,6 +50,7 @@ Make sure to be in a directory with write-access (for example your home director
 You can change the directory to your home directory with the `cd(homedir())` command.
 
 ```julia
+using Pkg
 Pkg.test("DIVAnd")
 ```
 
