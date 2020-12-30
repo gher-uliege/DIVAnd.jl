@@ -355,7 +355,8 @@ function floodfill(mask, directions = vonNeumannNeighborhood(mask))
         push!(area, sum(ml))
     end
 
-    sortp = sortperm(area; rev = true)
+    sortp = invperm(sortperm(area; rev = true))
+
     for I in eachindex(index)
         tmp = index[I]
         if tmp != 0

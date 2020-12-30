@@ -132,3 +132,14 @@ m = DIVAnd.floodfillpoint(mask, CartesianIndex(1, 1))
 index = DIVAnd.floodfill(mask)
 @test index[1, 1] == 2
 @test index[end, 1] == 1
+
+# test sorting
+mask = falses(8, 8)
+mask[2,2] = true
+mask[4,4:6] .= true
+mask[6,5:6] .= true
+index = DIVAnd.floodfill(mask)
+
+@test sum(index .== 1) == 3
+@test sum(index .== 2) == 2
+@test sum(index .== 3) == 1
