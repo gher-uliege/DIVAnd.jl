@@ -1,13 +1,9 @@
 # DIVAnd
 
 [![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
-[![Build Status Windows](https://ci.appveyor.com/api/projects/status/github/gher-ulg/DIVAnd.jl?branch=master&svg=true)](https://ci.appveyor.com/project/Alexander-Barth/DIVAnd-jl)
-
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
-
-<!--[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)-->
+[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
-
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
 
 `DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-ulg/DIVA but not further developed anymore).
@@ -25,18 +21,12 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-Under Linux you will also need the packages `make`, `gcc` and `netcdf` which you can install under Debian/Ubuntu with:
-
-```bash
-apt-get install make gcc libnetcdf-dev netcdf-bin
-```
-
 You need [Julia](http://julialang.org) (version 1.4 or 1.5) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside Julia, you can download and install the package by issuing:
 
 ```julia
 using Pkg
-Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+Pkg.add("DIVAnd")
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
@@ -48,7 +38,7 @@ To update DIVAnd, run the following command and restart Julia (or restart the ju
 
 ```julia
 using Pkg
-Pkg.add(PackageSpec(name="DIVAnd", rev="master"))
+Pkg.update("DIVAnd")
 ```
 
 
@@ -60,6 +50,7 @@ Make sure to be in a directory with write-access (for example your home director
 You can change the directory to your home directory with the `cd(homedir())` command.
 
 ```julia
+using Pkg
 Pkg.test("DIVAnd")
 ```
 
