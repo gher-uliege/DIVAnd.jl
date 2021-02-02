@@ -25,7 +25,7 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *  `dens`: data density field (integral is one)
 *  `Ltuple` : The bandwidthth used (either the input value or the calculated ones)
 *  `LCV` : Likelihood Cross Validation estimator value (the higher the better) leave one out approach
-*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
+*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave-one-out approach
 """
 function DIVAnd_heatmap(
     mask,
