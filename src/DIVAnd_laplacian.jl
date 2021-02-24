@@ -278,8 +278,14 @@ derivative2n(dim, mask, pmn, len, va) =
 
 
 function _sparse_derivative2n!(dim, mask, pm, len, Rpre, n, Rpost)
-    S = sparse([], [], Float64[], length(mask), length(mask))
     linindex = LinearIndices(mask)
+    nnzmax = 3*length(mask)
+    Si = zeros(Int,nnzmax)
+    Sj = zeros(Int,nnzmax)
+    Ss = zeros(Float64,nnzmax)
+
+    # number of non-zeros in S
+    Snnz = 0
 
     for Ipost in Rpost
         for i = 2:n-1
@@ -287,14 +293,33 @@ function _sparse_derivative2n!(dim, mask, pm, len, Rpre, n, Rpost)
                 if mask[Ipre, i-1, Ipost] && mask[Ipre, i, Ipost] && mask[Ipre, i+1, Ipost]
                     coeff = len[Ipre, i, Ipost]^2 * pm[Ipre, i, Ipost]^2
 
-                    S[linindex[Ipre, i, Ipost], linindex[Ipre, i-1, Ipost]] += coeff
-                    S[linindex[Ipre, i, Ipost], linindex[Ipre, i, Ipost]] += -2 * coeff
-                    S[linindex[Ipre, i, Ipost], linindex[Ipre, i+1, Ipost]] += coeff
+                    Snnz = Snnz+1
+                    Si[Snnz] = linindex[Ipre, i, Ipost]
+                    Sj[Snnz] = linindex[Ipre, i-1, Ipost]
+                    Ss[Snnz] = coeff
+
+                    Snnz = Snnz+1
+                    Si[Snnz] = linindex[Ipre, i, Ipost]
+                    Sj[Snnz] = linindex[Ipre, i, Ipost]
+                    Ss[Snnz] = -2 * coeff
+
+                    Snnz = Snnz+1
+                    Si[Snnz] = linindex[Ipre, i, Ipost]
+                    Sj[Snnz] = linindex[Ipre, i+1, Ipost]
+                    Ss[Snnz] = coeff
+
+#                    S[linindex[Ipre, i, Ipost], linindex[Ipre, i-1, Ipost]] += coeff
+#                    S[linindex[Ipre, i, Ipost], linindex[Ipre, i, Ipost]] += -2 * coeff
+#                    S[linindex[Ipre, i, Ipost], linindex[Ipre, i+1, Ipost]] += coeff
                 end
             end
         end
     end
-    return S
+    return sparse(
+       (@view Si[1:Snnz]),
+       (@view Sj[1:Snnz]),
+       (@view Ss[1:Snnz]),
+        length(mask), length(mask))
 end
 
 function sparse_derivative2n(dim::Integer, mask, pmn, len)
