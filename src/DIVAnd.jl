@@ -24,6 +24,10 @@ using Dates
 using DelimitedFiles
 using Test
 
+using AlgebraicMultigrid
+import IterativeSolvers: cg
+
+
 #if v"1.0" <= VERSION < v"1.3"
 if v"1.0" <= VERSION
     # workaround for

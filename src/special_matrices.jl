@@ -1,7 +1,7 @@
 
 mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
     IS::TA
-    factors::Union{SuiteSparse.CHOLMOD.Factor{T},Nothing}
+    factors::Union{SuiteSparse.CHOLMOD.Factor{T},AlgebraicMultigrid.Preconditioner,Nothing}
 end
 
 function CovarIS(IS::TA) where {TA<:AbstractMatrix}
@@ -15,7 +15,12 @@ Base.inv(C::CovarIS) = C.IS
 Base.size(C::CovarIS) = size(C.IS)
 
 function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
-    if C.factors != nothing
+    if C.factors isa AlgebraicMultigrid.Preconditioner
+        @info "call cg"
+        x,convergence_history = cg(C.IS, v, Pl = C.factors, verbose = true, log = true)
+        @show convergence_history
+        return x
+    elseif C.factors != nothing
         return C.factors \ v
     else
         return C.IS \ v

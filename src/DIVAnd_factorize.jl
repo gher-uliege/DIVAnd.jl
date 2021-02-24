@@ -19,7 +19,8 @@ function DIVAnd_factorize!(s)
     H = s.H
 
     if s.primal
-        if s.inversion == :chol
+        @show s.inversion
+        if (s.inversion == :chol) || (s.inversion == :amg_sa)
             if isa(R, Diagonal)
                 # R \ H is still sparse
                 iR = Diagonal(1 ./ diag(R))
@@ -33,8 +34,15 @@ function DIVAnd_factorize!(s)
 
             # Cholesky factor of the inverse of a posteriori
             # error covariance iP
+            @show s.factorize,s.inversion
             if s.factorize
-                factorize!(P)
+                if (s.inversion == :chol)
+                    factorize!(P)
+                else
+                    ml = smoothed_aggregation(iP)
+                    P.factors = aspreconditioner(ml)
+                    @show typeof(P.factors)
+                end
             end
 
             s.P = P
