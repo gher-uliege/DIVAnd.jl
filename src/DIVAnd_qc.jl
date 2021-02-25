@@ -48,7 +48,7 @@ function DIVAnd_qc(fi, s, method = 0)
     nrealdata = sum(obsin)
     meaneps2 = (d0d / nrealdata) * invlam / (1 + invlam)
 
-    @debug "meaneps2: meaneps2"
+    @debug "meaneps2: $meaneps2"
 
     qcval = zeros(nd)
 
