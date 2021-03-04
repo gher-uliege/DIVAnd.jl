@@ -27,7 +27,7 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = []) where 
 
     if s.primal
         if (s.inversion == :chol) || (s.inversion == :cg_amg_sa)
-            @show typeof(s.P.factors)
+            @debug "s.P.factors: $(typeof(s.P.factors))"
             P = s.P
             fpi = P * (H' * (R \ yo[:]))
         else

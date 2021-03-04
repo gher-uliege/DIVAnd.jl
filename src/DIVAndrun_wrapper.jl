@@ -13,8 +13,6 @@ function DIVAndrun(
     kwargs...,
 )
 
-    @show Dict(pairs(kwargs))
-
     fi, s =
         @time DIVAnd.DIVAndrun(
             mask, pmn, xyi,

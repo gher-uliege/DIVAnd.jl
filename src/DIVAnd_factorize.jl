@@ -34,14 +34,13 @@ function DIVAnd_factorize!(s)
 
             # Cholesky factor of the inverse of a posteriori
             # error covariance iP
-            @show s.factorize,s.inversion
+            @debug "factorize: $(s.factorize)"
             if s.factorize
                 if (s.inversion == :chol)
                     factorize!(P)
                 else
                     ml = smoothed_aggregation(iP)
                     P.factors = aspreconditioner(ml)
-                    @show typeof(P.factors)
                 end
             end
 
