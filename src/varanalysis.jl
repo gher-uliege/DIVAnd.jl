@@ -1,13 +1,17 @@
 
-function diffusion!(ivol, nus, α, nmax, x0, x)
+function diffusion!(ivol, nus, α, nmax, x0, x,
+                    boundary_condition! = nothing)
     work1 = similar(x)
     x[:] = x0
 
     for niter = 1:nmax
         DIVAnd_laplacian_apply!(ivol, nus, x, work1)
 
-        for ind in eachindex(x)
+        @inbounds for ind in eachindex(x)
             x[ind] = x[ind] + α * work1[ind]
+        end
+        if boundary_condition! != nothing
+            boundary_condition!(x)
         end
         #x[:] = x + α * work1
     end
@@ -16,7 +20,7 @@ end
 
 
 
-function diffusion(mask,pmn,len_,x0)
+function diffusion(mask,pmn,len_,x0; boundary_condition! = nothing)
     n = ndims(mask)
     len = DIVAnd.len_harmonize(len_, mask)
 
@@ -32,8 +36,10 @@ function diffusion(mask,pmn,len_,x0)
 
     x = copy(x0)
 
-    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(mask, pmn, nu)
-    diffusion!(ivol, nus, α, nmax, x0, x)
+    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(
+        mask, pmn, nu)
+    diffusion!(ivol, nus, α, nmax, x0, x,
+        boundary_condition!)
     return x
 end
 
