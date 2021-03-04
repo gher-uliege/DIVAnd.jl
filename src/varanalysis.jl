@@ -15,6 +15,28 @@ function diffusion!(ivol, nus, α, nmax, x0, x)
 end
 
 
+
+function diffusion(mask,pmn,len_,x0)
+    n = ndims(mask)
+    len = DIVAnd.len_harmonize(len_, mask)
+
+    #nu = ([L .^ 2 for L in len]...,)
+    nu = ntuple(i -> len[i].^2,Val(n))
+    α0 = 1 / (2 * sum([maximum(pmn[i] .^ 2 .* nu[i]) for i = 1:n]))
+
+    # 10% safety margin
+    α = α0 / 1.1
+
+    # number of iterations 1/(2*α) (round to the closest be even number)
+    nmax = 2 * round(Int, 1 / (4 * α))
+
+    x = copy(x0)
+
+    ivol, nus = DIVAnd.DIVAnd_laplacian_prepare(mask, pmn, nu)
+    diffusion!(ivol, nus, α, nmax, x0, x)
+    return x
+end
+
 """
 work1, work2: size of mask
 

@@ -83,7 +83,9 @@ function DIVAnd_cpme(
     else
         cpme, s = DIVAndrun(mask, pmn, xi, x, ones(size(f)), len, epsilon2; otherargs...)
     end
-    cpme = errorscale .* max.(-cpme .+ 1, 0)
+
+    clamp!(cpme,0,1)
+    cpme = errorscale .* (1 .- cpme)
 
     return cpme
 

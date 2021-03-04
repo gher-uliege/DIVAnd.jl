@@ -2,11 +2,16 @@
 mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
     IS::TA
     factors::Union{SuiteSparse.CHOLMOD.Factor{T},AlgebraicMultigrid.Preconditioner,Nothing}
+    maxiter::Int
+    abstol::Float64
+    reltol::Float64
+    verbose::Bool
 end
 
-function CovarIS(IS::TA) where {TA<:AbstractMatrix}
+function CovarIS(IS::TA; maxiter = 100,
+                 abstol = 0., reltol = 1e-5, verbose=true) where {TA<:AbstractMatrix}
     factors = nothing
-    CovarIS{eltype(TA),TA}(IS, factors)
+    return CovarIS{eltype(TA),TA}(IS, factors, maxiter,abstol,reltol,verbose)
 end
 
 
@@ -16,9 +21,20 @@ Base.size(C::CovarIS) = size(C.IS)
 
 function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
     if C.factors isa AlgebraicMultigrid.Preconditioner
-        @info "call cg"
-        x,convergence_history = cg(C.IS, v, Pl = C.factors, verbose = true, log = true)
-        @show convergence_history
+        @debug "Call conjugate gradient with $(C.maxiter) iterations."
+        @debug "Note the following is the norm of the residual, i.e. the sum (not the mean) of all elements of the residual squared"
+        log = false
+        @debug begin
+            log = true
+        end
+        x,convergence_history = cg(
+            C.IS, v, Pl = C.factors,
+            verbose = C.verbose,
+            log = log,
+            abstol = C.abstol,
+            reltol = C.reltol,
+            maxiter = C.maxiter)
+        #@show convergence_history
         return x
     elseif C.factors != nothing
         return C.factors \ v

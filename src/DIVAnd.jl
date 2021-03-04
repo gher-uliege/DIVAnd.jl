@@ -152,7 +152,7 @@ function DIVAnd_struct(::Type{OT}, mask::AbstractArray{Bool,n}) where {OT,n}
     iB = myempty(OT, (prod(sz), prod(sz)))
     iB_ = OT[]
     Ld = Float64[]
-    P = CovarIS{Float64,OT}(sempty, nothing)
+    P = CovarIS{Float64,OT}(sempty, nothing, 100, 0., 0., true)
 
     isinterior = Bool[]
     isinterior_stag = [Bool[] for i = 1:n]
@@ -422,6 +422,9 @@ export DIVAnd_constr_constcoast
 include("DIVAndjog.jl")
 include("DIVAndrun.jl")
 include("DIVAndgo.jl")
+
+include("DIVAndrun_wrapper.jl")
+
 include("DIVAnd_cpme.jl")
 include("DIVAnd_aexerr.jl")
 include("DIVAnd_GCVKii.jl")

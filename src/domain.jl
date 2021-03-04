@@ -67,7 +67,7 @@ end
 
 
 """
-    mask,(pm,pn),(xi,yi) = domain(bathname,bathisglobal,lonr,latr)
+    mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
 
 Generate a 2D geospatial domain based on the topography from the netCDF file
 `bathname`.
@@ -83,7 +83,7 @@ function domain(bathname, bathisglobal, lonr, latr)
 end
 
 """
-    mask,(pm,pn,po),(xi,yi,zi) = domain(bathname,bathisglobal,lonr,latr,depthr)
+    mask,(pm,pn,po),(xi,yi,zi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr,depthr)
 
 Generate a 3D geospatial domain based on the topography from the netCDF file
 `bathname`. If `zlevel` is `:surface`, then `depthr` is zero for the sea surface and
