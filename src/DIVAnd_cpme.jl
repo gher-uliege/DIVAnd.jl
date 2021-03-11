@@ -62,9 +62,8 @@ function DIVAnd_cpme(
     # Could be a small improvement. Also used in DIVAnd_aexerr
 
     len = len_harmonize(Labs, mask)
-    for i = 1:length(len)
-        len[i] .= len[i] / 1.70766
-    end
+    # avoid modifying input argument
+    len_err = ntuple(i -> len[i] / 1.70766,length(len))
 
     if sum(csteps) > 0
         cpme, s = DIVAndjog(
@@ -73,7 +72,7 @@ function DIVAnd_cpme(
             xi,
             x,
             ones(size(f)),
-            len,
+            len_err,
             epsilon2,
             csteps,
             lmask;
@@ -81,7 +80,7 @@ function DIVAnd_cpme(
             otherargs...,
         )
     else
-        cpme, s = DIVAndrun(mask, pmn, xi, x, ones(size(f)), len, epsilon2; otherargs...)
+        cpme, s = DIVAndrun(mask, pmn, xi, x, ones(size(f)), len_err, epsilon2; otherargs...)
     end
 
     clamp!(cpme,0,1)
