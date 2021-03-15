@@ -21,7 +21,6 @@ function DIVAndrun(
             len_scaled,
             epsilon2; alphabc = 0,
             kwargs...)
-
     qcdata = ()
     if haskey(Dict(pairs(kwargs)),:QCMETHOD)
         qc_method = kwargs.QCMETHOD
@@ -36,7 +35,6 @@ function DIVAndrun(
     if errortype == :cpme
         erri = DIVAnd.DIVAnd_cpme(mask,pmn,xyi,xsel,vaa,len_scaled,epsilon2; kwargs...)
     end
-
 
     scalefactore = DIVAnd.DIVAnd_adaptedeps2(vaa, residual, epsilon2, isnan.(residual))
 

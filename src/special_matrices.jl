@@ -11,6 +11,9 @@ end
 function CovarIS(IS::TA; maxiter = 100,
                  abstol = 0., reltol = 1e-5, verbose=true) where {TA<:AbstractMatrix}
     factors = nothing
+    @debug "CovarIS: reltol: $(reltol)"
+    @debug "CovarIS: abstol: $(abstol)"
+    @debug "CovarIS: maxiter: $(maxiter)"
     return CovarIS{eltype(TA),TA}(IS, factors, maxiter,abstol,reltol,verbose)
 end
 
@@ -22,7 +25,11 @@ Base.size(C::CovarIS) = size(C.IS)
 function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
     if C.factors isa AlgebraicMultigrid.Preconditioner
         @debug "Call conjugate gradient with $(C.maxiter) iterations."
+        @debug "Relative tolerance $(C.reltol)"
         @debug "Note the following is the norm of the residual, i.e. the sum (not the mean) of all elements of the residual squared"
+        @debug "checksum $(sum(C.IS))  $(sum(v))"
+        @debug "size $(size(C.IS))  $(size(v))"
+
         log = false
         @debug begin
             log = true
@@ -34,6 +41,12 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
             abstol = C.abstol,
             reltol = C.reltol,
             maxiter = C.maxiter)
+
+        @debug "Number of iterations: $(convergence_history.iters)"
+        @debug "Final norm of residue: $(convergence_history.data[:resnorm][end])"
+        @debug begin
+            @show norm(C.IS * x - v)
+        end
         #@show convergence_history
         return x
     elseif C.factors != nothing

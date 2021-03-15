@@ -30,7 +30,7 @@ function DIVAnd_factorize!(s)
                 iP = iB + H' * (R \ full(H))
             end
 
-            P = CovarIS(iP, maxiter = s.maxit)
+            P = CovarIS(iP, maxiter = s.maxit, reltol = s.tol)
 
             # Cholesky factor of the inverse of a posteriori
             # error covariance iP

@@ -48,6 +48,7 @@ function DIVAnd_obs(s, xi, x, yo::Vector{T}, R, I = zeros(T, 0, 0)) where {T}
     H = H * sparse_pack(mask)'
 
     s.obsout = out
+    @debug "number of observations: $(sum(.!out))"
 
     if isa(R, Diagonal)
         diagR = Float64.(diag(R))
