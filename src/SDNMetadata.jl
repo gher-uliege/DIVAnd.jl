@@ -45,6 +45,17 @@ encodeWMSStyle(params) = join([k * ':' * string(v) for (k, v) in params], "+")
 
 Based on the information in the dictionary `metadata` and the analysed 4D field
 `fi` produce a list of NetCDF global and variable attributes for `DIVAnd_save2`.
+To list all registered projects call `keys(DIVAnd.PROJECTS)` for example:
+
+```julia-repl
+julia> using DIVAnd
+julia> keys(DIVAnd.PROJECTS)
+Base.KeySet for a Dict{String,Dict{String,String}} with 3 entries. Keys:
+  "EMODNET-chemistry"
+  "SeaDataNet"
+  "SeaDataCloud"
+```
+
 """
 function SDNMetadata(
     metadata,
