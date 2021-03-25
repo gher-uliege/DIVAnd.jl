@@ -45,7 +45,7 @@ encodeWMSStyle(params) = join([k * ':' * string(v) for (k, v) in params], "+")
 
 Based on the information in the dictionary `metadata` and the analysed 4D field
 `fi` produce a list of NetCDF global and variable attributes for `DIVAnd_save2`.
-To list all registered projects call `keys(DIVAnd.PROJECTS)` for example:
+To list all registered projects call `keys(DIVAnd.PROJECTS)`. For example:
 
 ```julia-repl
 julia> using DIVAnd
