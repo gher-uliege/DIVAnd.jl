@@ -331,6 +331,9 @@ function get_originators_from_obsid(db, obsids; ignore_errors = false)
         (author_edmo_str, local_cdi) = split(obsid, '-'; limit = 2)
         author_edmo = parse(Int64, author_edmo_str)
 
+        # strip trailing /v0 or /v1
+        local_cdi = replace(local_cdi,r"/v\d+$" => "")
+
         key = (author_edmo, local_cdi)
 
         if haskey(db, key)
