@@ -551,15 +551,15 @@ function Base.iterate(iter::AllCoupels, state = (1, 1))
     return (nextstate, nextstate)
 end
 
-mutable struct RandomCoupels
+mutable struct RandomCoupels{TRNG <: AbstractRNG}
     n::Int
     count::Int
-    iseed::Int
+    rng::TRNG
 end
 
 Base.length(iter::RandomCoupels) = iter.count
 
-function Base.iterate(iter::RandomCoupels, state = (0, MersenneTwister(iter.iseed)))
+function Base.iterate(iter::RandomCoupels, state = (0, copy(iter.rng)))
     count, rng = state
 
     if count == iter.count
@@ -575,7 +575,6 @@ function Base.iterate(iter::RandomCoupels, state = (0, MersenneTwister(iter.isee
 
     return ((i, j), (count + 1, rng))
 end
-
 
 mutable struct VertRandomCoupels
     zlevel::Float64 # depth in meters
@@ -650,10 +649,12 @@ end
 this function used to be called lfit in fitlsn.f
 
 """
-function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
+function fitlen(x::Tuple, d, weight, nsamp;
+                rng = Random.GLOBAL_RNG, kwargs...)
     # number of samples
     n = length(d)
     iseed = n
+    Random.seed!(rng,iseed)
 
     iter = if (nsamp == 0)
         AllCoupels(n)
@@ -663,7 +664,7 @@ function fitlen(x::Tuple, d, weight, nsamp; kwargs...)
             @warn "Strange to ask for more samples than available from data; will proceed"
         end
 
-        RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2, iseed)
+        RandomCoupels(n, (nsamp * (nsamp - 1)) ÷ 2, rng)
     end
 
     #    if (n > 10000) && (nsamp != 0)
