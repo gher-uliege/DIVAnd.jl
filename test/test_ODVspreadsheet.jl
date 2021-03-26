@@ -3,6 +3,10 @@ using Dates
 import DIVAnd
 ODV = DIVAnd.ODVspreadsheet
 
+# note:
+# emacs tsv-mode and csv-align-mode (keeping fields visually aligned) are
+# useful to inspect ODV spreadsheet files
+# https://elpa.gnu.org/packages/csv-mode.html
 
 fname = joinpath(dirname(@__FILE__), "..", "data", "sample_ODV.txt")
 
