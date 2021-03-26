@@ -20,8 +20,8 @@ const namespaces = Dict(
 
 const CFStandardNameURL = "http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml"
 const CFAreaTypesURL = "http://cfconventions.org/Data/area-type-table/current/src/area-type-table.xml"
-const VocabURL = "http://vocab.nerc.ac.uk/collection"
-const EDMOURL = "http://www.seadatanet.org/urnurl"
+const VocabURL = "https://vocab.nerc.ac.uk/collection"
+const EDMOURL = "https://www.seadatanet.org/urnurl"
 
 
 mutable struct CFVocab
@@ -239,6 +239,7 @@ function findbylabel(
     headers = [
         "Accept" => "application/rdf+xml"
     ]
+    @debug "get collection: $collection.baseurl"
     r = HTTP.get(collection.baseurl,headers)
     xdoc = EzXML.parsexml(String(r.body))
     concepts = Vocab.Concept.(findall("//skos:Concept", root(xdoc), Vocab.namespaces))
@@ -275,6 +276,7 @@ mutable struct EDMOEntry
 end
 
 function EDMOEntry(url::AbstractString)
+    @debug "getting EDMO URL $url"
     r = HTTP.get(url)
     xdoc = parsexml(String(r.body))
     return EDMOEntry(root(xdoc))
