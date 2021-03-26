@@ -28,10 +28,11 @@ using AlgebraicMultigrid
 import IterativeSolvers: cg
 
 
-#if v"1.0" <= VERSION < v"1.3"
-if v"1.0" <= VERSION
+if v"1.0" <= VERSION < v"1.6"
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
+    # solved in
+    # https://github.com/JuliaLang/julia/issues/39474
     import Base: *
     Base.:*(A::SparseArrays.SparseMatrixCSC, B::BitArray) = A * Int8.(B)
 end
