@@ -616,6 +616,13 @@ function loadprofile(
     time = Vector{DateTime}(undef, sz)
     time_qv = Vector{String}(undef, sz)
 
+    # Note:
+    # For time series yyyy-mm-ddThh:mm:ss.sss is the deployment date and time of instrument
+    # while time_ISO8601 is the time of the measurement.
+    # However, for trajectory data yyyy-mm-ddThh:mm:ss.sss is the time of the measurement.
+    # see "3.2.2 Time Series Data" and  "3.2.3 Trajectory Data"
+    # https://web.archive.org/web/20200718093738/https://odv.awi.de/fileadmin/user_upload/odv/misc/odvGuide.pdf
+
     # chronological julian day
     if "SDN:P01::CJDY1101" in P01names
         locname_time = localnames(sheet, "SDN:P01::CJDY1101")[1]
