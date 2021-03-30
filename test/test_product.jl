@@ -59,6 +59,7 @@ dx = dy = 0.5
 lonr = 3:dx:11.8
 latr = 42.0:dy:44.0
 depthr = [0.0, 20.0, 30.0]
+depthr = [0.0, 20.0, 30.0, 500, 1000, 2000]
 epsilon2 = 0.01
 
 # put one point on land
@@ -163,6 +164,8 @@ mask[3, 3, 1] = false
 
 ncglobalattrib, ncvarattrib = DIVAnd.SDNMetadata(metadata, filename, varname, lonr, latr)
 
+error_thresholds = [("L1", 0.3), ("L2", 0.5), ("L3", 0.1)]
+
 if isfile(filename)
     rm(filename) # delete the previous analysis
 end
@@ -182,8 +185,13 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
     mask = mask,
     surfextend = surfextend,
     stat_per_timeslice = true,
-    error_thresholds = [("L1", 0.3), ("L2", 0.5), ("L3", 0.1)],
+    error_thresholds = error_thresholds,
 )
+
+
+filename2 = tempname()
+cp(filename,filename2,force=true)
+DIVAnd.derived(filename2,varname,error_thresholds = error_thresholds)
 
 obsused = dbinfo[:used]
 #DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
@@ -324,3 +332,4 @@ vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 #rm(filename)
 
 nothing
+
