@@ -14,9 +14,40 @@ function varbyattrib_first(ds; kwargs...)
         str = join(["attribute '$k' equal to '$v'" for (k, v) in kwargs], " and ")
         error("No NetCDF variable found with $(str) in $(path(ds))")
     end
+
+    if length(vs) > 1
+        str = join(["attribute '$k' equal to '$v'" for (k, v) in kwargs], " and ")
+        error("Several NetCDFs variable found with the $(str) in $(path(ds)). Loading this file is ambiguous. Please file an issue at https://github.com/gher-ulg/DIVAnd.jl/issues with the output of julia command `using NCDatasets; NCDataset(\"$(path(ds))\")` or the shell command `ncdump -h \"$(path(ds))\"` if this file has been produced by ODV.")
+    end
+
+    @debug begin
+        str = join(["attribute '$k' equal to '$v'" for (k, v) in kwargs], " and ")
+        @debug "use variable $(name(vs[1])) ($str)"
+    end
     return vs[1]
 end
 
+
+
+_promote_Float64_or_more(x::Float32) = Float64(x)
+_promote_Float64_or_more(x) = x
+
+function decode_odv_years(data,fillvalue)
+    t = similar(data, Union{DateTime,Missing})
+    @inbounds for i in eachindex(data)
+        if data[i] == fillvalue
+            t[i] = missing
+        else
+            data_float64 = _promote_Float64_or_more(data[i])
+            year = floor(Int,data_float64)
+            yearlen = (Dates.isleapyear(year) ? 366 : 365)
+
+            doy_ms = round(Int64,1000*24*60*60 * yearlen * (data_float64 - year))
+            t[i] = DateTime(year,1,1) + Dates.Millisecond(doy_ms)
+        end
+    end
+    return t
+end
 
 # # files always have variables with the long_name  "LOCAL_CDI_ID" and "EDMO_CODE" (all upper-case)
 # # long_name for the primary variable to analysis are always P35 names
@@ -219,7 +250,17 @@ We use the empty string for LOCAL_CDI_ID instead.
 
         obsproflon = varbyattrib_first(ds, standard_name = "longitude")[:]
         obsproflat = varbyattrib_first(ds, standard_name = "latitude")[:]
-        obsproftime = varbyattrib_first(ds, standard_name = "time")[:]
+
+        vars_time_ISO8601 = varbyattrib(ds, long_name = "time_ISO8601")
+
+        if length(vars_time_ISO8601) == 1
+            nctime = vars_time_ISO8601[1]
+            data = nctime.var[:]
+            fv = get(nctime.attrib,"_FillValue",nothing)
+            obsproftime = decode_odv_years(data,fv)
+        else
+            obsproftime = varbyattrib_first(ds, standard_name = "time")[:]
+        end
 
         ncvar = varbyattrib_first(ds, long_name = long_name)
         ncvar_z = varbyattrib_first(ds, long_name = "Depth")
