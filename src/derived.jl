@@ -1,5 +1,6 @@
 
-function deepest(array::AbstractArray{Union{Missing,T},3}) where T
+function deepest(array::Array{Union{Missing,T},3}) where T
+#function deepest(array::AbstractArray{Union{Missing,T},3}) where T
     sz = size(array)
     array2d = Array{Union{Missing,T},3-1}(undef,sz[1],sz[2])
     array2d .= missing
@@ -90,8 +91,8 @@ function derived(source_filename,varname,datafile;
         ncdeepest(nc,varname,"",nothing)
         dims = ("lon", "lat", "time")
 
-        @show ncvar[10,3,:,1]
-        @show nc[varname * "_deepest"][10,3,1]
+        #@show ncvar[10,3,:,1]
+        #@show nc[varname * "_deepest"][10,3,1]
 
         for (thresholds_name, thresholds_value) in error_thresholds
             newvarname = "$(varname)_deepest_$(thresholds_name)"
@@ -135,7 +136,7 @@ function derived(source_filename,varname,datafile;
         ncvardeepestdepth.attrib["units"] = "meters"
         ncvardeepestdepth.attrib["positive"] = "down"
 
-      # Loop on depth: start from surface and go to the bottom
+        # Loop on depth: start from surface and go to the bottom
         # (I also add "abs" in case depth are negative, but not probable)
         depthindex = sortperm(abs.(depth))
         for idepth in depthindex
