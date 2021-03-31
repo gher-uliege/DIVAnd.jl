@@ -730,6 +730,21 @@ Stacktrace:
  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147
 ```
 
+### DimensionMismatch when running `diva3d`
+
+You get an error like
+```julia
+DimensionMismatch("tried to assign 201×201 array to 202×201 destination")
+```
+
+This type of error might be due to the reading of the bathymetry: if you work with a
+regional bathymetry (for instance not with GEBCO), you should set the option
+`bathisglobal` to false.
+
+When `bathisglobal = true`, the longitude is supposed to *wrap around*
+(the last element of the lon should be right before the first element of lon),
+thus the dimension mismatch.
+
 
 ### Installing additional packages when using a git clone
 
