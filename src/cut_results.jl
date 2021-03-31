@@ -18,7 +18,7 @@ function inpolygon(polygon_lon,polygon_lat,lonr,latr)
     maskkeep = trues(sz)
 
     X = hcat(polygon_lon,polygon_lat)
-    @show X
+
     for j = 1:sz[2]
         for i = 1:sz[1]
             maskkeep[i,j] = _inpolygon(X,(lonr[i],latr[j]))
@@ -151,8 +151,11 @@ function cut(filename2,varname,filename_cut,maskkeep::AbstractArray{Bool,2};
                 if compress
                     storage,chunksizes = chunking(ncvar)
                     isshuffled,isdeflated,deflatelevel = deflate(ncvar)
+                    sizecut = ntuple(i -> ds_cut.dim[dn[i]],length(dn))
 
-                    chunksizes  = min.(chunksizes,size(ncvar))
+                    @debug "sizecut: $(sizecut)"
+                    chunksizes  = min.(chunksizes,sizecut)
+
                     @debug "checksum: $(checksum(ncvar))"
                     @debug "chunksizes: $chunksizes"
                     @debug "storage: $chunksizes"
