@@ -265,8 +265,14 @@ We use the empty string for LOCAL_CDI_ID instead.
         ncvar = varbyattrib_first(ds, long_name = long_name)
         ncvar_z = varbyattrib_first(ds, long_name = "Depth")
 
+        @debug "variable: $(name(ncvar))"
+        @debug "variable z: $(name(ncvar_z))"
+
         ncv_ancillary = NCDatasets.ancillaryvariables(ncvar, "status_flag").var
         ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z, "status_flag").var
+
+        @debug "variable flag: $(name(ncv_ancillary))"
+        @debug "variable flag z: $(name(ncv_ancillary_z))"
 
         accepted_status_flag_values =
             flagvalues(ncv_ancillary.attrib, accepted_status_flags)
