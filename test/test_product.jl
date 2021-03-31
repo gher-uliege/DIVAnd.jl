@@ -188,15 +188,26 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
     error_thresholds = error_thresholds,
 )
 
-
-filename2 = tempname()
-cp(filename,filename2,force=true)
-DIVAnd.derived(filename2,varname,error_thresholds = error_thresholds)
-
+# save observations
 obsused = dbinfo[:used]
 #DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
-
 DIVAnd.saveobs(filename, (obslon, obslat, obsdepth, obstime), obsids)
+
+# derived parameters
+filename2 = tempname()
+DIVAnd.derived(filename,varname,filename2,error_thresholds = error_thresholds)
+
+# cutting results
+filename_cut = tempname()
+polygon_lon = lonr[[5, end, end, 5]]
+polygon_lat = latr[[1, 1, end, end]]
+
+maskkeep = DIVAnd.inpolygon(polygon_lon,polygon_lat,lonr,latr)
+
+DIVAnd.cut(filename2,varname,filename_cut,polygon_lon,polygon_lat)
+
+
+
 
 
 project = "SeaDataCloud"

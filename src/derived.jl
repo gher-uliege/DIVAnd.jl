@@ -50,9 +50,34 @@ function ncdeepest(nc,varname,suffix,thresholds_value)
     end
 end
 
-function derived(datafile,varname;
+"""
+    DIVAnd.derived(filename,varname,new_filename;
                  error_thresholds = [("L1", 0.3), ("L2", 0.5)],
                  )
+
+Compute derived quantities from a DIVAnd analyse (in particular the deepest
+value of an analysis) using the NetCDF file `filename` with the variable 
+`varname`. The result will be written in `new_filename`.
+
+See `DIVAnd.diva3d` for the optional parameter `error_thresholds`.
+
+Example:
+
+```julia
+using DIVAnd
+filename = "Water_body_dissolved_oxygen_concentration_monthly.nc"
+new_filename = "Water_body_dissolved_oxygen_concentration_monthly2.nc"
+varname = "Water body dissolved oxygen concentration"
+DIVAnd.derived(filename,varname,new_filename)
+```
+"""
+function derived(source_filename,varname,datafile;
+                 error_thresholds = [("L1", 0.3), ("L2", 0.5)],
+                 )
+
+    if source_filename !== datafile
+        cp(source_filename,datafile, force=true)
+    end
 
     NCDatasets.Dataset(datafile, "a") do nc
         ncvar = nc[varname]
@@ -126,6 +151,3 @@ function derived(datafile,varname;
         @info("Written new variable deepest depth")
     end
 end
-
-
-

@@ -89,6 +89,14 @@ DIVAnd.Vocab.canonical_units
 DIVAnd.Vocab.splitURL
 ```
 
+
+### Post-processing
+
+```@docs
+DIVAnd.derived
+DIVAnd.cut
+```
+
 ## Internal API or advanced usage
 
 
