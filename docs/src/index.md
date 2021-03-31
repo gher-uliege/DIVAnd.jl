@@ -4,7 +4,7 @@ DIVAnd
 
 # DIVAnd.jl documentation
 
-## API refence
+## API reference
 
 ```@docs
 DIVAnd.diva3d
@@ -240,7 +240,7 @@ The velocity field should be a
 tuple of n-elements. Every element of the tuple is a gridded array (defined at the same location than the target array) representing a single velocity component.
 For 3D analysis, the order of the dimensions is typically: longitude, latitude and depth. Like-wise the velocity components are
 zonal, meridional and vertical velocity. The three velocity components has to be scaled by
-a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in DIVAnd.jl to automate this process.
+a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in `DIVAnd.jl` to automate this process.
 
 For the two dimensional case, the velocity has just two components as shown in the example below.
 
