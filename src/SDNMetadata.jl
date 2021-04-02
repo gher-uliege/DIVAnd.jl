@@ -244,6 +244,7 @@ function loadoriginators(csvfile::IO)
     data::Array{String,2}, headers::Array{String,2} =
         readdlm(csvfile, ',', String; header = true)
 
+    @debug "headers: $headers"
     @assert headers[:] == ["active", "author_edmo", "cdi_identifier", "originator_edmo"]
 
 
@@ -944,7 +945,10 @@ Project is either "SeaDataNet", "EMODNET-chemistry" or "SeaDataCloud".
 The XML file contains a list of the data the originators. divadoxml
 will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignored if `ignore_errors` is
-set to true.
+set to true. To understand why some EDMO code/local CDI ID could not be found, one can
+the decompress file from $(OriginatorEDMO_URL) which contains a file called
+`export.csv`. This file has the columns `author_edmo` and `cdi_identifier` which this
+function uses to find the data originators (column `originator_edmo`).
 
 Information can be overridden with the dictionary `additionalvars`. The keys should
 corresponds to the template tags found the in `template` directory. Template
@@ -994,6 +998,7 @@ DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zi
     WMSlayername = ["winter","spring","summer","autumn"]
 )
 ```
+
 """
 function divadoxml(
     filepaths::Vector{<:AbstractString},
