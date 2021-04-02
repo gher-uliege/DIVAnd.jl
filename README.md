@@ -21,8 +21,8 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-You need [Julia](http://julialang.org) (version 1.4 or 1.5) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
-Inside Julia, you can download and install the package by issuing:
+You need [Julia](http://julialang.org) (version 1.5 or 1.6) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+Inside a Julia terminal, you can download and install the package by issuing:
 
 ```julia
 using Pkg
@@ -34,11 +34,28 @@ It is not recommended to download the source of `DIVAnd.jl` directly (using the 
 
 # Updating DIVAnd
 
-To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
+To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel using `Kernel` -> `Restart`):
 
 ```julia
 using Pkg
 Pkg.update("DIVAnd")
+```
+
+Note that Julia does not directly delete the previous installed version.
+To check if you have the latest version run the following command:
+
+```julia
+using Pkg
+Pkg.status()
+```
+
+The latest version number is available from [here](https://github.com/gher-ulg/DIVAnd.jl/releases).
+
+To explicitly install a given version `X.Y.Z` you can also use:
+
+```julia
+using Pkg
+Pkg.add(name="DIVAnd", version="X.Y.Z")
 ```
 
 

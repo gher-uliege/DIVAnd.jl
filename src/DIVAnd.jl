@@ -531,6 +531,10 @@ include("DIVAnd_diagapp.jl")
 
 include("DIVAnd_scalecpme!.jl")
 
+include("derived.jl")
+
+include("cut_results.jl")
+
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
 # statevector

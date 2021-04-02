@@ -33,7 +33,10 @@ function DIVAndrun(
 
     erri = ()
     if errortype == :cpme
-        erri = DIVAnd.DIVAnd_cpme(mask,pmn,xyi,xsel,vaa,len_scaled,epsilon2; kwargs...)
+        @warn "disable error"
+        #erri = DIVAnd.DIVAnd_cpme(mask,pmn,xyi,xsel,vaa,len_scaled,epsilon2; kwargs...)
+        # debug
+        erri = zeros(size(fi))
     end
 
     scalefactore = DIVAnd.DIVAnd_adaptedeps2(vaa, residual, epsilon2, isnan.(residual))

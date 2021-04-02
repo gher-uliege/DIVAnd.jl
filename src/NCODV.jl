@@ -14,9 +14,40 @@ function varbyattrib_first(ds; kwargs...)
         str = join(["attribute '$k' equal to '$v'" for (k, v) in kwargs], " and ")
         error("No NetCDF variable found with $(str) in $(path(ds))")
     end
+
+    if length(vs) > 1
+        str = join(["attribute '$k' equal to '$v'" for (k, v) in kwargs], " and ")
+        error("Several NetCDFs variable found with the $(str) in $(path(ds)). Loading this file is ambiguous. Please file an issue at https://github.com/gher-ulg/DIVAnd.jl/issues with the output of julia command `using NCDatasets; NCDataset(\"$(path(ds))\")` or the shell command `ncdump -h \"$(path(ds))\"` if this file has been produced by ODV.")
+    end
+
+    @debug begin
+        str = join(["attribute '$k' equal to '$v'" for (k, v) in kwargs], " and ")
+        @debug "use variable $(name(vs[1])) ($str)"
+    end
     return vs[1]
 end
 
+
+
+_promote_Float64_or_more(x::Float32) = Float64(x)
+_promote_Float64_or_more(x) = x
+
+function decode_odv_years(data,fillvalue)
+    t = similar(data, Union{DateTime,Missing})
+    @inbounds for i in eachindex(data)
+        if data[i] == fillvalue
+            t[i] = missing
+        else
+            data_float64 = _promote_Float64_or_more(data[i])
+            year = floor(Int,data_float64)
+            yearlen = (Dates.isleapyear(year) ? 366 : 365)
+
+            doy_ms = round(Int64,1000*24*60*60 * yearlen * (data_float64 - year))
+            t[i] = DateTime(year,1,1) + Dates.Millisecond(doy_ms)
+        end
+    end
+    return t
+end
 
 # # files always have variables with the long_name  "LOCAL_CDI_ID" and "EDMO_CODE" (all upper-case)
 # # long_name for the primary variable to analysis are always P35 names
@@ -27,27 +58,42 @@ function loadprof(
     flag::NCDatasets.Variable{Tflag,2},
     fillval,
     accepted_status_flag_values,
+
     ncz::NCDatasets.Variable{Tz,2},
     flag_z::NCDatasets.Variable{Tflagz,2},
     fillval_z,
-    accepted_status_flag_values_z;
+    accepted_status_flag_values_z,
+
+    nctime,
+    flag_time,
+    fillval_time,
+    accepted_status_flag_values_time;
+
     nchunk = 10
 ) where {T,Tz,Tflag,Tflagz}
+
     n_samples = size(ncvar, 1)
     n_stations = size(ncvar, 2)
     #    n_stations = 100000
     #    n_stations = 10000
+    data_chunk = Array{T,2}(undef, (n_samples, nchunk))
+    flag_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
+    profile = Vector{T}(undef, n_samples)
     data = Vector{Vector{T}}(undef, n_stations)
+
+    #z = Vector{Vector{T}}(undef, n_stations)
+    z_chunk = Array{Tz,2}(undef, (n_samples, nchunk))
+    flag_z_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
+    profile_z = Vector{T}(undef, n_samples)
     data_z = Vector{Vector{T}}(undef, n_stations)
 
-    z = Vector{Vector{T}}(undef, n_stations)
-    data_chunk = Array{T,2}(undef, (n_samples, nchunk))
-    z_chunk = Array{Tz,2}(undef, (n_samples, nchunk))
-    flag_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
-    flag_z_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
-
-    profile = Vector{T}(undef, n_samples)
-    profile_z = Vector{T}(undef, n_samples)
+    if nctime != nothing
+        Ttime = eltype(nctime)
+        time_chunk = Array{Ttime,2}(undef, (n_samples, nchunk))
+        flag_time_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
+        profile_time = Vector{Float64}(undef, n_samples)
+    end
+    data_time = Vector{Vector{Float64}}(undef, n_stations)
 
     t0 = Base.time()
     @inbounds for i = 1:nchunk:n_stations
@@ -61,31 +107,56 @@ function loadprof(
         clen = length(nc)
 
         NCDatasets.load!(ncvar, data_chunk, :, nc)
-        NCDatasets.load!(ncz, z_chunk, :, nc)
         NCDatasets.load!(flag, flag_chunk, :, nc)
+
+        NCDatasets.load!(ncz, z_chunk, :, nc)
         NCDatasets.load!(flag_z, flag_z_chunk, :, nc)
+
+        if nctime != nothing
+            NCDatasets.load!(nctime, time_chunk, :, nc)
+            NCDatasets.load!(flag_time, flag_time_chunk, :, nc)
+        end
 
         for k = 1:clen
             iprofile = 0
             for l = 1:n_samples
-                if (
-                    (data_chunk[l, k] != fillval) &&
-                    (z_chunk[l, k] != fillval_z) &&
-                    (flag_chunk[l, k] ∈ accepted_status_flag_values) &&
-                    (flag_z_chunk[l, k] ∈ accepted_status_flag_values_z)
-                )
+                ok = true
 
+                # check value
+                ok = ok && (data_chunk[l, k] != fillval) &&
+                    (flag_chunk[l, k] ∈ accepted_status_flag_values)
+
+                # check depth
+                ok = ok && (z_chunk[l, k] != fillval_z) &&
+                    (flag_z_chunk[l, k] ∈ accepted_status_flag_values_z)
+
+                # check time (for time series)
+                if nctime != nothing
+                    ok = ok && (time_chunk[l, k] != fillval_time) &&
+                        (flag_time_chunk[l, k] ∈ accepted_status_flag_values_time)
+                end
+
+                if ok
                     iprofile = iprofile + 1
                     profile[iprofile] = data_chunk[l, k]
                     profile_z[iprofile] = z_chunk[l, k]
+
+                    if nctime != nothing
+                        profile_time[iprofile] = time_chunk[l, k]
+                    end
                 end
             end
+
             j = i + k - 1
             data[j] = profile[1:iprofile]
             data_z[j] = profile_z[1:iprofile]
+
+            if nctime != nothing
+                data_time[j] = profile_time[1:iprofile]
+            end
         end
     end
-    return data, data_z
+    return data, data_z, data_time
 end
 
 
@@ -102,12 +173,21 @@ function flatten_data(
     len = sum(length.(data))
     flat_lon = zeros(T, len)
     flat_lat = zeros(T, len)
-    flat_time = Vector{DateTime}(undef, len)
     flat_ids = fill("", (len,))
     sel = trues(len)
 
-    flat_data = Vector{T}(vcat(data...))
-    flat_z = Vector{T}(vcat(data_z...))
+    #flat_data = Vector{T}(vcat(data...))
+    flat_data = Vector{T}(reduce(vcat,data))
+    #flat_z = Vector{T}(vcat(data_z...))
+    flat_z = Vector{T}(reduce(vcat,data_z))
+
+    if ndims(obsproftime) == 2
+        # time series
+        flat_time = reduce(vcat,obsproftime)
+    else
+        # profile
+        flat_time = Vector{DateTime}(undef, len)
+    end
 
     j = 0
 
@@ -115,17 +195,27 @@ function flatten_data(
         #    for i = 1:100
         jend = j + length(data[i])
         obsid = "$(EDMO_CODE[i])-$(LOCAL_CDI_ID[i])"
+        #@show obsproftime[i]
 
-        if (
-            ismissing(obsproftime[i]) ||
-            ismissing(obsproflon[i]) ||
-            ismissing(obsproflat[i])
-        )
+        notok = false
+        notok = notok || ismissing(obsproflon[i])
+        notok = notok || ismissing(obsproflat[i])
+
+        if ndims(obsproftime) == 1
+            ## check only for profiles
+            notok = notok || ismissing(obsproftime[i])
+        end
+
+        if notok
             sel[j+1:jend] .= false
         else
             flat_lon[j+1:jend] .= obsproflon[i]
             flat_lat[j+1:jend] .= obsproflat[i]
-            flat_time[j+1:jend] .= obsproftime[i]
+
+            if ndims(obsproftime) == 1
+                # profile
+                flat_time[j+1:jend] .= obsproftime[i]
+            end
             flat_ids[j+1:jend] .= obsid
         end
         j = jend
@@ -219,33 +309,85 @@ We use the empty string for LOCAL_CDI_ID instead.
 
         obsproflon = varbyattrib_first(ds, standard_name = "longitude")[:]
         obsproflat = varbyattrib_first(ds, standard_name = "latitude")[:]
-        obsproftime = varbyattrib_first(ds, standard_name = "time")[:]
+
+        # time for time series
+        ncvar_time = nothing
+        ncv_ancillary_time = nothing
+        fillval_time = nothing
+        accepted_status_flag_values_time = nothing
+        vars_time_ISO8601 = varbyattrib(ds, long_name = "time_ISO8601")
+
+        if length(vars_time_ISO8601) == 1
+            # time series
+            ncvar_time = vars_time_ISO8601[1]
+            @assert ndims(ncvar_time) == 2
+        else
+            # profile
+            obsproftime = varbyattrib_first(ds, standard_name = "time")[:]
+            @assert ndims(obsproftime) == 1
+        end
 
         ncvar = varbyattrib_first(ds, long_name = long_name)
         ncvar_z = varbyattrib_first(ds, long_name = "Depth")
 
+        @debug "variable: $(name(ncvar))"
+        @debug "variable z: $(name(ncvar_z))"
+
         ncv_ancillary = NCDatasets.ancillaryvariables(ncvar, "status_flag").var
         ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z, "status_flag").var
+
+        if ncvar_time !== nothing
+            ncv_ancillary_time = NCDatasets.ancillaryvariables(ncvar_time, "status_flag").var
+            fillval_time = get(ncvar_time.attrib, "_FillValue", nothing)
+        end
+
+        @debug "variable flag: $(name(ncv_ancillary))"
+        @debug "variable flag z: $(name(ncv_ancillary_z))"
 
         accepted_status_flag_values =
             flagvalues(ncv_ancillary.attrib, accepted_status_flags)
         accepted_status_flag_values_z =
             flagvalues(ncv_ancillary_z.attrib, accepted_status_flags)
-        @debug accepted_status_flag_values
+
+        @debug "accepted_status_flag_values: $accepted_status_flag_values"
+        @debug "accepted_status_flag_values_z: $accepted_status_flag_values_z"
+
+        if ncvar_time !== nothing
+            accepted_status_flag_values_time =
+                flagvalues(ncv_ancillary_time.attrib, accepted_status_flags)
+            @debug "accepted_status_flag_values_time: $accepted_status_flag_values_time"
+        end
 
         fillval = ncvar.attrib["_FillValue"]
-        fillval_z = get(ncvar.attrib, "_FillValue", nothing)
-        data, data_z = loadprof(
+        fillval_z = get(ncvar_z.attrib, "_FillValue", nothing)
+
+        data, data_z, data_time = loadprof(
             ncvar.var,
             ncv_ancillary,
             fillval,
             accepted_status_flag_values,
+
             ncvar_z.var,
             ncv_ancillary_z,
             fillval_z,
-            accepted_status_flag_values_z;
+            accepted_status_flag_values_z,
+
+            #= these 4 variables are nothing for profiles =#
+            (ncvar_time == nothing ? nothing : ncvar_time.var),
+            ncv_ancillary_time,
+            fillval_time,
+            accepted_status_flag_values_time,
+
             nchunk = nchunk
         )
+
+
+        if ncvar_time !== nothing
+            time_units = ncvar_time.attrib["units"]
+            @debug "time_units: $time_units (decode as fractional years)"
+            @assert time_units == "years since 0000-01-01"
+            obsproftime = decode_odv_years.(data_time,fillval_time)
+        end
 
         obsvalue, obslon, obslat, obsdepth, obstime, obsids = flatten_data(
             T,

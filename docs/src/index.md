@@ -4,7 +4,7 @@ DIVAnd
 
 # DIVAnd.jl documentation
 
-## API refence
+## API reference
 
 ```@docs
 DIVAnd.diva3d
@@ -87,6 +87,14 @@ DIVAnd.Vocab.find
 DIVAnd.Vocab.description
 DIVAnd.Vocab.canonical_units
 DIVAnd.Vocab.splitURL
+```
+
+
+### Post-processing
+
+```@docs
+DIVAnd.derived
+DIVAnd.cut
 ```
 
 ## Internal API or advanced usage
@@ -240,7 +248,7 @@ The velocity field should be a
 tuple of n-elements. Every element of the tuple is a gridded array (defined at the same location than the target array) representing a single velocity component.
 For 3D analysis, the order of the dimensions is typically: longitude, latitude and depth. Like-wise the velocity components are
 zonal, meridional and vertical velocity. The three velocity components has to be scaled by
-a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in DIVAnd.jl to automate this process.
+a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in `DIVAnd.jl` to automate this process.
 
 For the two dimensional case, the velocity has just two components as shown in the example below.
 
@@ -729,6 +737,21 @@ Stacktrace:
  .................
  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147
 ```
+
+### DimensionMismatch when running `diva3d`
+
+You get an error like
+```julia
+DimensionMismatch("tried to assign 201×201 array to 202×201 destination")
+```
+
+This type of error might be due to the reading of the bathymetry: if you work with a
+regional bathymetry (for instance not with GEBCO), you should set the option
+`bathisglobal` to false.
+
+When `bathisglobal = true`, the longitude is supposed to *wrap around*
+(the last element of the lon should be right before the first element of lon),
+thus the dimension mismatch.
 
 
 ### Installing additional packages when using a git clone
