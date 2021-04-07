@@ -143,8 +143,8 @@ function ufill!(c, valexc, work, work2, iwork::Array{Int8,3}, iwork2::Array{Int8
     while icount > 0
         icount = 0
 
-        for k = 2:kmax+1
-            for j = 2:jmax+1
+        @inbounds for k = 2:kmax+1
+            Threads.@threads for j = 2:jmax+1
                 for i = 2:imax+1
                     work2[i, j, k] = work[i, j, k]
                     iwork2[i, j, k] = iwork[i, j, k]
