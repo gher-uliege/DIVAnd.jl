@@ -524,6 +524,7 @@ function previewURL(
         # (time depth) lat lon
         var = ds[varnameL1]
         n_time = 1
+        k_depth = 1
         min_non_missing = 0
         preview_url_time = nothing
 
@@ -535,17 +536,19 @@ function previewURL(
                 # find the time slice with the maximum data
                 count_valid = zeros(Int, size(var, 4))
                 for n = 1:size(var, 4)
-                    field = var[:, :, end, n]
+                    field = var[:, :, k_depth, n]
                     count_valid[n] = sum(.!ismissing.(field))
                 end
                 @debug "count $(count_valid)"
 
                 n_time = findmax(count_valid)[2]
-                field = var[:, :, end, n_time]
+                field = var[:, :, k_depth, n_time]
                 if n_time != 1
                     preview_url_time = WMStimeparam(ds["time"], n_time)
                 end
                 #@debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+                @debug "n_time: $n_time"
+                @debug "k_depth: $k_depth"
             end
         elseif "time" in dimnames(var)
             # only time
@@ -553,7 +556,7 @@ function previewURL(
         else
             # only depth
             if size(var, 3) == 1
-                field = var[:, :, 1]
+                field = var[:, :, k_depth]
             else
                 field = var[:, :, end]
             end
