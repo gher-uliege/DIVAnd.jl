@@ -488,8 +488,6 @@ The `unpack` function _unpacks_ the vector `fpi` into the different variables va
 
 Check the [example](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/DIVAnd_example_fixed_obs.jl).
 
-
-
 ## API changes
 
 We do our best to avoid changing the API, but sometimes it is unfortunately necessary.
@@ -516,7 +514,6 @@ Pkg.add("Documenter")
 
 
 If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.
-Julia calls the local copy of the package list `METADATA`.
 For example to retry the installation of `EzXML` issue the following command:
 
 ```julia
@@ -585,7 +582,7 @@ You can put this line in a file `.juliarc.jl` placed in your home directory (the
 
 ### Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
 
-Cloning METADATA or downloading a Julia packages fails with:
+Cloning the package registery or downloading a Julia packages fails with:
 
 ```
 GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )
