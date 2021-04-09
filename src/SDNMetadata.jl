@@ -197,7 +197,7 @@ function getedmoinfo(edmo_code, role)
 
     contact = Dict{String,String}(
         "EDMO_CODE" => string(edmo_code),
-        "EDMO_URL" => "https://cdi.seadatanet.org/report/$(edmo_code)",
+        "EDMO_URL" => "https://edmo.seadatanet.org/report/$(edmo_code)",
         "name" => DIVAnd.Vocab.name(entry),
         "phone" => DIVAnd.Vocab.phone(entry),
         "fax" => DIVAnd.Vocab.fax(entry),
