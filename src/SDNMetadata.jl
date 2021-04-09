@@ -612,6 +612,7 @@ function gettemplatevars(
     basemap = "shadedrelief",
     additionalcontacts = [],
     ignore_errors = false,
+    sigdigits = 5,
 )
 
     # assume that grid and time coverage is the same as the
@@ -637,6 +638,9 @@ function gettemplatevars(
         @warn "warning: non uniform horizontal resolution $(dlon) $(dlat)"
         sqrt(dlon * dlat)
     end
+
+    # round resolution
+    horizontal_resolution = round(horizontal_resolution,sigdigits=sigdigits)
 
     # "degree (or km)",
     horizontal_resolution_units = "degree"
