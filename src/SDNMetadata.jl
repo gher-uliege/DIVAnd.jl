@@ -733,6 +733,11 @@ function gettemplatevars(
         URLsfromlabels("C19", split(ds.attrib["area_keywords"], '|'))
     end
 
+    P36_urn = Vocab.urn.(Vocab.find(Vocab.Concept(P35_keywords[1]["URL"]), "broader", "P36"))
+    P36_keywords = labelandURL.(P36_urn)
+
+    @debug "P36_keywords: $(getindex.(P36_keywords,"label"))"
+
     domain = C19_keywords[1]["label"]
 
     edmo_code = if haskey(ds.attrib, "institution_urn")
@@ -782,9 +787,11 @@ function gettemplatevars(
         "netcdf_variables" => [], # added later
         "P02_keywords" => P02_keywords,
         "P35_keywords" => P35_keywords,
+        "P36_keywords" => P36_keywords,
         "C19_keywords" => C19_keywords,
         "P02_date" => Dates.format(datetime, isodateformat),
         "P35_date" => Dates.format(datetime, isodateformat),
+        "P36_date" => Dates.format(datetime, isodateformat),
         "C19_date" => Dates.format(datetime, isodateformat),
     )
 

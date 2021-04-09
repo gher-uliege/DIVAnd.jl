@@ -288,6 +288,9 @@
           </gmd:thesaurusName>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
+
+      <!-- P02 -->
+
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           {{#P02_keywords}}
@@ -328,6 +331,10 @@
           </gmd:thesaurusName>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
+
+      <!-- end P02 -->
+      <!-- P35 -->
+
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
 
@@ -369,6 +376,55 @@
           </gmd:thesaurusName>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
+
+      <!-- end P35 -->
+      <!-- P36 -->
+
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+
+          {{#P36_keywords}}
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="{{ URL }}">{{ label }} </gmx:Anchor>
+          </gmd:keyword>
+          {{/P36_keywords}}
+          {{^P36_keywords}}
+          <gmd:keyword/>
+          {{/P36_keywords}}
+
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="parameter" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>EMODnet Chemistry chemical groups</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>{{ P36_date }}</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://sextant.ifremer.fr/geonetwork/srv/eng/thesaurus.download?ref=external.parameter.NVS.P36">geonetwork.thesaurus.external.parameter.NVS.P36</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+
+      <!-- end P36 -->
+      <!-- C19 -->
+
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
 
@@ -410,7 +466,7 @@
           </gmd:thesaurusName>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
-
+      <!-- end C19 -->
 
       <!-- L04 matrix code -->
 
@@ -450,6 +506,7 @@
             </gmd:thesaurusName>
          </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
+      <!-- end L04 -->
 
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
