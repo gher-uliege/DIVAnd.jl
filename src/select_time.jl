@@ -33,7 +33,7 @@ TS = DIVAnd.TimeSelectorYearListMonthList([1900:2020],[[12,1,2],[3,4,5],[6,7,8],
 ```
 
 Note that for seasonal analyses, DIVAnd will only select observations within the
-privided year range (and not pick year-1 for December), for example
+provided year range (and not pick year-1 for December), for example
 
 ``` julia
 using DIVAnd
