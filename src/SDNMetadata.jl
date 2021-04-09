@@ -756,6 +756,9 @@ function gettemplatevars(
         varname
     end
 
+    # random string for INSPIRE compliance
+    time_period_id = randstring('a':'z', 32)
+
     templateVars = Dict(
         "project" => project,
         "product_id" => product_id,
@@ -793,6 +796,7 @@ function gettemplatevars(
         "P35_date" => Dates.format(datetime, isodateformat),
         "P36_date" => Dates.format(datetime, isodateformat),
         "C19_date" => Dates.format(datetime, isodateformat),
+        "time_period_id" => time_period_id,
     )
 
     close(ds)
