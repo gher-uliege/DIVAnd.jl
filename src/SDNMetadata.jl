@@ -36,6 +36,15 @@ const OriginatorEDMO_URL = "https://emodnet-chemistry.maris.nl/download/export.z
 
 const layersep = "*"
 
+"""
+    escape(x)
+
+Escape characters except slash.
+"""
+function escape(x)
+    return join(HTTP.escapeuri.(split(x,"/")),"/")
+end
+
 """encode parameters as key-value separated by : and +"""
 encodeWMSStyle(params) = join([k * ':' * string(v) for (k, v) in params], "+")
 
@@ -66,6 +75,7 @@ function SDNMetadata(
     field = nothing,
     default_field_min = nothing,
     default_field_max = nothing,
+    url_path = nothing,
 )
 
     pathname = joinpath(dirname(@__FILE__), "..")
@@ -164,6 +174,7 @@ function SDNMetadata(
             domain;
             default_field_min = default_field_min,
             default_field_max = default_field_max,
+            url_path = url_path,
         )
 
 
@@ -425,14 +436,32 @@ function numstring(x)
 end
 
 function WMStimeparam(nctime, n)
-    dtime = nctime[2] - nctime[1]
-    paramstr = if Dates.Day(360) <= dtime <= Dates.Day(366)
-        string(Dates.year(nctime[n]))
+    # heuristics as in
+    # timemap as defined in divaonweb/divaonweb/util.py
+    time = nctime[:]
+    #time = [DateTime(2000,1,1),DateTime(2000,1,2)]; n = 1
+
+    dtime = Dates.value(time[2] - time[1]) / (24*60*60*1000)
+    seasonnames = ["winter","spring","summer","autumn"]
+    month = Dates.month(nctime[n])
+    year = Dates.year(nctime[n])
+    season = (month-1)/3 +1
+
+    # heuristics
+    if 27 <= dtime <= 32
+        hr_t = @sprintf("%02d",month)
+    elseif (27*3 <= dtime <= 32*3) && (len(time) <= 4)
+        hr_t = seasonnames[n]
+    elseif (27*3 <= dtime <= 32*3)
+        hr_t = seasonnames[season] * " " * string(year)
+    elseif 27*12 <= dtime <= 32*12
+        hr_t = string(year)
     else
-        string(nctime[n])
+        hr_t = string(time[n])
     end
-    @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $paramstr"
-    return paramstr
+
+    @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $hr_t"
+    return hr_t
 end
 
 
@@ -448,6 +477,7 @@ function previewURL(
     preview_url_time = nothing,
     default_field_min = nothing,
     default_field_max = nothing,
+    url_path = nothing,
 )
 
     preview_url_query = OrderedDict(
@@ -458,7 +488,7 @@ function previewURL(
         "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
         "decorated" => "true",
         "format" => "image/png",
-        "layers" => domain * "/" * filepath * layersep * varnameL1,
+        "layers" => url_path * "/" * filepath * layersep * varnameL1,
         "styles" => encodeWMSStyle(Dict(
             "vmin" => default_field_min,
             "vmax" => default_field_max,
@@ -481,7 +511,6 @@ function previewURL(
     preview_url_query_string = replace(preview_url_query_string, r"^:" => "")
 
     preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
-    @debug "preview_url: $preview_url"
     return preview_url
 end
 
@@ -504,6 +533,7 @@ function previewURL(
     basemap = "shadedrelief",
     default_field_min = nothing,
     default_field_max = nothing,
+    url_path = nothing,
 )
 
     Dataset(filepath, "r") do ds
@@ -595,6 +625,7 @@ function previewURL(
             preview_url_time = preview_url_time,
             default_field_min = default_field_min,
             default_field_max = default_field_max,
+            url_path = url_path,
         )
 
         return preview_url
@@ -613,6 +644,7 @@ function gettemplatevars(
     additionalcontacts = [],
     ignore_errors = false,
     sigdigits = 5,
+    url_path = nothing,
 )
 
     # assume that grid and time coverage is the same as the
@@ -863,8 +895,15 @@ function gettemplatevars(
         ',',
     )
 
+    if url_path == nothing
+        url_path = domain
+    end
+
     preview_url =
-        previewURL(filepaths[previewindex], varname, project, domain; basemap = basemap)
+        previewURL(filepaths[previewindex], varname, project, domain;
+                   basemap = basemap,
+                   url_path = url_path,
+                   )
 
     # Specify any input variables to the template as a dictionary.
     merge!(
@@ -879,9 +918,9 @@ function gettemplatevars(
             # URL for the global data set
             "WMS_dataset_getcap" =>
                 baseurl_wms * "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
-            "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
+            "WMS_dataset_layer" => url_path * "/" * filepath * layersep * varnameL1,
             "WMS_layers" => [],
-            "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
+            "NetCDF_URL" => baseurl_http * "/" * escape(url_path) * "/" * escape(filepath),
             "NetCDF_description" => "Link to download the following file: " * filename,
             #        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
             #        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
@@ -901,7 +940,7 @@ function gettemplatevars(
         push!(
             templateVars["OPENDAP_URLs"],
             Dict(
-                "URL" => baseurl_opendap * "/" * domain * "/" * filepaths[i] * ".html",
+                "URL" => baseurl_opendap * "/" * escape(url_path) * "/" * escape(filepaths[i]) * ".html",
                 "description" => description,
             ),
         )
@@ -909,7 +948,7 @@ function gettemplatevars(
 
     for (name, description, filepath_) in templateVars["netcdf_variables"]
         if (name == "obsid") || (endswith(name, "_L1") && !endswith(name, "deepest_L1"))
-            layer_name = domain * "/" * filepath_ * layersep * name
+            layer_name = url_path * "/" * filepath_ * layersep * name
             if name == "obsid"
                 layer_name = "point:" * layer_name
             end
@@ -928,8 +967,21 @@ function gettemplatevars(
 
     #    @debug println("templateVars",templateVars)
     #    @debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
-    @debug "NetCDF_URL: $(templateVars["NetCDF_URL"])"
     @debug "WMS_layers: $(templateVars["WMS_layers"])"
+
+    @info "Please check the following URLs"
+
+    @info "URL (image preview): $preview_url"
+
+    @info "NetCDF URL: $(templateVars["NetCDF_URL"])"
+
+    for OPENDAP_URL in templateVars["OPENDAP_URLs"]
+        @info "OPENDAP URL: $(OPENDAP_URL["URL"])"
+    end
+
+    for WMS_layer in templateVars["WMS_layers"]
+        @debug "WMS layer name: $(WMS_layer["name"])"
+    end
 
     return templateVars
 end
@@ -989,6 +1041,18 @@ webserver, the `filepath` should also contain this subfolder (e.g.
 structure on OceanBrowser. Relative paths should be used, and if the Julia code isn't right above the NetCDF
 files, use cd("<path>") before each setting the files parameter which use paths relative to this path.
 
+If the products will go into a sub-directory (which is different from the domain
+name), the part of the path should with provided with the parameter `url_path`.
+
+The link for the NetCDF download for EMODNET-chemistry for example is the following:
+
+```
+PROJECTS["EMODNET-chemistry"]["baseurl_http"] *  "/" * url_path * "/" * filepath
+```
+
+where `url_path` defaults to the the domain name (from the C19 vocabulary) if
+it is not provided. The script will print the URLs for verification.
+
 `additionalcontacts` is a list of dictionaries with additional condact
 information to be added in the XML file. Elements are typically create by the
 function `DIVAnd.getedmoinfo`.
@@ -1030,6 +1094,7 @@ function divadoxml(
     additionalvars = Dict{String,Any}(),
     additionalcontacts = [],
     WMSlayername = String[],
+    url_path = nothing,
 )
 
     # template file we will use.
@@ -1045,6 +1110,7 @@ function divadoxml(
         basemap = basemap,
         additionalcontacts = additionalcontacts,
         ignore_errors = ignore_errors,
+        url_path = url_path,
     )
 
     merge!(templateVars, additionalvars)
