@@ -1081,6 +1081,26 @@ DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zi
 )
 ```
 
+
+For this function the following global NetCDF attributes are mandatory:
+
+* `product_id`: UUID identifier
+* `parameter_keywords_urn` or `parameter_keywords`: P35 code (e.g. "SDN:P35::EPC00007") or preferred label (e.g. "Water body phosphate") respectively.
+* `search_keywords_urn` or `search_keywords`: P02 code or preferred label
+* `area_keywords_urn` or `area_keywords`: C19 code or preferred label
+* `institution_edmo_code`: EDMO code number
+* `product_version`: version of the product
+
+
+Adding a global attribute, can be done using the following:
+
+```julia
+ds = NCDatafile("DIVA_file.nc","a")
+ds.attrib["attribute_name"] = "attribute value"
+close(ds)
+```
+
+
 """
 function divadoxml(
     filepaths::Vector{<:AbstractString},
