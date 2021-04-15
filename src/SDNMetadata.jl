@@ -704,6 +704,9 @@ function gettemplatevars(
         ""
     end
 
+    # strip starting https://doi.org/ if necessary
+    doi = replace(doi,r"^https://doi.org/" => "")
+
     temp_resolution_unit = "none"
     temp_resolution = "none"
 
