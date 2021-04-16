@@ -36,6 +36,7 @@ function DIVAndrun(
     QCMETHOD = (),
     coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
     coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
+    mean_Labs = nothing,
 ) where {N,T}
 
     # check pmn .* len > 4
@@ -61,6 +62,7 @@ function DIVAndrun(
         btrunc = btrunc,
         coeff_laplacian = coeff_laplacian,
         coeff_derivative2 = coeff_derivative2,
+        mean_Labs = mean_Labs,
     )
 
 

@@ -109,7 +109,11 @@ function DIVAndgo(
     @debug "error method: $(errormethod)"
     @info "number of windows: $(length(windowlist))"
 
+    mean_Labs = collect(mean.(Labs))
+    @debug "mean_Labs: $(mean_Labs)"
+
     @sync @distributed for iwin = 1:size(windowlist, 1)
+    #@sync @distributed for iwin = 44:size(windowlist, 1)
         iw1 = windowlist[iwin][1]
         iw2 = windowlist[iwin][2]
         isol1 = windowlist[iwin][3]
@@ -196,6 +200,7 @@ function DIVAndgo(
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
                     velocity = velocity,
+                    mean_Labs = mean_Labs,
                     otherargs...,
                 )
 
@@ -234,6 +239,7 @@ function DIVAndgo(
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
                         velocity = velocity,
+                        mean_Labs = mean_Labs,
                         otherargs...,
                     )
                 end
@@ -256,6 +262,7 @@ function DIVAndgo(
                     QCMETHOD = QCMETHOD,
                     RTIMESONESCALES = RTIMESONESCALES,
                     velocity = velocity,
+                    mean_Labs = mean_Labs,
                     otherargs...,
                 )
 
@@ -284,6 +291,7 @@ function DIVAndgo(
                         QCMETHOD = QCMETHOD,
                         RTIMESONESCALES = RTIMESONESCALES,
                         velocity = velocity,
+                        mean_Labs = mean_Labs,
                         otherargs...,
                     )
                 end

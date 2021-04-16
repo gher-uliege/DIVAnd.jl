@@ -29,6 +29,7 @@ function DIVAnd_background(
     btrunc = [],
     coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
     coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
+    mean_Labs = nothing,
 )
 
     # number of dimensions
@@ -64,16 +65,22 @@ function DIVAnd_background(
         end
     end
 
+    # mean correlation length in every dimension
+    Ld =
+        if mean_Labs == nothing
+            [mean(L) for L in Labs]
+        else
+            mean_Labs
+        end
+
     if scale_len
         # scale Labs by len_scale so that all kernels are similar
         Labs = ntuple(i -> Labs[i] / len_scale, n)
+        Ld = Ld / len_scale
     end
 
 
-    # mean correlation length in every dimension
-    Ld = [mean(L) for L in Labs]
     neff = sum(Ld .> 0)
-
     @debug "effective number of dimensions (neff): $neff"
 
     # geometric mean
@@ -115,10 +122,7 @@ function DIVAnd_background(
 
     WE = oper_diag(operatortype, statevector_pack(sv, (1 ./ sqrt.(d),))[:, 1])
 
-
-
     Ln = prod(Ld[Ld.>0])
-
 
 
     #if any(Ld <= 0)
@@ -127,6 +131,7 @@ function DIVAnd_background(
     #end
 
     coeff = coeff * Ln # units length^n
+    @debug "normalization coeff: $coeff"
 
     pmnv = hcat([pm[:] for pm in pmn]...)
 
