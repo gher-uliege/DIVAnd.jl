@@ -51,7 +51,7 @@ function DIVAnd_cpme(
     csteps = [0],
     lmask = [],
     alphapc = [],
-    mean_Labs = collect(mean.(Labs)),
+    mean_Labs = collect(mean.(len_harmonize(Labs, mask))),
     otherargs...,
 )
     #function DIVAnd_cpme(mask,pmn,xi,x,f,Labs,epsilon2)
