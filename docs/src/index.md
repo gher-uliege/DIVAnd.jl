@@ -482,7 +482,7 @@ then, for the `nt` other analysis, we use the structure `s`, computed in the pre
 fpi = s.P * (s.H' * (s.R \ obsval[:,i]))
 f_with_mask = unpack(s.sv, fpi, NaN)
 ```
-where i=1, ..., nt.      
+where i=1, ..., nt.
 
 The `unpack` function _unpacks_ the vector `fpi` into the different variables var1, var2, ... `s.sv` is the statevector and `NaN` is the fill value.
 
@@ -492,6 +492,7 @@ Check the [example](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/D
 
 We do our best to avoid changing the API, but sometimes it is unfortunately necessary.
 
+* 2021-04-21: When using domain splitting, the average correlation length is computed over all domain and not per subdomain. The API remained the same.
 * 2019-06-24: `DIVAnd.fit_isotropic` and `DIVAnd.fit` are removed and replaced by `DIVAnd.fithorzlen` and `DIVAnd.fitvertlen`.
 * 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preference will now be given for `background_lenz`.
 * 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
