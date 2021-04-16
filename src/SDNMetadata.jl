@@ -479,6 +479,9 @@ function previewURL(
     default_field_max = nothing,
     url_path = nothing,
 )
+    if url_path == nothing
+        url_path = domain
+    end
 
     preview_url_query = OrderedDict(
         "service" => "WMS",
