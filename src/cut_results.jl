@@ -64,11 +64,12 @@ Example
 
 ```julia
 filename2 = "Water_body_dissolved_oxygen_concentration_monthly.nc"
+# polygon with the area to retain
 polygon_lon = [-20., 20, 20, -19]
 polygon_lat = [21, 21, 53., 52.]
 varname = "Water body dissolved oxygen concentration"
 filename_cut = "cut.nc"
-cut(filename2,varname,filename_cut,polygon_lon,polygon_lat)
+DIVAnd.cut(filename2,varname,filename_cut,polygon_lon,polygon_lat)
 ```
 
 """
