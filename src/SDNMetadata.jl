@@ -450,7 +450,7 @@ function WMStimeparam(nctime, n)
     # heuristics
     if 27 <= dtime <= 32
         hr_t = @sprintf("%02d",month)
-    elseif (27*3 <= dtime <= 32*3) && (len(time) <= 4)
+    elseif (27*3 <= dtime <= 32*3) && (length(time) <= 4)
         hr_t = seasonnames[n]
     elseif (27*3 <= dtime <= 32*3)
         hr_t = seasonnames[season] * " " * string(year)
