@@ -180,6 +180,17 @@ Thanks to Lennert and Bart (VLIZ) for this trick.
 
 Some examples in `DIVAnd.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://dox.ulg.ac.be/index.php/s/Bo01EicxnMgP9E3/download. The zip file should be decompressed and the directory `DIVAnd-example-data` should be placed on the same level than the directory `DIVAnd.jl`.
 
+# Reporting issues
+
+Please include the following information when reporting an issue:
+
+* Version of Julia
+* Version of DIVAnd
+* Operating system
+* Full screen output preferably obtained by setting `ENV["JULIA_DEBUG"] = "DIVAnd"`.
+* Full stack strace with error message
+* A short description of the problem
+* The command and their arguments which produced the error
 
 # Fun
 
