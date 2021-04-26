@@ -57,7 +57,12 @@ To explicitly install a given version `X.Y.Z` you can also use:
 using Pkg
 Pkg.add(name="DIVAnd", version="X.Y.Z")
 ```
+Or the master version:
 
+```julia
+using Pkg
+Pkg.add(name="DIVAnd", rev="master")
+```
 
 # Testing
 
