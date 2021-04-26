@@ -445,7 +445,7 @@ function WMStimeparam(nctime, n)
     seasonnames = ["winter","spring","summer","autumn"]
     month = Dates.month(nctime[n])
     year = Dates.year(nctime[n])
-    season = (month-1)/3 +1
+    season = (month-1) ÷ 3 + 1
 
     # heuristics
     if 27 <= dtime <= 32
