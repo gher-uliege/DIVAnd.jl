@@ -937,7 +937,7 @@ function gettemplatevars(
 
     for i = 1:length(filepaths)
         # opendap
-        description = "OPENDAP web page about the dataset " * filename
+        description = "OPeNDAP web page about the dataset " * filename
         if length(WMSlayername) >= i
             if WMSlayername[i] != ""
                 description *= " ($(WMSlayername[i]))"
