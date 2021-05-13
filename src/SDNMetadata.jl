@@ -8,7 +8,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
         "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
         "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
-        "baseurl_opendap" => "http://ec.oceanbrowser.net:8081/data/emodnet-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/emodnet-domains",
         "template" => joinpath(pathname, "templates", "emodnet-chemistry.mustache"),
     ),
     "SeaDataNet" => Dict(
@@ -17,7 +17,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
         "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
         "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
-        "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataNet-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/SeaDataNet-domains",
         "template" => joinpath(pathname, "templates", "seadatanet.mustache"),
     ),
     "SeaDataCloud" => Dict(
@@ -26,7 +26,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
         "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
         "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataCloud-domains",
-        "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataCloud-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/SeaDataNet-domains",
         "template" => joinpath(pathname, "templates", "seadatanet.mustache"),
     ),
 )
