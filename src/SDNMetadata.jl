@@ -8,7 +8,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
         "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
         "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
-        "baseurl_opendap" => "http://ec.oceanbrowser.net:8081/data/emodnet-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/emodnet-domains",
         "template" => joinpath(pathname, "templates", "emodnet-chemistry.mustache"),
     ),
     "SeaDataNet" => Dict(
