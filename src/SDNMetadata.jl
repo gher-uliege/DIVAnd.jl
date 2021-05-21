@@ -472,7 +472,7 @@ function previewURL(
     latr,
     project,
     domain;
-    colorbar_quantiles = [0.01, 0.99],
+    colorbar_quantiles = [0.001, 0.999],
     basemap = "shadedrelief",
     preview_url_time = nothing,
     default_field_min = nothing,
