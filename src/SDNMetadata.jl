@@ -755,20 +755,28 @@ function gettemplatevars(
 
     P02_keywords = if haskey(ds.attrib, "search_keywords_urn")
         labelandURL.(split(ds.attrib["search_keywords_urn"], ", "))
-    else
+    elseif haskey(ds.attrib, "search_keywords")
         URLsfromlabels("P02", split(ds.attrib["search_keywords"], '|'))
+    else
+        error("attribute search_keywords_urn or search_keywords are not found")
     end
 
     P35_keywords = if haskey(ds.attrib, "parameter_keyword_urn")
         labelandURL.(split(ds.attrib["parameter_keyword_urn"], ", "))
-    else
+    elseif haskey(ds.attrib,"parameter_keyword")
+        URLsfromlabels("P35", split(ds.attrib["parameter_keyword"], '|'))
+    elseif haskey(ds.attrib,"parameter_keywords")
         URLsfromlabels("P35", split(ds.attrib["parameter_keywords"], '|'))
+    else
+        error("attribute parameter_keyword_urn or parameter_keyword(s) are not found")
     end
 
     C19_keywords = if haskey(ds.attrib, "area_keywords_urn")
         labelandURL.(split(ds.attrib["area_keywords_urn"], ", "))
-    else
+    elseif haskey(ds.attrib, "area_keywords")
         URLsfromlabels("C19", split(ds.attrib["area_keywords"], '|'))
+    else
+        error("attribute area_keywords_urn or area_keywords are not found")
     end
 
     P36_urn = Vocab.urn.(Vocab.find(Vocab.Concept(P35_keywords[1]["URL"]), "broader", "P36"))
@@ -780,8 +788,10 @@ function gettemplatevars(
 
     edmo_code = if haskey(ds.attrib, "institution_urn")
         rmprefix.(ds.attrib["institution_urn"])
-    else
+    elseif haskey(ds.attrib, "institution_edmo_code")
         ds.attrib["institution_edmo_code"]
+    else
+        error("attribute institution_urn or institution_edmo_code are not found")
     end
 
     product_code = get(ds.attrib, "product_code", "")
@@ -1091,7 +1101,7 @@ DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zi
 For this function the following global NetCDF attributes are mandatory:
 
 * `product_id`: UUID identifier
-* `parameter_keywords_urn` or `parameter_keywords`: P35 code (e.g. "SDN:P35::EPC00007") or preferred label (e.g. "Water body phosphate") respectively.
+* `parameter_keyword_urn` or `parameter_keyword` (or `parameter_keywords`): P35 code (e.g. "SDN:P35::EPC00007") or preferred label (e.g. "Water body phosphate") respectively. Note the singular form (`parameter_keyword`) is preferred because there should be only a single P35 parameter per NetCDF file, but singular and plural forms are valid.
 * `search_keywords_urn` or `search_keywords`: P02 code or preferred label
 * `area_keywords_urn` or `area_keywords`: C19 code or preferred label
 * `institution_edmo_code`: EDMO code number
