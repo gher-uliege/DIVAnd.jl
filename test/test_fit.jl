@@ -40,9 +40,8 @@ Nens = 1
 distbin = 0:0.02:0.3
 mincount = 100
 
-Random.seed!(1234)
-field = DIVAnd.random(mask, (pm, pn), (lenx, leny), Nens)
-
+Random.seed!(rng,1234)
+field = DIVAnd.random(mask, (pm, pn), (lenx, leny), Nens, rng = rng)
 
 x = (xi[:], yi[:])
 v = field[:]
@@ -133,7 +132,8 @@ mask, (pm, pn, po), (xi, yi, zi) =
 
 lenx = leny = lenz = 0.2
 Nens = 1
-field = DIVAnd.random(mask, (pm, pn, po), (lenx, leny, lenz), Nens)
+Random.seed!(rng,12345)
+field = DIVAnd.random(mask, (pm, pn, po), (lenx, leny, lenz), Nens, rng = rng)
 
 
 z = [0.3, 0.5, 0.7]
@@ -148,6 +148,7 @@ dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fithorzlen(
     v,
     z;
     epsilon2 = epsilon2,
+    rng = rng,
 );
 
 @test median(fitlenxy) ≈ lenx rtol = 0.3
@@ -163,6 +164,7 @@ dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
     v,
     z;
     epsilon2 = epsilon2,
+    rng = rng,
 );
 @test median(fitlenz) ≈ lenz rtol = 0.5
 

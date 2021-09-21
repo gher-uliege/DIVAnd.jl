@@ -1,3 +1,5 @@
+using Random: seed!
+
 """
     meanx,stdx = stats(sumx,sumx2,N)
 
@@ -551,6 +553,8 @@ function Base.iterate(iter::AllCoupels, state = (1, 1))
     return (nextstate, nextstate)
 end
 
+Random.seed!(iter::AllCoupels,iseed) = nothing
+
 mutable struct RandomCoupels{TRNG <: AbstractRNG}
     n::Int
     count::Int
@@ -558,6 +562,7 @@ mutable struct RandomCoupels{TRNG <: AbstractRNG}
 end
 
 Base.length(iter::RandomCoupels) = iter.count
+Random.seed!(iter::RandomCoupels,iseed) = Random.seed!(iter.rng,iseed)
 
 function Base.iterate(iter::RandomCoupels, state = (0, copy(iter.rng)))
     count, rng = state
@@ -576,23 +581,27 @@ function Base.iterate(iter::RandomCoupels, state = (0, copy(iter.rng)))
     return ((i, j), (count + 1, rng))
 end
 
-mutable struct VertRandomCoupels
+mutable struct VertRandomCoupels{TRNG <: AbstractRNG}
     zlevel::Float64 # depth in meters
     zindex::Vector{Int}
     x::NTuple{3,Vector{Float64}}
     searchxy::Float64 # in meters
     maxntries::Int
     count::Int
+    rng::TRNG
 end
 
+Random.seed!(iter::VertRandomCoupels,iseed) = Random.seed!(iter.rng,iseed)
 
 function _next(iter::VertRandomCoupels, state)
+    count, rng = state
+
     # pick two random points
     j = -1
     jindex = -1
 
     for ntries = 1:iter.maxntries
-        j = iter.zindex[rand(1:length(iter.zindex))]
+        j = iter.zindex[rand(iter.rng,1:length(iter.zindex))]
 
         # # for few data, this is faster
         # if length(zindex) < 10000
@@ -607,7 +616,7 @@ function _next(iter::VertRandomCoupels, state)
         jindex = -1
 
         for ntries2 = 1:iter.maxntries
-            k = rand(1:length(iter.x[1]))
+            k = rand(iter.rng,1:length(iter.x[1]))
             if (
                 (
                     distfun_m([iter.x[1][k], iter.x[2][k]], [iter.x[1][j], iter.x[2][j]]) <
@@ -629,11 +638,11 @@ function _next(iter::VertRandomCoupels, state)
         error("fail to find enought pairs at z = $(iter.zlevel)")
     end
     #@show iter.zlevel,iter.x[3][j],iter.x[3][jindex]
-    return ((j, jindex), state + 1)
+    return ((j, jindex), (count + 1, rng))
 end
 
-Base.iterate(iter::VertRandomCoupels, state = 0) =
-    (state == iter.count ? nothing : _next(iter, state))
+Base.iterate(iter::VertRandomCoupels, state = (0, copy(iter.rng))) =
+    (state[1] == iter.count ? nothing : _next(iter, state))
 
 
 
@@ -728,7 +737,7 @@ function fitlen(
     x0 = zeros(ndims)
     x1 = zeros(ndims)
 
-    Random.seed!(iseed)
+    Random.seed!(iter,iseed)
 
     for (i, j) in iter
         # compute the distance
@@ -789,7 +798,7 @@ function fitlen(
 
     covarweight = zeros(nbmax)
 
-    Random.seed!(iseed)
+    Random.seed!(iter,iseed)
 
     for (i, j) in iter
         # compute the distance
@@ -1027,6 +1036,7 @@ function fithorzlen(
     limitlen = false,
     epsilon2 = ones(size(value)),
     min_rqual = 0.5,
+    rng = Random.GLOBAL_RNG,
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1062,7 +1072,10 @@ function fithorzlen(
         v = value[sel] .- mean(value[sel])
 
         var0opt[k], lenopt[k], fitinfos[k] =
-            DIVAnd.fitlen(xsel, v, weight[sel], min(length(v), nsamp); distfun = distfun)
+            DIVAnd.fitlen(xsel, v, weight[sel], min(length(v), nsamp);
+                          distfun = distfun,
+                          rng = rng,
+                          )
 
         rqual[k] = fitinfos[k][:rqual]
         if limitlen
@@ -1126,6 +1139,7 @@ function fitvertlen(
     limitfun = (z, len) -> len,
     epsilon2 = ones(size(value)),
     min_rqual = 0.5,
+    rng = Random.GLOBAL_RNG,
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
@@ -1158,11 +1172,13 @@ function fitvertlen(
             lenopt[k] = NaN
             fitinfos[k] = Dict{Symbol,Any}()
         else
-            iter = VertRandomCoupels(z[k], zindex, x, searchxy, maxntries, count)
+            iter = VertRandomCoupels(
+                z[k], zindex, x,
+                searchxy, maxntries, count, rng)
             #state = start(iter)
             #@code_warntype next(iter,state)
             #@code_warntype fitlen((x[3],),value,ones(size(value)),nsamp,iter)
-            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],), value, weight, nsamp, iter)
+            var0opt[k], lenopt[k], fitinfos[k] = fitlen((x[3],), value, weight, nsamp, iter; rng = rng)
 
             rqual[k] = fitinfos[k][:rqual]
             @info "Vert. correlation length at z=$(z[k]): $(lenopt[k])"
