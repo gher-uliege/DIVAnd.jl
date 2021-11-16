@@ -2,13 +2,14 @@
 # with observations from an analytical function.
 using Test
 using DIVAnd
+using StableRNGs
 
-Random.seed!(1)
+rng = StableRNG(1234567)
 
-x = randn(100)
-y = randn(100)
-z = randn(100)
-t = randn(100)
+x = randn(rng,100)
+y = randn(rng,100)
+z = randn(rng,100)
+t = randn(rng,100)
 f = z
 
 mask, (pm, pn, po, pq), (xi, yi, zi, ti) =

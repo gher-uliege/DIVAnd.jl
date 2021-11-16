@@ -65,9 +65,9 @@ for alphabc in [0, 1]
             alphabc = alphabc,
         )
     end
-    @show fi[12,12,3]
-    @show fi2[12,12,3]
-#    @test fi ≈ fi2
+    #@show fi[12,12,3]
+    #@show fi2[12,12,3]
+    @test fi ≈ fi2
 end
 
 
