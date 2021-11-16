@@ -648,6 +648,7 @@ function gettemplatevars(
     ignore_errors = false,
     sigdigits = 5,
     url_path = nothing,
+    WMSexclude = String[],
 )
 
     # assume that grid and time coverage is the same as the
@@ -846,24 +847,29 @@ function gettemplatevars(
         Dataset(filepath_, "r") do ds
             for (name, var) in ds
                 if (("lon" in dimnames(var)) && ("lat" in dimnames(var))) ||
-                   (name == "obsid")
-                    if name == "obsid"
-                        description = "Observations"
-                    elseif haskey(var.attrib, "long_name")
-                        description = var.attrib["long_name"]
+                    (name == "obsid")
+
+                    if name in WMSexclude
+                        println("skipping ",name," for WMS layers")
                     else
-                        description = name
-                    end
-
-                    # add WMS layer name suffix if provided
-                    # this is useful if multiple NetCDF files are provided
-                    if length(WMSlayername) >= i
-                        if WMSlayername[i] != ""
-                            description *= " ($(WMSlayername[i]))"
+                        if name == "obsid"
+                            description = "Observations"
+                        elseif haskey(var.attrib, "long_name")
+                            description = var.attrib["long_name"]
+                        else
+                            description = name
                         end
-                    end
 
-                    push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                        # add WMS layer name suffix if provided
+                        # this is useful if multiple NetCDF files are provided
+                        if length(WMSlayername) >= i
+                            if WMSlayername[i] != ""
+                                description *= " ($(WMSlayername[i]))"
+                            end
+                        end
+
+                        push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                    end
                 end
             end
         end
@@ -1063,6 +1069,9 @@ it is not provided. The script will print the URLs for verification.
 information to be added in the XML file. Elements are typically create by the
 function `DIVAnd.getedmoinfo`.
 
+`WMSexclude` is a list of string with NetCDF variables not be included the XML
+under the WMS layer section.
+
 ### Example
 
 ```julia
@@ -1120,6 +1129,7 @@ function divadoxml(
     additionalvars = Dict{String,Any}(),
     additionalcontacts = [],
     WMSlayername = String[],
+    WMSexclude = String[],
     url_path = nothing,
 )
 
@@ -1137,6 +1147,7 @@ function divadoxml(
         additionalcontacts = additionalcontacts,
         ignore_errors = ignore_errors,
         url_path = url_path,
+        WMSexclude = WMSexclude,
     )
 
     merge!(templateVars, additionalvars)
