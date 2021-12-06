@@ -472,7 +472,7 @@ function previewURL(
     latr,
     project,
     domain;
-    colorbar_quantiles = [0.01, 0.99],
+    colorbar_quantiles = [0.001, 0.999],
     basemap = "shadedrelief",
     preview_url_time = nothing,
     default_field_min = nothing,
@@ -648,6 +648,7 @@ function gettemplatevars(
     ignore_errors = false,
     sigdigits = 5,
     url_path = nothing,
+    WMSexclude = String[],
 )
 
     # assume that grid and time coverage is the same as the
@@ -755,20 +756,28 @@ function gettemplatevars(
 
     P02_keywords = if haskey(ds.attrib, "search_keywords_urn")
         labelandURL.(split(ds.attrib["search_keywords_urn"], ", "))
-    else
+    elseif haskey(ds.attrib, "search_keywords")
         URLsfromlabels("P02", split(ds.attrib["search_keywords"], '|'))
+    else
+        error("attribute search_keywords_urn or search_keywords are not found")
     end
 
     P35_keywords = if haskey(ds.attrib, "parameter_keyword_urn")
         labelandURL.(split(ds.attrib["parameter_keyword_urn"], ", "))
-    else
+    elseif haskey(ds.attrib,"parameter_keyword")
+        URLsfromlabels("P35", split(ds.attrib["parameter_keyword"], '|'))
+    elseif haskey(ds.attrib,"parameter_keywords")
         URLsfromlabels("P35", split(ds.attrib["parameter_keywords"], '|'))
+    else
+        error("attribute parameter_keyword_urn or parameter_keyword(s) are not found")
     end
 
     C19_keywords = if haskey(ds.attrib, "area_keywords_urn")
         labelandURL.(split(ds.attrib["area_keywords_urn"], ", "))
-    else
+    elseif haskey(ds.attrib, "area_keywords")
         URLsfromlabels("C19", split(ds.attrib["area_keywords"], '|'))
+    else
+        error("attribute area_keywords_urn or area_keywords are not found")
     end
 
     P36_urn = Vocab.urn.(Vocab.find(Vocab.Concept(P35_keywords[1]["URL"]), "broader", "P36"))
@@ -780,8 +789,10 @@ function gettemplatevars(
 
     edmo_code = if haskey(ds.attrib, "institution_urn")
         rmprefix.(ds.attrib["institution_urn"])
-    else
+    elseif haskey(ds.attrib, "institution_edmo_code")
         ds.attrib["institution_edmo_code"]
+    else
+        error("attribute institution_urn or institution_edmo_code are not found")
     end
 
     product_code = get(ds.attrib, "product_code", "")
@@ -846,24 +857,29 @@ function gettemplatevars(
         Dataset(filepath_, "r") do ds
             for (name, var) in ds
                 if (("lon" in dimnames(var)) && ("lat" in dimnames(var))) ||
-                   (name == "obsid")
-                    if name == "obsid"
-                        description = "Observations"
-                    elseif haskey(var.attrib, "long_name")
-                        description = var.attrib["long_name"]
+                    (name == "obsid")
+
+                    if name in WMSexclude
+                        println("skipping ",name," for WMS layers")
                     else
-                        description = name
-                    end
-
-                    # add WMS layer name suffix if provided
-                    # this is useful if multiple NetCDF files are provided
-                    if length(WMSlayername) >= i
-                        if WMSlayername[i] != ""
-                            description *= " ($(WMSlayername[i]))"
+                        if name == "obsid"
+                            description = "Observations"
+                        elseif haskey(var.attrib, "long_name")
+                            description = var.attrib["long_name"]
+                        else
+                            description = name
                         end
-                    end
 
-                    push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                        # add WMS layer name suffix if provided
+                        # this is useful if multiple NetCDF files are provided
+                        if length(WMSlayername) >= i
+                            if WMSlayername[i] != ""
+                                description *= " ($(WMSlayername[i]))"
+                            end
+                        end
+
+                        push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                    end
                 end
             end
         end
@@ -1063,6 +1079,9 @@ it is not provided. The script will print the URLs for verification.
 information to be added in the XML file. Elements are typically create by the
 function `DIVAnd.getedmoinfo`.
 
+`WMSexclude` is a list of string with NetCDF variables not be included the XML
+under the WMS layer section.
+
 ### Example
 
 ```julia
@@ -1091,7 +1110,7 @@ DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zi
 For this function the following global NetCDF attributes are mandatory:
 
 * `product_id`: UUID identifier
-* `parameter_keywords_urn` or `parameter_keywords`: P35 code (e.g. "SDN:P35::EPC00007") or preferred label (e.g. "Water body phosphate") respectively.
+* `parameter_keyword_urn` or `parameter_keyword` (or `parameter_keywords`): P35 code (e.g. "SDN:P35::EPC00007") or preferred label (e.g. "Water body phosphate") respectively. Note the singular form (`parameter_keyword`) is preferred because there should be only a single P35 parameter per NetCDF file, but singular and plural forms are valid.
 * `search_keywords_urn` or `search_keywords`: P02 code or preferred label
 * `area_keywords_urn` or `area_keywords`: C19 code or preferred label
 * `institution_edmo_code`: EDMO code number
@@ -1120,6 +1139,7 @@ function divadoxml(
     additionalvars = Dict{String,Any}(),
     additionalcontacts = [],
     WMSlayername = String[],
+    WMSexclude = String[],
     url_path = nothing,
 )
 
@@ -1137,6 +1157,7 @@ function divadoxml(
         additionalcontacts = additionalcontacts,
         ignore_errors = ignore_errors,
         url_path = url_path,
+        WMSexclude = WMSexclude,
     )
 
     merge!(templateVars, additionalvars)

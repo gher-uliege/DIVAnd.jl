@@ -3,6 +3,9 @@
 using Test
 using Random
 import DIVAnd
+using StableRNGs
+
+rng = StableRNG(1234)
 
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_squaredom(2, range(-1, stop = 1, length = 50))
@@ -16,8 +19,6 @@ u = a * yi;
 v = -a * xi;
 epsilon2 = 1 / 200
 len = 0.4
-
-Random.seed!(1234);
 
 fi_ref, s = DIVAnd.DIVAndrun(
     mask,
@@ -48,6 +49,7 @@ for i = 1:5
         i;
         velocity = (u, v),
         alphabc = 0,
+        rng = rng,
     )
 
     #@show i, extrema(fi - fi_ref)
@@ -71,6 +73,7 @@ for ii = 1:5
         ii;
         velocity = (u, v),
         alphabc = 0,
+        rng = rng,
     )
     @test fi ≈ fi_ref rtol = 1e-2
 end

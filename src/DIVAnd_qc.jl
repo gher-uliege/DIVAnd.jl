@@ -27,7 +27,7 @@ If you cannot run `DIVAndrun` but use `DIVAndgo` (which does not provide a struc
 the latter provides `qcvalues` if you call `DIVAndgo` with a keyword parameter `QCMETHOD=`
 
 """
-function DIVAnd_qc(fi, s, method = 0)
+function DIVAnd_qc(fi, s, method = 0; rng = Random.GLOBAL_RNG)
 
     # @info "Applying quality check based on the analysis"
     # For the moment, hardwired values
@@ -75,7 +75,7 @@ function DIVAnd_qc(fi, s, method = 0)
     elseif mymethod == 4
         cvval = 1
         qcval .=
-            residual .^ 2 ./ (cvval * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s)) .^ 2)
+            residual .^ 2 ./ (cvval * (diag(R) / invlam) .* (1 .- DIVAnd_GCVKiiobs(s, rng = rng)) .^ 2)
     elseif mymethod == 5
         qcval .=
             residual .^ 2 ./

@@ -517,6 +517,11 @@ and times (`times` vector of `DateTime`)), search for points which are in the sa
  box of length `delta`. `delta` is a vector with 4 elements corresponding to
 longitude, latitude, depth and time
 (in days). `dupl` a vector of vectors containing the indices of the duplicates.
+
+!!! note
+
+    Observations and coordinates should not be NaN or Inf.
+
 """
 function checkduplicates(
     x::Tuple,
@@ -602,6 +607,10 @@ end
 Report duplicates of observations in data set (x2,v2) which are also in data set
 (x1,v1). `x1` and `x2` are tuples of vectors with the coordinates, `v1` and `v2` are the
 corresponding values.
+
+!!! note
+
+    Observations and coordinates should not be NaN or Inf.
 """
 function checkduplicates(
     x1::Tuple,

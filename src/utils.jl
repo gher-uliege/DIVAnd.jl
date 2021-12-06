@@ -590,6 +590,7 @@ function random(
     alpha::Vector{T} = T[],
     moddim::Vector{T} = T[],
     scale_len::Bool = true,
+    rng = Random.GLOBAL_RNG,
     btrunc = [],
 ) where {N,T}
 
@@ -606,7 +607,7 @@ function random(
     )
 
     n = size(s.iB, 1)::Int
-    z = randn(n, Nens)
+    z = randn(rng,n, Nens)
 
     F = cholesky(s.iB::SparseMatrixCSC{T,Int})
     F_UP = F.UP
