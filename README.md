@@ -118,6 +118,8 @@ where
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
 
+More examples are available in the notebooks from the [Diva Workshop](https://github.com/gher-ulg/Diva-Workshops).
+
 ## Note on which analysis function to use
 
 `DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when multiplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
