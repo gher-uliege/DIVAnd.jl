@@ -2,14 +2,15 @@
 # with observations from an analytical function.
 using Test
 using DIVAnd
+using StableRNGs
 
+rng = StableRNG(123)
 
 # observations
 # same random set used as sometimes qc flags vary depending on actual noise
-Random.seed!(11)
 
-x = rand(150);
-y = rand(150);
+x = rand(rng,150);
+y = rand(rng,150);
 
 # Put two points in specific locations
 
@@ -23,7 +24,7 @@ y[2] = 0.25
 f = sin.(x * 2 * pi) .* sin.(y * 2 * pi);
 
 
-f = f + 0.25 * randn(150);
+f = f + 0.25 * randn(rng,150);
 
 # Now fake some mix up in  two points coordinates
 
@@ -49,7 +50,7 @@ fi, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; alphabc = 
 
 
 for method in [0, 1, 3, 4]
-    qcval = DIVAnd_qc(fi, s, method)
+    qcval = DIVAnd_qc(fi, s, method; rng = rng)
 
     if method == 4
         # Provide fake THETA value
