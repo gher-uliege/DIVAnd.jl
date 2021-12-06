@@ -101,6 +101,7 @@ function DIVAnd_diagapp(
     # in 2D needs to be adapted to cover the domain: pack unpack and sum on real domain ?
     # Allocate arrays once
     eij = zeros(Int, size(pmn[1]))
+    #@show size(eij)
     diagerror = zeros(Float64, size(pmn[1])) .* NaN
     tutuu = zeros(Float64, size(pmn[1]))
     tutu = statevector_pack(sv, (eij,))
@@ -169,10 +170,13 @@ function DIVAnd_diagapp(
             tutuub[:], = statevector_unpack(sv, zy)
         end
         # Now each point of eij sums up the contribution aournd its box center
-        for IG in findall(x -> x == 1, eij)
+        for IGtemp in findall(x -> x == 1, eij)
+        IG=CartesianIndex(IGtemp)
             ####################################
             # NEED TO TAKE INTO ACCOUNT MODDIM
             ####################################
+            #@show IG, IFI, mystep, ILA
+            #@show typeof(IG), typeof(IFI), typeof(mystep), typeof(ILA)
             diagerror[IG] = sum(tutuu[max(IFI, IG - mystep):min(IG + mystep, ILA)])
             if Binv
                 diagB[IG] = sum(tutuub[max(IFI, IG - mystep):min(IG + mystep, ILA)])
