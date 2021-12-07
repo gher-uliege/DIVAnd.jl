@@ -21,7 +21,7 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-You need [Julia](http://julialang.org) (version 1.5 or 1.6) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 1.6 or 1.7) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside a Julia terminal, you can download and install the package by issuing:
 
 ```julia
