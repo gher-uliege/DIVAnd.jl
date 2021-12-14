@@ -269,9 +269,12 @@ The variable with the following standard_name should exits:
 * time
 
 As well as the variable with the following long_name:
-* LOCAL_CDI_ID
-* EDMO_code or EDMO_CODE
+* LOCAL\\_CDI\\_ID
+* EDMO\\_code or EDMO\\_CODE
 * Depth
+
+A guide how to export NetCDF files from ODV is available [here](https://github.com/gher-ulg/Diva-Workshops/blob/master/tricks/ODV_netCDF_export.md)
+
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
          nchunk = 10)
