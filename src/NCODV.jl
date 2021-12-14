@@ -277,7 +277,6 @@ function statusflags(ncvar,accepted_status_flags)
     tmp = NCDatasets.ancillaryvariables(ncvar, "status_flag")
     if tmp != nothing
         @debug "variable flag: $(name(tmp)) for $(name(ncvar))"
-        @show accepted_status_flags
         accepted_status_flag_values =
             flagvalues(tmp.attrib, accepted_status_flags)
         @debug "accepted_status_flag_values: $accepted_status_flag_values"

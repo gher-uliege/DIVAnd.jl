@@ -389,7 +389,7 @@ good = almostgood.(ox_qf) .& .!ismissing.(ox) .& almostgood.(z_qf) .& .!ismissin
 
 
 # Test warning of missing flags
-fname = "ncodv_without_flags.nc"
+fname = tempname()
 if !isfile(fname)
     download("https://dox.ulg.ac.be/index.php/s/nGmsH5ydCAjgft5/download",fname)
 end
