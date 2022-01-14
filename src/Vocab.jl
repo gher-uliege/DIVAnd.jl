@@ -133,14 +133,15 @@ end
 function Concept(url::AbstractString)
     # Content Negotiation
     # http://vocab.nerc.ac.uk/
-    @debug "get concept: $url"
     headers = [
         "Accept" => "application/rdf+xml"
     ]
+    @debug "get concept: $url"
+    @debug "as curl -L -H \"$(join(headers[1],": "))\" \"$url\""
     r = HTTP.get(url,headers)
     xdoc = parsexml(String(r.body))
 
-    node = findfirst("skos:Concept", root(xdoc), namespaces)
+    node = findfirst("rdf:Description", root(xdoc), namespaces)
     return Concept(node)
 end
 
@@ -239,10 +240,11 @@ function findbylabel(
     headers = [
         "Accept" => "application/rdf+xml"
     ]
-    @debug "get collection: $collection.baseurl"
+    @debug "get collection: $(collection.baseurl)"
+    @debug "as curl -L -H \"$(join(headers[1],": "))\" \"$(collection.baseurl)\""
     r = HTTP.get(collection.baseurl,headers)
     xdoc = EzXML.parsexml(String(r.body))
-    concepts = Vocab.Concept.(findall("//skos:Concept", root(xdoc), Vocab.namespaces))
+    concepts = Vocab.Concept.(findall("//rdf:Description", root(xdoc), Vocab.namespaces))
     alllabels = Vocab.prefLabel.(concepts)
 
     foundconcepts = Vector{Vocab.Concept}(undef, length(labels))
