@@ -3,7 +3,7 @@ uuid = "efc8151c-67de-5a8f-9a35-d8f54746ae9d"
 keywords = ["interpolation", "data analysis", "spatial data analysis", "oceanography"]
 license = "GPL2+"
 desc = "DIVAnd performs an n-dimensional variational analysis of arbitrarily located observations"
-version = "2.7.6"
+version = "2.7.7"
 
 [deps]
 AlgebraicMultigrid = "2169fc97-5a83-5252-b627-83903c6c433c"
@@ -31,7 +31,7 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
-AlgebraicMultigrid = "0.2, 0.3, 0.4"
+AlgebraicMultigrid = "0.2, 0.3, 0.4, 0.5"
 DataStructures = "0.17, 0.18"
 EzXML = "0.8, 0.9, 1.1"
 HTTP = "0.8, 0.9"

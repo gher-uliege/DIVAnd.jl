@@ -12,8 +12,9 @@ entry = collection["sea_water_temperature"]
 @test occursin("water", DIVAnd.Vocab.description(entry))
 @test DIVAnd.Vocab.canonical_units(entry) == "K"
 
-
-#collection = DIVAnd.Vocab.Collection("http://www.seadatanet.org/urnurl/collection/P01/current/")
+url = "https://vocab.nerc.ac.uk/collection/P01/current/PSALPR01"
+c = DIVAnd.Vocab.Concept(url)
+@test occursin("salinity", DIVAnd.Vocab.prefLabel(c))
 
 collection = DIVAnd.Vocab.SDNCollection("P01")
 
