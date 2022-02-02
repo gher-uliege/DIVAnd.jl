@@ -34,6 +34,7 @@ function DIVAndjog(
     csteps,
     lmask,
     pcmethod = 1;
+    rng = Random.GLOBAL_RNG,
     alphapc = [],
     otherargs...,
 )
@@ -220,7 +221,7 @@ function DIVAndjog(
 
 
                 xguess = PC1 * (PC1 * xguess)
-                xr = randn(size(xguess)[1], 1)
+                xr = randn(rng,size(xguess)[1], 1)
                 scalef = (xr' * (PC1 * (PC2 * (PC1 * xr)))) ./ (xr' * xr)
                 scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
@@ -311,7 +312,7 @@ function DIVAndjog(
                 # tolerance on the gradient A x - b
 
                 xguess = (PC1 * xguess)
-                xr = randn(size(xguess)[1], 1)
+                xr = randn(rng,size(xguess)[1], 1)
                 newsc = [1]
                 #scalef=(xr'*(PC1.factors[:UP]\(PC2*(PC1.factors[:PtL]\xr))))./(xr'*xr)
                 if PC1 == 1
@@ -464,7 +465,7 @@ function DIVAndjog(
 
 
 
-                xr = randn(size(xguess)[1], 1)
+                xr = randn(rng,size(xguess)[1], 1)
                 scalef =
                     0.5 * ((xr' * (PC1 * (PC2 * xr))) + (xr' * (PC2 * (PC1 * xr)))) ./
                     (xr' * xr)
@@ -780,7 +781,7 @@ function DIVAndjog(
 
 
 
-            xr = randn(size(HI)[1], 1)
+            xr = randn(rng,size(HI)[1], 1)
 
             scalef = (xr' * (HI * (HI' * xr))) ./ (xr' * xr)
             scalef2 = 1 / scalef[1]
@@ -908,7 +909,7 @@ function DIVAndjog(
             fc = 0
             #gc()
 
-            xr = randn(size(HI)[1], 1)
+            xr = randn(rng,size(HI)[1], 1)
 
             scalef = (xr' * (HI * (HI' * xr))) ./ (xr' * xr)
             scalef2 = 1.0 / scalef[1]
@@ -1012,18 +1013,18 @@ function DIVAndjog(
 
 
             xguess = PC1 * (PC1 * xguess)
-            #xr=randn(size(HI)[1],1)
+            #xr=randn(rng,size(HI)[1],1)
             #scalef=(xr'*(HI*(PC1*(PC2*(PC1*(HI'*xr))))))./(xr'*xr)
-            xr = randn(size(HI)[2], 1)
+            xr = randn(rng,size(HI)[2], 1)
             scalef = (xr' * ((PC1 * (PC2 * (PC1 * (xr)))))) ./ (xr' * xr)
-            #xr=randn(size(HI)[2],1)
+            #xr=randn(rng,size(HI)[2],1)
             scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
             #Maybe adapt scaling including HI ?
-            # xr=randn(size(HI)[1],1)
+            # xr=randn(rng,size(HI)[1],1)
             # xz=HI'*xr;
             # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
-            # xz=randn(size(HI)[2],1)
+            # xz=randn(rng,size(HI)[2],1)
             # scalefter=(xz'*(PC2*xz))./(xz'*xz)
 
 
@@ -1165,18 +1166,18 @@ function DIVAndjog(
 
 
             xguess = PC1a * (PC1b * (PC1b * (PC1a * (HI * xguess))))
-            xr = randn(size(HI)[1], 1)
+            xr = randn(rng,size(HI)[1], 1)
             scalef =
                 (xr' * (PC1a * (PC1b * (HI * (PC2 * (HI' * (PC1b * (PC1a * xr)))))))) ./
                 (xr' * xr)
-            xr = randn(size(HI)[2], 1)
+            xr = randn(rng,size(HI)[2], 1)
             scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
             #Maybe adapt scaling including HI ?
-            # xr=randn(size(HI)[1],1)
+            # xr=randn(rng,size(HI)[1],1)
             # xz=HI'*xr;
             # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
-            # xz=randn(size(HI)[2],1)
+            # xz=randn(rng,size(HI)[2],1)
             # scalefter=(xz'*(PC2*xz))./(xz'*xz)
 
 
@@ -1321,7 +1322,7 @@ function DIVAndjog(
             diagshift = 0.00015 * (sqrt(size(HI)[1] / size(HI)[2]) - 1)
 
             xguess = (PC1b * (PC1a * (PC1a * (PC1b * (HI * (PC1 * (PC1 * xguess)))))))
-            xr = randn(size(HI)[1], 1)
+            xr = randn(rng,size(HI)[1], 1)
             scalef =
                 (
                     xr' * (
@@ -1331,16 +1332,16 @@ function DIVAndjog(
                         )
                     )
                 ) ./ (xr' * xr)
-            #xr=randn(size(HI)[2],1)
+            #xr=randn(rng,size(HI)[2],1)
             #scalef=(xr'*((PC1*(PC2*(PC1*(xr))))))./(xr'*xr)
-            xr = randn(size(HI)[2], 1)
+            xr = randn(rng,size(HI)[2], 1)
             scalefter = (xr' * (PC2 * xr)) ./ (xr' * xr)
 
             #Maybe adapt scaling including HI ?
-            # xr=randn(size(HI)[1],1)
+            # xr=randn(rng,size(HI)[1],1)
             # xz=HI'*xr;
             # scalef=(xz'*(PC1*(PC2*(PC1*xz))))./(xz'*xz)
-            # xz=randn(size(HI)[2],1)
+            # xz=randn(rng,size(HI)[2],1)
             # scalefter=(xz'*(PC2*xz))./(xz'*xz)
 
 

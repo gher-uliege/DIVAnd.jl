@@ -2,22 +2,27 @@
 # with observations from an analytical function.
 
 using Test
+using StableRNGs
+using Random
+using DIVAnd
 
 # true error variance of observation
 epsilon2_true = 1.0
 
-Random.seed!(1234)
+rng = StableRNG(1234)
+#rng = MersenneTwister(1234)
+
 # observations
 nobs = 99
-x = rand(nobs);
-y = rand(nobs);
+x = rand(rng,nobs);
+y = rand(rng,nobs);
 
 # true length-scale
 len_true = 0.5
 f = sin.(π * x / len_true) .* cos.(π * y / len_true);
 
 # add noise
-f = f + sqrt(epsilon2_true) * randn(nobs);
+f = f + sqrt(epsilon2_true) * randn(rng,nobs);
 
 # final grid
 mask, (pm, pn), (xi, yi) =
@@ -44,10 +49,11 @@ for imeth = 0:3
             3,
             imeth;
             alphabc = 0,
+            rng = rng,
         )
 
-    @test 0.5 < bestfactore * epsilon2 / epsilon2_true <= 2.5
-    @test 0.3 < bestfactorl * len / len_true < 3
+    @test 0.5 < bestfactore * epsilon2 / epsilon2_true <= 4
+    @test 0.2 < bestfactorl * len / len_true < 3
 
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
@@ -66,8 +72,9 @@ for imeth = 0:3
         3,
         imeth;
         alphabc = 0,
+        rng = rng,
     )
-    @test 1.0 < bestfactor < 1.4
+    @test 1.0 < bestfactor < 1.9
     #@test 0.3 < bestfactorl*len/len_true < 3
 
     #@show bestfactor
@@ -88,11 +95,12 @@ for imeth = 0:3
         0,
         imeth;
         alphabc = 0,
+        rng = rng,
     )
     #@test 0.5 < bestfactore*epsilon2/epsilon2_true < 2
     #@test 0.3 < bestfactorl*len/len_true < 3
 
-    @test 1.5 < bestfactor < 2.1
+    @test 1.2 < bestfactor < 2.1
 
     #@show bestfactor
     #@show bestfactore*epsilon2
@@ -113,10 +121,11 @@ for imeth = 0:3
             0,
             imeth;
             alphabc = 0,
+            rng = rng,
         )
 
     #@show bestfactor
-    @test 0.8 < bestfactor < 1.1
+    @test 0.8 < bestfactor < 1.3
     #@show bestfactore*epsilon2
     #@show bestfactorl*len
 end

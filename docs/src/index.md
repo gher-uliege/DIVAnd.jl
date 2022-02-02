@@ -4,7 +4,7 @@ DIVAnd
 
 # DIVAnd.jl documentation
 
-## API refence
+## API reference
 
 ```@docs
 DIVAnd.diva3d
@@ -87,6 +87,14 @@ DIVAnd.Vocab.find
 DIVAnd.Vocab.description
 DIVAnd.Vocab.canonical_units
 DIVAnd.Vocab.splitURL
+```
+
+
+### Post-processing
+
+```@docs
+DIVAnd.derived
+DIVAnd.cut
 ```
 
 ## Internal API or advanced usage
@@ -240,7 +248,7 @@ The velocity field should be a
 tuple of n-elements. Every element of the tuple is a gridded array (defined at the same location than the target array) representing a single velocity component.
 For 3D analysis, the order of the dimensions is typically: longitude, latitude and depth. Like-wise the velocity components are
 zonal, meridional and vertical velocity. The three velocity components has to be scaled by
-a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in DIVAnd.jl to automate this process.
+a constant factor to enhance or decrease this constraint. It is recommended that this parameter is tuned by cross-validation. There are no tools currently in `DIVAnd.jl` to automate this process.
 
 For the two dimensional case, the velocity has just two components as shown in the example below.
 
@@ -474,18 +482,17 @@ then, for the `nt` other analysis, we use the structure `s`, computed in the pre
 fpi = s.P * (s.H' * (s.R \ obsval[:,i]))
 f_with_mask = unpack(s.sv, fpi, NaN)
 ```
-where i=1, ..., nt.      
+where i=1, ..., nt.
 
 The `unpack` function _unpacks_ the vector `fpi` into the different variables var1, var2, ... `s.sv` is the statevector and `NaN` is the fill value.
 
 Check the [example](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/DIVAnd_example_fixed_obs.jl).
 
-
-
 ## API changes
 
 We do our best to avoid changing the API, but sometimes it is unfortunately necessary.
 
+* 2021-04-21: When using domain splitting, the average correlation length is computed over all domain and not per subdomain. The API remained the same.
 * 2019-06-24: `DIVAnd.fit_isotropic` and `DIVAnd.fit` are removed and replaced by `DIVAnd.fithorzlen` and `DIVAnd.fitvertlen`.
 * 2019-06-24: If the parameters `background_lenz` and `background_lenz_factor` of `diva3d` are both specified, then preference will now be given for `background_lenz`.
 * 2018-07-02: The module `divand` has been renamed `DIVAnd` and likewise functions containing `divand`
@@ -508,7 +515,6 @@ Pkg.add("Documenter")
 
 
 If the installation of a package fails, it is recommended to update the local copy of the package list by issuing `Pkg.update()` to make sure that Julia knows about the latest version of these packages and then to re-try the installation of the problematic package.
-Julia calls the local copy of the package list `METADATA`.
 For example to retry the installation of `EzXML` issue the following command:
 
 ```julia
@@ -577,7 +583,7 @@ You can put this line in a file `.juliarc.jl` placed in your home directory (the
 
 ### Julia cannot connect to GitHub on Windows 7 and Windows Server 2012
 
-Cloning METADATA or downloading a Julia packages fails with:
+Cloning the package registery or downloading a Julia packages fails with:
 
 ```
 GitError(Code:ECERTIFICATE, Class:OS, , user cancelled certificate checks: )
@@ -729,6 +735,21 @@ Stacktrace:
  .................
  [9] DIVAndrun(::BitArray{3}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Tuple{Array{Float64,1},Array{Float64,1},Array{Float64,1}}, ::Array{Float64,1}, ::Tuple{Array{Float64,3},Array{Float64,3},Array{Float64,3}}, ::Float64) at /home/ctroupin/.julia/v0.6/DIVAnd/src/DIVAndrun.jl:147
 ```
+
+### DimensionMismatch when running `diva3d`
+
+You get an error like
+```julia
+DimensionMismatch("tried to assign 201×201 array to 202×201 destination")
+```
+
+This type of error might be due to the reading of the bathymetry: if you work with a
+regional bathymetry (for instance not with GEBCO), you should set the option
+`bathisglobal` to false.
+
+When `bathisglobal = true`, the longitude is supposed to *wrap around*
+(the last element of the lon should be right before the first element of lon),
+thus the dimension mismatch.
 
 
 ### Installing additional packages when using a git clone

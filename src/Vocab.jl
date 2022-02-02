@@ -20,8 +20,8 @@ const namespaces = Dict(
 
 const CFStandardNameURL = "http://cfconventions.org/Data/cf-standard-names/current/src/cf-standard-name-table.xml"
 const CFAreaTypesURL = "http://cfconventions.org/Data/area-type-table/current/src/area-type-table.xml"
-const VocabURL = "http://vocab.nerc.ac.uk/collection"
-const EDMOURL = "http://www.seadatanet.org/urnurl"
+const VocabURL = "https://vocab.nerc.ac.uk/collection"
+const EDMOURL = "https://www.seadatanet.org/urnurl"
 
 
 mutable struct CFVocab
@@ -133,14 +133,15 @@ end
 function Concept(url::AbstractString)
     # Content Negotiation
     # http://vocab.nerc.ac.uk/
-    @debug "get concept: $url"
     headers = [
         "Accept" => "application/rdf+xml"
     ]
+    @debug "get concept: $url"
+    @debug "as curl -L -H \"$(join(headers[1],": "))\" \"$url\""
     r = HTTP.get(url,headers)
     xdoc = parsexml(String(r.body))
 
-    node = findfirst("skos:Concept", root(xdoc), namespaces)
+    node = findfirst("rdf:Description", root(xdoc), namespaces)
     return Concept(node)
 end
 
@@ -239,9 +240,11 @@ function findbylabel(
     headers = [
         "Accept" => "application/rdf+xml"
     ]
+    @debug "get collection: $(collection.baseurl)"
+    @debug "as curl -L -H \"$(join(headers[1],": "))\" \"$(collection.baseurl)\""
     r = HTTP.get(collection.baseurl,headers)
     xdoc = EzXML.parsexml(String(r.body))
-    concepts = Vocab.Concept.(findall("//skos:Concept", root(xdoc), Vocab.namespaces))
+    concepts = Vocab.Concept.(findall("//rdf:Description", root(xdoc), Vocab.namespaces))
     alllabels = Vocab.prefLabel.(concepts)
 
     foundconcepts = Vector{Vocab.Concept}(undef, length(labels))
@@ -275,6 +278,7 @@ mutable struct EDMOEntry
 end
 
 function EDMOEntry(url::AbstractString)
+    @debug "getting EDMO URL $url"
     r = HTTP.get(url)
     xdoc = parsexml(String(r.body))
     return EDMOEntry(root(xdoc))

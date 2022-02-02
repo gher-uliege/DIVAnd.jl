@@ -13,7 +13,7 @@ function checkresolution(
 ) where {N,T1,T2}
     for i = 1:length(pmn)
         for j in CartesianIndices(pmn[i])
-            if ((pmn[i][j] * len[i][j] <= 2) && mask[j]) && (len[i][j] != 0.0)
+            if ((pmn[i][j] * len[i][j] < 2) && mask[j]) && (len[i][j] != 0.0)
                 res = 1 / pmn[i][j]
                 @warn "resolution ($res) is too coarse for correlation length $(len[i][j]) in dimension $i at indices $j (skipping further tests). It is recommended that the resolution is at least 2 times finer than the correlation length."
                 #error("stop")
@@ -143,8 +143,8 @@ function ufill!(c, valexc, work, work2, iwork::Array{Int8,3}, iwork2::Array{Int8
     while icount > 0
         icount = 0
 
-        for k = 2:kmax+1
-            for j = 2:jmax+1
+        @inbounds for k = 2:kmax+1
+            Threads.@threads for j = 2:jmax+1
                 for i = 2:imax+1
                     work2[i, j, k] = work[i, j, k]
                     iwork2[i, j, k] = iwork[i, j, k]
@@ -590,6 +590,7 @@ function random(
     alpha::Vector{T} = T[],
     moddim::Vector{T} = T[],
     scale_len::Bool = true,
+    rng = Random.GLOBAL_RNG,
     btrunc = [],
 ) where {N,T}
 
@@ -606,7 +607,7 @@ function random(
     )
 
     n = size(s.iB, 1)::Int
-    z = randn(n, Nens)
+    z = randn(rng,n, Nens)
 
     F = cholesky(s.iB::SparseMatrixCSC{T,Int})
     F_UP = F.UP

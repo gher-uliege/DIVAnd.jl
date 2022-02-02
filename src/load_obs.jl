@@ -127,9 +127,10 @@ end
 
 
 """
-    obsvalue,obslon,obslat,obsdepth,obstime,obsid = loadobs(T,filename,varname)
+    obsvalue,obslon,obslat,obsdepth,obstime,obsids = loadobs(T,filename,varname)
+    obsvalue,obslon,obslat,obsdepth,obstime,obsids = loadobs(T,filenames,varname)
 
-Load the variable `varname` from the netCDF file `filename`.
+Load the variable `varname` from the netCDF file `filename` (or list of filenames).
 Coordinates (the netCDF variables "obslon", "obslat", "obsdepth"),
 time ("obstime") and identifiers ("obsids") will also be loaded.
 Numeric output arguments will have the type `T`.
@@ -149,4 +150,16 @@ function loadobs(T, filename, varname; chunksize = 1_000_000)
 
         return value, lon, lat, depth, time, obsid
     end
+end
+
+
+function loadobs(T, filenames::AbstractVector{<:AbstractString}, varname; chunksize = 1_000_000)
+    d = DIVAnd.loadobs.(Float64,filenames,varname; chunksize = chunksize)
+    obsvalue = reduce(vcat,getindex.(d,1))
+    obslon = reduce(vcat,getindex.(d,2))
+    obslat = reduce(vcat,getindex.(d,3))
+    obsdepth = reduce(vcat,getindex.(d,4))
+    obstime = reduce(vcat,getindex.(d,5))
+    obsids = reduce(vcat,getindex.(d,6))
+    return obsvalue, obslon, obslat, obsdepth, obstime, obsids
 end

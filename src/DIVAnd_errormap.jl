@@ -13,11 +13,10 @@ function DIVAnd_errormap(
 )
 
     # Criteria to define which fraction of the domain size L can be to be called small
-    LoverLlimit = 0.12
+    LoverLlimit = 0.1
     # Criteria for lot of data means lot of data in hypersphere of correlation length diameters. Need to think about L=0 case ...
     pointsperbubblelimit = 10
     pointsperbubblelimitlow = 1
-
 
 
     errmethod = method
@@ -27,6 +26,7 @@ function DIVAnd_errormap(
     smallL = false
     Bigdata = false
     Lowdata = false
+
 
     if method == "auto"
 
@@ -40,7 +40,7 @@ function DIVAnd_errormap(
             LoverLdomain[i] = Lpmnrange[i][2] / size(mask)[i]
         end
 
-        if sum(Loverdomain .< LoverLlimit) == ndims(masl)
+        if sum(LoverLdomain .< LoverLlimit) == ndims(mask)
             smallL = true
         end
 
@@ -49,21 +49,21 @@ function DIVAnd_errormap(
         realdims = ndims(mask)
         for i = 1:ndims(mask)
             LoverLdomain[i] = Lpmnrange[i][1] / size(mask)[i]
+
+
             if Lpmnrange[i][1] == 0
                 LoverLdomain[i] = 1.0 / size(mask)[i]
                 realdims = realdims - 1
             end
         end
-
-        if prod(Loverdomain) * ndata > pointsperbubblelimit^realdims
+        #nbdonnee size of f a revoir en fonction depsilon2
+        if prod(LoverLdomain)*(pi^realdims)/gamma((realdims/2)+1) * size(f)[1] > pointsperbubblelimit
             Bigdata = true
         end
 
-        if prod(Loverdomain) * ndata < pointsperbubblelimitlow^realdims
+        if prod(LoverLdomain)*(pi^realdims)/gamma((realdims/2)+1) * size(f)[1] < pointsperbubblelimitlow
             Lowdata = true
         end
-
-
 
         # try to guess
 
@@ -83,30 +83,128 @@ function DIVAnd_errormap(
                 else
                     errmethod = "diagapp"
                 end
-
             end
-            if Bigdata
+        else
+		    if Bigdata
                 errmethod = "scpme"
             else
                 errmethod = "aexerr"
-            end
-
-        else
-
-
+		    end
 
         end
-
-
-
-
-
 
         # So best guess up to now
         @show errmethod
     end
 
 
+
+    if method == "cheap"
+        Lpmnrange = DIVAnd_Lpmnrange(pmn, len)
+        # L compared to domain size
+
+        LoverLdomain = zeros(Float64, ndims(mask))
+
+
+        for i = 1:ndims(mask)
+            LoverLdomain[i] = Lpmnrange[i][2] / size(mask)[i]
+        end
+
+        if sum(LoverLdomain .< LoverLlimit) == ndims(mask)
+            smallL = true
+        end
+
+
+        # Now look at lower values to check for data coverage
+        realdims = ndims(mask)
+        for i = 1:ndims(mask)
+            LoverLdomain[i] = Lpmnrange[i][1] / size(mask)[i]
+            if Lpmnrange[i][1] == 0
+                LoverLdomain[i] = 1.0 / size(mask)[i]
+                realdims = realdims - 1
+            end
+        end
+        #nbdonnee size of f a revoir en fonction depsilon2
+        if prod(LoverLdomain) * size(f)[1] > pointsperbubblelimit^realdims
+            Bigdata = true
+        end
+
+        if prod(LoverLdomain) * size(f)[1] < pointsperbubblelimitlow^realdims
+            Lowdata = true
+        end
+        if smallL
+            if Lowdata
+                errmethod = "cpme"
+            else
+                if Bigdata
+                    errmethod = "scpme"
+                else
+                    errmethod = "cpme"
+                end
+            end
+        else
+		    if Bigdata
+                errmethod = "scpme"
+            else
+                errmethod = "cpme"
+		    end
+
+        end
+    end
+
+    if method == "precise"
+        Lpmnrange = DIVAnd_Lpmnrange(pmn, len)
+        # L compared to domain size
+
+        LoverLdomain = zeros(Float64, ndims(mask))
+
+
+        for i = 1:ndims(mask)
+            LoverLdomain[i] = Lpmnrange[i][2] / size(mask)[i]
+        end
+
+        if sum(LoverLdomain .< LoverLlimit) == ndims(mask)
+            smallL = true
+        end
+
+
+        # Now look at lower values to check for data coverage
+        realdims = ndims(mask)
+        for i = 1:ndims(mask)
+            LoverLdomain[i] = Lpmnrange[i][1] / size(mask)[i]
+            if Lpmnrange[i][1] == 0
+                LoverLdomain[i] = 1.0 / size(mask)[i]
+                realdims = realdims - 1
+            end
+        end
+        #nbdonnee size of f a revoir en fonction depsilon2
+        if prod(LoverLdomain) * size(f)[1] > pointsperbubblelimit^realdims
+            Bigdata = true
+        end
+
+        if prod(LoverLdomain) * size(f)[1] < pointsperbubblelimitlow^realdims
+            Lowdata = true
+        end
+
+
+        if smallL
+            if Lowdata
+                errmethod = "aexerr"
+            else
+                if Bigdata
+                    errmethod = "diagapp"
+                else
+                    errmethod = "diagapp"
+                end
+            end
+        else
+		    if Bigdata
+                errmethod = "diagapp"
+            else
+                errmethod = "aexerr"
+		    end
+        end
+    end
 
 
     if errmethod == "cpme" && Bscale
@@ -141,13 +239,71 @@ function DIVAnd_errormap(
     end
 
 
-
-
     # Now calculate error depening on the method
 
-    @show errmethod, ScalebyB
+    @show errmethod, ScalebyB, pointsperbubblelimit
 
+    if errmethod == "cpme"
+        errormap = DIVAnd_cpme(
+            mask,
+            pmn,
+            xi,
+            x,
+            f,
+            len,
+            epsilon2;
+            otherargs...
+        )
 
-    return errormap, errmethod
+        return errormap, errmethod
+    end
 
+    if errmethod == "scpme"
+        errormap = DIVAnd_cpme(
+            mask,
+            pmn,
+            xi,
+            x,
+            f,
+            len,
+            epsilon2;
+            otherargs...
+        )
+
+        scpme=deepcopy(errormap)
+        @time DIVAnd_scalecpme!(scpme,s.P)
+
+        return scpme, errmethod
+    end
+
+    if errmethod == "exact"
+        errormap =statevector_unpack(s.sv,diag(s.P))
+
+        return errormap, errmethod
+    end
+
+    if errmethod == "diagapp"
+        errormap = DIVAnd_diagapp(
+            s.P,
+            pmn,
+            len,
+            s.sv,
+        )
+        return errormap, errmethod
+    end
+
+    if errmethod == "aexerr"
+        errormap,bi,c,d =DIVAnd_aexerr(
+            mask,
+            pmn,
+            xi,
+            x,
+            f,
+            len,
+            epsilon2;
+            otherargs...
+        )
+        return errormap, errmethod
+    end
+    @show "you should not be here"
 end

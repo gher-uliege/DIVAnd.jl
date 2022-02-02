@@ -24,10 +24,15 @@ using Dates
 using DelimitedFiles
 using Test
 
-#if v"1.0" <= VERSION < v"1.3"
-if v"1.0" <= VERSION
+using AlgebraicMultigrid
+import IterativeSolvers: cg
+
+
+if v"1.0" <= VERSION < v"1.6"
     # workaround for
     # https://github.com/JuliaLang/julia/issues/28011
+    # solved in
+    # https://github.com/JuliaLang/julia/issues/39474
     import Base: *
     Base.:*(A::SparseArrays.SparseMatrixCSC, B::BitArray) = A * Int8.(B)
 end
@@ -148,7 +153,7 @@ function DIVAnd_struct(::Type{OT}, mask::AbstractArray{Bool,n}) where {OT,n}
     iB = myempty(OT, (prod(sz), prod(sz)))
     iB_ = OT[]
     Ld = Float64[]
-    P = CovarIS{Float64,OT}(sempty, nothing)
+    P = CovarIS{Float64,OT}(sempty, nothing, 100, 0., 0., true)
 
     isinterior = Bool[]
     isinterior_stag = [Bool[] for i = 1:n]
@@ -418,6 +423,9 @@ export DIVAnd_constr_constcoast
 include("DIVAndjog.jl")
 include("DIVAndrun.jl")
 include("DIVAndgo.jl")
+
+include("DIVAndrun_wrapper.jl")
+
 include("DIVAnd_cpme.jl")
 include("DIVAnd_aexerr.jl")
 include("DIVAnd_GCVKii.jl")
@@ -522,6 +530,10 @@ include("average_background_profile.jl")
 include("DIVAnd_diagapp.jl")
 
 include("DIVAnd_scalecpme!.jl")
+
+include("derived.jl")
+
+include("cut_results.jl")
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 

@@ -22,6 +22,11 @@
 # Alexander Barth
 # GPLv2 or later
 
+using DIVAnd
+using JSON
+using Printf
+using Statistics
+
 function test_2dvar_benchmark(name)
 
     @printf("Running DIVAnd benchmark in 2 dimensions\n")
@@ -51,9 +56,9 @@ function test_2dvar_benchmark(name)
         @printf("size %5d time %10.4f \n", ng[i], median_time[i])
     end
 
-    fname = "test_2dvar_benchmark_$(name).mat"
-    @printf("save result in file %s\n", fname)
-    matwrite(fname, Dict("time" => time, "RMS" => RMS, "ng" => ng))
+    #fname = "test_2dvar_benchmark_$(name).mat"
+    #@printf("save result in file %s\n", fname)
+    #matwrite(fname, Dict("time" => time, "RMS" => RMS, "ng" => ng))
 
     return median_time, ng, time
 end
@@ -68,7 +73,7 @@ function benchmark_nd_repeat(n, ng, ntimes; kwargs...)
         times[i], RMS[i] = benchmark_nd(n, ng; kwargs...)
     end
 
-    mad(x) = median(abs.(x - median(x)))
+    mad(x) = median(abs.(x .- median(x)))
 
     stat = Dict{String,Any}([
         (string(f), f(times)) for f in [mean, std, median, mad, minimum, maximum]
@@ -89,16 +94,16 @@ function benchmark_nd(n, ng; kwargs...)
     f(xy...) = .*([cos.(2 * pi * ng * x / 20) for x in xy]...)
 
     # grid of background field
-    mask, pmn, xyi = DIVAnd_squaredom(n, linspace(0, 1, ng))
+    mask, pmn, xyi = DIVAnd_squaredom(n, LinRange(0, 1, ng))
     vi = f(xyi...)
 
     # grid of observations
-    xy = ndgrid([linspace(1e-6, 1 - 1e-6, mg) for i = 1:n]...)
+    xy = ndgrid([LinRange(1e-6, 1 - 1e-6, mg) for i = 1:n]...)
     v = f([x[:] for x in xy]...)
 
     t1 = time_ns()
-    va, s = varanalysis(mask, pmn, xyi, xy, v, len, epsilon2; kwargs...)
-    #va,s = DIVAndrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
+    #va, s = varanalysis(mask, pmn, xyi, xy, v, len, epsilon2; kwargs...)
+    va,s = DIVAndrun(mask,pmn,xyi,xy,v,len,epsilon2; kwargs...);
     t2 = time_ns()
     time = (t2 - t1) / 1e9
     RMS = rms(va, vi)

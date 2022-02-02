@@ -1,12 +1,20 @@
 
 mutable struct CovarIS{T,TA} <: AbstractMatrix{T}
     IS::TA
-    factors::Union{SuiteSparse.CHOLMOD.Factor{T},Nothing}
+    factors::Union{SuiteSparse.CHOLMOD.Factor{T},AlgebraicMultigrid.Preconditioner,Nothing}
+    maxiter::Int
+    abstol::Float64
+    reltol::Float64
+    verbose::Bool
 end
 
-function CovarIS(IS::TA) where {TA<:AbstractMatrix}
+function CovarIS(IS::TA; maxiter = 100,
+                 abstol = 0., reltol = 1e-5, verbose=true) where {TA<:AbstractMatrix}
     factors = nothing
-    CovarIS{eltype(TA),TA}(IS, factors)
+    @debug "CovarIS: reltol: $(reltol)"
+    @debug "CovarIS: abstol: $(abstol)"
+    @debug "CovarIS: maxiter: $(maxiter)"
+    return CovarIS{eltype(TA),TA}(IS, factors, maxiter,abstol,reltol,verbose)
 end
 
 
@@ -15,7 +23,33 @@ Base.inv(C::CovarIS) = C.IS
 Base.size(C::CovarIS) = size(C.IS)
 
 function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
-    if C.factors != nothing
+    if C.factors isa AlgebraicMultigrid.Preconditioner
+        @debug "Call conjugate gradient with $(C.maxiter) iterations."
+        @debug "Relative tolerance $(C.reltol)"
+        @debug "Note the following is the norm of the residual, i.e. the sum (not the mean) of all elements of the residual squared"
+        @debug "checksum $(sum(C.IS))  $(sum(v))"
+        @debug "size $(size(C.IS))  $(size(v))"
+
+        log = false
+        @debug begin
+            log = true
+        end
+        x,convergence_history = cg(
+            C.IS, v, Pl = C.factors,
+            verbose = C.verbose,
+            log = log,
+            abstol = C.abstol,
+            reltol = C.reltol,
+            maxiter = C.maxiter)
+
+        @debug "Number of iterations: $(convergence_history.iters)"
+        @debug "Final norm of residue: $(convergence_history.data[:resnorm][end])"
+        @debug begin
+            @show norm(C.IS * x - v)
+        end
+        #@show convergence_history
+        return x
+    elseif C.factors != nothing
         return C.factors \ v
     else
         return C.IS \ v

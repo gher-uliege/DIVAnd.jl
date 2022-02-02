@@ -1,3 +1,6 @@
+# run as, e.g.
+#
+# julia benchmark.jl 3 sparse
 using JSON
 
 
@@ -33,11 +36,11 @@ for i = 1:length(sizes)
     # must be one line otherwise the result of time -v is too difficult to parse
 
     if method == "sparse"
-        cmd = "using DIVAnd; using JSON; include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),10; operatortype=Val{:sparse})))"
+        cmd = "include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),10; operatortype=Val{:sparse})))"
     elseif method == "varanalysis"
-        cmd = "using DIVAnd; using JSON; include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),5; tol = 1e-3)))"
+        cmd = "include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),5; tol = 1e-3)))"
     else
-        cmd = "using DIVAnd; using JSON; include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),5; inversion=:pcg, operatortype=Val{:MatFun}, tol=1e-3, maxit = 100000)))"
+        cmd = "include(\"test_2dvar_benchmark.jl\"); print(JSON.json(benchmark_nd_repeat($(ndim),$(sizes[i]),5; inversion=:pcg, operatortype=Val{:MatFun}, tol=1e-3, maxit = 100000)))"
     end
     run(pipeline(
         `/usr/bin/time -v $(juliaexec) --eval $(cmd)`,

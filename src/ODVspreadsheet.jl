@@ -197,15 +197,17 @@ function readODVspreadsheet(datafile)
                 continue
             end
 
-            line = split(row, "\t")[index2keep]
+            line_all_columns = split(row, "\t")
+
+            if length(line_all_columns) != ncols
+                error("Expecting $(ncols) columns but $(length(line_all_columns)) found at line number $i. The full line is:\n\n" * row)
+            end
+
+            line = line_all_columns[index2keep]
 
             # some files have only white space on the last line
             if all.(isempty(line))
                 continue
-            end
-
-            if length(line) != ncols2
-                error("Expecting $(ncols2) columns but $(length(line)) found in line $(line) (line number $i).")
             end
 
             i = i + 1
@@ -398,18 +400,18 @@ parsejd(t) =
 
 
 """
-    v = myparse(T,s)
+    v = myparse(T,s, i)
 
 Parse the string `s` as a type `T`. Unlike Julia's parse function
 an error message contains the string `s` (which could not be parsed) for
 debugging.
 """
-function myparse(T, s)
+function myparse(T, s, i)
     try
         return parse(T, s)
     catch err
         if isa(err, ArgumentError)
-            throw(ArgumentError("unable to parse $(s) as $(T)"))
+            throw(ArgumentError("unable to parse $(s) as $(T). Element $i"))
         else
             rethrow(err)
         end
@@ -442,7 +444,7 @@ function SDNparse!(col, fillmode, fillvalue, data)
             if eltype(data) <: AbstractString
                 data[i] = col[i]
             else
-                data[i] = myparse(eltype(data), col[i])
+                data[i] = myparse(eltype(data), col[i], i)
                 #data[i] = parse(eltype(data),col[i])
             end
         end
@@ -494,7 +496,7 @@ function loaddataqv(
     locnames = localnames(sheet)
     lenprof = size(profile, 2)
 
-    cn_data = colnumber(sheet, locname)
+    cn_data = ODVspreadsheet.colnumber(sheet, locname)
     data = Vector{T}(undef, lenprof)
     data_qv = fill("", (lenprof,))
 
@@ -614,6 +616,13 @@ function loadprofile(
     time = Vector{DateTime}(undef, sz)
     time_qv = Vector{String}(undef, sz)
 
+    # Note:
+    # For time series yyyy-mm-ddThh:mm:ss.sss is the deployment date and time of instrument
+    # while time_ISO8601 is the time of the measurement.
+    # However, for trajectory data yyyy-mm-ddThh:mm:ss.sss is the time of the measurement.
+    # see "3.2.2 Time Series Data" and  "3.2.3 Trajectory Data"
+    # https://web.archive.org/web/20200718093738/https://odv.awi.de/fileadmin/user_upload/odv/misc/odvGuide.pdf
+
     # chronological julian day
     if "SDN:P01::CJDY1101" in P01names
         locname_time = localnames(sheet, "SDN:P01::CJDY1101")[1]
@@ -622,7 +631,7 @@ function loadprofile(
         time = parsejd.(timedata)
     elseif "time_ISO8601" in locnames
         time, time_qv =
-            loaddataqv(sheet, profile, "time_ISO8601", filldate; qvlocalname = qvlocalname)
+            ODVspreadsheet.loaddataqv(sheet, profile, "time_ISO8601", filldate; qvlocalname = qvlocalname)
     elseif "SDN:P01::DTUT8601" in P01names
         # ISO8601 format, e.g. yyyy-mm-ddThh:mm:ss.sss
 
@@ -767,6 +776,8 @@ function load(
 
             @info "Starting loop on the $(nprofiles(sheet)) profiles"
             for iprofile = 1:nprofiles(sheet)
+                @debug "Profile number: $iprofile"
+
                 data,
                 data_qv,
                 obslon,

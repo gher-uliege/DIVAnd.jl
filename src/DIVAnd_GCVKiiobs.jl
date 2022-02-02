@@ -5,7 +5,7 @@ Computes an estimate of the mean value of the diagonal of HK using GCV and the a
 Only using real data locations.
 
 """
-function DIVAnd_GCVKiiobs(s, nr = 30; FIELD = ())
+function DIVAnd_GCVKiiobs(s, nr = 30; FIELD = (), rng = Random.GLOBAL_RNG)
 
     #the second, optional argument is the number of random vectors nr used for the estimate
 
@@ -40,11 +40,12 @@ function DIVAnd_GCVKiiobs(s, nr = 30; FIELD = ())
 
 
     #if optimisation is to be used, make sure to use the same reference random points
-    Random.seed!(nr)
+    Random.seed!(rng,nr)
 
     Z = randn(size(R)[1], nr)
 
-    Random.seed!()
+    # re-seed
+    Random.seed!(rng,rand(rng,UInt32))
 
     P = s.P
     WW = P * (H' * (R \ Z))

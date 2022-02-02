@@ -1,5 +1,5 @@
 # DIVAnd
-
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
@@ -21,8 +21,8 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-You need [Julia](http://julialang.org) (version 1.4 or 1.5) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
-Inside Julia, you can download and install the package by issuing:
+You need [Julia](http://julialang.org) (version 1.6 or 1.7) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+Inside a Julia terminal, you can download and install the package by issuing:
 
 ```julia
 using Pkg
@@ -34,13 +34,35 @@ It is not recommended to download the source of `DIVAnd.jl` directly (using the 
 
 # Updating DIVAnd
 
-To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel):
+To update DIVAnd, run the following command and restart Julia (or restart the jupyter notebook kernel using `Kernel` -> `Restart`):
 
 ```julia
 using Pkg
 Pkg.update("DIVAnd")
 ```
 
+Note that Julia does not directly delete the previous installed version.
+To check if you have the latest version run the following command:
+
+```julia
+using Pkg
+Pkg.status()
+```
+
+The latest version number is available from [here](https://github.com/gher-ulg/DIVAnd.jl/releases).
+
+To explicitly install a given version `X.Y.Z` you can also use:
+
+```julia
+using Pkg
+Pkg.add(name="DIVAnd", version="X.Y.Z")
+```
+Or the master version:
+
+```julia
+using Pkg
+Pkg.add(name="DIVAnd", rev="master")
+```
 
 # Testing
 
@@ -95,6 +117,8 @@ where
 `epsilon2` is the error variance of the observations.
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
+
+More examples are available in the notebooks from the [Diva Workshop](https://github.com/gher-ulg/Diva-Workshops).
 
 ## Note on which analysis function to use
 
@@ -163,6 +187,17 @@ Thanks to Lennert and Bart (VLIZ) for this trick.
 
 Some examples in `DIVAnd.jl` use a quite large data set which cannot be efficiently distributed through `git`. This data can be downloaded from the URL https://dox.ulg.ac.be/index.php/s/Bo01EicxnMgP9E3/download. The zip file should be decompressed and the directory `DIVAnd-example-data` should be placed on the same level than the directory `DIVAnd.jl`.
 
+# Reporting issues
+
+Please include the following information when reporting an issue:
+
+* Version of Julia
+* Version of DIVAnd
+* Operating system
+* Full screen output preferably obtained by setting `ENV["JULIA_DEBUG"] = "DIVAnd"`.
+* Full stack strace with error message
+* A short description of the problem
+* The command and their arguments which produced the error
 
 # Fun
 

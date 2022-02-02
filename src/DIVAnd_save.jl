@@ -595,6 +595,11 @@ variable called `varname`.
   * `used`: allows to subset the data to save only used variables in the netCDF
      file
 
+**Note:** in order to save only the observations used in the interpolation, one can use the `dbinfo` object as follows:
+```julia-repl
+obsused = dbinfo[:used] # returned by diva3d
+DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used=obsused)
+```
 """
 function saveobs(
     filename,

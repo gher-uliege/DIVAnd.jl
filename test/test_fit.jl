@@ -2,7 +2,11 @@ using Test
 using DelimitedFiles
 using Statistics
 using Random
+using StableRNGs
 import DIVAnd
+
+rng = Random.GLOBAL_RNG
+rng = StableRNG(1234)
 
 # test data for basic statistics
 x = [1.0, 2.0, 3.0, 4.0]
@@ -36,9 +40,8 @@ Nens = 1
 distbin = 0:0.02:0.3
 mincount = 100
 
-Random.seed!(1234)
-field = DIVAnd.random(mask, (pm, pn), (lenx, leny), Nens)
-
+Random.seed!(rng,1234)
+field = DIVAnd.random(mask, (pm, pn), (lenx, leny), Nens, rng = rng)
 
 x = (xi[:], yi[:])
 v = field[:]
@@ -81,7 +84,7 @@ weight = A[:, 4]
 
 # use all pairs
 nsamp = 0
-varbak, RL, dbinfo = DIVAnd.fitlen((x, y), d, weight, nsamp)
+varbak, RL, dbinfo = DIVAnd.fitlen((x, y), d, weight, nsamp; rng = rng)
 
 # reference value are  from DIVA fit (Fortran version)
 # git commit
@@ -94,17 +97,15 @@ varbak, RL, dbinfo = DIVAnd.fitlen((x, y), d, weight, nsamp)
 
 # random samples
 nsamp = 150
-varbak, RL, dbinfo = DIVAnd.fitlen((x, y), d, weight, nsamp)
+varbak, RL, dbinfo = DIVAnd.fitlen((x, y), d, weight, nsamp; rng = rng)
 
 # reference value from Julia implementation with seed set to 150
 # fluctuations are large for different seeds
 
-
-@test 1.233239751232584 ≈ RL rtol = 0.3
-@test 2.8684064643392313 ≈ dbinfo[:sn] rtol = 0.5
-@test 30.67060450819036 ≈ varbak rtol = 0.2
-@test 0.7779495857989941 ≈ dbinfo[:rqual] rtol = 0.2
-
+@test 1.6184793426171522 ≈ RL
+@test 1.3058876287893113 ≈ dbinfo[:sn]
+@test 23.425097759577064 ≈ varbak
+@test 0.6885893124253655 ≈ dbinfo[:rqual]
 
 #=
 fname = "/home/abarth/src/DIVA/DIVA3D/src/Fortran/Util/testdata.txt"
@@ -131,7 +132,8 @@ mask, (pm, pn, po), (xi, yi, zi) =
 
 lenx = leny = lenz = 0.2
 Nens = 1
-field = DIVAnd.random(mask, (pm, pn, po), (lenx, leny, lenz), Nens)
+Random.seed!(rng,12345)
+field = DIVAnd.random(mask, (pm, pn, po), (lenx, leny, lenz), Nens, rng = rng)
 
 
 z = [0.3, 0.5, 0.7]
@@ -146,6 +148,7 @@ dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fithorzlen(
     v,
     z;
     epsilon2 = epsilon2,
+    rng = rng,
 );
 
 @test median(fitlenxy) ≈ lenx rtol = 0.3
@@ -161,11 +164,15 @@ dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
     v,
     z;
     epsilon2 = epsilon2,
+    rng = rng,
 );
 @test median(fitlenz) ≈ lenz rtol = 0.5
 
 
 # RandomCoupels iterators
 
-@test collect(DIVAnd.RandomCoupels(1000, 10, 1234)) ==
-      collect(DIVAnd.RandomCoupels(1000, 10, 1234))
+iseed = 1234
+Random.seed!(rng,iseed)
+
+@test collect(DIVAnd.RandomCoupels(1000, 10, rng)) ==
+      collect(DIVAnd.RandomCoupels(1000, 10, rng))

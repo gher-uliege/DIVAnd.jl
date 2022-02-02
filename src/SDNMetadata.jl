@@ -8,7 +8,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
         "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
         "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
-        "baseurl_opendap" => "http://ec.oceanbrowser.net:8081/data/emodnet-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/emodnet-domains",
         "template" => joinpath(pathname, "templates", "emodnet-chemistry.mustache"),
     ),
     "SeaDataNet" => Dict(
@@ -17,7 +17,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
         "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
         "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataNet-domains",
-        "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataNet-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/SeaDataNet-domains",
         "template" => joinpath(pathname, "templates", "seadatanet.mustache"),
     ),
     "SeaDataCloud" => Dict(
@@ -26,7 +26,7 @@ const PROJECTS = Dict(
         "baseurl_visualization" => "http://sdn.oceanbrowser.net/web-vis/",
         "baseurl_wms" => "http://sdn.oceanbrowser.net/web-vis/Python/web/wms",
         "baseurl_http" => "http://sdn.oceanbrowser.net/data/SeaDataCloud-domains",
-        "baseurl_opendap" => "http://sdn.oceanbrowser.net:8081/data/SeaDataCloud-domains",
+        "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/SeaDataNet-domains",
         "template" => joinpath(pathname, "templates", "seadatanet.mustache"),
     ),
 )
@@ -35,6 +35,15 @@ const OriginatorEDMO_URL = "https://emodnet-chemistry.maris.nl/download/export.z
 
 
 const layersep = "*"
+
+"""
+    escape(x)
+
+Escape characters except slash.
+"""
+function escape(x)
+    return join(HTTP.escapeuri.(split(x,"/")),"/")
+end
 
 """encode parameters as key-value separated by : and +"""
 encodeWMSStyle(params) = join([k * ':' * string(v) for (k, v) in params], "+")
@@ -45,6 +54,17 @@ encodeWMSStyle(params) = join([k * ':' * string(v) for (k, v) in params], "+")
 
 Based on the information in the dictionary `metadata` and the analysed 4D field
 `fi` produce a list of NetCDF global and variable attributes for `DIVAnd_save2`.
+To list all registered projects call `keys(DIVAnd.PROJECTS)`. For example:
+
+```julia-repl
+julia> using DIVAnd
+julia> keys(DIVAnd.PROJECTS)
+Base.KeySet for a Dict{String,Dict{String,String}} with 3 entries. Keys:
+  "EMODNET-chemistry"
+  "SeaDataNet"
+  "SeaDataCloud"
+```
+
 """
 function SDNMetadata(
     metadata,
@@ -55,6 +75,7 @@ function SDNMetadata(
     field = nothing,
     default_field_min = nothing,
     default_field_max = nothing,
+    url_path = nothing,
 )
 
     pathname = joinpath(dirname(@__FILE__), "..")
@@ -153,6 +174,7 @@ function SDNMetadata(
             domain;
             default_field_min = default_field_min,
             default_field_max = default_field_max,
+            url_path = url_path,
         )
 
 
@@ -186,7 +208,7 @@ function getedmoinfo(edmo_code, role)
 
     contact = Dict{String,String}(
         "EDMO_CODE" => string(edmo_code),
-        "EDMO_URL" => "https://cdi.seadatanet.org/report/$(edmo_code)",
+        "EDMO_URL" => "https://edmo.seadatanet.org/report/$(edmo_code)",
         "name" => DIVAnd.Vocab.name(entry),
         "phone" => DIVAnd.Vocab.phone(entry),
         "fax" => DIVAnd.Vocab.fax(entry),
@@ -233,6 +255,7 @@ function loadoriginators(csvfile::IO)
     data::Array{String,2}, headers::Array{String,2} =
         readdlm(csvfile, ',', String; header = true)
 
+    @debug "headers: $headers"
     @assert headers[:] == ["active", "author_edmo", "cdi_identifier", "originator_edmo"]
 
 
@@ -319,6 +342,9 @@ function get_originators_from_obsid(db, obsids; ignore_errors = false)
     for obsid in obsids
         (author_edmo_str, local_cdi) = split(obsid, '-'; limit = 2)
         author_edmo = parse(Int64, author_edmo_str)
+
+        # strip trailing /v0 or /v1
+        local_cdi = replace(local_cdi,r"/v\d+$" => "")
 
         key = (author_edmo, local_cdi)
 
@@ -410,14 +436,32 @@ function numstring(x)
 end
 
 function WMStimeparam(nctime, n)
-    dtime = nctime[2] - nctime[1]
-    paramstr = if Dates.Day(360) <= dtime <= Dates.Day(366)
-        string(Dates.year(nctime[n]))
+    # heuristics as in
+    # timemap as defined in divaonweb/divaonweb/util.py
+    time = nctime[:]
+    #time = [DateTime(2000,1,1),DateTime(2000,1,2)]; n = 1
+
+    dtime = Dates.value(time[2] - time[1]) / (24*60*60*1000)
+    seasonnames = ["winter","spring","summer","autumn"]
+    month = Dates.month(nctime[n])
+    year = Dates.year(nctime[n])
+    season = (month-1) ÷ 3 + 1
+
+    # heuristics
+    if 27 <= dtime <= 32
+        hr_t = @sprintf("%02d",month)
+    elseif (27*3 <= dtime <= 32*3) && (length(time) <= 4)
+        hr_t = seasonnames[n]
+    elseif (27*3 <= dtime <= 32*3)
+        hr_t = seasonnames[season] * " " * string(year)
+    elseif 27*12 <= dtime <= 32*12
+        hr_t = string(year)
     else
-        string(nctime[n])
+        hr_t = string(time[n])
     end
-    @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $paramstr"
-    return paramstr
+
+    @debug "WMS TIME parameter: $(string(nctime[n])); time increment $dtime; WMS parameter: $hr_t"
+    return hr_t
 end
 
 
@@ -428,12 +472,16 @@ function previewURL(
     latr,
     project,
     domain;
-    colorbar_quantiles = [0.01, 0.99],
+    colorbar_quantiles = [0.001, 0.999],
     basemap = "shadedrelief",
     preview_url_time = nothing,
     default_field_min = nothing,
     default_field_max = nothing,
+    url_path = nothing,
 )
+    if url_path == nothing
+        url_path = domain
+    end
 
     preview_url_query = OrderedDict(
         "service" => "WMS",
@@ -443,7 +491,7 @@ function previewURL(
         "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
         "decorated" => "true",
         "format" => "image/png",
-        "layers" => domain * "/" * filepath * layersep * varnameL1,
+        "layers" => url_path * "/" * filepath * layersep * varnameL1,
         "styles" => encodeWMSStyle(Dict(
             "vmin" => default_field_min,
             "vmax" => default_field_max,
@@ -466,7 +514,6 @@ function previewURL(
     preview_url_query_string = replace(preview_url_query_string, r"^:" => "")
 
     preview_url = PROJECTS[project]["baseurl_wms"] * preview_url_query_string
-    @debug "preview_url: $preview_url"
     return preview_url
 end
 
@@ -489,6 +536,7 @@ function previewURL(
     basemap = "shadedrelief",
     default_field_min = nothing,
     default_field_max = nothing,
+    url_path = nothing,
 )
 
     Dataset(filepath, "r") do ds
@@ -509,6 +557,7 @@ function previewURL(
         # (time depth) lat lon
         var = ds[varnameL1]
         n_time = 1
+        k_depth = 1
         min_non_missing = 0
         preview_url_time = nothing
 
@@ -520,17 +569,19 @@ function previewURL(
                 # find the time slice with the maximum data
                 count_valid = zeros(Int, size(var, 4))
                 for n = 1:size(var, 4)
-                    field = var[:, :, end, n]
+                    field = var[:, :, k_depth, n]
                     count_valid[n] = sum(.!ismissing.(field))
                 end
                 @debug "count $(count_valid)"
 
                 n_time = findmax(count_valid)[2]
-                field = var[:, :, end, n_time]
+                field = var[:, :, k_depth, n_time]
                 if n_time != 1
                     preview_url_time = WMStimeparam(ds["time"], n_time)
                 end
                 #@debug "use n_time: $n_time $preview_url_time valid: $(count_valid[n_time])"
+                @debug "n_time: $n_time"
+                @debug "k_depth: $k_depth"
             end
         elseif "time" in dimnames(var)
             # only time
@@ -538,7 +589,7 @@ function previewURL(
         else
             # only depth
             if size(var, 3) == 1
-                field = var[:, :, 1]
+                field = var[:, :, k_depth]
             else
                 field = var[:, :, end]
             end
@@ -577,6 +628,7 @@ function previewURL(
             preview_url_time = preview_url_time,
             default_field_min = default_field_min,
             default_field_max = default_field_max,
+            url_path = url_path,
         )
 
         return preview_url
@@ -594,6 +646,9 @@ function gettemplatevars(
     basemap = "shadedrelief",
     additionalcontacts = [],
     ignore_errors = false,
+    sigdigits = 5,
+    url_path = nothing,
+    WMSexclude = String[],
 )
 
     # assume that grid and time coverage is the same as the
@@ -619,6 +674,9 @@ function gettemplatevars(
         @warn "warning: non uniform horizontal resolution $(dlon) $(dlat)"
         sqrt(dlon * dlat)
     end
+
+    # round resolution
+    horizontal_resolution = round(horizontal_resolution,sigdigits=sigdigits)
 
     # "degree (or km)",
     horizontal_resolution_units = "degree"
@@ -649,6 +707,9 @@ function gettemplatevars(
     else
         ""
     end
+
+    # strip starting https://doi.org/ if necessary
+    doi = replace(doi,r"^https://doi.org/" => "")
 
     temp_resolution_unit = "none"
     temp_resolution = "none"
@@ -695,28 +756,43 @@ function gettemplatevars(
 
     P02_keywords = if haskey(ds.attrib, "search_keywords_urn")
         labelandURL.(split(ds.attrib["search_keywords_urn"], ", "))
-    else
+    elseif haskey(ds.attrib, "search_keywords")
         URLsfromlabels("P02", split(ds.attrib["search_keywords"], '|'))
+    else
+        error("attribute search_keywords_urn or search_keywords are not found")
     end
 
     P35_keywords = if haskey(ds.attrib, "parameter_keyword_urn")
         labelandURL.(split(ds.attrib["parameter_keyword_urn"], ", "))
-    else
+    elseif haskey(ds.attrib,"parameter_keyword")
+        URLsfromlabels("P35", split(ds.attrib["parameter_keyword"], '|'))
+    elseif haskey(ds.attrib,"parameter_keywords")
         URLsfromlabels("P35", split(ds.attrib["parameter_keywords"], '|'))
+    else
+        error("attribute parameter_keyword_urn or parameter_keyword(s) are not found")
     end
 
     C19_keywords = if haskey(ds.attrib, "area_keywords_urn")
         labelandURL.(split(ds.attrib["area_keywords_urn"], ", "))
-    else
+    elseif haskey(ds.attrib, "area_keywords")
         URLsfromlabels("C19", split(ds.attrib["area_keywords"], '|'))
+    else
+        error("attribute area_keywords_urn or area_keywords are not found")
     end
+
+    P36_urn = Vocab.urn.(Vocab.find(Vocab.Concept(P35_keywords[1]["URL"]), "broader", "P36"))
+    P36_keywords = labelandURL.(P36_urn)
+
+    @debug "P36_keywords: $(getindex.(P36_keywords,"label"))"
 
     domain = C19_keywords[1]["label"]
 
     edmo_code = if haskey(ds.attrib, "institution_urn")
         rmprefix.(ds.attrib["institution_urn"])
-    else
+    elseif haskey(ds.attrib, "institution_edmo_code")
         ds.attrib["institution_edmo_code"]
+    else
+        error("attribute institution_urn or institution_edmo_code are not found")
     end
 
     product_code = get(ds.attrib, "product_code", "")
@@ -728,6 +804,9 @@ function gettemplatevars(
     else
         varname
     end
+
+    # random string for INSPIRE compliance
+    time_period_id = randstring('a':'z', 32)
 
     templateVars = Dict(
         "project" => project,
@@ -760,10 +839,13 @@ function gettemplatevars(
         "netcdf_variables" => [], # added later
         "P02_keywords" => P02_keywords,
         "P35_keywords" => P35_keywords,
+        "P36_keywords" => P36_keywords,
         "C19_keywords" => C19_keywords,
         "P02_date" => Dates.format(datetime, isodateformat),
         "P35_date" => Dates.format(datetime, isodateformat),
+        "P36_date" => Dates.format(datetime, isodateformat),
         "C19_date" => Dates.format(datetime, isodateformat),
+        "time_period_id" => time_period_id,
     )
 
     close(ds)
@@ -775,24 +857,29 @@ function gettemplatevars(
         Dataset(filepath_, "r") do ds
             for (name, var) in ds
                 if (("lon" in dimnames(var)) && ("lat" in dimnames(var))) ||
-                   (name == "obsid")
-                    if name == "obsid"
-                        description = "Observations"
-                    elseif haskey(var.attrib, "long_name")
-                        description = var.attrib["long_name"]
+                    (name == "obsid")
+
+                    if name in WMSexclude
+                        println("skipping ",name," for WMS layers")
                     else
-                        description = name
-                    end
-
-                    # add WMS layer name suffix if provided
-                    # this is useful if multiple NetCDF files are provided
-                    if length(WMSlayername) >= i
-                        if WMSlayername[i] != ""
-                            description *= " ($(WMSlayername[i]))"
+                        if name == "obsid"
+                            description = "Observations"
+                        elseif haskey(var.attrib, "long_name")
+                            description = var.attrib["long_name"]
+                        else
+                            description = name
                         end
-                    end
 
-                    push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                        # add WMS layer name suffix if provided
+                        # this is useful if multiple NetCDF files are provided
+                        if length(WMSlayername) >= i
+                            if WMSlayername[i] != ""
+                                description *= " ($(WMSlayername[i]))"
+                            end
+                        end
+
+                        push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                    end
                 end
             end
         end
@@ -830,8 +917,15 @@ function gettemplatevars(
         ',',
     )
 
+    if url_path == nothing
+        url_path = domain
+    end
+
     preview_url =
-        previewURL(filepaths[previewindex], varname, project, domain; basemap = basemap)
+        previewURL(filepaths[previewindex], varname, project, domain;
+                   basemap = basemap,
+                   url_path = url_path,
+                   )
 
     # Specify any input variables to the template as a dictionary.
     merge!(
@@ -846,9 +940,9 @@ function gettemplatevars(
             # URL for the global data set
             "WMS_dataset_getcap" =>
                 baseurl_wms * "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
-            "WMS_dataset_layer" => domain * "/" * filepath * layersep * varnameL1,
+            "WMS_dataset_layer" => url_path * "/" * filepath * layersep * varnameL1,
             "WMS_layers" => [],
-            "NetCDF_URL" => baseurl_http * "/" * domain * "/" * filepath,
+            "NetCDF_URL" => baseurl_http * "/" * escape(url_path) * "/" * escape(filepath),
             "NetCDF_description" => "Link to download the following file: " * filename,
             #        "OPENDAP_URL" => baseurl_opendap * "/" * domain * "/" * filepath * ".html",
             #        "OPENDAP_description" => "OPENDAP web page about the dataset " * filename,
@@ -859,7 +953,7 @@ function gettemplatevars(
 
     for i = 1:length(filepaths)
         # opendap
-        description = "OPENDAP web page about the dataset " * filename
+        description = "OPeNDAP web page about the dataset " * filename
         if length(WMSlayername) >= i
             if WMSlayername[i] != ""
                 description *= " ($(WMSlayername[i]))"
@@ -868,7 +962,7 @@ function gettemplatevars(
         push!(
             templateVars["OPENDAP_URLs"],
             Dict(
-                "URL" => baseurl_opendap * "/" * domain * "/" * filepaths[i] * ".html",
+                "URL" => baseurl_opendap * "/" * escape(url_path) * "/" * escape(filepaths[i]) * ".html",
                 "description" => description,
             ),
         )
@@ -876,7 +970,7 @@ function gettemplatevars(
 
     for (name, description, filepath_) in templateVars["netcdf_variables"]
         if (name == "obsid") || (endswith(name, "_L1") && !endswith(name, "deepest_L1"))
-            layer_name = domain * "/" * filepath_ * layersep * name
+            layer_name = url_path * "/" * filepath_ * layersep * name
             if name == "obsid"
                 layer_name = "point:" * layer_name
             end
@@ -895,8 +989,21 @@ function gettemplatevars(
 
     #    @debug println("templateVars",templateVars)
     #    @debug println("templateVars NetCDF_URL",templateVars["NetCDF_URL"])
-    @debug "NetCDF_URL: $(templateVars["NetCDF_URL"])"
     @debug "WMS_layers: $(templateVars["WMS_layers"])"
+
+    @info "Please check the following URLs"
+
+    @info "URL (image preview): $preview_url"
+
+    @info "NetCDF URL: $(templateVars["NetCDF_URL"])"
+
+    for OPENDAP_URL in templateVars["OPENDAP_URLs"]
+        @info "OPENDAP URL: $(OPENDAP_URL["URL"])"
+    end
+
+    for WMS_layer in templateVars["WMS_layers"]
+        @debug "WMS layer name: $(WMS_layer["name"])"
+    end
 
     return templateVars
 end
@@ -930,7 +1037,10 @@ Project is either "SeaDataNet", "EMODNET-chemistry" or "SeaDataCloud".
 The XML file contains a list of the data the originators. divadoxml
 will abort with an error if some combinations of EDMO code, local CDI ID are
 not present in the `cdilist`. Such errors can be ignored if `ignore_errors` is
-set to true.
+set to true. To understand why some EDMO code/local CDI ID could not be found, one can
+the decompress file from $(OriginatorEDMO_URL) which contains a file called
+`export.csv`. This file has the columns `author_edmo` and `cdi_identifier` which this
+function uses to find the data originators (column `originator_edmo`).
 
 Information can be overridden with the dictionary `additionalvars`. The keys should
 corresponds to the template tags found the in `template` directory. Template
@@ -953,9 +1063,24 @@ webserver, the `filepath` should also contain this subfolder (e.g.
 structure on OceanBrowser. Relative paths should be used, and if the Julia code isn't right above the NetCDF
 files, use cd("<path>") before each setting the files parameter which use paths relative to this path.
 
+If the products will go into a sub-directory (which is different from the domain
+name), the part of the path should with provided with the parameter `url_path`.
+
+The link for the NetCDF download for EMODNET-chemistry for example is the following:
+
+```
+PROJECTS["EMODNET-chemistry"]["baseurl_http"] *  "/" * url_path * "/" * filepath
+```
+
+where `url_path` defaults to the the domain name (from the C19 vocabulary) if
+it is not provided. The script will print the URLs for verification.
+
 `additionalcontacts` is a list of dictionaries with additional condact
 information to be added in the XML file. Elements are typically create by the
 function `DIVAnd.getedmoinfo`.
+
+`WMSexclude` is a list of string with NetCDF variables not be included the XML
+under the WMS layer section.
 
 ### Example
 
@@ -980,6 +1105,27 @@ DIVAnd.divadoxml(files,"Water_body_chlorophyll-a","EMODNET-chemistry","export.zi
     WMSlayername = ["winter","spring","summer","autumn"]
 )
 ```
+
+
+For this function the following global NetCDF attributes are mandatory:
+
+* `product_id`: UUID identifier
+* `parameter_keyword_urn` or `parameter_keyword` (or `parameter_keywords`): P35 code (e.g. "SDN:P35::EPC00007") or preferred label (e.g. "Water body phosphate") respectively. Note the singular form (`parameter_keyword`) is preferred because there should be only a single P35 parameter per NetCDF file, but singular and plural forms are valid.
+* `search_keywords_urn` or `search_keywords`: P02 code or preferred label
+* `area_keywords_urn` or `area_keywords`: C19 code or preferred label
+* `institution_edmo_code`: EDMO code number
+* `product_version`: version of the product
+
+
+Adding a global attribute, can be done using the following:
+
+```julia
+ds = NCDatafile("DIVA_file.nc","a")
+ds.attrib["attribute_name"] = "attribute value"
+close(ds)
+```
+
+
 """
 function divadoxml(
     filepaths::Vector{<:AbstractString},
@@ -993,6 +1139,8 @@ function divadoxml(
     additionalvars = Dict{String,Any}(),
     additionalcontacts = [],
     WMSlayername = String[],
+    WMSexclude = String[],
+    url_path = nothing,
 )
 
     # template file we will use.
@@ -1008,6 +1156,8 @@ function divadoxml(
         basemap = basemap,
         additionalcontacts = additionalcontacts,
         ignore_errors = ignore_errors,
+        url_path = url_path,
+        WMSexclude = WMSexclude,
     )
 
     merge!(templateVars, additionalvars)

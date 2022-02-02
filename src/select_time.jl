@@ -10,13 +10,13 @@ abstract type AbstractTimeSelector end
 
 The structure `TS` handles the time aggregation based on `yearlists` and
 `monthlists`. `yearlists` is a vector of ranges (containing start and end years),
-for example `[1980:1989,1990:1999,2000:2009]`.
+for example `[1980:1989,1990:1999,2000:2009,2010:2019]`.
 
 `monthlists` is a vector of two-element vector (containing start and end months), for
 example `[1:3,4:6,7:9,10:12]`.
 
 The upper bound of a `yearlist` and `monthlist` element is considered inclusive.
-The range of years of 2000:2009 consideres all years upto and including the year 2009.
+The range of years of 2010:2019 consideres all years upto and including the year 2009.
 
 If a month range spans beyond December, then all Months must be specified, e.g.
 example `[2:4,5:6,7:9,[10,11,12,1]]` or `[2:4,5:6,7:9,[10:12;1]]`.
@@ -26,12 +26,34 @@ an empty month range.
 ## Example
 
 ```julia
-# seasonal climatology using all data from 1900 to 2017
+# seasonal climatology using all data from 1900 to 2020
 # for winter (December-February), spring, summer, autumn
 
-TS = DIVAnd.TimeSelectorYearListMonthList([1900:2017],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
+TS = DIVAnd.TimeSelectorYearListMonthList([1900:2020],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
 ```
 
+Note that for seasonal analyses, DIVAnd will only select observations within the
+provided year range (and not pick year-1 for December), for example
+
+``` julia
+using DIVAnd
+TS = DIVAnd.TimeSelectorYearListMonthList([1900:2020],[[12,1,2],[3,4,5],[6,7,8],[9,10,11]])
+DIVAnd.select(TS,1,[DateTime(1899,12,31), DateTime(1900,1,1)])
+```
+
+This returns `[0,1]` i.e. the 1st observation is not used, while the second is
+used. There is no special case for the month 12.
+
+If the data from e.g. December 1899 should be considered for a seasonal
+analysis for the year 1900-2020, one should shift the observations as follows:
+
+``` julia
+obstime_shifted = copy(obstime)
+obstime_shifted[Dates.month.(obstime) .== 12] .+= Dates.Year(1)
+```
+
+The analysis function should then use `obstime_shifted` while for the function
+`saveobs` is it recommended to use the original `obstime` vector.
 """
 struct TimeSelectorYearListMonthList{T1<:AbstractVector,T2<:AbstractVector} <:
        AbstractTimeSelector

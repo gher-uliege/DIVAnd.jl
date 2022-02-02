@@ -86,6 +86,7 @@ gridded background field and the observations minus the background field.
    `false` is the default value.
 *  `stat_per_timeslice` (default false): if true, then the residual values (and possibly qcvalues) are also returned by time slices which is useful if the time slices overlap (see example below).
 *   `error_thresholds` (default `[("L1", 0.3), ("L2", 0.5)]`). This is a list of tuples with the applied error thresholds and the variable names suffixes. If the variable is named e. g. `"Salinity"`, then the variables `"Salinity_L1"` (resp.  `"Salinity_L2"`) will be created where the analysis is masked if the relative error exceeds 0.3 (resp. 0.5).
+*   `divamethod`: `DIVAndgo` (default) or `DIVAndrun`
 
 Any additional keywoard arguments understood by `DIVAndgo`/`DIVAndrun` can also be used here
 (e.g. velocity constrain)
@@ -161,6 +162,7 @@ function diva3d(
     velocity = (),
     stat_per_timeslice = false,
     error_thresholds = [("L1", 0.3), ("L2", 0.5)],
+    divamethod = DIVAndgo,
     kwargs...,
 )
 
@@ -369,7 +371,7 @@ function diva3d(
 
     # create the NetCDF file
     # make sure that the file is closed even if there is an error
-    @info "Creating netCDF file"
+    @info "Creating netCDF file $filename"
     Dataset(filename, "c") do ds
         ncvar, ncvar_relerr, ncvar_Lx = DIVAnd.ncfile(
             ds,
@@ -639,7 +641,8 @@ function diva3d(
                 checkresolution(mask, pmn, len_scaled)
 
                 # analysis
-                fi2, erri, residual, qcdata, scalefactore = DIVAnd.DIVAndgo(
+                fi2, erri, residual, qcdata, scalefactore =
+                    divamethod(
                     mask,
                     pmn,
                     xyi,

@@ -1,5 +1,6 @@
 import DIVAnd
 using DataStructures
+using Test
 
 metadata = OrderedDict(
     # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-Chemistry, ...)
