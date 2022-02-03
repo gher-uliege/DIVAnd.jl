@@ -271,7 +271,7 @@ function DIVAnd_errormap(
         )
 
         scpme=deepcopy(errormap)
-        @time DIVAnd_scalecpme!(scpme,s.P)
+        DIVAnd_scalecpme!(scpme,s.P)
 
         return scpme, errmethod
     end
@@ -305,5 +305,5 @@ function DIVAnd_errormap(
         )
         return errormap, errmethod
     end
-    @show "you should not be here"
+    @show "You should not be here"
 end
