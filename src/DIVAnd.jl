@@ -535,6 +535,8 @@ include("derived.jl")
 
 include("cut_results.jl")
 
+include("DIVAnd_errormap.jl")
+
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
 # statevector
@@ -620,6 +622,8 @@ export checkobs
 export DIVAnd_heatmap, DIVAnd_integral, DIVAnd_scaleL, DIVAnd_superobs
 
 export DIVAnd_diagapp
+
+export DIVAnd_errormap
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient

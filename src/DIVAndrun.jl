@@ -32,7 +32,7 @@ function DIVAndrun(
     fluxes = (),
     epsfluxes = 0,
     epsilon2forfractions = 0,
-    RTIMESONESCALES = (),
+	RTIMESONESCALES = (),
     QCMETHOD = (),
     coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
     coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
