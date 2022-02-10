@@ -1,4 +1,5 @@
 using Test
+using Random
 import DIVAnd
 
 nobs = 100
@@ -18,3 +19,14 @@ output = lowercase(String(take!(buf)))
 
 @test occursin("inf", output)
 @test occursin("2", output)
+
+
+lon = [1,2,1]
+lat = [10,20,10]
+val = [1,2,-1]
+ulon,ulat = DIVAnd.statpos(lon, lat)
+@test sort(ulon) ≈ [1,2]
+@test sort(ulat) ≈ [10,20]
+
+ulon,ulat,meanval,stdval,count = DIVAnd.statpos(val, lon, lat)
+@test sort(meanval) ≈ [0, 2]

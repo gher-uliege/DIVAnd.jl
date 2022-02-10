@@ -48,7 +48,7 @@ function statpos(val, lon, lat)
     end
     meanval = sumval ./ count
     stdval = sumval2 ./ count - meanval .^ 2
-    stdval[stdval.<0] = 0
+    stdval[stdval.<0] .= 0
     stdval = sqrt.(stdval)
 
     ulon = [p[1] for p in uniquepos]
