@@ -3,34 +3,34 @@
 
 """
     ulon,ulat = statpos(lon,lat)
+    ulon,ulat = statpos((lon,lat,...))
 
 Return unique positions (`ulon`, `ulat`) as well their mean,
 standard deviation and count of the vector of observations `val` located
 at the positions `lon` and `lat`.
 
 """
-function statpos(lon, lat)
-    allpos = collect(zip(lon, lat))
+function statpos(x::NTuple)
+    allpos = collect(zip(x...))
     uniquepos = collect(Set(allpos))
-
-    ulon = [p[1] for p in uniquepos]
-    ulat = [p[2] for p in uniquepos]
-
-    return ulon, ulat
+    return ntuple(i -> getindex.(uniquepos,i),length(x))
 end
+
+@deprecate statpos(lon::AbstractVector, lat::AbstractVector) statpos((lon,lat))
 
 
 
 """
-    ulon,ulat,meanval,stdval,count = statpos(val,lon,lat)
+    (ulon,ulat),meanval,stdval,count = statpos(val,(lon,lat))
+    (ulon,ulat,...),meanval,stdval,count = statpos(val,(lon,lat,...))
 
 Return unique positions (`ulon`, `ulat`) as well as their mean,
 standard deviation and count of the vector of observations `val` located
 at the positions `lon` and `lat`.
 
 """
-function statpos(val, lon, lat)
-    allpos = collect(zip(lon, lat))
+function statpos(val, x::NTuple)
+    allpos = collect(zip(x...))
     uniquepos = collect(Set(allpos))
 
     count = zeros(Int, length(uniquepos))
@@ -51,12 +51,15 @@ function statpos(val, lon, lat)
     stdval[stdval.<0] .= 0
     stdval = sqrt.(stdval)
 
-    ulon = [p[1] for p in uniquepos]
-    ulat = [p[2] for p in uniquepos]
+    uniquex = ntuple(i -> getindex.(uniquepos,i),length(x))
 
-    return ulon, ulat, meanval, stdval, count
+    return uniquex, meanval, stdval, count
 end
 
+@deprecate statpos(val, lon::AbstractVector, lat::AbstractVector) begin
+    (ulon,ulat),meanval,stdval,count = statpos(val,(lon,lat))
+    return ulon, ulat, meanval, stdval, count
+end
 
 """
     checkobs(x,v,ids)
