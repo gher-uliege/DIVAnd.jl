@@ -145,7 +145,11 @@ value_validation = value[groupindex .== 2]
 """
 function randsplit(x,fractions; rng = Random.GLOBAL_RNG)
     # cumulative fractions
-    cprob = (0,cumsum(fractions)...)
+    @static if VERSION < v"1.5"
+        cprob = (0,cumsum(collect(fractions))...)
+    else
+        cprob = (0,cumsum(fractions)...)
+    end
 
     if !(cprob[end] ≈ 1)
         error("fractions do not sum to 1")
