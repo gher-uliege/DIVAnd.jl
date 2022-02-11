@@ -1,5 +1,5 @@
 # DIVAnd
-
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
