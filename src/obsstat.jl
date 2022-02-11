@@ -111,3 +111,66 @@ function checkobs(io::IO, x, v, ids)
 
     check(v, ids, "data")
 end
+
+
+
+"""
+    groupindex = DIVAnd.randsplit(x,fractions)
+
+Split the observations based on their positions `x` (a tuple of vectors with
+the coordinates) into as many groups as their are elements in `fractions`
+(which are the approximate fraction of unique positions for the different group).
+Observations with the same coordinates will not be split accross different groups.
+
+### Example
+
+In this example, split the data such that 90 % belong to the analysis dataset
+and 10% to validation dataset.
+
+```julia
+fractions = (0.9,0.1)
+# random data
+lonobs = rand(1:5,100)
+latobs = rand(1:5,100)
+value = rand(100)
+groupindex = DIVAnd.randsplit((lonobs,latobs),fractions)
+lonobs_analysis = lonobs[groupindex .== 1]
+latobs_analysis = latobs[groupindex .== 1]
+value_analysis = value[groupindex .== 1]
+
+lonobs_validation = lonobs[groupindex .== 2]
+latobs_validation = latobs[groupindex .== 2]
+value_validation = value[groupindex .== 2]
+```
+"""
+function randsplit(x,fractions; rng = Random.GLOBAL_RNG)
+    # cumulative fractions
+    cprob = (0,cumsum(fractions)...)
+
+    if !(cprob[end] ≈ 1)
+        error("fractions do not sum to 1")
+    end
+
+    nobs = length(x[1])
+
+    groupindex = zeros(Int,nobs)
+    positions = collect(zip(x...))
+    c = counter(positions)
+
+    unique_positions = Random.shuffle(rng,collect(keys(c)))
+
+    npos = length(c)
+    indices = round.(Int,cprob .* length(c))
+
+    for i=1:length(fractions)
+        # set of all position in group i
+        set = Set(unique_positions[(indices[i]+1):indices[i+1]])
+
+        for k = 1:nobs
+            if positions[k] in set
+                groupindex[k] = i
+            end
+        end
+    end
+    return groupindex
+end
