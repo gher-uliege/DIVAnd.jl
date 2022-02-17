@@ -1,10 +1,47 @@
 function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),kwargs...)
 
-# Same arguments as DIVAndrun.     
-#    One optional keyword argument "eof=" and which contains an array of the
-#       coefficients from a linear fit between the variables (typically obtained by
-#       preliminary statistics or a run of this multivariate routine on a larger data set
-#       and which produced the eof coefficients)
+
+"""
+    DIVAnd_multivarEOF(mask,pmn,xi,x,f,len,epsilon2; <keyword arguments>)
+
+Perform an n-dimensional multivariate variational analysis of the observations `f` located at
+the coordinates `x`. The output array `fi` represent the interpolated field at the grid
+defined by the coordinates `xi` and the scales factors `pmn`.
+
+# Input: same as DIVAndrun
+* `mask`: binary mask delimiting the domain. true is inside and false outside.
+For oceanographic application, this is the land-sea mask where sea is true and land is false.
+
+* `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
+   element represents the scale factor of the corresponding dimension. Its
+   inverse is the local resolution of the grid in a particular dimension.
+   For example, in two dimensions, `pmn` is a tuple `(pm,pn)` where `pm` is
+   the inverse of the local resolution in first dimension and `pn` is the the inverse
+   of the local resolution in second dimension.
+
+*  `xi`: tuple with n elements. Every element represents a coordinate
+  of the final grid on which the observations are interpolated.
+
+* `x`: tuple with n elements. Every element represents a coordinate of
+  the observations.
+
+* `f`: value of the observations *minus* the background estimate (vector of
+  `m` elements where `m` is the number of observations). See also note.
+
+* `len`: tuple with n elements. Every element represents the correlation length for a given dimension.
+     HERE THE LAST DIMENSION MUST HAVE ZERO L
+
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
+
+# Optional input arguments specified as keyword arguments and can take the same arguments as DIVAndrun.     
+#    One optional keyword argument
+
+*  `eof`: if provided contains an array of the
+       coefficients from a linear fit between the variables (typically obtained by
+       preliminary statistics or a run of this multivariate routine on a larger data set
+       and which produced the eof coefficients)
+
+
 # layer of multivariates is the last dimension and coordinates must be the index
 # The correlation length in the last dimension MUST BE ZERO.    
 # layer index + positive epsilon for real coordinates. See modulo function used later
@@ -16,6 +53,8 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
 # eofamplitudes  analysed amplitudes ("common field between variables")
 # emap error map from univariate approach
 # emapm error map from multivariate approach 
+
+"""
 
     
     function reducedims(xx)
