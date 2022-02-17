@@ -538,11 +538,11 @@ include("cut_results.jl")
 
 include("DIVAnd_errormap.jl")
 
-include("DIVAnd_multivariateEOF.jl")
+include("DIVAnd_multivarEOF.jl")
 
-include("DIVAnd_multivariateJAC.jl")
+include("DIVAnd_multivarJAC.jl")
 
-export DIVAnd_multivariateEOF, DIVAnd_multivariateJAC
+export DIVAnd_multivarEOF, DIVAnd_multivarJAC
 
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
