@@ -411,6 +411,7 @@ include("DIVAnd_factorize.jl")
 include("DIVAnd_solve.jl")
 include("DIVAnd_metric.jl")
 include("DIVAnd_constr_advec.jl")
+export DIVAnd_constr_advec
 include("DIVAnd_constr_fluxes.jl")
 export DIVAnd_constr_fluxes
 
@@ -536,6 +537,13 @@ include("derived.jl")
 include("cut_results.jl")
 
 include("DIVAnd_errormap.jl")
+
+include("DIVAnd_multivariateEOF.jl")
+
+include("DIVAnd_multivariateJAC.jl")
+
+export DIVAnd_multivariateEOF, DIVAnd_multivariateJAC
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
