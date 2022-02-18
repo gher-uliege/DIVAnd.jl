@@ -97,7 +97,7 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
     @show "error method in multivar $meth"
    
         vconstrain=[]
-        ML=10
+        ML=5
         pseudovelocity=[zeros(Float64,size(mask)) for idx in 1:ndims(mask)]
         for mloop=1:ML
             #
