@@ -286,7 +286,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
         coo=ndims(mask)
         # just take the points from one layer and copy them into other layers
 		# add 0.0001 to make sure rounding is not a problem
-        xm[coo][(k-1)*nd+1:k*nd].= mod.(xm[coo][(k-2)*nd+1:(k-1)*nd]+0.0001,nlay).+1
+        xm[coo][(k-1)*nd+1:k*nd].= mod.(xm[coo][(k-2)*nd+1:(k-1)*nd] .+0.0001,nlay).+1
       end
       # Values of data are unimportant for the error field. So just repeated
       fm=repeat(f,nlay)
