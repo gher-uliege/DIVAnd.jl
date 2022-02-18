@@ -7,6 +7,11 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
 Perform an n-dimensional multivariate variational analysis of the observations `f` located at
 the coordinates `x`. The output array `fi` represent the interpolated field at the grid
 defined by the coordinates `xi` and the scales factors `pmn`.
+The dimensions of the variables are arbitrary (generally space and time coordinates), but the LAST dimension must be the dimension for the different variables.
+So for a multivariate analysis with 3 variables, the last dimension has three components and the corresponding coordinates are just 1, 2, 3 (the index of the variable).
+All coordinates, including the input data needs to apply the same rule, so if your normal data have (x,y,z) coordinates for example, you will now have (x,y,z,v) where v contains for each data point the variable
+to which it corresponds (1, 2, 3 ...)
+
 
 # Input: same as DIVAndrun
 * `mask`: binary mask delimiting the domain. true is inside and false outside.
@@ -39,20 +44,19 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 *  `eof`: if provided contains an array of the
        coefficients from a linear fit between the variables (typically obtained by
        preliminary statistics or a run of this multivariate routine on a larger data set
-       and which produced the eof coefficients)
+       and which produced the eof coefficients). `eof`=[1.0,1.0] for example means the two variables are positively correlated with a slope 1.
+	   `eof`=[1.0,-0.5] means the variables are negatively correlated and that for a variable 1 value of 1, variable 2 is expected to have a value of -0.5
 
 
-# layer of multivariates is the last dimension and coordinates must be the index
-# The correlation length in the last dimension MUST BE ZERO.    
-# layer index + positive epsilon for real coordinates. See modulo function used later
-# Maybe rethink that 
-#    Output: 
-# fi  multivariate field
-# s   structure as for divandrun
-# eof eof between variables 
-# eofamplitudes  analysed amplitudes ("common field between variables")
-# emap error map from univariate approach
-# emapm error map from multivariate approach 
+
+#  Output: 
+
+* `fi`:  multivariate field with the last dimension corresponding to the different variables
+* `s`:    structure as for divandrun
+* `eof`:  eof between variables (see explanation for the input keyword)
+* `eofamplitudes`:   analysed amplitudes of the eofs. If "multiplied" by the eof that provides a new background field, a "common field between variables" which was subtracted for the classical analysis
+* `emap`:  error map from univariate approach
+* `emapm`: error map from multivariate approach 
 
 """
 
@@ -281,7 +285,8 @@ For oceanographic application, this is the land-sea mask where sea is true and l
       for k=2:nlay
         coo=ndims(mask)
         # just take the points from one layer and copy them into other layers
-        xm[coo][(k-1)*nd+1:k*nd].= mod.(xm[coo][(k-2)*nd+1:(k-1)*nd],nlay).+1
+		# add 0.0001 to make sure rounding is not a problem
+        xm[coo][(k-1)*nd+1:k*nd].= mod.(xm[coo][(k-2)*nd+1:(k-1)*nd]+0.0001,nlay).+1
       end
       # Values of data are unimportant for the error field. So just repeated
       fm=repeat(f,nlay)

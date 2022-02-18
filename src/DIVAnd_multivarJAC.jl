@@ -1,17 +1,37 @@
 function DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs...)
 
-# Same arguments as DIVAndrun.     
-#    
-# layer of multivariates is the last dimension and coordinates must be the index
-# The correlation length in the last dimension MUST BE ZERO.    
-# layer index + positive epsilon for real coordinates. See modulo function used later
-# Maybe rethink that 
-#    Output: 
+"""
+
+DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs...)
+# Same input as DIVAnd_multivarEOF
+
+# Additional keyword argument input:
+
+* `epsilon2jacobian` : epsilon2 array (or value) which defines the strength of the multivariate constraint for each variable.
+
+      If you use a very large value for one variable, it means that variable will not be modified by the coupling, but the other will be. So typically
+	  if you have a habitat variable which you want to influence a variable for which you have few data only. Then you assign a large epsilon2forjacobian to the habitat variable and
+	  a lower value to the other one.
+
+# Output: 
+
+* `fi`: analysis
+
+* `s` : structure 
+
+* `emap` : univariate error field
+
+* `emapm` : multivariate error field
+
+* `pseudovelocity` : the "advection" field that guided the analysis
+
     
-    # TO DO: scale constraint by L^2 (different for each layer? Or pointwise ?
-    # use epsilon2forjacobian to allow one field not to be changed
-    # weight pseudovelicity also using that epsilon2forjacobian 
+    
 # 
+
+"""
+
+
 
     if ndims(mask)<3
         @error "Need two dimensional fields and several variables"
