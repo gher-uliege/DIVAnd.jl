@@ -1,6 +1,3 @@
-function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),kwargs...)
-
-
 """
     DIVAnd_multivarEOF(mask,pmn,xi,x,f,len,epsilon2; <keyword arguments>)
 
@@ -59,6 +56,9 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 * `emapm`: error map from multivariate approach 
 
 """
+function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),kwargs...)
+
+
 
     
     function reducedims(xx)
