@@ -37,15 +37,14 @@ function statpos(val, x::NTuple)
     sumval = zeros(length(uniquepos))
     sumval2 = zeros(length(uniquepos))
 
-    for i = 1:length(uniquepos)
-        for j = 1:length(allpos)
-            if uniquepos[i] == allpos[j]
-                count[i] += 1
-                sumval[i] += val[j]
-                sumval2[i] += val[j]^2
-            end
-        end
+    mapping = Dict([(up,i) for (i,up) in enumerate(uniquepos)])
+    for j = 1:length(allpos)
+        i = mapping[allpos[j]]
+        count[i] += 1
+        sumval[i] += val[j]
+        sumval2[i] += val[j]^2
     end
+
     meanval = sumval ./ count
     stdval = sumval2 ./ count - meanval .^ 2
     stdval[stdval.<0] .= 0
