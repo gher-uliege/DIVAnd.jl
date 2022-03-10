@@ -544,6 +544,10 @@ include("DIVAnd_multivarJAC.jl")
 
 export DIVAnd_multivarEOF, DIVAnd_multivarJAC
 
+include("DIVAndfun.jl")
+
+export DIVAndfun
+
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
