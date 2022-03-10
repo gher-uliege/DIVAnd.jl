@@ -1,11 +1,10 @@
 
 
-function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=nothing,kwargs...)
+
     
     
     
 """
-	
 	myfunny=DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=nothing,kwargs...)
 	
 Provides a simplified interface to  DIVAndrun and in return provides an interpolation FUNCTION rather than the gridded field of DIVAndrun
@@ -23,14 +22,13 @@ You can use all keyword parameters of divand
 # Input:
 * `x`: tuple of arrays of coordinates
 
-* 
 * `f`: the value of the function to interpolate at the coordinates x`
 
 # Output:
 * `myfunny`: the interpolation function. If you had two dimensional input (i.e. x was a tuple of two coordinates), you can evaluate the interpolation as myfunny(0.1,0.2) for example
 
 """	
-	
+function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=nothing,kwargs...)	
 	
 	
 	
