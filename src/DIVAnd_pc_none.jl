@@ -3,8 +3,7 @@
 
 Dummy function for requiring that no preconditioner is used in DIVAnd.
 
-See also:
-diavnd_pc_sqrtiB
+See also: `diavnd_pc_sqrtiB`
 """
 function DIVAnd_pc_none(iB, H, R)
     function fun!(x, fx)

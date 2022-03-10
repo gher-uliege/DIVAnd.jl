@@ -227,14 +227,14 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 * `fracindex`: fractional indices (n-by-m array). If this array is specified,
      then x and xi are not used.
 
-* `inversion`: direct solver (:chol for Cholesky factorization), an
-     interative solver (:pcg for preconditioned conjugate gradient [1]) can be
-     used or :cg_amg_sa for a multigrid method with preconditioned conjugate 
+* `inversion`: direct solver (`:chol` for Cholesky factorization), an
+     interative solver (`:pcg` for preconditioned conjugate gradient [1]) can be
+     used or `:cg_amg_sa` for a multigrid method with preconditioned conjugate 
      gradient. The two last methods are iterative methods who a controlled by 
      the number of iterations `maxit` and the tolerance `tol`.
 
 * `compPC`: function that returns a preconditioner for the primal formulation
-     if inversion is set to 'pcg'. :The function has the following arguments:
+     if inversion is set to `:pcg`. The function has the following arguments:
 
            fun = compPC(iB,H,R)
 
@@ -278,10 +278,10 @@ For oceanographic application, this is the land-sea mask where sea is true and l
   observations before calling DIVAnd and then add the first guess back in.
 
 # Example:
-  see DIVAnd_simple_example.jl
+  see `DIVAnd_simple_example.jl`
 
 # References
-[1]  https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method
+[1]  [The preconditioned conjugate gradient method](https://en.wikipedia.org/w/index.php?title=Conjugate_gradient_method&oldid=761287292#The_preconditioned_conjugate_gradient_method)
 """
 function DIVAndrun(
     mask::BitArray,

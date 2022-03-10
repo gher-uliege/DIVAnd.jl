@@ -1,9 +1,8 @@
 """
-Computes a  heatmap based on locations of observations using kernel density estimation (probability density field whose integral over the domain is one)
-
-dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
+    dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,nmax=1000,otherargs...)
 
+Computes a  heatmap based on locations of observations using kernel density estimation (probability density field whose integral over the domain is one)
 
 # Input:
 *  `mask`: mask as usual
@@ -11,8 +10,7 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *  `xi`: tuple of coordinates of the grid for the heatmap
 *  `x` : tuple of coordinates of observations
 *  `inflation`: array generally of ones. For some applications an observation can carry a different weight which is then encoded in the array
-*  `Labs` : the length scales for DIVAnd. Here their meaning is the spread (bandwidth) of the observations for the Kernel calculation
-*              if zero is provided, the routine applies an empirical estimate, returned in the Ltuple output.
+*  `Labs` : the length scales for DIVAnd. Here their meaning is the spread (bandwidth) of the observations for the Kernel calculation. If zero is provided, the routine applies an empirical estimate, returned in the Ltuple output.
 
 *   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate. Default "0"
 *   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical. Default is to optimize
