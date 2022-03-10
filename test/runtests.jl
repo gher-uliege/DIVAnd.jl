@@ -127,6 +127,9 @@ using SpecialFunctions
 
     # Heatmap
     include("test_heatmap.jl")
+	
+	# DIVAndfun
+	include("test_DIVAndfun.jl")
 
     # test DIVAnd_filter3
     A = zeros(5, 5, 5, 5, 5)
