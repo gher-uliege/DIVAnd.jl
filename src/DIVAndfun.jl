@@ -71,7 +71,7 @@ function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=
             ri[2]=ri[2]+0.0001*LX[i]
             ri[1]=ri[1]-0.0001*LX[i]
             LX[i]=ri[2]-ri[1]
-            coords=[coords...,range(ri...,NX[i])]
+            coords=[coords...,range(ri...,step=NX[i])]
         end
         mask,pmn,xi = DIVAnd_rectdom(coords...)
       else
