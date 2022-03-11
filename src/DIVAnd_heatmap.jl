@@ -23,7 +23,7 @@ Computes a  heatmap based on locations of observations using kernel density esti
 *  `dens`: data density field (integral is one)
 *  `Ltuple` : The bandwidthth used (either the input value or the calculated ones)
 *  `LCV` : Likelihood Cross Validation estimator value (the higher the better) leave one out approach
-*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
+*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave-one-out approach
 """
 function DIVAnd_heatmap(
     mask,
@@ -108,13 +108,15 @@ function DIVAnd_heatmap(
         #varxb=zeros(Float64,DIMS)
         LF = zeros(Float64, DIMS)
         #fromgausstodivaL=[0.8099,0.62,0.62,0.62,0.62,0.62,0.62]
+		#{\left(\sum_i \eta_i \right) ^2 \over \sum_i \eta_i^2}
+		NPEFF=(sum(inflation))^2/sum(inflation .^ 2)
         for i = 1:DIMS
             meanxo = sum(inflation .* x[i]) / sum(inflation)
             varx[i] = sum(inflation .* (x[i] .- meanxo) .^ 2) / sum(inflation)
             #meanxob=sum(x[i])/size(inflation)[1]
             #varxb[i]=sum((x[i].-meanxob).^2)/size(inflation)[1]
             #@show i,meanxo,varx[i],meanxob,varxb[i]
-            LF[i] = sqrt(varx[i]) / ((DIMS + 2.0) * NPI / 4.0)^(1.0 / (4.0 + DIMS))
+            LF[i] = sqrt(varx[i]) / ((DIMS + 2.0) * NPEFF / 4.0)^(1.0 / (4.0 + DIMS))
             #@show LF[i]
             #LF[i]=sqrt(varxb[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
             #@show LF[i]

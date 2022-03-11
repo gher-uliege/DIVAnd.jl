@@ -104,7 +104,7 @@ dens1D, LHM, LCV, LSCV = DIVAnd_heatmap(
     nmax = 100,
 )
 #@show dens1D[2]
-@test dens1D[2] ≈ 0.022670544314773736
+@test dens1D[2] ≈ 0.028110268285718967
 
 
 newcoord, newval, sumw, varp, idx = DIVAnd_superobs((xo,), inflation, 100)

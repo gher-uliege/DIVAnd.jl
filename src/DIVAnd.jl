@@ -411,6 +411,7 @@ include("DIVAnd_factorize.jl")
 include("DIVAnd_solve.jl")
 include("DIVAnd_metric.jl")
 include("DIVAnd_constr_advec.jl")
+export DIVAnd_constr_advec
 include("DIVAnd_constr_fluxes.jl")
 export DIVAnd_constr_fluxes
 
@@ -535,6 +536,19 @@ include("derived.jl")
 
 include("cut_results.jl")
 
+include("DIVAnd_errormap.jl")
+
+include("DIVAnd_multivarEOF.jl")
+
+include("DIVAnd_multivarJAC.jl")
+
+export DIVAnd_multivarEOF, DIVAnd_multivarJAC
+
+include("DIVAndfun.jl")
+
+export DIVAndfun
+
+
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
 # statevector
@@ -567,6 +581,7 @@ export sparse_stagger,
     sparse_diff,
     localize_separable_grid,
     ndgrid,
+	localresolution,
     sparse_pack,
     sparse_interp,
     sparse_trim,
@@ -620,6 +635,8 @@ export checkobs
 export DIVAnd_heatmap, DIVAnd_integral, DIVAnd_scaleL, DIVAnd_superobs
 
 export DIVAnd_diagapp
+
+export DIVAnd_errormap
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient
