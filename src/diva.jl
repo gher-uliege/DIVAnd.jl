@@ -60,7 +60,7 @@ netCDF file `filename` under the variable `varname`.
 to load the background from a call-back function (default `nothing`). The call-back functions has the parameters
 `(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
 (possibly transformed) and `trans` the transformation function. The output of this function is the
-gridded background field and the observations minus the background field.
+gridded background field and the observations minus the background field. See also `DIVAnd.backgroundfile`.
 * `background_epsilon2_factor`: multiplication for `epsilon2` when computing a
    vertical profile as a background estimate (default: computed internally based on the amount of data). This parameter is not used
    when the parameter `background` or `background_lenz` is provided.
