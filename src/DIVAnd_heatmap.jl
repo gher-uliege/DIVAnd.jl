@@ -1,9 +1,8 @@
 """
-Computes a  heatmap based on locations of observations using kernel density estimation (probability density field whose integral over the domain is one)
-
-dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
+    dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiterations=0,myheatmapmethod="DataKernel",
     optimizeheat=true,nmax=1000,otherargs...)
 
+Computes a  heatmap based on locations of observations using kernel density estimation (probability density field whose integral over the domain is one)
 
 # Input:
 *  `mask`: mask as usual
@@ -11,8 +10,7 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *  `xi`: tuple of coordinates of the grid for the heatmap
 *  `x` : tuple of coordinates of observations
 *  `inflation`: array generally of ones. For some applications an observation can carry a different weight which is then encoded in the array
-*  `Labs` : the length scales for DIVAnd. Here their meaning is the spread (bandwidth) of the observations for the Kernel calculation
-*              if zero is provided, the routine applies an empirical estimate, returned in the Ltuple output.
+*  `Labs` : the length scales for DIVAnd. Here their meaning is the spread (bandwidth) of the observations for the Kernel calculation. If zero is provided, the routine applies an empirical estimate, returned in the Ltuple output.
 
 *   `Ladaptiveiterations`: adaptive scaling where the length scales are adapted on the data density already estimated. You can iterate. Default "0"
 *   `optimizeheat` : boolean which can turn on or off an algorithmic optimisation. Results should be identical. Default is to optimize
@@ -25,7 +23,7 @@ dens,Ltuple,LCV,LSCV = DIVAnd_heatmap(mask,pmn,xi,x,inflation,Labs;Ladaptiveiter
 *  `dens`: data density field (integral is one)
 *  `Ltuple` : The bandwidthth used (either the input value or the calculated ones)
 *  `LCV` : Likelihood Cross Validation estimator value (the higher the better) leave one out approach
-*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave one out approach
+*  `LSCV` : Least Square Cross Validation estimator (the lower the better) leave-one-out approach
 """
 function DIVAnd_heatmap(
     mask,
@@ -110,13 +108,15 @@ function DIVAnd_heatmap(
         #varxb=zeros(Float64,DIMS)
         LF = zeros(Float64, DIMS)
         #fromgausstodivaL=[0.8099,0.62,0.62,0.62,0.62,0.62,0.62]
+		#{\left(\sum_i \eta_i \right) ^2 \over \sum_i \eta_i^2}
+		NPEFF=(sum(inflation))^2/sum(inflation .^ 2)
         for i = 1:DIMS
             meanxo = sum(inflation .* x[i]) / sum(inflation)
             varx[i] = sum(inflation .* (x[i] .- meanxo) .^ 2) / sum(inflation)
             #meanxob=sum(x[i])/size(inflation)[1]
             #varxb[i]=sum((x[i].-meanxob).^2)/size(inflation)[1]
             #@show i,meanxo,varx[i],meanxob,varxb[i]
-            LF[i] = sqrt(varx[i]) / ((DIMS + 2.0) * NPI / 4.0)^(1.0 / (4.0 + DIMS))
+            LF[i] = sqrt(varx[i]) / ((DIMS + 2.0) * NPEFF / 4.0)^(1.0 / (4.0 + DIMS))
             #@show LF[i]
             #LF[i]=sqrt(varxb[i])/((DIMS+2.0)*NP/4.0)^(1.0/(4.0+DIMS))
             #@show LF[i]

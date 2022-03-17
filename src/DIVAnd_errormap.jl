@@ -1,3 +1,56 @@
+"""
+    error,method = DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,
+	s;
+    method = "auto",
+    Bscale = false,
+    otherargs...,);
+
+
+
+# Input: same as for DIVAndrun WHICH MUST HAVE BEEN EXECUTED to get `s`
+
+* `mask`: binary mask delimiting the domain. true is inside and false outside. For oceanographic application, this is the land-sea mask.
+
+* `pmn`: scale factor of the grid. pmn is a tuple with n elements. Every
+       element represents the scale factor of the corresponding dimension. Its
+       inverse is the local resolution of the grid in a particular dimension.
+
+*  `xi`: tuple with n elements. Every element represents a coordinate
+  of the final grid on which the observations are interpolated
+
+* `x`: tuple with n elements. Every element represents a coordinate of
+  the observations
+
+* `f`: value of the observations *minus* the background estimate (m-by-1 array).
+    (see note)
+
+* `len`: correlation length
+
+* `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
+
+* `s`: this is the structure returned from the analysis itself. 
+
+# Optional input arguments specified as keyword arguments also as for DIVAnd
+
+*`method` : the method to be used, valid are `auto`, `cheap`, `precise`, `cpme`, `scpme`, `exact`, `aexerr`, `diagapp`
+
+            auto will select depenting on data coverage and length scale 
+			cheap will also select but restrict to cheaper methods
+			precise will also select but prefer better approximations
+			the other choices are just the ones among which the automatic choices will choose from. You can force the choice by specifying the method.
+
+*`Bscale` : it `true` will try to take out the the boundary effects in the background error variance. Not possible with all methods
+
+# Output:
+
+* `error`: the error map
+
+* `method`: the method used
+
+"""
+
+
+
 function DIVAnd_errormap(
     mask,
     pmn,
@@ -94,7 +147,7 @@ function DIVAnd_errormap(
         end
 
         # So best guess up to now
-        @show errmethod
+        # @show errmethod
     end
 
 
@@ -241,7 +294,7 @@ function DIVAnd_errormap(
 
     # Now calculate error depening on the method
 
-    @show errmethod, ScalebyB, pointsperbubblelimit
+    # @show errmethod, ScalebyB, pointsperbubblelimit
 
     if errmethod == "cpme"
         errormap = DIVAnd_cpme(
@@ -271,7 +324,7 @@ function DIVAnd_errormap(
         )
 
         scpme=deepcopy(errormap)
-        @time DIVAnd_scalecpme!(scpme,s.P)
+        DIVAnd_scalecpme!(scpme,s.P)
 
         return scpme, errmethod
     end
@@ -305,5 +358,5 @@ function DIVAnd_errormap(
         )
         return errormap, errmethod
     end
-    @show "you should not be here"
+    @show "You should not be here"
 end

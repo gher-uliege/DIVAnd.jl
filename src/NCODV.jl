@@ -28,7 +28,6 @@ function varbyattrib_first(ds; kwargs...)
 end
 
 
-
 _promote_Float64_or_more(x::Float32) = Float64(x)
 _promote_Float64_or_more(x) = x
 
@@ -49,18 +48,27 @@ function decode_odv_years(data,fillvalue)
     return t
 end
 
+
+function alloc_chunk(flag,sz)
+    if flag !== nothing
+        Array{eltype(flag),2}(undef, sz)
+    else
+        nothing
+    end
+end
+
 # # files always have variables with the long_name  "LOCAL_CDI_ID" and "EDMO_CODE" (all upper-case)
 # # long_name for the primary variable to analysis are always P35 names
 # # longitude, latitude and time (including dates) have the standard attribute "longitude", "latitude" and "time", respectively
 
 function loadprof(
     ncvar::NCDatasets.Variable{T,2},
-    flag::NCDatasets.Variable{Tflag,2},
+    flag,
     fillval,
     accepted_status_flag_values,
 
     ncz::NCDatasets.Variable{Tz,2},
-    flag_z::NCDatasets.Variable{Tflagz,2},
+    flag_z,
     fillval_z,
     accepted_status_flag_values_z,
 
@@ -68,29 +76,30 @@ function loadprof(
     flag_time,
     fillval_time,
     accepted_status_flag_values_time;
-
     nchunk = 10
-) where {T,Tz,Tflag,Tflagz}
-
-    n_samples = size(ncvar, 1)
+) where {T,Tz}
+    n_samples = size(ncvar,1)
     n_stations = size(ncvar, 2)
     #    n_stations = 100000
     #    n_stations = 10000
     data_chunk = Array{T,2}(undef, (n_samples, nchunk))
-    flag_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
+    flag_chunk = alloc_chunk(flag,(n_samples, nchunk))
+
     profile = Vector{T}(undef, n_samples)
     data = Vector{Vector{T}}(undef, n_stations)
 
     #z = Vector{Vector{T}}(undef, n_stations)
     z_chunk = Array{Tz,2}(undef, (n_samples, nchunk))
-    flag_z_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
+    flag_z_chunk = alloc_chunk(flag_z,(n_samples, nchunk))
+
     profile_z = Vector{T}(undef, n_samples)
     data_z = Vector{Vector{T}}(undef, n_stations)
 
     if nctime != nothing
         Ttime = eltype(nctime)
         time_chunk = Array{Ttime,2}(undef, (n_samples, nchunk))
-        flag_time_chunk = Array{Tflag,2}(undef, (n_samples, nchunk))
+        flag_time_chunk = alloc_chunk(flag_time,(n_samples, nchunk))
+
         profile_time = Vector{Float64}(undef, n_samples)
     end
     data_time = Vector{Vector{Float64}}(undef, n_stations)
@@ -107,10 +116,16 @@ function loadprof(
         clen = length(nc)
 
         NCDatasets.load!(ncvar, data_chunk, :, nc)
-        NCDatasets.load!(flag, flag_chunk, :, nc)
+
+        if flag != nothing
+            NCDatasets.load!(flag, flag_chunk, :, nc)
+        end
 
         NCDatasets.load!(ncz, z_chunk, :, nc)
-        NCDatasets.load!(flag_z, flag_z_chunk, :, nc)
+
+        if flag_z != nothing
+            NCDatasets.load!(flag_z, flag_z_chunk, :, nc)
+        end
 
         if nctime != nothing
             NCDatasets.load!(nctime, time_chunk, :, nc)
@@ -123,17 +138,26 @@ function loadprof(
                 ok = true
 
                 # check value
-                ok = ok && (data_chunk[l, k] != fillval) &&
-                    (flag_chunk[l, k] ∈ accepted_status_flag_values)
+                ok = ok && (data_chunk[l, k] != fillval)
+
+                if flag != nothing
+                    ok = ok && (flag_chunk[l, k] ∈ accepted_status_flag_values)
+                end
 
                 # check depth
-                ok = ok && (z_chunk[l, k] != fillval_z) &&
-                    (flag_z_chunk[l, k] ∈ accepted_status_flag_values_z)
+                ok = ok && (z_chunk[l, k] != fillval_z)
+
+                if flag_z != nothing
+                    ok = ok && (flag_z_chunk[l, k] ∈ accepted_status_flag_values_z)
+                end
 
                 # check time (for time series)
                 if nctime != nothing
-                    ok = ok && (time_chunk[l, k] != fillval_time) &&
-                        (flag_time_chunk[l, k] ∈ accepted_status_flag_values_time)
+                    ok = ok && (time_chunk[l, k] != fillval_time)
+
+                    if flag_time != nothing
+                        ok = ok && (flag_time_chunk[l, k] ∈ accepted_status_flag_values_time)
+                    end
                 end
 
                 if ok
@@ -249,6 +273,20 @@ function flagvalues(attrib, accepted_status_flags)
     return accepted_status_flag_values
 end
 
+function statusflags(ncvar,accepted_status_flags)
+    tmp = NCDatasets.ancillaryvariables(ncvar, "status_flag")
+    if tmp != nothing
+        @debug "variable flag: $(name(tmp)) for $(name(ncvar))"
+        accepted_status_flag_values =
+            flagvalues(tmp.attrib, accepted_status_flags)
+        @debug "accepted_status_flag_values: $accepted_status_flag_values"
+        return tmp.var, accepted_status_flag_values
+    else
+        @warn "No ancillary variable status_flags found for variable $(name(ncvar)). All data points are assumed to be good."
+        return nothing, nothing
+    end
+end
+
 """
     obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname,long_name;
          qv_flags = ["good_value","probably_good_value"],
@@ -269,9 +307,12 @@ The variable with the following standard_name should exits:
 * time
 
 As well as the variable with the following long_name:
-* LOCAL_CDI_ID
-* EDMO_code or EDMO_CODE
+* LOCAL\\_CDI\\_ID
+* EDMO\\_code or EDMO\\_CODE
 * Depth
+
+A guide how to export NetCDF files from ODV is available [here](https://github.com/gher-ulg/Diva-Workshops/blob/master/tricks/ODV_netCDF_export.md)
+
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
          nchunk = 10)
@@ -333,29 +374,12 @@ We use the empty string for LOCAL_CDI_ID instead.
         @debug "variable: $(name(ncvar))"
         @debug "variable z: $(name(ncvar_z))"
 
-        ncv_ancillary = NCDatasets.ancillaryvariables(ncvar, "status_flag").var
-        ncv_ancillary_z = NCDatasets.ancillaryvariables(ncvar_z, "status_flag").var
+        ncv_ancillary, accepted_status_flag_values = statusflags(ncvar,accepted_status_flags)
+        ncv_ancillary_z, accepted_status_flag_values_z = statusflags(ncvar_z,accepted_status_flags)
 
         if ncvar_time !== nothing
-            ncv_ancillary_time = NCDatasets.ancillaryvariables(ncvar_time, "status_flag").var
+            ncv_ancillary_time, accepted_status_flag_values_time = statusflags(ncvar_time,accepted_status_flags)
             fillval_time = get(ncvar_time.attrib, "_FillValue", nothing)
-        end
-
-        @debug "variable flag: $(name(ncv_ancillary))"
-        @debug "variable flag z: $(name(ncv_ancillary_z))"
-
-        accepted_status_flag_values =
-            flagvalues(ncv_ancillary.attrib, accepted_status_flags)
-        accepted_status_flag_values_z =
-            flagvalues(ncv_ancillary_z.attrib, accepted_status_flags)
-
-        @debug "accepted_status_flag_values: $accepted_status_flag_values"
-        @debug "accepted_status_flag_values_z: $accepted_status_flag_values_z"
-
-        if ncvar_time !== nothing
-            accepted_status_flag_values_time =
-                flagvalues(ncv_ancillary_time.attrib, accepted_status_flags)
-            @debug "accepted_status_flag_values_time: $accepted_status_flag_values_time"
         end
 
         fillval = ncvar.attrib["_FillValue"]
@@ -377,7 +401,6 @@ We use the empty string for LOCAL_CDI_ID instead.
             ncv_ancillary_time,
             fillval_time,
             accepted_status_flag_values_time,
-
             nchunk = nchunk
         )
 

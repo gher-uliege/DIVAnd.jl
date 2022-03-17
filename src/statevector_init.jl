@@ -31,13 +31,10 @@ Input:
     Every mask can have a different shape.
 
 Output:
-  s: structure to be used with statevector_pack and statevector_unpack.
+  s: structure to be used with `statevector_pack` and `statevector_unpack`.
 
 Note:
-see also statevector_pack, statevector_unpack
-
-Author: Alexander Barth, 2009,2017 <a.barth@ulg.ac.be>
-License: GPL 2 or later
+  see also `statevector_pack`, `statevector_unpack`
 """
 function statevector_init(masks)
 

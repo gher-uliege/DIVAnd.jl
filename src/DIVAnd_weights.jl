@@ -38,7 +38,7 @@ Coordinates of point i are `coord[i,1],coord[i,2],...,coord[i,ndim]`
 To avoid an ndata² complexity a grid is set up first so as to allow only the calculation
 of covariances when distances are smaller than `3*LS`
 
-Adapted from DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90
+Adapted from `DIVA3D/src/Fortran/Util/Rtimesx_weighting.f90`
 """
 function Rtimesx!(coord, LS::NTuple{ndim,T}, x, Rx) where {T} where {ndim}
     ndata = size(coord, 2)

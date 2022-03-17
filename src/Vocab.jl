@@ -141,7 +141,10 @@ function Concept(url::AbstractString)
     r = HTTP.get(url,headers)
     xdoc = parsexml(String(r.body))
 
-    node = findfirst("rdf:Description", root(xdoc), namespaces)
+    #node = findfirst("rdf:Description", root(xdoc), namespaces)
+    xpath = ".//rdf:Description/rdf:type[@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']/.."
+    @debug xpath
+    node = findfirst(xpath, root(xdoc), namespaces)
     return Concept(node)
 end
 
@@ -244,7 +247,9 @@ function findbylabel(
     @debug "as curl -L -H \"$(join(headers[1],": "))\" \"$(collection.baseurl)\""
     r = HTTP.get(collection.baseurl,headers)
     xdoc = EzXML.parsexml(String(r.body))
-    concepts = Vocab.Concept.(findall("//rdf:Description", root(xdoc), Vocab.namespaces))
+    xpath = ".//rdf:Description/rdf:type[@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']/.."
+    @debug xpath
+    concepts = Vocab.Concept.(findall(xpath, root(xdoc), Vocab.namespaces))
     alllabels = Vocab.prefLabel.(concepts)
 
     foundconcepts = Vector{Vocab.Concept}(undef, length(labels))

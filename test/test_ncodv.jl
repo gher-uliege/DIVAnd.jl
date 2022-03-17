@@ -386,3 +386,15 @@ time_qf = nc["var1_qc"][:];
 good = almostgood.(ox_qf) .& .!ismissing.(ox) .& almostgood.(z_qf) .& .!ismissing.(z) .& almostgood.(time_qf) .& .!ismissing.(time)
 
 @test ox[good] == obsvalue
+
+
+# Test warning of missing flags
+fname = tempname()
+if !isfile(fname)
+    download("https://dox.ulg.ac.be/index.php/s/nGmsH5ydCAjgft5/download",fname)
+end
+T = Float32
+long_name = "Water body salinity"
+
+@test_logs (:warn, r".*status_flags.*") match_mode = :any NCODV.load(
+   T,fname,long_name)
