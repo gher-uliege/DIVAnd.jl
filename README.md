@@ -31,6 +31,9 @@ Pkg.add("DIVAnd")
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
 
+Windows users should not upgrate to julia 1.8 (currently in beta) until these issues are solved:
+* https://github.com/JuliaPackaging/Yggdrasil/issues/4511
+* https://github.com/Unidata/netcdf-c/issues/2248
 
 # Updating DIVAnd
 
