@@ -94,6 +94,7 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
     
     
     emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method="cheap",kwargs...)        
+	sori=deepcopy(s)
     @show "error method in multivar $meth"
    
         vconstrain=[]
@@ -194,7 +195,7 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
             pseudovelocity[1]=reshape(uu,size(pseudovelocity[1]))
             pseudovelocity[2]=reshape(vv,size(pseudovelocity[2]))
             #
-             vconstrain=DIVAnd_constr_advec(s, tuple(pseudovelocity...))
+             vconstrain=DIVAnd_constr_advec(sori, tuple(pseudovelocity...))
             # pass the corresponding constraint to divandrun 
              fi,s=DIVAndrun(mask,pmn,xi,x,f,len,epsilon2;constraints=[vconstrain],kwargs...)
         
