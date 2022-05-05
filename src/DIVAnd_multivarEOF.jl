@@ -206,7 +206,7 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
         for k=1:size(eof)[1]
                 if abs(eof[k])<0.1/size(eof)[1]
                       @warn "Sorry too weak  correlations layer $k"
-                      return fi,s,eof,eofamplitudes,emap
+                      return fi,s,eof,eofamplitudes,emap,emap
                 end
         end
 
