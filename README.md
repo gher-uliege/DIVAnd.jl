@@ -1,5 +1,5 @@
 # DIVAnd
-<div align="center"> <img src="https://user-images.githubusercontent.com/9881475/174615595-7db41006-d9bb-4cb8-a76c-a18146c8ec4c.png"></img></div>
+<div align="center"> <img src="docs/src/assets/logo.png"></img></div>
 
 ---
 
