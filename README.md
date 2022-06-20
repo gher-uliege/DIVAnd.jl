@@ -1,10 +1,16 @@
 # DIVAnd
+<div align="center"> <img src="https://user-images.githubusercontent.com/9881475/174615595-7db41006-d9bb-4cb8-a76c-a18146c8ec4c.png"></img></div>
+
+---
+
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
+
+
 
 `DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-ulg/DIVA but not further developed anymore).
 
