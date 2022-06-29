@@ -141,10 +141,12 @@ More examples are available in the notebooks from the [Diva Workshop](https://gi
 
 `DIVAndfun` is a version with a minimal set of parameters (the coordinates and values of observations)  `(x,f)` and provides and interpolation function rather than an already gridded field. 
 
-`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
-
 `diva3D` is a higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
 
+`DIVAnd_heatmap` can be used for additive data and produces Kernel Density Estimations.
+
+
+`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
 
 ## Note about the background field
 
