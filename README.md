@@ -139,6 +139,8 @@ More examples are available in the notebooks from the [Diva Workshop](https://gi
 
 `DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when multiplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
 
+`DIVAndfun` is a version with a minimal set of parameters (the coordinates and values of observations)  `(x,f)` and provides and interpolation function rather than an already gridded field. 
+
 `DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
 
 `diva3D` is a higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
