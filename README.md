@@ -91,12 +91,12 @@ using Pkg
 Pkg.test("DIVAnd")
 ```
 
-All tests should pass without error.
+All tests should pass without error (it can take several minutes).
 
 ```
 INFO: Testing DIVAnd
 Test Summary: | Pass  Total
-  DIVAnd      |  427    427
+  DIVAnd      |  461    461
 INFO: DIVAnd tests passed
 ```
 
