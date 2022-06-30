@@ -99,6 +99,7 @@ attribs_res = DIVAnd.Quadtrees.within(qt3, xmin, xmax)
 # Test in 1D - 4D
 
 for n = 1:4
+    local s
     #@show n
     Xtest = rand(n, 100)
     attribs_ = collect(1:size(Xtest, 2))
