@@ -126,7 +126,7 @@ using Downloads: download
 
     # Heatmap
     include("test_heatmap.jl")
-	
+
 	# DIVAndfun
 	include("test_DIVAndfun.jl")
 
