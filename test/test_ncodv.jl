@@ -4,6 +4,7 @@ using DIVAnd
 using Test
 using DataStructures
 using Dates
+using Downloads: download
 
 #=
 fnames = [expanduser("~/Downloads/data_from_SDN_2017-11_TS_profiles_non-restricted_med.nc")]
