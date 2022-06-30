@@ -111,8 +111,8 @@ sel = 1:length(obslon)
 len = (0.1, 0.1)
 x = (obslon, obslat)
 
-weight = @time DIVAnd.weight_RtimesOne(x, len);
-weighti = @time DIVAnd.weight_RtimesOne_binning(x, len)
+weight = DIVAnd.weight_RtimesOne(x, len);
+weighti = DIVAnd.weight_RtimesOne_binning(x, len)
 
 ratio = sqrt(mean((weighti - weight) .^ 2)) / sqrt(mean(weighti .^ 2))
 @debug "weight ratio: $ratio"
