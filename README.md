@@ -8,7 +8,7 @@
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
-[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
+[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337) ![GitHub top language](https://img.shields.io/github/languages/top/gher-ulg/DIVAnd.jl)
 
 
 
