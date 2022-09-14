@@ -3,7 +3,7 @@ uuid = "efc8151c-67de-5a8f-9a35-d8f54746ae9d"
 keywords = ["interpolation", "data analysis", "spatial data analysis", "oceanography"]
 license = "GPL2+"
 desc = "DIVAnd performs an n-dimensional variational analysis of arbitrarily located observations"
-version = "2.7.8"
+version = "2.7.10"
 
 [deps]
 AlgebraicMultigrid = "2169fc97-5a83-5252-b627-83903c6c433c"
@@ -35,19 +35,19 @@ AlgebraicMultigrid = "0.2, 0.3, 0.4, 0.5"
 DataStructures = "0.17, 0.18"
 EzXML = "0.8, 0.9, 1.1"
 HTTP = "0.8, 0.9, 1"
-Interpolations = "0.12, 0.13"
+Interpolations = "0.12, 0.13, 0.14"
 IterativeSolvers = "0.8, 0.9"
 Missings = "0.4, 1.0"
 Mustache = "1"
 NCDatasets = "0.10, 0.11, 0.12"
 SpecialFunctions = "0.8, 0.10, 1.0, 2"
-ZipFile = "0.8, 0.9"
+ZipFile = "0.8, 0.9, 0.10"
 julia = "0.7, 1"
 
 [extras]
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
 [targets]
-test = ["Test", "StableRNGs","Downloads"]
+test = ["Test", "StableRNGs", "Downloads"]

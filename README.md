@@ -8,7 +8,7 @@
 [![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
-[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
+[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337) ![GitHub top language](https://img.shields.io/github/languages/top/gher-ulg/DIVAnd.jl)
 
 
 
@@ -27,7 +27,7 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-You need [Julia](http://julialang.org) (version 1.6 or 1.7) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 1.6 or later) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside a Julia terminal, you can download and install the package by issuing:
 
 ```julia
@@ -36,15 +36,6 @@ Pkg.add("DIVAnd")
 ```
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
-
-
-Windows users are required to pin the version of NetCDF_jll until this [issue](https://github.com/JuliaPackaging/Yggdrasil/issues/4511) is resolved (help is more than welcome).
-
-```julia
-using Pkg
-Pkg.add("NetCDF_jll")
-Pkg.pin(name="NetCDF_jll", version="400.702.400")
-```
 
 
 # Updating DIVAnd
@@ -217,6 +208,8 @@ Please include the following information when reporting an issue:
 * Full stack strace with error message
 * A short description of the problem
 * The command and their arguments which produced the error
+
+Note that only [official julia builds](https://julialang.org/downloads/) are supported. 
 
 # Fun
 
