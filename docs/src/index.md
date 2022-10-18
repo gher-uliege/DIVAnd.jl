@@ -26,6 +26,7 @@ DIVAnd.interp
 DIVAnd.backgroundfile
 DIVAnd.Quadtrees.checkduplicates
 DIVAnd.DIVAnd_heatmap
+DIVAnd.DIVAndfun
 ```
 
 

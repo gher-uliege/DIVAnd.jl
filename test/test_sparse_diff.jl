@@ -4,7 +4,7 @@ using LinearAlgebra
 # Testing sparse and MatFun operators.
 
 for opertype in [Val{:sparse}, Val{:MatFun}]
-
+    local pm, pn, gridindices, field, f2
 
 
     field = randn(21, 30, 10)

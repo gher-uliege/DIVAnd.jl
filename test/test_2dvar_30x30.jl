@@ -35,12 +35,10 @@ ZtHKZ = Z' * (s.H * (s.P * (s.H' * (s.R \ Z))));
 WW = s.P * (s.H' * (s.R \ Z));
 ZtHKZ2 = Z' * s.H * WW;
 
-@time ZtHKZ = Z' * s.H * (s.P * (s.H' * (s.R \ Z)));
+ZtHKZ = Z' * s.H * (s.P * (s.H' * (s.R \ Z)));
 
-@time begin
-    WW = s.P * (s.H' * (s.R \ Z))
-    ZtHKZ2 = Z' * s.H * WW
-end
+WW = s.P * (s.H' * (s.R \ Z))
+ZtHKZ2 = Z' * s.H * WW
 
 
 

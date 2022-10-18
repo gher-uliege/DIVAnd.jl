@@ -467,7 +467,7 @@ end
 
 function previewURL(
     filepath,
-    varnameL1,
+    varname_masked,
     lonr,
     latr,
     project,
@@ -491,7 +491,7 @@ function previewURL(
         "bbox" => "$(lonr[1]),$(latr[1]),$(lonr[end]),$(latr[end])",
         "decorated" => "true",
         "format" => "image/png",
-        "layers" => url_path * "/" * filepath * layersep * varnameL1,
+        "layers" => url_path * "/" * filepath * layersep * varname_masked,
         "styles" => encodeWMSStyle(Dict(
             "vmin" => default_field_min,
             "vmax" => default_field_max,
@@ -537,6 +537,7 @@ function previewURL(
     default_field_min = nothing,
     default_field_max = nothing,
     url_path = nothing,
+    default_error_level = "L2",
 )
 
     Dataset(filepath, "r") do ds
@@ -547,15 +548,15 @@ function previewURL(
         latr = [minimum(lat), maximum(lat)]
 
         # prefer layer L1 for plotting if available
-        varnameL1 = if haskey(ds, varname * "_L1")
-            varname * "_L1"
+        varname_masked = if haskey(ds, varname * "_" * default_error_level)
+            varname * "_" * default_error_level
         else
             varname
         end
 
         # load default layer (first time instance and surface)
         # (time depth) lat lon
-        var = ds[varnameL1]
+        var = ds[varname_masked]
         n_time = 1
         k_depth = 1
         min_non_missing = 0
@@ -618,7 +619,7 @@ function previewURL(
 
         preview_url = previewURL(
             filepath,
-            varnameL1,
+            varname_masked,
             lonr,
             latr,
             project,
@@ -649,6 +650,7 @@ function gettemplatevars(
     sigdigits = 5,
     url_path = nothing,
     WMSexclude = String[],
+    default_error_level = "L2",
 )
 
     # assume that grid and time coverage is the same as the
@@ -798,9 +800,9 @@ function gettemplatevars(
     product_code = get(ds.attrib, "product_code", "")
 
 
-    # prefer layer L1 for plotting if available
-    varnameL1 = if haskey(ds, varname * "_L1")
-        varname * "_L1"
+    # prefer layer L1/L2 for plotting if available
+    varname_masked = if haskey(ds, varname * "_" * default_error_level)
+        varname * "_" * default_error_level
     else
         varname
     end
@@ -925,6 +927,7 @@ function gettemplatevars(
         previewURL(filepaths[previewindex], varname, project, domain;
                    basemap = basemap,
                    url_path = url_path,
+                   default_error_level = default_error_level,
                    )
 
     # Specify any input variables to the template as a dictionary.
@@ -940,7 +943,7 @@ function gettemplatevars(
             # URL for the global data set
             "WMS_dataset_getcap" =>
                 baseurl_wms * "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
-            "WMS_dataset_layer" => url_path * "/" * filepath * layersep * varnameL1,
+            "WMS_dataset_layer" => url_path * "/" * filepath * layersep * varname_masked,
             "WMS_layers" => [],
             "NetCDF_URL" => baseurl_http * "/" * escape(url_path) * "/" * escape(filepath),
             "NetCDF_description" => "Link to download the following file: " * filename,
@@ -1027,7 +1030,9 @@ end
                      WMSlayername = [],
                      previewindex = 1,
                      additionalcontacts = [],
-                     additionalvars = Dict{String,Any}())
+                     additionalvars = Dict{String,Any}(),
+                     default_error_level = "L2",
+)
 
 Generate the XML metadata file `xmlfilename` from the NetCDF
 file `filepath` (or list of files) with the  NetCDF variable `varname`.
@@ -1081,6 +1086,9 @@ function `DIVAnd.getedmoinfo`.
 
 `WMSexclude` is a list of string with NetCDF variables not be included the XML
 under the WMS layer section.
+
+`default_error_level` is either L1 or L2 corresponding to the masked variables
+using relative error threshold 0.3 or 0.5. The default is L2.
 
 ### Example
 
@@ -1141,6 +1149,7 @@ function divadoxml(
     WMSlayername = String[],
     WMSexclude = String[],
     url_path = nothing,
+    default_error_level = "L2",
 )
 
     # template file we will use.
@@ -1158,6 +1167,7 @@ function divadoxml(
         ignore_errors = ignore_errors,
         url_path = url_path,
         WMSexclude = WMSexclude,
+        default_error_level = default_error_level,
     )
 
     merge!(templateVars, additionalvars)

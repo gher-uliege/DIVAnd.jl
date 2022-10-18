@@ -315,7 +315,8 @@ A guide how to export NetCDF files from ODV is available [here](https://github.c
 
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
-         nchunk = 10)
+              depth_name = "Depth",
+              nchunk = 10)
 
     accepted_status_flags = qv_flags
 
@@ -369,7 +370,7 @@ We use the empty string for LOCAL_CDI_ID instead.
         end
 
         ncvar = varbyattrib_first(ds, long_name = long_name)
-        ncvar_z = varbyattrib_first(ds, long_name = "Depth")
+        ncvar_z = varbyattrib_first(ds, long_name = depth_name)
 
         @debug "variable: $(name(ncvar))"
         @debug "variable z: $(name(ncvar_z))"

@@ -32,15 +32,6 @@ ulon,ulat = DIVAnd.statpos((lon, lat))
 (ulon,ulat),meanval,stdval,count = DIVAnd.statpos(val, (lon, lat))
 @test sort(meanval) ≈ [0, 2]
 
-# old API
-ulon,ulat = DIVAnd.statpos(lon, lat)
-@test sort(ulon) ≈ [1,2]
-@test sort(ulat) ≈ [10,20]
-
-ulon,ulat,meanval,stdval,count = DIVAnd.statpos(val, lon, lat)
-@test sort(meanval) ≈ [0, 2]
-
-
 # test DIVAnd.randsplit
 
 rng = StableRNG(123)
