@@ -4,19 +4,19 @@
 ---
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
-[![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
-[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
-[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
+[![Build Status](https://github.com/gher-uliege/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-uliege/DIVAnd.jl/actions)
+[![codecov.io](http://codecov.io/github/gher-uliege/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-uliege/DIVAnd.jl?branch=master)
+[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/stable/)
+[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/latest/)
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
 
 
 
-`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-ulg/DIVA but not further developed anymore).
+`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-uliege/DIVA but not further developed anymore).
 
 The method bears some similarities and equivalences with Optimal Interpolation or Krigging in that it allows to create a smooth and continous field from a collection of observations, observations which can be affected by errors. The analysis method is however different in practise, allowing to take into account topological features, physical constraints etc in a natural way. The method was initially developped with ocean data in mind, but it can be applied to any field where localized observations have to be used to produce gridded fields which are "smooth".
 
-See also https://gher-ulg.github.io/DIVAnd-presentation/#1
+See also https://gher-uliege.github.io/DIVAnd-presentation/#1
 
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
@@ -64,7 +64,7 @@ using Pkg
 Pkg.status()
 ```
 
-The latest version number is available from [here](https://github.com/gher-ulg/DIVAnd.jl/releases).
+The latest version number is available from [here](https://github.com/gher-uliege/DIVAnd.jl/releases).
 
 To explicitly install a given version `X.Y.Z` you can also use:
 
@@ -112,11 +112,11 @@ using DIVAnd
 ?DIVAndrun
 ```
 
-see also https://gher-ulg.github.io/DIVAnd.jl/latest/index.html
+see also https://gher-uliege.github.io/DIVAnd.jl/latest/index.html
 
 ## Example
 
-[DIVAnd_simple_example_4D.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/DIVAnd_simple_example_4D.jl) is a basic example in fours dimensions. The call to `DIVAndrun` looks like this:
+[DIVAnd_simple_example_4D.jl](https://github.com/gher-uliege/DIVAnd.jl/blob/master/examples/DIVAnd_simple_example_4D.jl) is a basic example in fours dimensions. The call to `DIVAndrun` looks like this:
 
 ```julia
 fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
@@ -133,7 +133,7 @@ where
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
 
-More examples are available in the notebooks from the [Diva Workshop](https://github.com/gher-ulg/Diva-Workshops).
+More examples are available in the notebooks from the [Diva Workshop](https://github.com/gher-uliege/Diva-Workshops).
 
 ## Note on which analysis function to use
 
@@ -167,7 +167,7 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
-Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
+Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-uliege/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
 
 
 ## Note about the error fields
