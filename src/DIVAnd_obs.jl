@@ -55,7 +55,9 @@ function DIVAnd_obs(s, xi, x, yo::Vector{T}, R, I = zeros(T, 0, 0)) where {T}
         diagR[out] .= Inf
         R = Diagonal(diagR)
     else
-        error("all observation must be inside the domain for non-diagonal error observation covariance matrix")
+        if count(out) > 0
+            error("all observation must be inside the domain for non-diagonal error observation covariance matrix")
+        end
     end
 
     constrain = DIVAnd_constrain(yo, R, H)
