@@ -1,6 +1,8 @@
 # Testing DIVAnd in 2 dimensions with independent verification.
 using DIVAnd
 using Test
+using LinearAlgebra
+using SparseArrays
 
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 10))
