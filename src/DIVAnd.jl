@@ -548,6 +548,7 @@ include("DIVAndfun.jl")
 
 export DIVAndfun
 
+include("deprecated.jl")
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 
