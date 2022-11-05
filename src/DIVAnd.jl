@@ -115,8 +115,8 @@ mutable struct DIVAnd_struct{T,Ti,N,OT}
     preconditioner
     keepLanczosVectors::Bool
     yo::Vector{T}
-    R::Diagonal{T}
-    #R::Union{Diagonal{T},SparseMatrixCSC{T,Int}}
+    #R::Diagonal{T}
+    R::Union{Diagonal{T},SparseMatrixCSC{T,Int}}
     H::SparseMatrixCSC{T,Int}
     P::CovarIS{T,OT}
     obsout::BitArray{1}
