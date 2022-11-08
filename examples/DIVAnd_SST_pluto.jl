@@ -18,12 +18,6 @@ end
 begin
     # We set up a new environment for this notebook
     import Pkg
-    using PyCall
-    try
-        pyimport("matplotlib")
-    catch
-        run(`$(PyCall.python) -m pip install matplotlib`)
-    end
     using PlutoUI
     using DIVAnd
     using PyPlot
@@ -43,18 +37,18 @@ begin
 
 	# remove zonal average
 	v0 = copy(vfull)
-	v0[.!mask] .= 0	
+	v0[.!mask] .= 0
 	v = vfull .- sum(v0,dims=1) ./ sum(mask,dims=1)
-	
+
     sz  = size(v)
     xi,yi =  DIVAnd.ndgrid(lon,lat)
 
     i,j =  DIVAnd.ndgrid(1:sz[1],1:sz[2])
-	
+
     # scale factor; inverse of the resolution
     pm = ones(sz) ./ ((xi[2,1]-xi[1,1]) .* cosd.(yi));
     pn = ones(sz) / (yi[1,2]-yi[1,1]);
-	
+
 	md"""### Illustration of DIVAnd
 
 	We use the Reynolds et al. 2002 [OI SST](https://www.psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html) for the month January and remove the zonal average. We extract pseudo-observations at random location and aim to reconstruct the field from these data points.
@@ -112,12 +106,12 @@ begin
 	subplot(2,2,1)
     pcolormesh(xi,yi,v); title("True field")
 	map()
-	
+
 	subplot(2,2,2)
 	scatter(xi[indexobs],yi[indexobs],2,vobs,edgecolor="w",linewidth=0.);
 	title("Observation")
     map()
-	
+
 	subplot(2,2,3)
     pcolormesh(xi,yi,vi); title("Analysis field")
 	map()
@@ -125,7 +119,7 @@ begin
 	subplot(2,2,4)
     pcolormesh(xi,yi,vi - v); title("Analysis - true field")
 	map(cl = (-1,1))
-    
+
     gcf()
 end
 
