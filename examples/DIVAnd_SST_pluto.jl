@@ -22,16 +22,16 @@ begin
     using DIVAnd
     using Plots
     using NCDatasets
-	using Statistics
-	using Random
-	import Logging
-	Logging.disable_logging(Logging.Warn) # or e.g. Logging.Info
-	# Avoid
-	# Multiple series with different color share a colorbar.
-	# Colorbar may not reflect all series correctly.
+    using Statistics
+    using Random
+    import Logging
+    Logging.disable_logging(Logging.Warn) # or e.g. Logging.Info
+    # Avoid
+    # Multiple series with different color share a colorbar.
+    # Colorbar may not reflect all series correctly.
 
-	# data URL
-	url = "http://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2/sst.ltm.1961-1990.nc"
+    # data URL
+    url = "http://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2/sst.ltm.1961-1990.nc"
 
     ds = NCDataset(url)
     vfull = reverse(nomissing(ds["sst"][:,:,1],NaN),dims=2)
@@ -39,12 +39,12 @@ begin
     lat = reverse(ds["lat"][:])
     close(ds)
 
-	mask = isfinite.(vfull)
+    mask = isfinite.(vfull)
 
-	# remove zonal average
-	v0 = copy(vfull)
-	v0[.!mask] .= 0
-	v = vfull .- sum(v0,dims=1) ./ sum(mask,dims=1)
+    # remove zonal average
+    v0 = copy(vfull)
+    v0[.!mask] .= 0
+    v = vfull .- sum(v0,dims=1) ./ sum(mask,dims=1)
 
     sz  = size(v)
     xi,yi =  DIVAnd.ndgrid(lon,lat)
@@ -100,19 +100,19 @@ begin
         len,epsilon2
     )
 
-	continents = ifelse.(isfinite.(v),NaN,0)
+    continents = ifelse.(isfinite.(v),NaN,0)
 	
-	function plotmap(v,title;clim = extrema(filter(isfinite,v)))
-       heatmap(lon,lat,continents',c = palette([:grey, :grey], 2),cbar=:top)
-       heatmap!(lon,lat,v',title=title,clim=clim,cbar=:top)
+    function plotmap(v,title;clim = extrema(filter(isfinite,v)), kwargs...)
+       heatmap(lon,lat,continents',c = palette([:grey, :grey], 2))
+       heatmap!(lon,lat,v'; title=title,clim=clim, kwargs...)
     end
 
-	function scattermap(vobs; clim = extrema(filter(isfinite,vobs)))
-	   heatmap(lon,lat,continents',c = palette([:grey, :grey], 2),cbar=:top)
+    function scattermap(vobs; clim = extrema(filter(isfinite,vobs)))
+       heatmap(lon,lat,continents',c = palette([:grey, :grey], 2),cbar=:top)
        scatter!(xi[indexobs],yi[indexobs],marker_z = vobs,
-		   title = "Observations",label = :none, markersize = 2,
-		   clim = clim,
-		   edgecolor = :none)
+           title = "Observations",label = :none, markersize = 2,
+           clim = clim,
+           edgecolor = :none)
 	end
 	clim = extrema(filter(isfinite,v))
 	
@@ -120,7 +120,7 @@ begin
        plotmap(v,"True field", clim = clim),
        plotmap(vi,"Analysis field", clim = clim),
 	   scattermap(vobs, clim = clim),
-       plotmap(vi-v,"Analysis - true field", clim = (-4,4)),
+       plotmap(vi-v,"Analysis - true field", clim = (-4,4), c = :bluesreds),
 	   size=(800,400)
     )
 end
@@ -159,7 +159,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "fc6a4dad830c97eed536203cb6cf09b19a4657a4"
+project_hash = "69bb909cd634c34c7238ea7711313c6837be87cd"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
