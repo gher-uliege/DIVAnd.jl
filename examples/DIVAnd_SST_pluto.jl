@@ -24,6 +24,7 @@ begin
     using NCDatasets
     using Statistics
     using Random
+    using Downloads: download
     import Logging
     Logging.disable_logging(Logging.Warn) # or e.g. Logging.Info
     # Avoid
@@ -31,9 +32,13 @@ begin
     # Colorbar may not reflect all series correctly.
 
     # data URL
-    url = "http://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2/sst.ltm.1961-1990.nc"
+    #url = "http://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2/sst.ltm.1961-1990.nc"
+    filename = "sst.ltm.1961-1990.nc"
+    if !isfile(filename)
+        download("https://dox.ulg.ac.be/index.php/s/ptfCNIWGfJ247Gj/download",filename)
+    end
 
-    ds = NCDataset(url)
+    ds = NCDataset(filename)
     vfull = reverse(nomissing(ds["sst"][:,:,1],NaN),dims=2)
     lon = ds["lon"][:]
     lat = reverse(ds["lat"][:])
@@ -138,6 +143,7 @@ md"Random seed (`seed` = $seed)"
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DIVAnd = "efc8151c-67de-5a8f-9a35-d8f54746ae9d"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 NCDatasets = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
@@ -157,9 +163,9 @@ PlutoUI = "~0.7.48"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.0"
+julia_version = "1.8.2"
 manifest_format = "2.0"
-project_hash = "69bb909cd634c34c7238ea7711313c6837be87cd"
+project_hash = "50c7174e499f8549ff0ba5726f3dbef914d81bce"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -975,7 +981,7 @@ version = "1.10.0"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.0"
+version = "1.10.1"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
