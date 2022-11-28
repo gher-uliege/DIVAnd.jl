@@ -188,6 +188,18 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
     error_thresholds = error_thresholds,
 )
 
+
+meanv,count = DIVAnd.binning((lonr,latr,depthr),(obslon,obslat,obsdepth),obsvalue)
+
+@test sum(count) <= length(obsvalue)
+
+
+meanv,count = DIVAnd.binning((lonr,latr,depthr,TS),(obslon,obslat,obsdepth,obstime),obsvalue)
+
+@test sum(count) <= length(obsvalue)
+@test maximum(filter(isfinite,meanv)) <= maximum(filter(isfinite,obsvalue))
+@test minimum(filter(isfinite,meanv)) >= minimum(filter(isfinite,obsvalue))
+
 # save observations
 obsused = dbinfo[:used]
 #DIVAnd.saveobs(filename,(obslon,obslat,obsdepth,obstime),obsids,used = obsused)
@@ -343,4 +355,3 @@ vn2, fi = background(xi, n, firef, DIVAnd.Anam.notransform()[1])
 #rm(filename)
 
 nothing
-

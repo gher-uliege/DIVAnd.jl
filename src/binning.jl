@@ -34,34 +34,14 @@ function findin(x, c)
     return -1
 end
 
-#=
-function binning(x::NTuple{1,T}, xv, v) where {T}
-    # unstaggered coordinate
-    x_unstagger = unstagger(x[1])
-    sz = size(x[1])
 
-    vb = zeros(eltype(v), sz)
-    count = zeros(Int, sz)
-
-    for j = 1:length(v)
-        i = findin(x_unstagger, xv[1][j])
-        if i != -1
-            vb[i] = vb[i] + v[j]
-            count[i] += 1
-        end
-    end
-
-    return vb ./ count, count, vb
-end
-=#
-
-function binning(gridx::Tuple, x, v)
-    # unstaggered coordinate
+function binning!(gridx::Tuple, x, v, vb, count)
     gridx_unstagger = DIVAnd.unstagger.(gridx)
     sz = length.(gridx)
 
-    vb = zeros(eltype(v), sz)
-    count = zeros(Int, sz)
+    @assert size(vb) == sz
+    @assert size(count) == sz
+
     nout = 0
     n = length(gridx)
 
@@ -72,10 +52,42 @@ function binning(gridx::Tuple, x, v)
         if checkbounds(Bool, vb, ind)
             vb[ind] = vb[ind] + v[j]
             count[ind] += 1
-        else
-            nout += 1
         end
     end
 
-    return vb ./ count, count, vb, nout
+    for ind = 1:length(vb)
+        vb[ind] /= count[ind]
+    end
+
+    return vb, count
+end
+
+function binning(gridx::NTuple{N,AbstractVector}, x, v) where N
+    sz = length.(gridx)
+    vb = zeros(eltype(v), sz)
+    count = zeros(Int, sz)
+
+    return binning!(gridx, x, v, vb, count)
+end
+
+
+function binning(gridx::NTuple{N,Union{AbstractVector,DIVAnd.AbstractTimeSelector}}, x, v) where N
+    @assert isa(gridx[N],DIVAnd.AbstractTimeSelector)
+
+    gridx_ = gridx[1:N-1]
+    TS  = gridx[N]
+
+    sz = length.(gridx)
+    vb = zeros(eltype(v), sz)
+    mean_v = zeros(eltype(v), sz)
+    count = zeros(Int, sz)
+
+    for n = 1:length(gridx[N])
+        sel = DIVAnd.select(TS,n,x[N])
+        x_sel = ntuple(i -> x[i][sel],N-1)
+
+        binning!(gridx_, x_sel, v[sel],selectdim(mean_v,N,n),selectdim(count,N,n))
+    end
+
+    return mean_v,count
 end
