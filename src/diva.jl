@@ -22,10 +22,11 @@ netCDF file `filename` under the variable `varname`.
    If `fitcorrlen` is `true`, then `len` can be the empty tuple `()` or a tuple containing
    3 arrays of normalized (or relative) correlation lengths which will be multiplied by the
    horizontal and vertical correlation lengths. In the case where `fitcorrlen` is `true` and `len` is provided, the
-   elements of the tuple `len` are a dimensional and mostly of the order of 1. Where the elements of `len` are less 
-   than 1, the correlation length (obtained via fitting) is effectively decreased and where it is larger than 1 it is increased.
+   elements of the tuple `len` are adimensional and mostly of the order of 1. Where the elements of `len` are less 
+   than 1, the correlation length (obtained via fitting, DIVAnd.fithorzlen and DIVAnd.fitvertlen) is effectively decreased and where it is larger than 1 it is increased.
    This is useful for example to decrease the correlation length locally near steep topography.
    It is advised to check the range of the scaled correlation length which is printed on the screen while running DIVAnd. The fitted values are also returned in the structure `dbinfo`.
+   The correlation length fitting can produce irrealistic results for inhomogenous data coverage.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field).
 `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
