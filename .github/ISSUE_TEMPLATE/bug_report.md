@@ -20,7 +20,9 @@ Type here the result of the command `import Pkg; Pkg.status()`
 ```
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. 
-2. 
-3.
+The command and their arguments which produced the error
+
+**Full screen output**
+Preferably obtained by setting `ENV["JULIA_DEBUG"] = "DIVAnd"`
+
+** Full stack trace with error message**
