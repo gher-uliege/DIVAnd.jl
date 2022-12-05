@@ -22,6 +22,30 @@ function DIVAnd_save(filename, mask::AbstractArray{Bool,N}, varname, fi) where {
 end
 
 
+function _detect_dims(xyi)
+    # index of depth and time (-1 mean no depth/time dimension)
+    idepth = -1
+    itime = -1
+    dimnames = ("lon", "lat")
+
+    if length(xyi) == 4
+        idepth = 3
+        itime = 4
+        dimnames = ("lon", "lat", "depth", "time")
+    elseif length(xyi) == 3
+        if eltype(xyi[3]) <: DateTime
+            itime = 3
+            dimnames = ("lon", "lat", "time")
+        else
+            idepth = 3
+            dimnames = ("lon", "lat", "depth")
+        end
+    end
+
+    return dimnames,idepth,itime
+end
+
+
 """
     DIVAnd_save(ds,filename,xyi,fi,varname;
                       ncvarattrib = Dict(), ncglobalattrib = Dict(), ...)
@@ -95,25 +119,7 @@ function ncfile(
 
     # chunksizes should not exceed the size of fi
     chunksizes = min.(chunksizes, collect(sz))
-
-    # index of depth and time (-1 mean no depth/time dimension)
-    idepth = -1
-    itime = -1
-    dimnames = ("lon", "lat")
-
-    if length(xyi) == 4
-        idepth = 3
-        itime = 4
-        dimnames = ("lon", "lat", "depth", "time")
-    elseif length(xyi) == 3
-        if eltype(xyi[3]) <: DateTime
-            itime = 3
-            dimnames = ("lon", "lat", "time")
-        else
-            idepth = 3
-            dimnames = ("lon", "lat", "depth")
-        end
-    end
+    dimnames,idepth,itime = _detect_dims(xyi)
 
     units = get(ncvarattrib, "units", "")
     longname = get(ncvarattrib, "long_name", "")
@@ -426,6 +432,37 @@ function save(filename, xyi::NTuple{N,AbstractVector}, fi, varname; kwargs...) w
 end
 
 
+function savefield(filename,varname_bins,data,xyi;
+                   long_name = nothing,
+                   type_save = Float32,
+                   deflatelevel = 5,
+                   fillvalue = NCDatasets.fillvalue(Float32),
+                   chunksizes = [100, 100, 1, 1][1:length(xyi)],
+                   )
+
+    dimnames,idepth,itime = _detect_dims(xyi)
+    sz = length.(xyi)
+    chunksizes = min.(chunksizes, collect(sz))
+    ds = NCDataset(filename,"a")
+
+    ncdatabins = defVar(ds,varname_bins, type_save, dimnames;
+                        fillvalue = type_save(fillvalue),
+                        deflatelevel = deflatelevel,
+                        chunksizes = chunksizes)
+
+    if long_name != nothing
+        ncdatabins.attrib["long_name"] = long_name
+    end
+    ncdatabins.attrib["missing_value"] = type_save(fillvalue)
+
+    tmp = allowmissing(data)
+    tmp[.!isfinite.(tmp)] .= missing
+    ncdatabins[:] = tmp
+    close(ds)
+    return nothing
+end
+
+
 """
     DIVAnd.saveobs(filename,xy,ids;
                    type_save = Float32,
@@ -645,5 +682,25 @@ function saveobs(
     return nothing
 end
 
+
+function saveobsstat(filename,xyi,xy; isoutlier = nothing)
+
+    obsvalue = ones(size(xy[1]))
+    meanv,count = DIVAnd.binning(xyi,xy,obsvalue)
+
+    savefield(filename,"databins",log10.(count),xyi,
+              long_name = "Logarithm10 of number of data in bins")
+
+
+    if isoutlier !== nothing
+        xy_outlier = getindex.(xy,Ref(isoutlier))
+
+        obsvalue_outlier = ones(size(xy_outlier[1]))
+        meanv,count = DIVAnd.binning(xyi,xy_outlier,obsvalue_outlier)
+
+        savefield(filename,"outlbins",log10.(count),xyi,
+              long_name = "Logarithm10 of number of outliers data in bins")
+    end
+end
 
 @deprecate DIVAnd_save DIVAnd_save2

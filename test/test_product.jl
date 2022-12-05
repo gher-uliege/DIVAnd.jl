@@ -189,16 +189,24 @@ dbinfo = @test_logs (:info, r".*netCDF*") match_mode = :any DIVAnd.diva3d(
 )
 
 
+
+# observation statistics in data bins
 meanv,count = DIVAnd.binning((lonr,latr,depthr),(obslon,obslat,obsdepth),obsvalue)
 
 @test sum(count) <= length(obsvalue)
-
 
 meanv,count = DIVAnd.binning((lonr,latr,depthr,TS),(obslon,obslat,obsdepth,obstime),obsvalue)
 
 @test sum(count) <= length(obsvalue)
 @test maximum(filter(isfinite,meanv)) <= maximum(filter(isfinite,obsvalue))
 @test minimum(filter(isfinite,meanv)) >= minimum(filter(isfinite,obsvalue))
+
+isoutlier = falses(size(obsvalue))
+
+xyi = (lonr,latr,depthr,TS)
+xy = (obslon, obslat, obsdepth, obstime)
+DIVAnd.saveobsstat(filename,xyi,xy; isoutlier = isoutlier)
+
 
 # save observations
 obsused = dbinfo[:used]
@@ -217,8 +225,6 @@ polygon_lat = latr[[1, 1, end, end]]
 maskkeep = DIVAnd.inpolygon(polygon_lon,polygon_lat,lonr,latr)
 
 DIVAnd.cut(filename2,varname,filename_cut,polygon_lon,polygon_lat)
-
-
 
 
 
