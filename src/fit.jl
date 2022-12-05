@@ -385,7 +385,7 @@ end
   varbak, RL, dbinfo =
      fitlen(x::Tuple,d,weight,nsamp; distfun = distfun_euclid, kwargs...)
 
-this function used to be called lfit in fitlsn.f
+This function used to be called lfit in fitlsn.f
 
 """
 function fitlen(x::Tuple, d, weight, nsamp;
@@ -730,7 +730,7 @@ _getparam(z, f::Function) = f(z)
     lenxy,dbinfo = DIVAnd.fithorzlen(x,value,z)
 
 Determines the horizontal correlation length `lenxy` based on the
-measurments `value` at the location `x` (tuple of 3 vectors corresponding to
+measurements `value` at the location `x` (tuple of 3 vectors corresponding to
 longitude, latitude and depth) at the depth levels defined in `z`.
 
 Optional arguments:
@@ -739,16 +739,16 @@ Optional arguments:
  * `maxnsamp` (default 5000): maximum number of samples
  * `limitlen` (default false): limit correlation length by mean distance between
     observations
- * `limitfun` (default no function): a function with with the two arguments (depth and
+ * `limitfun` (default no function): a function with two arguments (depth and
 estimated correlation length) which returns an adjusted correlation length. For
 example to force the correlation length to be between 300 km and 50 km one would
 use the following: `limitfun = (z,len) -> max(min(len,300_000),10_000))`. If provided
 `limitfun` is used before and after the smoothing.
  * `epsilon2` (default is a vector of the same size as `value` with all elements
     equal to 1): the relative error variance of the observations. Less reliable
-    observation would have a larger corresponding value.
+    observations would have a larger corresponding value.
  * `distfun`: function computing the distance between the points `xi` and `xj`.
-  Per default it represent the Euclidian distance.
+  Per default it represents the Euclidian distance.
 
 """
 function fithorzlen(
@@ -770,7 +770,7 @@ function fithorzlen(
 ) where {T}
 
     if any(ϵ2 -> ϵ2 < 0, epsilon2)
-        error("some values in epsilon2 are negatives (minimum value is $(minimum(epsilon2)))")
+        error("some values in epsilon2 are negative (minimum value is $(minimum(epsilon2)))")
     end
 
     kmax = length(z)
