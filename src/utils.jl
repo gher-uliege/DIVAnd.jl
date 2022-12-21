@@ -2,7 +2,7 @@
 """
     checkresolution(mask,pmn,len)
 
-Returns a warning of the resolution is too coarse relative to the correlation
+Returns a warning if the resolution is too coarse relative to the correlation
 length. The resolution must be at least 2 times finer than the correlation
 length.
 """
@@ -276,8 +276,8 @@ end
 """
     directions = vonNeumannNeighborhood(mask)
 
-Return a vector will all search directions corresponding to the Von Neumann
-neighborhood in N dimensions where N is the dimension of the boolean array
+Return a vector with all search directions corresponding to the Von Neumann
+neighborhood in N dimensions, where N is the dimension of the boolean array
 `mask`.
 """
 function vonNeumannNeighborhood(mask::AbstractArray{Bool,N}) where {N}
@@ -289,7 +289,7 @@ end
 """
     m = floodfillpoint(mask,I,directions)
 
-Fill the binary mask starting at index `I` (`CartesianIndex`). All element
+Fill the binary mask starting at index `I` (`CartesianIndex`). All elements
 directly connected to the starting location `I` will be `true` without crossing
 any element equal to `false` in `mask`. Per default the value of `I` is the
 first true element in `mask` and `directions ` correspond to the Von Neumann
@@ -689,7 +689,7 @@ end
 Return a function `fun` which is used in DIVAnd to make
 anomalies out of observations based relative to the field
 defined in the NetCDF variable `varname` in the NetCDF file
-`fname`. It is assumed that the NetCDF variables has the variable
+`fname`. It is assumed that the NetCDF file has the variable
 `lon`, `lat` and `depth`. And that the NetCDF variable is defined on the
 same grid as the analysis.
 
@@ -723,14 +723,14 @@ end
 Return a function `fun` which is used in DIVAnd to make
 anomalies out of observations based relative to the field
 defined in the NetCDF variable `varname` in the NetCDF file
-`fname`. It is assumed that the NetCDF variables has the variable
+`fname`. It is assumed that the NetCDF file has the variable
 `lon`, `lat` and `depth`. And that the NetCDF variable is defined on the
 same grid as the analysis and was generated according to the provided time selector
 `TS` (TimeSelectorYearListMonthList or TimeSelectorRunningAverage).
 
 !!! note
 
-    At all vertical levels, there should at least one sea point.
+    At all vertical levels, there should be at least one sea point.
 """
 function backgroundfile(fname, varname, TS::AbstractTimeSelector)
 
@@ -761,7 +761,7 @@ function backgroundfile(fname, varname, TS::AbstractTimeSelector)
 
         nbackground = findmax(overlap)[2]
 
-        @info "analysis time index $n uses the backgrond time index $nbackground"
+        @info "analysis time index $n uses the background time index $nbackground"
 
         if hasdepth
             v_nbackground = v[:, :, :, nbackground]
@@ -854,7 +854,7 @@ Return a function `fun` which is used in DIVAnd as a advection constraint using
 fields defined in the NetCDF variable `varnameu`, `varnamev` and `varnamew`
 (zonal, meridional and vertical velocity components) in the NetCDF file
 `fname`. If the parameter `varnamew` is omitted, the vertical velicity is neglected.
-It is assumed that the NetCDF variables has the variable
+It is assumed that the NetCDF file has the variable
 `lon`, `lat` and `depth` and that the fields have been average according to the provided time selector
 `TSvelocity` (`TimeSelectorYearListMonthList` or `TimeSelectorRunningAverage`).
 
