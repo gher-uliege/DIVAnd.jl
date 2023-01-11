@@ -330,7 +330,8 @@ function DIVAnd_errormap(
     end
 
     if errmethod == "exact"
-        errormap =statevector_unpack(s.sv,diag(s.P))
+	
+        errormap, =statevector_unpack(s.sv,diag(s.P))
 
         return errormap, errmethod
     end
