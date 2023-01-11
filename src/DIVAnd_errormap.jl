@@ -81,8 +81,6 @@ function DIVAnd_errormap(
     Lowdata = false
 
 
-    if method == "auto"
-
         Lpmnrange = DIVAnd_Lpmnrange(pmn, len)
         # L compared to domain size
 
@@ -118,6 +116,10 @@ function DIVAnd_errormap(
             Lowdata = true
         end
 
+
+    if method == "auto"
+
+        
         # try to guess
 
         # small L
@@ -153,38 +155,7 @@ function DIVAnd_errormap(
 
 
     if method == "cheap"
-        Lpmnrange = DIVAnd_Lpmnrange(pmn, len)
-        # L compared to domain size
-
-        LoverLdomain = zeros(Float64, ndims(mask))
-
-
-        for i = 1:ndims(mask)
-            LoverLdomain[i] = Lpmnrange[i][2] / size(mask)[i]
-        end
-
-        if sum(LoverLdomain .< LoverLlimit) == ndims(mask)
-            smallL = true
-        end
-
-
-        # Now look at lower values to check for data coverage
-        realdims = ndims(mask)
-        for i = 1:ndims(mask)
-            LoverLdomain[i] = Lpmnrange[i][1] / size(mask)[i]
-            if Lpmnrange[i][1] == 0
-                LoverLdomain[i] = 1.0 / size(mask)[i]
-                realdims = realdims - 1
-            end
-        end
-        #nbdonnee size of f a revoir en fonction depsilon2
-        if prod(LoverLdomain) * size(f)[1] > pointsperbubblelimit^realdims
-            Bigdata = true
-        end
-
-        if prod(LoverLdomain) * size(f)[1] < pointsperbubblelimitlow^realdims
-            Lowdata = true
-        end
+        
         if smallL
             if Lowdata
                 errmethod = "cpme"
@@ -206,38 +177,7 @@ function DIVAnd_errormap(
     end
 
     if method == "precise"
-        Lpmnrange = DIVAnd_Lpmnrange(pmn, len)
-        # L compared to domain size
-
-        LoverLdomain = zeros(Float64, ndims(mask))
-
-
-        for i = 1:ndims(mask)
-            LoverLdomain[i] = Lpmnrange[i][2] / size(mask)[i]
-        end
-
-        if sum(LoverLdomain .< LoverLlimit) == ndims(mask)
-            smallL = true
-        end
-
-
-        # Now look at lower values to check for data coverage
-        realdims = ndims(mask)
-        for i = 1:ndims(mask)
-            LoverLdomain[i] = Lpmnrange[i][1] / size(mask)[i]
-            if Lpmnrange[i][1] == 0
-                LoverLdomain[i] = 1.0 / size(mask)[i]
-                realdims = realdims - 1
-            end
-        end
-        #nbdonnee size of f a revoir en fonction depsilon2
-        if prod(LoverLdomain) * size(f)[1] > pointsperbubblelimit^realdims
-            Bigdata = true
-        end
-
-        if prod(LoverLdomain) * size(f)[1] < pointsperbubblelimitlow^realdims
-            Lowdata = true
-        end
+        
 
 
         if smallL
