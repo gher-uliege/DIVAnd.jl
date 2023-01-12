@@ -1,7 +1,7 @@
 """
     error,method = DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,
 	s;
-    method = "auto",
+    method = :auto,
     Bscale = false,
     otherargs...,);
 
@@ -32,7 +32,7 @@
 
 # Optional input arguments specified as keyword arguments also as for DIVAnd
 
-*`method` : the method to be used, valid are `auto`, `cheap`, `precise`, `cpme`, `scpme`, `exact`, `aexerr`, `diagapp`
+*`method` : the method to be used, valid are `:auto`, `:cheap`, `:precise`, `:cpme`, `:scpme`, `:exact`, `:aexerr`, `:diagapp`
 
             auto will select depenting on data coverage and length scale 
 			cheap will also select but restrict to cheaper methods
@@ -60,7 +60,7 @@ function DIVAnd_errormap(
     len,
     epsilon2,
     s;
-    method = "auto",
+    method = :auto,
     Bscale = false,
     otherargs...,
 )
@@ -117,7 +117,7 @@ function DIVAnd_errormap(
         end
 
 
-    if method == "auto"
+    if method == :auto
 
         
         # try to guess
@@ -131,19 +131,19 @@ function DIVAnd_errormap(
         # very high data coverage: scpme
         if smallL
             if Lowdata
-                errmethod = "cpme"
+                errmethod = :cpme
             else
                 if Bigdata
-                    errmethod = "scpme"
+                    errmethod = :scpme
                 else
-                    errmethod = "diagapp"
+                    errmethod = :diagapp
                 end
             end
         else
 		    if Bigdata
-                errmethod = "scpme"
+                errmethod = :scpme
             else
-                errmethod = "aexerr"
+                errmethod = :aexerr
 		    end
 
         end
@@ -154,58 +154,58 @@ function DIVAnd_errormap(
 
 
 
-    if method == "cheap"
+    if method == :cheap
         
         if smallL
             if Lowdata
-                errmethod = "cpme"
+                errmethod = :cpme
             else
                 if Bigdata
-                    errmethod = "scpme"
+                    errmethod = :scpme
                 else
-                    errmethod = "cpme"
+                    errmethod = :cpme
                 end
             end
         else
 		    if Bigdata
-                errmethod = "scpme"
+                errmethod = :scpme
             else
-                errmethod = "cpme"
+                errmethod = :cpme
 		    end
 
         end
     end
 
-    if method == "precise"
+    if method == :precise
         
 
 
         if smallL
             if Lowdata
-                errmethod = "aexerr"
+                errmethod = :aexerr
             else
                 if Bigdata
-                    errmethod = "diagapp"
+                    errmethod = :diagapp
                 else
-                    errmethod = "diagapp"
+                    errmethod = :diagapp
                 end
             end
         else
 		    if Bigdata
-                errmethod = "diagapp"
+                errmethod = :diagapp
             else
-                errmethod = "aexerr"
+                errmethod = :aexerr
 		    end
         end
     end
 
 
-    if errmethod == "cpme" && Bscale
+    if errmethod == :cpme && Bscale
         warn("Sorry, that method does not allow rescaling by spatial dependance of B ")
         ScalebyB = false
     end
 
-    if errmethod == "scpme" && Bscale
+    if errmethod == :scpme && Bscale
         warn("Sorry, that method does not allow rescaling by spatial dependance of B ")
         ScalebyB = false
     end
@@ -216,7 +216,7 @@ function DIVAnd_errormap(
         ScalebyB = false
     end
 
-    if errmethod == "scpme" && noP
+    if errmethod == :scpme && noP
         warn("Sorry, that method needs s.P to be available. Will use cpme instead")
         errmethod = cpme
     end
@@ -226,7 +226,7 @@ function DIVAnd_errormap(
         errmethod = aexerr
     end
 
-    if errmethod == "diagapp" && noP
+    if errmethod == :diagapp && noP
         warn("Sorry, that method needs s.P to be available. Will use aexerr instead")
         errmethod = aexerr
     end
@@ -236,7 +236,7 @@ function DIVAnd_errormap(
 
     # @show errmethod, ScalebyB, pointsperbubblelimit
 
-    if errmethod == "cpme"
+    if errmethod == :cpme
         errormap = DIVAnd_cpme(
             mask,
             pmn,
@@ -251,7 +251,7 @@ function DIVAnd_errormap(
         return errormap, errmethod
     end
 
-    if errmethod == "scpme"
+    if errmethod == :scpme
         errormap = DIVAnd_cpme(
             mask,
             pmn,
@@ -276,7 +276,7 @@ function DIVAnd_errormap(
         return errormap, errmethod
     end
 
-    if errmethod == "diagapp"
+    if errmethod == :diagapp
         errormap = DIVAnd_diagapp(
             s.P,
             pmn,
@@ -286,7 +286,7 @@ function DIVAnd_errormap(
         return errormap, errmethod
     end
 
-    if errmethod == "aexerr"
+    if errmethod == :aexerr
         errormap,bi,c,d =DIVAnd_aexerr(
             mask,
             pmn,

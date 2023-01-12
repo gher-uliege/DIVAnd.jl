@@ -134,7 +134,7 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
 
     # univariate analysis
     fi,s=DIVAndrun(mask,pmn,xi,x,f,len,epsilon2;velocity=velocity,kwargs...)
-    emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method="cheap",velocity=velocity,kwargs...)
+    emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method=:cheap,velocity=velocity,kwargs...)
     @debug "error method in multivar $meth"
     # keep points where error is small enough
     limite=0.5
@@ -292,7 +292,7 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
       fm=repeat(f,nlay)
 
       # Error maps for the multivariate approach
-      emapm,methm=DIVAnd_errormap(mask,pmn,xi,tuple(xm...),fm,len,epsilon2m,s;method="cheap",velocity=velocity,kwargs...)
+      emapm,methm=DIVAnd_errormap(mask,pmn,xi,tuple(xm...),fm,len,epsilon2m,s;method=:cheap,velocity=velocity,kwargs...)
       @debug methm
     # Banzaii, finished
     return fi,s,eof,eofamplitudes,emap,emapm

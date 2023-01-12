@@ -93,7 +93,7 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
     
     
     
-    emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method="cheap",kwargs...)        
+    emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method=:cheap,kwargs...)        
 	sori=deepcopy(s)
     @show "error method in multivar $meth"
    
@@ -205,7 +205,7 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
         
         end 
       # Error maps for the multivariate approach
-      emapm,methm=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method="cheap",constraints=[vconstrain],kwargs...)
+      emapm,methm=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method=:cheap,constraints=[vconstrain],kwargs...)
       @show methm
     # Banzaii, finished      
     return fi,s,emap,emapm,pseudovelocity
