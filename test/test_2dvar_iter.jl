@@ -48,6 +48,7 @@ va_chol, s = DIVAndrun(
 )
 
 for jj = 1:4
+    local va_iter, s_np
     # iterative (without preconditioner)
     va_iter, s_np = DIVAndrun(
         mask,

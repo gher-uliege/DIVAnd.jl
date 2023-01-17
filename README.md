@@ -1,16 +1,22 @@
 # DIVAnd
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Build Status](https://github.com/gher-ulg/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-ulg/DIVAnd.jl/actions)
-[![codecov.io](http://codecov.io/github/gher-ulg/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-ulg/DIVAnd.jl?branch=master)
-[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/stable/)
-[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-ulg.github.io/DIVAnd.jl/latest/)
-[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
+<div align="center"> <img src="docs/src/assets/logo.png"></img></div>
 
-`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-ulg/DIVA but not further developed anymore).
+---
+
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Build Status](https://github.com/gher-uliege/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-uliege/DIVAnd.jl/actions)
+[![codecov.io](http://codecov.io/github/gher-uliege/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-uliege/DIVAnd.jl?branch=master)
+[![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/stable/)
+[![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/latest/)
+[![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
+![GitHub top language](https://img.shields.io/github/languages/top/gher-uliege/DIVAnd.jl)
+
+
+`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-uliege/DIVA but not further developed anymore).
 
 The method bears some similarities and equivalences with Optimal Interpolation or Krigging in that it allows to create a smooth and continous field from a collection of observations, observations which can be affected by errors. The analysis method is however different in practise, allowing to take into account topological features, physical constraints etc in a natural way. The method was initially developped with ocean data in mind, but it can be applied to any field where localized observations have to be used to produce gridded fields which are "smooth".
 
-See also https://gher-ulg.github.io/DIVAnd-presentation/#1
+See also https://gher-uliege.github.io/DIVAnd-presentation/#1
 
 Please cite this paper as follows if you use `DIVAnd` in a publication:
 
@@ -21,7 +27,7 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 # Installing
 
-You need [Julia](http://julialang.org) (version 1.6 or 1.7) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
+You need [Julia](http://julialang.org) (version 1.6 or later) to run `DIVAnd`. The command line version is sufficient for `DIVAnd`.
 Inside a Julia terminal, you can download and install the package by issuing:
 
 ```julia
@@ -49,7 +55,7 @@ using Pkg
 Pkg.status()
 ```
 
-The latest version number is available from [here](https://github.com/gher-ulg/DIVAnd.jl/releases).
+The latest version number is available from [here](https://github.com/gher-uliege/DIVAnd.jl/releases).
 
 To explicitly install a given version `X.Y.Z` you can also use:
 
@@ -76,12 +82,12 @@ using Pkg
 Pkg.test("DIVAnd")
 ```
 
-All tests should pass without error.
+All tests should pass without error (it can take several minutes).
 
 ```
 INFO: Testing DIVAnd
 Test Summary: | Pass  Total
-  DIVAnd      |  427    427
+  DIVAnd      |  461    461
 INFO: DIVAnd tests passed
 ```
 
@@ -97,11 +103,11 @@ using DIVAnd
 ?DIVAndrun
 ```
 
-see also https://gher-ulg.github.io/DIVAnd.jl/latest/index.html
+see also https://gher-uliege.github.io/DIVAnd.jl/latest/index.html
 
 ## Example
 
-[DIVAnd_simple_example_4D.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/examples/DIVAnd_simple_example_4D.jl) is a basic example in fours dimensions. The call to `DIVAndrun` looks like this:
+[DIVAnd_simple_example_4D.jl](https://github.com/gher-uliege/DIVAnd.jl/blob/master/examples/DIVAnd_simple_example_4D.jl) is a basic example in fours dimensions. The call to `DIVAndrun` looks like this:
 
 ```julia
 fi,s = DIVAndrun(mask,(pm,pn,po,pq),(xi,yi,zi,ti),(x,y,z,t),f,len,epsilon2);
@@ -118,16 +124,20 @@ where
 
 The call returns `fi`, the analyzed field on the grid `(xi,yi,zi,ti)`.
 
-More examples are available in the notebooks from the [Diva Workshop](https://github.com/gher-ulg/Diva-Workshops).
+More examples are available in the notebooks from the [Diva Workshop](https://github.com/gher-uliege/Diva-Workshops).
 
 ## Note on which analysis function to use
 
 `DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when multiplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
 
-`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
+`DIVAndfun` is a version with a minimal set of parameters (the coordinates and values of observations)  `(x,f)` and provides and interpolation function rather than an already gridded field. 
 
 `diva3D` is a higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
 
+`DIVAnd_heatmap` can be used for additive data and produces Kernel Density Estimations.
+
+
+`DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
 
 ## Note about the background field
 
@@ -148,7 +158,7 @@ One statistical way to determine the parameter(s) is to do a [cross-validation](
 4. repeat steps 2 and 3 with different values of the parameters and try to minimize the RMS difference.
 
 You can repeat all steps with a different validation data set to ensure that the optimal parameter values are robust.
-Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulg/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
+Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-uliege/DIVAnd.jl/blob/master/src/DIVAnd_cv.jl)).
 
 
 ## Note about the error fields
@@ -198,6 +208,8 @@ Please include the following information when reporting an issue:
 * Full stack strace with error message
 * A short description of the problem
 * The command and their arguments which produced the error
+
+Note that only [official julia builds](https://julialang.org/downloads/) are supported. 
 
 # Fun
 

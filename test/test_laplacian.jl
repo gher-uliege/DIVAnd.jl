@@ -34,6 +34,7 @@ end
 Nmax = 1
 
 for sz in [(20,), (100, 100), (20, 20, 20), (5, 5, 5, 5)]
+    local mask, x, ij, D2, pmn, nu, Lxsp, ivol, nus, Lx
     x = randn(sz)
     mask = trues(sz)
 

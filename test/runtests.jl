@@ -1,5 +1,4 @@
 using DIVAnd
-
 using Test
 using Random
 using LinearAlgebra
@@ -8,7 +7,7 @@ using Printf
 using Statistics
 using DelimitedFiles
 using SpecialFunctions
-
+using Downloads: download
 
 @testset "DIVAnd" begin
     include("test_quadtrees.jl")
@@ -127,7 +126,7 @@ using SpecialFunctions
 
     # Heatmap
     include("test_heatmap.jl")
-	
+
 	# DIVAndfun
 	include("test_DIVAndfun.jl")
 

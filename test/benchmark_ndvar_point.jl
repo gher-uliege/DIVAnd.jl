@@ -31,5 +31,5 @@ len = ntuple(i -> 0.2, n)
 epsilon2 = 1.0;
 
 
-@time fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2)
+fi, s = DIVAndrun(mask, pmn, xyi, xy, f, len, epsilon2)
 nothing

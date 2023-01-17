@@ -632,25 +632,17 @@ function checkduplicates(
     Nobs1 = size(X1, 2)
     Nobs2 = size(X2, 2)
 
-    qt = @time Quadtrees.QT(X1, label1)::Quadtrees.QT{Float64,Int,n}
-    @time Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
+    qt = Quadtrees.QT(X1, label1)::Quadtrees.QT{Float64,Int,n}
+    Quadtrees.rsplit!(qt, maxcap, delta ./ factor)
     #@show qt
 
     duplicates = Vector{Vector{Int}}(undef, Nobs2)
 
-    xmin = zeros(n)
-    xmax = zeros(n)
-
     #    index_buffer = zeros(Int, Nobs1)
     index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
 
-    @time @fastmath @inbounds Threads.@threads for i = 1:Nobs2
+    @fastmath @inbounds Threads.@threads for i = 1:Nobs2
         index_buffer = @view index_buffer_all[:, Threads.threadid()]
-
-        #        for j = 1:n
-        #            xmin[j] = X2[j, i] - delta[j]
-        #            xmax[j] = X2[j, i] + delta[j]
-        #        end
 
         xmin = ntuple(j -> X2[j, i] - delta[j], Val(n))
         xmax = ntuple(j -> X2[j, i] + delta[j], Val(n))

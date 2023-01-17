@@ -20,8 +20,15 @@ netCDF file `filename` under the variable `varname`.
 * `len`: tuple with n elements. Every element represents the correlation length.
    If `fitcorrlen` is `false` (default), the correlation length should be expressed in meters.
    If `fitcorrlen` is `true`, then `len` can be the empty tuple `()` or a tuple containing
-   3 arrays of normalized correlation lengths which will be multiplied by the
-   horizontal and vertical correlation lengths.
+   3 arrays of normalized (or relative) correlation lengths which will be multiplied by the
+   horizontal and vertical correlation lengths. In the case where `fitcorrlen` is `true`
+   and `len` is provided, the elements of the tuple `len` are adimensional and mostly of the
+   order of 1. Where the elements of `len` are less than 1, the correlation length (obtained via
+   fitting, DIVAnd.fithorzlen and DIVAnd.fitvertlen) is effectively decreased and where it is larger
+   than 1 it is increased. This is useful for example to decrease the correlation length locally
+   near steep topography. It is advised to check the range of the scaled correlation length which
+   is printed on the screen while running DIVAnd. The fitted values are also returned in the structure `dbinfo`.
+   The correlation length fitting can produce irrealistic results for inhomogenous data coverage.
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field).
 `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a different error variance and their errors are decorrelated) or a matrix (all observations can have a different error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
@@ -60,7 +67,7 @@ netCDF file `filename` under the variable `varname`.
 to load the background from a call-back function (default `nothing`). The call-back functions has the parameters
 `(x,n,trans_value,trans)` where `x` represent the position of the observations, `n` the time index, `trans_value`, the observations
 (possibly transformed) and `trans` the transformation function. The output of this function is the
-gridded background field and the observations minus the background field.
+gridded background field and the observations minus the background field. See also `DIVAnd.backgroundfile`.
 * `background_epsilon2_factor`: multiplication for `epsilon2` when computing a
    vertical profile as a background estimate (default: computed internally based on the amount of data). This parameter is not used
    when the parameter `background` or `background_lenz` is provided.

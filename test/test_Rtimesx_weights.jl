@@ -195,10 +195,10 @@ coord = randn(ndim, ndata)
 x = ones(ndata)
 Rx = zeros(ndata)
 LS = ntuple(i -> 0.1, ndim)
-@time DIVAnd.Rtimesx!(coord, LS, x, Rx)
+DIVAnd.Rtimesx!(coord, LS, x, Rx)
 
 Rx2 = zeros(ndata)
-@time Rtimesx2!(coord, LS, x, Rx2)
+Rtimesx2!(coord, LS, x, Rx2)
 
 len = LS
 n = size(coord, 1)
@@ -208,7 +208,6 @@ maxcap = 10
 T = Float64
 qt = DIVAnd.Quadtrees.QT(coord, collect(1:Nobs))::DIVAnd.Quadtrees.QT{T,Int,ndim}
 DIVAnd.Quadtrees.rsplit!(qt, maxcap)
-@show DIVAnd.Quadtrees.maxdepth(qt)
 
 nothing
 

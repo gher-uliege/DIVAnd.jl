@@ -77,7 +77,10 @@ function loadprof(
     fillval_time,
     accepted_status_flag_values_time;
     nchunk = 10
-) where {T,Tz}
+    ) where {T,Tz}
+
+    @debug "accepted_status_flag_values_time: $accepted_status_flag_values_time, time name $(name(nctime))"
+
     n_samples = size(ncvar,1)
     n_stations = size(ncvar, 2)
     #    n_stations = 100000
@@ -295,8 +298,9 @@ end
 
 Load all profiles in the file `fname` corresponding to netCDF variable with the
 `long_name` attribute equal to the parameter `long_name`. `qv_flags` is a list of strings
-with the quality flags to be kept. `obsids` is a vector of strings with the
-EDMO code and local CDI id concatenated by a hyphen.
+with the quality flags to be kept. The filtering of the quality flags is applied
+to the data variables, time and depth coordinates. `obsids` is a vector of
+strings with the EDMO code and local CDI id concatenated by a hyphen.
 
 `nchunk` is the number of profiles read at a time. Large values of `nchunk` can increase
 performance but requirer also more memory.
@@ -315,7 +319,8 @@ A guide how to export NetCDF files from ODV is available [here](https://github.c
 
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
-         nchunk = 10)
+              depth_name = "Depth",
+              nchunk = 10)
 
     accepted_status_flags = qv_flags
 
@@ -369,7 +374,7 @@ We use the empty string for LOCAL_CDI_ID instead.
         end
 
         ncvar = varbyattrib_first(ds, long_name = long_name)
-        ncvar_z = varbyattrib_first(ds, long_name = "Depth")
+        ncvar_z = varbyattrib_first(ds, long_name = depth_name)
 
         @debug "variable: $(name(ncvar))"
         @debug "variable z: $(name(ncvar_z))"

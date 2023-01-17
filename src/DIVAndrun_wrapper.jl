@@ -14,7 +14,7 @@ function DIVAndrun(
 )
 
     fi, s =
-        @time DIVAnd.DIVAndrun(
+        DIVAnd.DIVAndrun(
             mask, pmn, xyi,
             xsel,
             vaa,

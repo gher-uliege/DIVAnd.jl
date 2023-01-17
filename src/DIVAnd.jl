@@ -343,8 +343,16 @@ function len_harmonize(
 end
 
 function len_harmonize(len, mask::AbstractArray{Bool,N}) where {N}
+    len_array = ntuple(N) do i
+        if isa(len[i],Number)
+            fill(len[i], size(mask))
+        else
+            len[i]
+        end
+    end
+
     # promote all lens to a common type
-    return len_harmonize(promote_array(len...), mask)
+    return len_harmonize(promote_array(len_array...), mask)
 end
 
 @inline function alpha_default(neff::Int)
@@ -548,6 +556,7 @@ include("DIVAndfun.jl")
 
 export DIVAndfun
 
+include("deprecated.jl")
 
 export DIVAnd_laplacian_prepare, DIVAnd_laplacian_apply, DIVAndrunfi
 

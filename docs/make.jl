@@ -1,6 +1,8 @@
 using Documenter
 using DIVAnd
 
+CI = get(ENV, "CI", nothing) == "true"
+
 makedocs(
     format = Documenter.HTML(),
     modules = [DIVAnd],
@@ -13,6 +15,8 @@ makedocs(
 # See "Hosting Documentation" and deploydocs() in the Documenter manual
 # for more information.
 
-deploydocs(
-    repo = "github.com/gher-ulg/DIVAnd.jl.git",
-)
+if CI
+    deploydocs(
+        repo = "github.com/gher-ulg/DIVAnd.jl.git",
+    )
+end
