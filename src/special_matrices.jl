@@ -34,7 +34,7 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
         @debug begin
             log = true
         end
-        x,convergence_history = cg(
+        output = cg(
             C.IS, v, Pl = C.factors,
             verbose = C.verbose,
             log = log,
@@ -42,6 +42,11 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
             reltol = C.reltol,
             maxiter = C.maxiter)
 
+        if log
+            x,convergence_history = output
+        else
+            x = output
+        end
         @debug "Number of iterations: $(convergence_history.iters)"
         @debug "Final norm of residue: $(convergence_history.data[:resnorm][end])"
         @debug begin
