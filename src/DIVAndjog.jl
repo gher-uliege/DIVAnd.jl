@@ -1249,9 +1249,9 @@ function DIVAndjog(
             PC1 = 1
             sc = 0
 
-            if size(lmask)[2] > 2
+            #if size(lmask)[2] > 2
                 fc, sc = DIVAndrun(maskc, pmnc, xic, x, f, Labsccut, 10000.0; otherargsc...)
-            end
+            #end
 
             if !(sc == 0)
                 # TEST makes sure there are values in the coarse resolution solution
