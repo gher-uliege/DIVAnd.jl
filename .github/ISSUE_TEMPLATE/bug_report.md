@@ -2,7 +2,7 @@
 name: Bug report
 about: 'Tell us what''s going wrong '
 title: "[\U0001F41E]"
-labels: bug
+labels: bug, enhancement
 assignees: ''
 
 ---
