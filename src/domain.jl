@@ -74,7 +74,8 @@ end
 
 Generate a 2D geospatial domain based on the topography from the netCDF file
 `bathname`. `lonr` and `latr` are expressed in degrees East and North
-respectively (as are `xi` and `yi`). `pm` and `pn` are in m⁻¹.
+respectively (as are `xi` and `yi`). `pm` and `pn` are in m⁻¹ (using the the
+mean Earth radius).
 """
 function domain(bathname, bathisglobal, lonr, latr)
     mask, (pm, pn), (xi, yi) = DIVAnd.DIVAnd_rectdom(lonr, latr)
@@ -96,7 +97,7 @@ zero for the sea floor and positive in water (positive is up).
 
 `lonr` and `latr` are expressed in degrees East and North
 respectively (as are `xi` and `yi`). `depthr` and `zi` are in meters and
-`pm`, `pn` and `po` are in m⁻¹.
+`pm`, `pn` and `po` are in m⁻¹ (using the the mean Earth radius).
 """
 function domain(bathname, bathisglobal, lonr, latr, depthr; zlevel = :surface)
 
