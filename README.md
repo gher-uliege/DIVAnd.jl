@@ -214,3 +214,8 @@ Note that only [official julia builds](https://julialang.org/downloads/) are sup
 # Fun
 
 An [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
+
+# You do not want to use Julia
+
+
+https://github.com/gher-uliege/DIVAnd.py
