@@ -217,5 +217,8 @@ An [educational web application](http://data-assimilation.net/Tools/divand_demo/
 
 # You do not want to use Julia
 
+You should really reconsider and try out Julia. It is easy to use and provides the native interface to `DIVAnd`.
+
+If you have a stable workflow using python, into which you want to integrate `DIVAnd`, you might try
 
 https://github.com/gher-uliege/DIVAnd.py
