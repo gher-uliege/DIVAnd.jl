@@ -1,7 +1,13 @@
+function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Number = 1.0)
+ 
+ return  DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc*ones(ndims(mask)))
+
+end
+
 """
 
 """
-function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc = 1)
+function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Vector{Float64} = ones(ndims(mask)))
 
     # number of dimensions
     n = ndims(mask)
@@ -18,12 +24,12 @@ function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc = 1)
     # Just used to fill the Labs tuple (so background will not fill it again)
     #
 
-    if alphabc == 0
+    if sum(alphabc) == 0
         #@warn "DIVAnd_bc_stretch was just used to fill in Labs"
         return pmnin, xiin, Labs
     end
 
-    if alphabc > 0
+    if sum(alphabc) > 0
         pmn = deepcopy(pmnin)
         xi = deepcopy(xiin)
 
@@ -38,7 +44,7 @@ function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc = 1)
                     max.(
                         (
                             (
-                                2.0 .* alphabc .* Labs[i][ind1...] .* pmnin[i][ind2...] .-
+                                2.0 .* alphabc[i] .* Labs[i][ind1...] .* pmnin[i][ind2...] .-
                                 1.0
                             ) .* pmnin[i][ind1...] .- pmnin[i][ind2...]
                         ) ./ (pmnin[i][ind1...] + pmnin[i][ind2...]),
@@ -55,7 +61,7 @@ function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc = 1)
                     max.(
                         (
                             (
-                                2.0 .* alphabc .* Labs[i][ind1...] .* pmnin[i][ind2...] .-
+                                2.0 .* alphabc[i] .* Labs[i][ind1...] .* pmnin[i][ind2...] .-
                                 1.0
                             ) .* pmnin[i][ind1...] - pmnin[i][ind2...]
                         ) ./ (pmnin[i][ind1...] + pmnin[i][ind2...]),
@@ -78,7 +84,7 @@ function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc = 1)
                 wjmb[ind1...] =
                     1.0 ./
                     max.(
-                        (2 * alphabc .* Labs[i][ind1...] .- 1.0 ./ wjmb[ind2...]),
+                        (2 * alphabc[i] .* Labs[i][ind1...] .- 1.0 ./ wjmb[ind2...]),
                         1.0 ./ wjmb[ind2...],
                     )
 
@@ -88,7 +94,7 @@ function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc = 1)
                 wjmb[ind1...] =
                     1.0 ./
                     max.(
-                        (2 * alphabc .* Labs[i][ind1...] .- 1.0 ./ wjmb[ind2...]),
+                        (2 * alphabc[i] .* Labs[i][ind1...] .- 1.0 ./ wjmb[ind2...]),
                         1.0 ./ wjmb[ind2...],
                     )
             end

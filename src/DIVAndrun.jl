@@ -116,7 +116,7 @@ function DIVAndrun(
     # add all additional constrains
     for i = 1:length(constraints)
         #@info "Adding additional constrain - $(i)"
-        s = DIVAnd_addc(s, constraints[i])
+		s = DIVAnd_addc(s, constraints[i])
     end
 
     # factorize a posteriori error covariance matrix
