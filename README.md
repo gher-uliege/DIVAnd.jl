@@ -139,6 +139,8 @@ More examples are available in the notebooks from the [Diva Workshop](https://gi
 
 `DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
 
+If you want to try out multivariate approaches, you can look at `DIVAnd_multivarEOF` and `DIVAnd_multivarJAC`
+
 ## Note about the background field
 
 If zero is not a valid first guess for your variable (as it is the case for e.g. ocean temperature), you have to subtract the first guess from the observations before calling `DIVAnd` and then add the first guess back in.
