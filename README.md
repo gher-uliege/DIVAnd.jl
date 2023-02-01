@@ -212,6 +212,7 @@ Please include the following information when reporting an issue:
 * The command and their arguments which produced the error
 
 Note that only [official julia builds](https://julialang.org/downloads/) are supported. 
+
 In all cases, if we provide a tentative solution, please provide a feedback in all cases (whether it solved your issue or not).
 
 # Fun
