@@ -426,7 +426,18 @@ function fitlen(
 )
     if length(d) == 0
         @warn "no data is provided to fitlen"
-        return NaN, NaN, Dict{Symbol,Any}()
+		dbinfo = Dict{Symbol,Any}(
+        :covar => [],
+        :fitcovar => [],
+        :distx => [],
+        :rqual => 0.0,
+        :range => 1:0,
+        :covarweight => [],
+        :distx => [],
+        :sn => 0.0,
+        :meandist => 0.0,
+    )
+        return NaN, NaN, dbinfo
     end
 
     # number of dimensions
@@ -505,7 +516,14 @@ function fitlen(
     @debug "Number of probable active bins: $rnbins"
 
     ddist = meandist / rnbins
-    nbmax = floor(Int, maxdist / ddist + 1)
+	nbmax=1
+    worktmp=maxdist / ddist 
+    if !isnan(worktmp)&&isfinite(worktmp)
+             nbmax = floor(Int, worktmp + 1)
+    end
+	
+	
+    #nbmax = floor(Int, maxdist / ddist + 1)
     @debug "distance for binning: $ddist"
     @debug "maximum number of bins: $nbmax"
 
