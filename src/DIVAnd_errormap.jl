@@ -210,7 +210,7 @@ function DIVAnd_errormap(
         ScalebyB = false
     end
 
-    if errmethod == "exact" && Bscale
+    if errmethod == :exact && Bscale
         # Or maybe if all info is there run locally ? Yes probably possible as aexerr also needs all infos ?
         warn("You need to do that scaling by yourself, running diva again with a very high R matrix and divide by this second map")
         ScalebyB = false
@@ -221,7 +221,7 @@ function DIVAnd_errormap(
         errmethod = cpme
     end
 
-    if errmethod == "exact" && noP
+    if errmethod == :exact && noP
         warn("Sorry, that method needs s.P to be available. Will use aexerr instead")
         errmethod = aexerr
     end
@@ -269,7 +269,7 @@ function DIVAnd_errormap(
         return scpme, errmethod
     end
 
-    if errmethod == "exact"
+    if errmethod == :exact
 	
         errormap, =statevector_unpack(s.sv,diag(s.P))
 
