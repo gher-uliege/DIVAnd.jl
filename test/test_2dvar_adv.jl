@@ -29,7 +29,17 @@ fi, s = DIVAndrun(
 
 @test abs(fi[18, 24] - 0.8993529043140029) < 1e-2
 
+norm1,norm2,norm3,epsilon2=DIVAnd_norms(fi,s)
 
+#@show norm1,norm2,norm3,epsilon2
+
+@test norm1 ≈ 4.864863745730252
+
+@test norm2 ≈ 0.1276096541011819
+
+@test norm3 ≈ 0.059450077426666054
+
+@test epsilon2 ≈ 1 / 200
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

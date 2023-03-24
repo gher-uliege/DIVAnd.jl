@@ -647,6 +647,10 @@ export DIVAnd_diagapp
 
 export DIVAnd_errormap
 
+include("DIVAnd_diagnostics.jl")
+
+export DIVAnd_norms
+
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient
 export sparse_gradient
