@@ -41,6 +41,26 @@ norm1,norm2,norm3,epsilon2=DIVAnd_norms(fi,s)
 
 @test epsilon2 ≈ 1 / 200
 
+m=sum(mask)
+m2c=DIVAnd.DIVAnd_ineqconstrain(0*ones(Float64,m),Diagonal(ones(Float64,m)))
+x = [0.4,0.5]
+y = [0.4,0.5]
+f = [1.0,-0.1]
+fi, s = DIVAndrun(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    f,
+    len,
+    epsilon2;
+    velocity = (u, v),
+    alphabc = 0,
+	ineqconstraints=(m2c,)
+);
+
+@test fi[18,24] ≈ 0.5381625233419283
+
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #
 # This program is free software; you can redistribute it and/or modify it under
