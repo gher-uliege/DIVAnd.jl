@@ -15,6 +15,7 @@ function DIVAndrun(
     maxit = 100,
     minit = 0,
     constraints = (),
+	ineqconstraints = (),
     inversion = :chol,
     moddim = [],
     fracindex = Matrix{T}(undef, 0, 0),
@@ -38,6 +39,105 @@ function DIVAndrun(
     coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
     mean_Labs = nothing,
 ) where {N,T}
+
+# Inequality constraints via loop around classical analysis (recursive call)
+
+	
+
+	if !isempty(ineqconstraints)
+
+
+
+function Ineqtoeq(yo,H,xo;tol1=1e-7,tol2=1e-8)
+    # Translates H x - yo > 0 into a quadratic weak constraint depending on a first guess of the statevector xo
+    vv=ones(size(yo)[1]).*Inf
+    Hxo=H*xo
+    @show sum(Hxo.<yo),(norm(Hxo-yo))^2/size(yo)[1]
+
+    vv[Hxo.<=yo].= tol1+tol2*((norm(Hxo-yo))^2/size(yo)[1])    
+    R=Diagonal(vv)    
+    return DIVAnd.DIVAnd_constrain(yo, R, H),sum(Hxo.<=yo)
+end
+
+
+
+	
+	allconstraints=constraints
+	ineqok=false
+	ntries=0
+	fi=()
+	s=()
+	ntriesmax=10
+	while !ineqok && ntries<ntriesmax
+	
+	ntries=ntries+1
+	
+	
+	fi,s=DIVAndrun(
+    operatortype,
+    mask,
+    pmnin,
+    xiin,
+    x,
+    f,
+    lin,
+    epsilon2;
+    velocity = velocity,
+    primal = primal,
+    factorize = factorize,
+    tol = tol,
+    maxit = maxit,
+    minit = minit,
+    constraints = allconstraints,
+	ineqconstraints = (),
+    inversion = inversion,
+    moddim = moddim,
+    fracindex = fracindex,
+    alpha = alpha,
+    keepLanczosVectors = keepLanczosVectors,
+    compPC = compPC,
+    progress = progress,
+    fi0 = fi0,
+    f0 = f0,
+    alphabc = alphabc,
+    scale_len = scale_len,
+    btrunc = btrunc,
+    MEMTOFIT = MEMTOFIT,
+    topographyforfluxes = topographyforfluxes,
+    fluxes = fluxes,
+    epsfluxes = epsfluxes,
+    epsilon2forfractions = epsilon2forfractions,
+	RTIMESONESCALES = RTIMESONESCALES,
+    QCMETHOD = QCMETHOD,
+    coeff_laplacian = coeff_laplacian,
+    coeff_derivative2 = coeff_derivative2,
+    mean_Labs = mean_Labs 
+	)
+	
+	# Calculate inequality constraints. If satisfied put ineqok true otherwise
+	# adapt constraints
+	ineqok=true
+	allconstraints=constraints
+	for i = 1:length(ineqconstraints)
+        #@info "Looking into inequality constrain - $(i)"
+		consttodo=ineqconstraints[i]
+		#consttodo.H
+        #consttodo.yo
+		fs=statevector_pack(s.sv, (fi,))
+        onemoreconstraint,violated=Ineqtoeq(consttodo.yo, consttodo.H, fs)
+		if violated>0
+			ineqok=false
+			@show violated,ntries
+		end
+		allconstraints=(allconstraints...,onemoreconstraint)# Add to the list of constraints
+    end
+	
+	
+	
+	end
+	return fi,s
+	end
+    # End of special treatment for inequality constraints
 
     # check pmn .* len > 4
     #checkresolution(mask,pmnin,lin)
@@ -215,7 +315,9 @@ For oceanographic application, this is the land-sea mask where sea is true and l
           m=2   1   3   3   1   (n=3,4)
           ...
 
-* `constraints`: a structure with user specified constraints (see `DIVAnd_addc`).
+* `constraints`: a structure with user specified quandratic constraints (see `DIVAnd_addc`).
+
+* `ineqconstraints`: a structure with user specified inequality constraints `Hx >= y0`. There is no check if the inequality constraints make sense are compatible with each other or with the data.
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. One should not include a boundary

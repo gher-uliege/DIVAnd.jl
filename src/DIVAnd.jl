@@ -71,6 +71,14 @@ mutable struct DIVAnd_constrain{
     H::TH
 end
 
+mutable struct DIVAnd_ineqconstrain{
+    T<:AbstractFloat,
+    TH<:AbstractMatrix{<:Number},
+}
+    yo::Vector{T}
+    H::TH
+end
+
 # T is the type of floats and
 # Ti: the type of integers
 # N: the number of dimensions
