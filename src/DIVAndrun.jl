@@ -16,6 +16,7 @@ function DIVAndrun(
     minit = 0,
     constraints = (),
 	ineqconstraints = (),
+	ntriesmax = 10,
     inversion = :chol,
     moddim = [],
     fracindex = Matrix{T}(undef, 0, 0),
@@ -67,7 +68,7 @@ end
 	ntries=0
 	fi=()
 	s=()
-	ntriesmax=10
+	
 	while !ineqok && ntries<ntriesmax
 	
 	ntries=ntries+1
@@ -317,7 +318,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 
 * `constraints`: a structure with user specified quandratic constraints (see `DIVAnd_addc`).
 
-* `ineqconstraints`: a structure with user specified inequality constraints `Hx >= y0`. There is no check if the inequality constraints make sense are compatible with each other or with the data.
+* `ineqconstraints`: a structure with user specified inequality constraints `Hx >= y0`. There is no check if the inequality constraints make sense are compatible with each other or with the data. Inequalities will not be satisfied exactly everywhere unless they are already satisfied with a normal analysis. You can increase the number of iterations by increasing `ntriesmax`.
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. One should not include a boundary
