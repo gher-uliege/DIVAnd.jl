@@ -318,7 +318,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 
 * `constraints`: a structure with user specified quandratic constraints (see `DIVAnd_addc`).
 
-* `ineqconstraints`: a structure with user specified inequality constraints `Hx >= y0`. There is no check if the inequality constraints make sense are compatible with each other or with the data. Inequalities will not be satisfied exactly everywhere unless they are already satisfied with a normal analysis. You can increase the number of iterations by increasing `ntriesmax`.
+* `ineqconstraints`: a structure with user specified inequality constraints such that the analysis `x` satisfies`Hx >= y0`. There is no check if the inequality constraints make sense are compatible with each other or with the data. Inequalities will not be satisfied exactly everywhere unless they are already satisfied with a normal analysis. You can increase the number of iterations by increasing `ntriesmax`.
 
 * `moddim`: modulo for cyclic dimension (vector with n elements).
      Zero is used for non-cyclic dimensions. One should not include a boundary
