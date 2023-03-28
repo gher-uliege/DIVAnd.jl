@@ -35,7 +35,7 @@ using Downloads: download
 	
 	include("test_multivar.jl")
 	
-	
+	include("test_errormaps.jl")
 
     # dynamical constraints
     include("test_2dvar_adv.jl")

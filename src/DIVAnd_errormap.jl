@@ -201,33 +201,33 @@ function DIVAnd_errormap(
 
 
     if errmethod == :cpme && Bscale
-        warn("Sorry, that method does not allow rescaling by spatial dependance of B ")
+        @warn "Sorry, that method does not allow rescaling by spatial dependance of B "
         ScalebyB = false
     end
 
     if errmethod == :scpme && Bscale
-        warn("Sorry, that method does not allow rescaling by spatial dependance of B ")
+        @warn "Sorry, that method does not allow rescaling by spatial dependance of B "
         ScalebyB = false
     end
 
     if errmethod == :exact && Bscale
         # Or maybe if all info is there run locally ? Yes probably possible as aexerr also needs all infos ?
-        warn("You need to do that scaling by yourself, running diva again with a very high R matrix and divide by this second map")
+        @warn "You need to do that scaling by yourself, running diva again with a very high R matrix and divide by this second map"
         ScalebyB = false
     end
 
     if errmethod == :scpme && noP
-        warn("Sorry, that method needs s.P to be available. Will use cpme instead")
+        @warn "Sorry, that method needs s.P to be available. Will use cpme instead"
         errmethod = cpme
     end
 
     if errmethod == :exact && noP
-        warn("Sorry, that method needs s.P to be available. Will use aexerr instead")
+        @warn "Sorry, that method needs s.P to be available. Will use aexerr instead"
         errmethod = aexerr
     end
 
     if errmethod == :diagapp && noP
-        warn("Sorry, that method needs s.P to be available. Will use aexerr instead")
+        @warn "Sorry, that method needs s.P to be available. Will use aexerr instead"
         errmethod = aexerr
     end
 
@@ -297,7 +297,18 @@ function DIVAnd_errormap(
             epsilon2;
             otherargs...
         )
+		if errormap==0
+		@warn "too fine resolution for aexerr, using exact"
+		errormap, =statevector_unpack(s.sv,diag(s.P))
+
         return errormap, errmethod
+		
+		end
+		if ScalebyB
+		return errormap./bi, errmethod
+		else
+        return errormap, errmethod
+		end
     end
     @show "You should not be here"
 end
