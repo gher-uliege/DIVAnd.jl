@@ -117,5 +117,6 @@ function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=
     
     # Now initialize interpolations function and return that
      
-    return LinearInterpolation(tuple(collect.(coords)...), fi.+backg)
+    #return LinearInterpolation(tuple(collect.(coords)...), fi.+backg)
+	return linear_interpolation(tuple(collect.(coords)...), fi.+backg)
 end
