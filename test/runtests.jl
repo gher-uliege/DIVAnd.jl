@@ -29,6 +29,13 @@ using Downloads: download
 
     include("test_1dvar.jl")
     include("test_1D_seminormed.jl")
+	
+	
+	# multivar
+	
+	include("test_multivar.jl")
+	
+	
 
     # dynamical constraints
     include("test_2dvar_adv.jl")
