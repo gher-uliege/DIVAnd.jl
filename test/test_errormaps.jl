@@ -4,6 +4,8 @@ using Test
 using StableRNGs
 using Random
 
+rng = StableRNG(1234)
+
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
 epsilon2 = 1 / 200
@@ -59,7 +61,7 @@ end
 end
 end
 end
-
+@show errmean
 @test errmean  ≈ 6.951700275663623
 
 
