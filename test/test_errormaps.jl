@@ -56,6 +56,7 @@ errorm,methodc=DIVAnd_errormap(
 	)
 	
 global errmean=errmean+errorm[10,10]
+@show errmean,errorm[10,10]
 
 end
 end
