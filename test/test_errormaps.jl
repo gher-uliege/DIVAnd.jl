@@ -11,7 +11,7 @@ mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
 epsilon2 = 1 / 200
 errmean=0
 
-a = 5;
+a = 5.0
 u = a * yi;
 v = -a * xi;
 
