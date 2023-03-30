@@ -1,8 +1,9 @@
 # Testing DIVAnd in 2 dimensions with advection.
-using DIVAnd
+
 using Test
 using StableRNGs
 using Random
+using DIVAnd
 
 rng = StableRNG(1234)
 
@@ -21,12 +22,12 @@ for len in (0.05, 0.2 ,1.0)
 for mymeth in (:auto, :cheap, :precise, :cpme, :scpme, :exact, :aexerr, :diagapp)
 for myscale in (true, false)
 
-xdd = rand(ND)
-ydd = rand(ND)
-fdd = randn(ND)
+xdd = rand(rng,ND)
+ydd = rand(rng,ND)
+fdd = randn(rng,ND)
 
 
-@show xdd[1],ND,len,mymeth,myscale,size(mask),size(pm),size(xi),size(yi)
+#show xdd[1],ND,len,mymeth,myscale,size(mask),size(pm),size(xi),size(yi)
 
 
 fi11,sl = DIVAndrun(
@@ -41,7 +42,7 @@ fi11,sl = DIVAndrun(
     alphabc = 0
 )
 
-@show size(fi11)
+
 
 errorm,methodc=DIVAnd_errormap(
     mask,
@@ -60,14 +61,14 @@ errorm,methodc=DIVAnd_errormap(
 	@show size(errorm),size(fi11)
 	
 global errmean=errmean+errorm[10,10]
-@show errmean,errorm[10,10],fi11[10,10],xdd[1],ND,len,mymeth,myscale,methodc
+#show errmean,errorm[10,10],fi11[10,10],xdd[1],ND,len,mymeth,myscale,methodc
 
 end
 end
 end
 end
-@show errmean
-@test errmean  ≈ 6.951700275663623
+##how errmean
+@test errmean  ≈ 7.541790086372698
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
