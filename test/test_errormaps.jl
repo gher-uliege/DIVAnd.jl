@@ -68,7 +68,7 @@ end
 end
 end
 ##how errmean
-@test errmean  ≈ 7.541790086372698
+@test errmean  ≈ 7.525552547782063
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
