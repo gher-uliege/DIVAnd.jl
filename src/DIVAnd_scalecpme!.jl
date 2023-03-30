@@ -5,7 +5,7 @@ function DIVAnd_scalecpme!(cpme, P::CovarIS, nsamples = 7)
 
 	fractionshift=0.5
 
-	z = randn((size(P)[1], nsamples))
+	z = randn(rng,(size(P)[1], nsamples))
     errscale = 1
     if P.factors != nothing
         ZZ = P.factors.PtL \ z
