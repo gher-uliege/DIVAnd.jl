@@ -40,7 +40,7 @@
 Compute a variational analysis of arbitrarily located observations to calculate the almost exact error
 
 """
-function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
+function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; rng=Random.GLOBAL_RNG, otherargs...)
 
 
 
@@ -114,7 +114,7 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     # not sure that covers nicely the domain?? Check random idea?
     #    randindexes = collect(1:nsa:npgrid)
 
-    randindexes = shuffle(collect(1:npgrid))[1:npongrid]
+    randindexes = shuffle(rng,collect(1:npgrid))[1:npongrid]
 
     ncv = size(randindexes)[1]
 

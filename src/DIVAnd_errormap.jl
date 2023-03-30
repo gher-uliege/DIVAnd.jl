@@ -296,6 +296,7 @@ function DIVAnd_errormap(
             f,
             len,
             epsilon2;
+			rng=rng,
             otherargs...
         )
 		if errormap==0
