@@ -55,7 +55,8 @@ errorm,methodc=DIVAnd_errormap(
     velocity = (u, v),
     alphabc = 0,
 	method=mymeth,
-	Bscale=myscale
+	Bscale=myscale,
+	rng=StableRNG(123)
 	)
 	
 	#@show size(errorm),size(fi11)
@@ -68,7 +69,7 @@ end
 end
 end
 ##how errmean
-@test errmean  ≈ 7.525552547782063
+@test errmean  ≈ 7.488115758433231
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

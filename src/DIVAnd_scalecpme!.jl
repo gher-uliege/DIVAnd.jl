@@ -1,10 +1,10 @@
-function DIVAnd_scalecpme!(cpme, P::CovarIS, nsamples = 7)
+function DIVAnd_scalecpme!(cpme, P::CovarIS, nsamples = 7;rng=Random.GLOBAL_RNG)
     # IN PLACE rescaling of the clever poor mans estimate using a randomized estimate of the analysis error covariance
     # P returned in structure s (so s.P) from a previous run
     # nsamples is the number of random arrays used to estimate the value
 
 	fractionshift=0.5
-    rng = Random.GLOBAL_RNG
+    
 	z = randn(rng,(size(P)[1], nsamples))
     errscale = 1
     if P.factors != nothing

@@ -62,7 +62,8 @@ function DIVAnd_errormap(
     s;
     method = :auto,
     Bscale = false,
-    otherargs...,
+	rng=Random.GLOBAL_RNG,
+    otherargs...
 )
 
     # Criteria to define which fraction of the domain size L can be to be called small
@@ -260,11 +261,11 @@ function DIVAnd_errormap(
             f,
             len,
             epsilon2;
-            otherargs...
+			otherargs...
         )
 
         scpme=deepcopy(errormap)
-        DIVAnd_scalecpme!(scpme,s.P)
+        DIVAnd_scalecpme!(scpme,s.P;rng=rng)
 
         return scpme, errmethod
     end
