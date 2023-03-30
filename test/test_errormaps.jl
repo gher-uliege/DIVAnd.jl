@@ -27,7 +27,7 @@ ydd = rand(rng,ND)
 fdd = randn(rng,ND)
 
 
-@show xdd[1],ND,len,mymeth,myscale,size(mask),size(pm),size(xi),size(yi)
+#@show xdd[1],ND,len,mymeth,myscale,size(mask),size(pm),size(xi),size(yi)
 
 
 fi11,sl = DIVAndrun(
@@ -62,14 +62,14 @@ errorm,methodc=DIVAnd_errormap(
 	#@show size(errorm),size(fi11)
 	
 global errmean=errmean+errorm[10,10]
-@show errmean,errorm[10,10],fi11[10,10],xdd[1],ND,len,mymeth,myscale,methodc
+#@show errmean,errorm[10,10],fi11[10,10],xdd[1],ND,len,mymeth,myscale,methodc
 
 end
 end
 end
 end
-##how errmean
-@test errmean  ≈ 7.524924869150642
+@show errmean
+@test abs(errmean  - 7.527185124068747) < 0.00000001
 
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>

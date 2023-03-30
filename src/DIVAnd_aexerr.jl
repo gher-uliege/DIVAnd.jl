@@ -147,7 +147,7 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; rng=Random.GLOBAL_RNG
     restrictedlist = falses(size(ffake)[1])
     restrictedlist[size(f)[1]+1:end] .= true
     # Limit the number of data points to the number of additional fake points
-    samples = shuffle(collect(1:size(f)[1]))[1:min(size(f)[1], npongrid)]
+    samples = shuffle(rng,collect(1:size(f)[1]))[1:min(size(f)[1], npongrid)]
     restrictedlist[samples] .= true
 
     #restrictedlist[:].=true
