@@ -181,13 +181,13 @@ For every constrain, a structure with the following fields is passed to `DIVAnd`
 
 Internally the observations are also implemented as constraint defined in this way.
 
-### Additional inequaliuty constraint
+### Additional inequality constraint
 
-An arbitrary number of additional quadratic constraints can be included to the cost function which should have the following form:
+An arbitrary number of additional inequality constraints can be included and which should have the following form:
 
 (**H**<sub>*i*</sub> **x**  > **yo**<sub>*i*</sub>)
 
-For every constrain, a structure with the following fields is passed to `DIVAnd`:
+For every constraint, a structure with the following fields is passed to `DIVAnd`:
 
 * `yo`: a vector
 * `H`: a matrix
