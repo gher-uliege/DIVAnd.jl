@@ -169,7 +169,7 @@ Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulieg
 
 ### Additional constraint
 
-An arbitrary number of additional constraints can be included to the cost function which should have the following form:
+An arbitrary number of additional quadratic constraints can be included to the cost function which should have the following form:
 
 *J*(**x**) = ∑<sub>*i*</sub> (**C**<sub>*i*</sub> **x**  - **z**<sub>*i*</sub>)ᵀ **Q**<sub>*i*</sub><sup>-1</sup> (**C**<sub>*i*</sub> **x** - **z**<sub>*i*</sub>)
 
@@ -180,6 +180,19 @@ For every constrain, a structure with the following fields is passed to `DIVAnd`
 * `R`: the matrix **Q**<sub>*i*</sub> (symmetric and positive defined)
 
 Internally the observations are also implemented as constraint defined in this way.
+
+### Additional inequaliuty constraint
+
+An arbitrary number of additional quadratic constraints can be included to the cost function which should have the following form:
+
+(**H**<sub>*i*</sub> **x**  > **yo**<sub>*i*</sub>)
+
+For every constrain, a structure with the following fields is passed to `DIVAnd`:
+
+* `yo`: a vector
+* `H`: a matrix
+
+
 
 ## Run notebooks on a server which has no graphical interface
 
