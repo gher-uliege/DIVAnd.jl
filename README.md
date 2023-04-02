@@ -24,6 +24,19 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 (click [here](./data/DIVAnd.bib) for the BibTeX entry).
 
+# Summary of features
+
+* N-Dimensional analysis/interpolation
+* Scattered data
+* Noise allowed
+* Physical constraints can be added
+* Inequality constraints can be added
+* Topological constraints are handled naturally (barriers, holes)
+* Analysis error maps can be estimated
+* Periodicity in selected directions can be enforced
+* Multivariate data can be used (experimental)
+* The output grid can be curvilinear
+
 
 # Installing
 
