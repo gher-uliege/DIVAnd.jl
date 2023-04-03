@@ -517,12 +517,12 @@ function fitlen(
 
     ddist = meandist / rnbins
 	nbmax=1
-    worktmp=maxdist / ddist 
+    worktmp=maxdist / ddist
     if !isnan(worktmp)&&isfinite(worktmp)
              nbmax = floor(Int, worktmp + 1)
     end
-	
-	
+
+
     #nbmax = floor(Int, maxdist / ddist + 1)
     @debug "distance for binning: $ddist"
     @debug "maximum number of bins: $nbmax"

@@ -106,7 +106,7 @@ begin
     )
 
     continents = ifelse.(isfinite.(v),NaN,0)
-	
+
     function plotmap(v,title;clim = extrema(filter(isfinite,v)), kwargs...)
        heatmap(lon,lat,continents',c = palette([:grey, :grey], 2))
        heatmap!(lon,lat,v'; title=title,clim=clim, kwargs...)
@@ -120,7 +120,7 @@ begin
            edgecolor = :none)
 	end
 	clim = extrema(filter(isfinite,v))
-	
+
     plot(
        plotmap(v,"True field", clim = clim),
        plotmap(vi,"Analysis field", clim = clim),

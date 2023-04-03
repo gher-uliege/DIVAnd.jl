@@ -1,5 +1,5 @@
 function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Number = 1.0)
- 
+
  return  DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc*ones(ndims(mask)))
 
 end

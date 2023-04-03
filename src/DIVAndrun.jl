@@ -43,7 +43,7 @@ function DIVAndrun(
 
 # Inequality constraints via loop around classical analysis (recursive call)
 
-	
+
 
 	if !isempty(ineqconstraints)
 
@@ -55,25 +55,25 @@ function Ineqtoeq(yo,H,xo;tol1=1e-7,tol2=1e-8)
     Hxo=H*xo
     @show sum(Hxo.<yo),(norm(Hxo-yo))^2/size(yo)[1]
 
-    vv[Hxo.<=yo].= tol1+tol2*((norm(Hxo-yo))^2/size(yo)[1])    
-    R=Diagonal(vv)    
+    vv[Hxo.<=yo].= tol1+tol2*((norm(Hxo-yo))^2/size(yo)[1])
+    R=Diagonal(vv)
     return DIVAnd.DIVAnd_constrain(yo, R, H),sum(Hxo.<=yo)
 end
 
 
 
-	
+
 	allconstraints=constraints
 	ineqok=false
 	ntries=0
 	fi=()
 	s=()
-	
+
 	while !ineqok && ntries<ntriesmax
-	
+
 	ntries=ntries+1
-	
-	
+
+
 	fi,s=DIVAndrun(
     operatortype,
     mask,
@@ -112,9 +112,9 @@ end
     QCMETHOD = QCMETHOD,
     coeff_laplacian = coeff_laplacian,
     coeff_derivative2 = coeff_derivative2,
-    mean_Labs = mean_Labs 
+    mean_Labs = mean_Labs
 	)
-	
+
 	# Calculate inequality constraints. If satisfied put ineqok true otherwise
 	# adapt constraints
 	ineqok=true
@@ -132,9 +132,9 @@ end
 		end
 		allconstraints=(allconstraints...,onemoreconstraint)# Add to the list of constraints
     end
-	
-	
-	
+
+
+
 	end
 	return fi,s
 	end
@@ -332,8 +332,8 @@ For oceanographic application, this is the land-sea mask where sea is true and l
 
 * `inversion`: direct solver (`:chol` for Cholesky factorization), an
      interative solver (`:pcg` for preconditioned conjugate gradient [1]) can be
-     used or `:cg_amg_sa` for a multigrid method with preconditioned conjugate 
-     gradient. The two last methods are iterative methods who a controlled by 
+     used or `:cg_amg_sa` for a multigrid method with preconditioned conjugate
+     gradient. The two last methods are iterative methods who a controlled by
      the number of iterations `maxit` and the tolerance `tol`.
 
 * `compPC`: function that returns a preconditioner for the primal formulation

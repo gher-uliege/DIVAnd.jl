@@ -58,9 +58,9 @@ errorm,methodc=DIVAnd_errormap(
 	Bscale=myscale,
 	rng=StableRNG(123)
 	)
-	
+
 	#@show size(errorm),size(fi11)
-	
+
 global errmean=errmean+errorm[10,10]
 #@show errmean,errorm[10,10],fi11[10,10],xdd[1],ND,len,mymeth,myscale,methodc
 

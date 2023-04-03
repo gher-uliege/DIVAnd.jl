@@ -28,13 +28,13 @@
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
-* `s`: this is the structure returned from the analysis itself. 
+* `s`: this is the structure returned from the analysis itself.
 
 # Optional input arguments specified as keyword arguments also as for DIVAnd
 
 *`method` : the method to be used, valid are `:auto`, `:cheap`, `:precise`, `:cpme`, `:scpme`, `:exact`, `:aexerr`, `:diagapp`
 
-            auto will select depenting on data coverage and length scale 
+            auto will select depenting on data coverage and length scale
 			cheap will also select but restrict to cheaper methods
 			precise will also select but prefer better approximations
 			the other choices are just the ones among which the automatic choices will choose from. You can force the choice by specifying the method.
@@ -120,7 +120,7 @@ function DIVAnd_errormap(
 
     if method == :auto
 
-        
+
         # try to guess
 
         # small L
@@ -156,7 +156,7 @@ function DIVAnd_errormap(
 
 
     if method == :cheap
-        
+
         if smallL
             if Lowdata
                 errmethod = :cpme
@@ -178,7 +178,7 @@ function DIVAnd_errormap(
     end
 
     if method == :precise
-        
+
 
 
         if smallL
@@ -271,7 +271,7 @@ function DIVAnd_errormap(
     end
 
     if errmethod == :exact
-	
+
         errormap, =statevector_unpack(s.sv,diag(s.P))
 
         return errormap, errmethod
@@ -304,7 +304,7 @@ function DIVAnd_errormap(
 		errormap, =statevector_unpack(s.sv,diag(s.P))
 
         return errormap, errmethod
-		
+
 		end
 		if ScalebyB
 		return errormap./bi, errmethod

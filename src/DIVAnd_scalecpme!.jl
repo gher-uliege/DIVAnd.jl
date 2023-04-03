@@ -4,7 +4,7 @@ function DIVAnd_scalecpme!(cpme, P::CovarIS, nsamples = 7;rng=Random.GLOBAL_RNG)
     # nsamples is the number of random arrays used to estimate the value
 
 	fractionshift=0.5
-    
+
 	z = randn(rng,(size(P)[1], nsamples))
     errscale = 1
     if P.factors != nothing
