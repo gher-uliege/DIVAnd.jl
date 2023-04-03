@@ -1,6 +1,6 @@
 """
     error,method = DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,
-	s;
+    s;
     method = :auto,
     Bscale = false,
     otherargs...,);
@@ -35,9 +35,9 @@
 *`method` : the method to be used, valid are `:auto`, `:cheap`, `:precise`, `:cpme`, `:scpme`, `:exact`, `:aexerr`, `:diagapp`
 
             auto will select depenting on data coverage and length scale
-			cheap will also select but restrict to cheaper methods
-			precise will also select but prefer better approximations
-			the other choices are just the ones among which the automatic choices will choose from. You can force the choice by specifying the method.
+            cheap will also select but restrict to cheaper methods
+            precise will also select but prefer better approximations
+            the other choices are just the ones among which the automatic choices will choose from. You can force the choice by specifying the method.
 
 *`Bscale` : it `true` will try to take out the the boundary effects in the background error variance. Not possible with all methods
 
@@ -62,7 +62,7 @@ function DIVAnd_errormap(
     s;
     method = :auto,
     Bscale = false,
-	rng=Random.GLOBAL_RNG,
+    rng=Random.GLOBAL_RNG,
     otherargs...
 )
 
@@ -141,11 +141,11 @@ function DIVAnd_errormap(
                 end
             end
         else
-		    if Bigdata
+            if Bigdata
                 errmethod = :scpme
             else
                 errmethod = :aexerr
-		    end
+            end
 
         end
 
@@ -168,11 +168,11 @@ function DIVAnd_errormap(
                 end
             end
         else
-		    if Bigdata
+            if Bigdata
                 errmethod = :scpme
             else
                 errmethod = :cpme
-		    end
+            end
 
         end
     end
@@ -192,11 +192,11 @@ function DIVAnd_errormap(
                 end
             end
         else
-		    if Bigdata
+            if Bigdata
                 errmethod = :diagapp
             else
                 errmethod = :aexerr
-		    end
+            end
         end
     end
 
@@ -261,7 +261,7 @@ function DIVAnd_errormap(
             f,
             len,
             epsilon2;
-			otherargs...
+            otherargs...
         )
 
         scpme=deepcopy(errormap)
@@ -296,21 +296,21 @@ function DIVAnd_errormap(
             f,
             len,
             epsilon2;
-			rng=rng,
+            rng=rng,
             otherargs...
         )
-		if errormap==0
-		@warn "too fine resolution for aexerr, using exact"
-		errormap, =statevector_unpack(s.sv,diag(s.P))
+        if errormap==0
+        @warn "too fine resolution for aexerr, using exact"
+        errormap, =statevector_unpack(s.sv,diag(s.P))
 
         return errormap, errmethod
 
-		end
-		if ScalebyB
-		return errormap./bi, errmethod
-		else
+        end
+        if ScalebyB
+        return errormap./bi, errmethod
+        else
         return errormap, errmethod
-		end
+        end
     end
     @show "You should not be here"
 end

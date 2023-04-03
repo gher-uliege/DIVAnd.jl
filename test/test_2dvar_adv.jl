@@ -56,7 +56,7 @@ fi, s = DIVAndrun(
     epsilon2;
     velocity = (u, v),
     alphabc = 0,
-	ineqconstraints=(m2c,)
+    ineqconstraints=(m2c,)
 );
 
 @test fi[18,24] ≈ 0.5381625233419283

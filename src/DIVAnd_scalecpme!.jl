@@ -3,9 +3,9 @@ function DIVAnd_scalecpme!(cpme, P::CovarIS, nsamples = 7;rng=Random.GLOBAL_RNG)
     # P returned in structure s (so s.P) from a previous run
     # nsamples is the number of random arrays used to estimate the value
 
-	fractionshift=0.5
+    fractionshift=0.5
 
-	z = randn(rng,(size(P)[1], nsamples))
+    z = randn(rng,(size(P)[1], nsamples))
     errscale = 1
     if P.factors != nothing
         ZZ = P.factors.PtL \ z
@@ -14,16 +14,16 @@ function DIVAnd_scalecpme!(cpme, P::CovarIS, nsamples = 7;rng=Random.GLOBAL_RNG)
         ZZ = P * z
         errscale = mean(diag(z' * ZZ) ./ diag(z' * z))
     end
-	# errscale here is the target
+    # errscale here is the target
 
-	# oldvalue is what we had
-	oldvalue=mean(cpme[.!isnan.(cpme)])
+    # oldvalue is what we had
+    oldvalue=mean(cpme[.!isnan.(cpme)])
 
-	#try a shift of fraction fractionshift of the mismatch
+    #try a shift of fraction fractionshift of the mismatch
 
-	cpme[:] .= cpme[:] .+ fractionshift*(errscale-oldvalue)
+    cpme[:] .= cpme[:] .+ fractionshift*(errscale-oldvalue)
 
-	# the rest is corrected by the multiplicative scaling
+    # the rest is corrected by the multiplicative scaling
 
 
     cpme[:] .= cpme[:] * errscale / mean(cpme[.!isnan.(cpme)])

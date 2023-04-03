@@ -60,10 +60,10 @@ begin
     pm = ones(sz) ./ ((xi[2,1]-xi[1,1]) .* cosd.(yi));
     pn = ones(sz) / (yi[1,2]-yi[1,1]);
 
-	md"""### Illustration of DIVAnd
+    md"""### Illustration of DIVAnd
 
-	We use the Reynolds et al. 2002 [OI SST](https://www.psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html) for the month January and remove the zonal average. We extract pseudo-observations at random locations and aim to reconstruct the field from these data points by using DIVAnd.
-	"""
+    We use the Reynolds et al. 2002 [OI SST](https://www.psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html) for the month January and remove the zonal average. We extract pseudo-observations at random locations and aim to reconstruct the field from these data points by using DIVAnd.
+    """
 end
 
 
@@ -118,15 +118,15 @@ begin
            title = "Observations",label = :none, markersize = 2,
            clim = clim,
            edgecolor = :none)
-	end
-	clim = extrema(filter(isfinite,v))
+    end
+    clim = extrema(filter(isfinite,v))
 
     plot(
        plotmap(v,"True field", clim = clim),
        plotmap(vi,"Analysis field", clim = clim),
-	   scattermap(vobs, clim = clim),
+       scattermap(vobs, clim = clim),
        plotmap(vi-v,"Analysis - true field", clim = (-4,4), c = :bluesreds),
-	   size=(800,400)
+       size=(800,400)
     )
 end
 

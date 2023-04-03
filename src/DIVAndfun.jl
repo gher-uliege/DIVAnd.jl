@@ -5,7 +5,7 @@
 
 
 """
-	myfunny=DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=nothing,kwargs...)
+    myfunny=DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=nothing,kwargs...)
 
 Provides a simplified interface to  DIVAndrun and in return provides an interpolation FUNCTION rather than the gridded field of DIVAndrun
 
@@ -118,5 +118,5 @@ function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=
     # Now initialize interpolations function and return that
 
     #return LinearInterpolation(tuple(collect.(coords)...), fi.+backg)
-	return linear_interpolation(tuple(collect.(coords)...), fi.+backg)
+    return linear_interpolation(tuple(collect.(coords)...), fi.+backg)
 end

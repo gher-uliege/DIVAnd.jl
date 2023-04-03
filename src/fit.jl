@@ -426,7 +426,7 @@ function fitlen(
 )
     if length(d) == 0
         @warn "no data is provided to fitlen"
-		dbinfo = Dict{Symbol,Any}(
+        dbinfo = Dict{Symbol,Any}(
         :covar => [],
         :fitcovar => [],
         :distx => [],
@@ -516,7 +516,7 @@ function fitlen(
     @debug "Number of probable active bins: $rnbins"
 
     ddist = meandist / rnbins
-	nbmax=1
+    nbmax=1
     worktmp=maxdist / ddist
     if !isnan(worktmp)&&isfinite(worktmp)
              nbmax = floor(Int, worktmp + 1)

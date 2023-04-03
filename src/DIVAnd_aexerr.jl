@@ -203,7 +203,7 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; rng=Random.GLOBAL_RNG
     f1, s1 =  DIVAndrun(mask, pmn, xi, xfake, ffake, len ./ 1.70766, epsilonforB; otherargs...)
 
     # Calculate final error
-	aexerr = max.(Bjmb - f1, 0.0)
+    aexerr = max.(Bjmb - f1, 0.0)
 
     #@show mean(aexerr[.!isnan.(aexerr)])
 

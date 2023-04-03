@@ -15,8 +15,8 @@ function DIVAndrun(
     maxit = 100,
     minit = 0,
     constraints = (),
-	ineqconstraints = (),
-	ntriesmax = 10,
+    ineqconstraints = (),
+    ntriesmax = 10,
     inversion = :chol,
     moddim = [],
     fracindex = Matrix{T}(undef, 0, 0),
@@ -34,7 +34,7 @@ function DIVAndrun(
     fluxes = (),
     epsfluxes = 0,
     epsilon2forfractions = 0,
-	RTIMESONESCALES = (),
+    RTIMESONESCALES = (),
     QCMETHOD = (),
     coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
     coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
@@ -45,7 +45,7 @@ function DIVAndrun(
 
 
 
-	if !isempty(ineqconstraints)
+    if !isempty(ineqconstraints)
 
 
 
@@ -63,18 +63,18 @@ end
 
 
 
-	allconstraints=constraints
-	ineqok=false
-	ntries=0
-	fi=()
-	s=()
+    allconstraints=constraints
+    ineqok=false
+    ntries=0
+    fi=()
+    s=()
 
-	while !ineqok && ntries<ntriesmax
+    while !ineqok && ntries<ntriesmax
 
-	ntries=ntries+1
+    ntries=ntries+1
 
 
-	fi,s=DIVAndrun(
+    fi,s=DIVAndrun(
     operatortype,
     mask,
     pmnin,
@@ -90,7 +90,7 @@ end
     maxit = maxit,
     minit = minit,
     constraints = allconstraints,
-	ineqconstraints = (),
+    ineqconstraints = (),
     inversion = inversion,
     moddim = moddim,
     fracindex = fracindex,
@@ -108,36 +108,36 @@ end
     fluxes = fluxes,
     epsfluxes = epsfluxes,
     epsilon2forfractions = epsilon2forfractions,
-	RTIMESONESCALES = RTIMESONESCALES,
+    RTIMESONESCALES = RTIMESONESCALES,
     QCMETHOD = QCMETHOD,
     coeff_laplacian = coeff_laplacian,
     coeff_derivative2 = coeff_derivative2,
     mean_Labs = mean_Labs
-	)
+    )
 
-	# Calculate inequality constraints. If satisfied put ineqok true otherwise
-	# adapt constraints
-	ineqok=true
-	allconstraints=constraints
-	for i = 1:length(ineqconstraints)
+    # Calculate inequality constraints. If satisfied put ineqok true otherwise
+    # adapt constraints
+    ineqok=true
+    allconstraints=constraints
+    for i = 1:length(ineqconstraints)
         #@info "Looking into inequality constrain - $(i)"
-		consttodo=ineqconstraints[i]
-		#consttodo.H
+        consttodo=ineqconstraints[i]
+        #consttodo.H
         #consttodo.yo
-		fs=statevector_pack(s.sv, (fi,))
+        fs=statevector_pack(s.sv, (fi,))
         onemoreconstraint,violated=Ineqtoeq(consttodo.yo, consttodo.H, fs)
-		if violated>0
-			ineqok=false
-			@show violated,ntries
-		end
-		allconstraints=(allconstraints...,onemoreconstraint)# Add to the list of constraints
+        if violated>0
+            ineqok=false
+            @show violated,ntries
+        end
+        allconstraints=(allconstraints...,onemoreconstraint)# Add to the list of constraints
     end
 
 
 
-	end
-	return fi,s
-	end
+    end
+    return fi,s
+    end
     # End of special treatment for inequality constraints
 
     # check pmn .* len > 4
@@ -217,7 +217,7 @@ end
     # add all additional constrains
     for i = 1:length(constraints)
         #@info "Adding additional constrain - $(i)"
-		s = DIVAnd_addc(s, constraints[i])
+        s = DIVAnd_addc(s, constraints[i])
     end
 
     # factorize a posteriori error covariance matrix

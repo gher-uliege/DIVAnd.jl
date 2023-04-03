@@ -10,8 +10,8 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
 * `epsilon2jacobian` : epsilon2 array (or value) which defines the strength of the multivariate constraint for each variable.
 
       If you use a very large value for one variable, it means that variable will not be modified by the coupling, but the other will be. So typically
-	  if you have a habitat variable which you want to influence a variable for which you have few data only. Then you assign a large epsilon2forjacobian to the habitat variable and
-	  a lower value to the other one.
+      if you have a habitat variable which you want to influence a variable for which you have few data only. Then you assign a large epsilon2forjacobian to the habitat variable and
+      a lower value to the other one.
 
 # Output:
 
@@ -94,7 +94,7 @@ DIVAnd_multivarJAC(mask,pmn,xi,x,f,lenin,epsilon2in;epsilon2jacobian=1.0,kwargs.
 
 
     emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method=:cheap,kwargs...)
-	sori=deepcopy(s)
+    sori=deepcopy(s)
     @show "error method in multivar $meth"
 
         vconstrain=[]
