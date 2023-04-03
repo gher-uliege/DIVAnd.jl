@@ -7,6 +7,7 @@ the regular grid defined by the vectors `xi` using the scaled observational erro
 variance `epsilon2` and the correlation length `len`. The result will be saved in the
 netCDF file `filename` under the variable `varname`.
 
+
 ## Inputs
 
 *  `xi`: tuple with n elements. Every element represents a coordinate
@@ -128,6 +129,7 @@ end
 !!! note
 
     At all vertical levels, there should at least one sea point.
+    The function assumes a spherical Earth with a radius equal to the mean Earth radius.
 """
 function diva3d(
     xi,
