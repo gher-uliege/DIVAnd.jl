@@ -36,6 +36,7 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 * Periodicity in selected directions can be enforced
 * Multivariate data can be used (experimental)
 * The output grid can be curvilinear
+* Instead of interpolating scattered data you can also peform Kernel Density Estimations with the points.
 
 
 # Installing
