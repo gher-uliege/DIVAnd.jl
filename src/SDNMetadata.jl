@@ -137,6 +137,8 @@ function SDNMetadata(
                 ],
                 "-",
             )
+        elseif k == "project"
+            v = project["name"]
         end
 
         if typeof(v) <: Vector
