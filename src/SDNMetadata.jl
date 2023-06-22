@@ -5,9 +5,9 @@ const PROJECTS = Dict(
     "EMODNET-chemistry" => Dict(
         "name" => "EMODnet Chemistry",
         "URL" => "https://emodnet.ec.europa.eu/en/chemistry",
-        "baseurl_visualization" => "http://ec.oceanbrowser.net/emodnet/",
+        "baseurl_visualization" => "https://emodnet.ec.europa.eu/geoviewer",
         "baseurl_wms" => "http://ec.oceanbrowser.net/emodnet/Python/web/wms",
-        "baseurl_http" => "http://ec.oceanbrowser.net/data/emodnet-domains",
+        "baseurl_http" => "https://emodnet.ec.europa.eu/geoviewer",
         "baseurl_opendap" => "http://opendap.oceanbrowser.net/thredds/dodsC/data/emodnet-domains",
         "template" => joinpath(pathname, "templates", "emodnet-chemistry.mustache"),
     ),
@@ -137,6 +137,8 @@ function SDNMetadata(
                 ],
                 "-",
             )
+        elseif k == "project"
+            v = project["name"]
         end
 
         if typeof(v) <: Vector

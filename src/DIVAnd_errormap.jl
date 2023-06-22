@@ -1,6 +1,6 @@
 """
     error,method = DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,
-	s;
+    s;
     method = :auto,
     Bscale = false,
     otherargs...,);
@@ -28,16 +28,16 @@
 
 * `epsilon2`: error variance of the observations (normalized by the error variance of the background field). `epsilon2` can be a scalar (all observations have the same error variance and their errors are decorrelated), a vector (all observations can have a difference error variance and their errors are decorrelated) or a matrix (all observations can have a difference error variance and their errors can be correlated). If `epsilon2` is a scalar, it is thus the *inverse of the signal-to-noise ratio*.
 
-* `s`: this is the structure returned from the analysis itself. 
+* `s`: this is the structure returned from the analysis itself.
 
 # Optional input arguments specified as keyword arguments also as for DIVAnd
 
 *`method` : the method to be used, valid are `:auto`, `:cheap`, `:precise`, `:cpme`, `:scpme`, `:exact`, `:aexerr`, `:diagapp`
 
-            auto will select depenting on data coverage and length scale 
-			cheap will also select but restrict to cheaper methods
-			precise will also select but prefer better approximations
-			the other choices are just the ones among which the automatic choices will choose from. You can force the choice by specifying the method.
+            auto will select depenting on data coverage and length scale
+            cheap will also select but restrict to cheaper methods
+            precise will also select but prefer better approximations
+            the other choices are just the ones among which the automatic choices will choose from. You can force the choice by specifying the method.
 
 *`Bscale` : it `true` will try to take out the the boundary effects in the background error variance. Not possible with all methods
 
@@ -62,7 +62,8 @@ function DIVAnd_errormap(
     s;
     method = :auto,
     Bscale = false,
-    otherargs...,
+    rng=Random.GLOBAL_RNG,
+    otherargs...
 )
 
     # Criteria to define which fraction of the domain size L can be to be called small
@@ -119,7 +120,7 @@ function DIVAnd_errormap(
 
     if method == :auto
 
-        
+
         # try to guess
 
         # small L
@@ -140,11 +141,11 @@ function DIVAnd_errormap(
                 end
             end
         else
-		    if Bigdata
+            if Bigdata
                 errmethod = :scpme
             else
                 errmethod = :aexerr
-		    end
+            end
 
         end
 
@@ -155,7 +156,7 @@ function DIVAnd_errormap(
 
 
     if method == :cheap
-        
+
         if smallL
             if Lowdata
                 errmethod = :cpme
@@ -167,17 +168,17 @@ function DIVAnd_errormap(
                 end
             end
         else
-		    if Bigdata
+            if Bigdata
                 errmethod = :scpme
             else
                 errmethod = :cpme
-		    end
+            end
 
         end
     end
 
     if method == :precise
-        
+
 
 
         if smallL
@@ -191,43 +192,43 @@ function DIVAnd_errormap(
                 end
             end
         else
-		    if Bigdata
+            if Bigdata
                 errmethod = :diagapp
             else
                 errmethod = :aexerr
-		    end
+            end
         end
     end
 
 
     if errmethod == :cpme && Bscale
-        warn("Sorry, that method does not allow rescaling by spatial dependance of B ")
+        @warn "Sorry, that method does not allow rescaling by spatial dependance of B "
         ScalebyB = false
     end
 
     if errmethod == :scpme && Bscale
-        warn("Sorry, that method does not allow rescaling by spatial dependance of B ")
+        @warn "Sorry, that method does not allow rescaling by spatial dependance of B "
         ScalebyB = false
     end
 
-    if errmethod == "exact" && Bscale
+    if errmethod == :exact && Bscale
         # Or maybe if all info is there run locally ? Yes probably possible as aexerr also needs all infos ?
-        warn("You need to do that scaling by yourself, running diva again with a very high R matrix and divide by this second map")
+        @warn "You need to do that scaling by yourself, running diva again with a very high R matrix and divide by this second map"
         ScalebyB = false
     end
 
     if errmethod == :scpme && noP
-        warn("Sorry, that method needs s.P to be available. Will use cpme instead")
+        @warn "Sorry, that method needs s.P to be available. Will use cpme instead"
         errmethod = cpme
     end
 
-    if errmethod == "exact" && noP
-        warn("Sorry, that method needs s.P to be available. Will use aexerr instead")
+    if errmethod == :exact && noP
+        @warn "Sorry, that method needs s.P to be available. Will use aexerr instead"
         errmethod = aexerr
     end
 
     if errmethod == :diagapp && noP
-        warn("Sorry, that method needs s.P to be available. Will use aexerr instead")
+        @warn "Sorry, that method needs s.P to be available. Will use aexerr instead"
         errmethod = aexerr
     end
 
@@ -264,13 +265,13 @@ function DIVAnd_errormap(
         )
 
         scpme=deepcopy(errormap)
-        DIVAnd_scalecpme!(scpme,s.P)
+        DIVAnd_scalecpme!(scpme,s.P;rng=rng)
 
         return scpme, errmethod
     end
 
-    if errmethod == "exact"
-	
+    if errmethod == :exact
+
         errormap, =statevector_unpack(s.sv,diag(s.P))
 
         return errormap, errmethod
@@ -295,9 +296,21 @@ function DIVAnd_errormap(
             f,
             len,
             epsilon2;
+            rng=rng,
             otherargs...
         )
+        if errormap==0
+        @warn "too fine resolution for aexerr, using exact"
+        errormap, =statevector_unpack(s.sv,diag(s.P))
+
         return errormap, errmethod
+
+        end
+        if ScalebyB
+        return errormap./bi, errmethod
+        else
+        return errormap, errmethod
+        end
     end
     @show "You should not be here"
 end

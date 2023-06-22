@@ -30,6 +30,13 @@ using Downloads: download
     include("test_1dvar.jl")
     include("test_1D_seminormed.jl")
 
+
+    # multivar
+
+    include("test_multivar.jl")
+
+    include("test_errormaps.jl")
+
     # dynamical constraints
     include("test_2dvar_adv.jl")
     include("test_2dvar_constcoast.jl")
@@ -127,8 +134,8 @@ using Downloads: download
     # Heatmap
     include("test_heatmap.jl")
 
-	# DIVAndfun
-	include("test_DIVAndfun.jl")
+    # DIVAndfun
+    include("test_DIVAndfun.jl")
 
     # test DIVAnd_filter3
     A = zeros(5, 5, 5, 5, 5)

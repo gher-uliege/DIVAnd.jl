@@ -57,7 +57,7 @@ end
                  )
 
 Compute derived quantities from a DIVAnd analyse (in particular the deepest
-value of an analysis) using the NetCDF file `filename` with the variable 
+value of an analysis) using the NetCDF file `filename` with the variable
 `varname`. The result will be written in `new_filename`.
 
 See `DIVAnd.diva3d` for the optional parameter `error_thresholds`.

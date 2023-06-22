@@ -40,7 +40,7 @@
 Compute a variational analysis of arbitrarily located observations to calculate the almost exact error
 
 """
-function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
+function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; rng=Random.GLOBAL_RNG, otherargs...)
 
 
 
@@ -114,7 +114,7 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     # not sure that covers nicely the domain?? Check random idea?
     #    randindexes = collect(1:nsa:npgrid)
 
-    randindexes = shuffle(collect(1:npgrid))[1:npongrid]
+    randindexes = shuffle(rng,collect(1:npgrid))[1:npongrid]
 
     ncv = size(randindexes)[1]
 
@@ -147,7 +147,7 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     restrictedlist = falses(size(ffake)[1])
     restrictedlist[size(f)[1]+1:end] .= true
     # Limit the number of data points to the number of additional fake points
-    samples = shuffle(collect(1:size(f)[1]))[1:min(size(f)[1], npongrid)]
+    samples = shuffle(rng,collect(1:size(f)[1]))[1:min(size(f)[1], npongrid)]
     restrictedlist[samples] .= true
 
     #restrictedlist[:].=true
@@ -200,11 +200,10 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; otherargs...)
     # The factor 1.70677 is the best one in 2D but should be slightly different for other dimensions
     # Could be a small improvement. Also used in DIVAnd_cpme
 
-    f1, s1 =
-        DIVAndrun(mask, pmn, xi, xfake, ffake, len ./ 1.70766, epsilonforB; otherargs...)
+    f1, s1 =  DIVAndrun(mask, pmn, xi, xfake, ffake, len ./ 1.70766, epsilonforB; otherargs...)
 
     # Calculate final error
-    aexerr = max.(Bjmb - f1, 0)
+    aexerr = max.(Bjmb - f1, 0.0)
 
     #@show mean(aexerr[.!isnan.(aexerr)])
 

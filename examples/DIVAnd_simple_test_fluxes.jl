@@ -71,9 +71,9 @@ fluxesafter=zeros(size(h)[2])
 
 for j=1:size(h)[2]
  for i=2:size(h)[1]-2
-	if mask[i,j]&& mask[i+1,j]
- 		fluxesafter[j]=fluxesafter[j]+h[i,j]*(fi[i+1,j]-fi[i,j])
-	end
+    if mask[i,j]&& mask[i+1,j]
+        fluxesafter[j]=fluxesafter[j]+h[i,j]*(fi[i+1,j]-fi[i,j])
+    end
  end
 end
 @show var(fluxes1+fluxesafter)
@@ -97,9 +97,9 @@ fluxesafter=zeros(size(h)[1])
 
 for i=1:size(h)[1]
  for j=2:size(h)[2]-2
-	if mask[i,j]&& mask[i,j+1]
- 		fluxesafter[i]=fluxesafter[i]+h[i,j]*(fi[i,j+1]-fi[i,j])
-	end
+    if mask[i,j]&& mask[i,j+1]
+        fluxesafter[i]=fluxesafter[i]+h[i,j]*(fi[i,j+1]-fi[i,j])
+    end
  end
 end
 
@@ -129,9 +129,9 @@ fluxesafter=zeros(size(h)[2])
 
 for j=1:size(h)[2]
  for i=2:size(h)[1]-2
-	if mask[i,j]&& mask[i+1,j]
- 		fluxesafter[j]=fluxesafter[j]+h[i,j]*(fi[i+1,j]-fi[i,j])
-	end
+    if mask[i,j]&& mask[i+1,j]
+        fluxesafter[j]=fluxesafter[j]+h[i,j]*(fi[i+1,j]-fi[i,j])
+    end
  end
 end
 @show var(fluxes1+fluxesafter)
@@ -141,9 +141,9 @@ fluxesafter=zeros(size(h)[1])
 
 for i=1:size(h)[1]
  for j=2:size(h)[2]-2
-	if mask[i,j]&& mask[i,j+1]
- 		fluxesafter[i]=fluxesafter[i]+h[i,j]*(fi[i,j+1]-fi[i,j])
-	end
+    if mask[i,j]&& mask[i,j+1]
+        fluxesafter[i]=fluxesafter[i]+h[i,j]*(fi[i,j+1]-fi[i,j])
+    end
  end
 end
 

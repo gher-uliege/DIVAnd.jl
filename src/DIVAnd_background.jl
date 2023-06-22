@@ -1,6 +1,6 @@
 """
-Form the inverse of the background error covariance matrix.
-s = DIVAnd_background(mask,pmn,Labs,alpha,moddim)
+    s = DIVAnd_background(mask,pmn,Labs,alpha,moddim)
+
 Form the inverse of the background error covariance matrix with
 finite-difference operators on a curvilinear grid
 # Input:
@@ -65,6 +65,8 @@ function DIVAnd_background(
         end
     end
 
+    @debug "alpha" alpha
+    @debug "scaling" len_scale
     # mean correlation length in every dimension
     Ld =
         if mean_Labs == nothing

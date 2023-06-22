@@ -30,7 +30,7 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
         @debug "checksum $(sum(C.IS))  $(sum(v))"
         @debug "size $(size(C.IS))  $(size(v))"
 
-        log = false
+        log = true
         @debug begin
             log = true
         end
@@ -52,7 +52,7 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
         @debug begin
             @show norm(C.IS * x - v)
         end
-        #@show convergence_history
+        @show convergence_history
         return x
     elseif C.factors != nothing
         return C.factors \ v
