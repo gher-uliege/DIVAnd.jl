@@ -18,8 +18,29 @@ function diffusion!(ivol, nus, α, nmax, x0, x,
 
 end
 
+"""
+    x = DIVAnd.diffusion(mask,pmn,len,x0; boundary_condition! = nothing)
+
+Diffuse the field `x0` (n-dimensional array) defined in a domain with a mask `mask` and
+metric `pmn` iteratively upto a length-scale of `len`. The units of `pmn`
+must be the inverse of the units of `len`. The optional function
+`boundary_condition!(x)` is applied after every interation to apply the
+boundary condition. This function expected to modify its argument.
 
 
+## Example
+
+```julia
+using DIVAnd
+mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
+f = zeros(size(mask))
+f[15,15] = 1
+len = 0.3
+f = DIVAnd.diffusion(mask,(pm,pn),len,f)
+```
+
+See also DIVAndrun for more information about `mask`, `pmn` and `len`.
+"""
 function diffusion(mask,pmn,len_,x0; boundary_condition! = nothing)
     n = ndims(mask)
     len = DIVAnd.len_harmonize(len_, mask)

@@ -30,11 +30,11 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
         @debug "checksum $(sum(C.IS))  $(sum(v))"
         @debug "size $(size(C.IS))  $(size(v))"
 
-        log = false
+        log = true
         @debug begin
             log = true
         end
-        x,convergence_history = cg(
+        output = cg(
             C.IS, v, Pl = C.factors,
             verbose = C.verbose,
             log = log,
@@ -42,12 +42,17 @@ function Base.:*(C::CovarIS, v::TV)::TV where {TV<:AbstractVector{Float64}}
             reltol = C.reltol,
             maxiter = C.maxiter)
 
+        if log
+            x,convergence_history = output
+        else
+            x = output
+        end
         @debug "Number of iterations: $(convergence_history.iters)"
         @debug "Final norm of residue: $(convergence_history.data[:resnorm][end])"
         @debug begin
             @show norm(C.IS * x - v)
         end
-        #@show convergence_history
+        @show convergence_history
         return x
     elseif C.factors != nothing
         return C.factors \ v

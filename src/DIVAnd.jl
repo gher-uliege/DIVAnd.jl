@@ -71,6 +71,14 @@ mutable struct DIVAnd_constrain{
     H::TH
 end
 
+mutable struct DIVAnd_ineqconstrain{
+    T<:AbstractFloat,
+    TH<:AbstractMatrix{<:Number},
+}
+    yo::Vector{T}
+    H::TH
+end
+
 # T is the type of floats and
 # Ti: the type of integers
 # N: the number of dimensions
@@ -590,7 +598,7 @@ export sparse_stagger,
     sparse_diff,
     localize_separable_grid,
     ndgrid,
-	localresolution,
+    localresolution,
     sparse_pack,
     sparse_interp,
     sparse_trim,
@@ -646,6 +654,10 @@ export DIVAnd_heatmap, DIVAnd_integral, DIVAnd_scaleL, DIVAnd_superobs
 export DIVAnd_diagapp
 
 export DIVAnd_errormap
+
+include("DIVAnd_diagnostics.jl")
+
+export DIVAnd_norms
 
 # old function name (to be depreciated)
 const sparse_gradient = DIVAnd_gradient

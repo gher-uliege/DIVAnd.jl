@@ -74,6 +74,12 @@ function DIVAnd_metric(lon::AbstractVector, lat::AbstractVector)
     return DIVAnd_metric(ndgrid(lon, lat)...)
 end
 
+"""
+    dy = DIVAnd.deg2m(dlat)
+
+Convert an increment of latitude to a increment in meters
+using the the mean Earth radius.
+"""
 function deg2m(dlat)
     # Mean radius (http://en.wikipedia.org/wiki/Earth_radius)
     R = 6371.009e3

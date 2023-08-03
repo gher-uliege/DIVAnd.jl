@@ -1,65 +1,76 @@
 # Testing DIVAnd in 2 dimensions with advection.
-using DIVAnd
+
 using Test
+using StableRNGs
+using Random
+using DIVAnd
+
+rng = StableRNG(1234)
 
 # grid of background field
 mask, (pm, pn), (xi, yi) = DIVAnd_squaredom(2, range(-1, stop = 1, length = 30))
+epsilon2 = 1 / 200
+errmean=0
 
-x = [0.4]
-y = [0.4]
-f = [1.0]
-
-a = 5;
+a = 5.0
 u = a * yi;
 v = -a * xi;
-epsilon2 = 1 / 200
-len = 0.2
 
-fi, s = DIVAndrun(
+
+for ND in (10, 1000, 10000)
+for len in (0.05, 0.2 ,1.0)
+for mymeth in (:auto, :cheap, :precise, :cpme, :scpme, :exact, :aexerr, :diagapp)
+for myscale in (true, false)
+
+xdd = rand(rng,ND)
+ydd = rand(rng,ND)
+fdd = randn(rng,ND)
+
+
+#@show xdd[1],ND,len,mymeth,myscale,size(mask),size(pm),size(xi),size(yi)
+
+
+fi11,sl = DIVAndrun(
     mask,
     (pm, pn),
     (xi, yi),
-    (x, y),
-    f,
+    (xdd, ydd),
+    fdd,
     len,
     epsilon2;
     velocity = (u, v),
-    alphabc = 0,
-);
+    alphabc = 0
+)
 
-@test abs(fi[18, 24] - 0.8993529043140029) < 1e-2
 
-norm1,norm2,norm3,epsilon2=DIVAnd_norms(fi,s)
 
-#@show norm1,norm2,norm3,epsilon2
-
-@test norm1 ≈ 4.864863745730252
-
-@test norm2 ≈ 0.1276096541011819
-
-@test norm3 ≈ 0.059450077426666054
-
-@test epsilon2 ≈ 1 / 200
-
-m=sum(mask)
-m2c=DIVAnd.DIVAnd_ineqconstrain(0*ones(Float64,m),Diagonal(ones(Float64,m)))
-x = [0.4,0.5]
-y = [0.4,0.5]
-f = [1.0,-0.1]
-fi, s = DIVAndrun(
+errorm,methodc=DIVAnd_errormap(
     mask,
     (pm, pn),
     (xi, yi),
-    (x, y),
-    f,
+    (xdd, ydd),
+    fdd,
     len,
-    epsilon2;
+    epsilon2,sl;
     velocity = (u, v),
     alphabc = 0,
-    ineqconstraints=(m2c,)
-);
+    method=mymeth,
+    Bscale=myscale,
+    rng=StableRNG(123)
+    )
 
-@test fi[18,24] ≈ 0.5381625233419283
+    #@show size(errorm),size(fi11)
+
+global errmean=errmean+errorm[10,10]
+#@show errmean,errorm[10,10],fi11[10,10],xdd[1],ND,len,mymeth,myscale,methodc
+
+end
+end
+end
+end
+@show errmean
+@test abs(errmean  - 7.527185124068747) < 0.00000001
+
 
 # Copyright (C) 2014, 2017 Alexander Barth <a.barth@ulg.ac.be>
 #

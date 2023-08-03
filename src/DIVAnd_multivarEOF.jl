@@ -42,7 +42,7 @@ For oceanographic application, this is the land-sea mask where sea is true and l
        coefficients from a linear fit between the variables (typically obtained by
        preliminary statistics or a run of this multivariate routine on a larger data set
        and which produced the eof coefficients). `eof`=[1.0,1.0] for example means the two variables are positively correlated with a slope 1.
-	   `eof`=[1.0,-0.5] means the variables are negatively correlated and that for a variable 1 value of 1, variable 2 is expected to have a value of -0.5
+       `eof`=[1.0,-0.5] means the variables are negatively correlated and that for a variable 1 value of 1, variable 2 is expected to have a value of -0.5
 
 
 
@@ -134,7 +134,7 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
 
     # univariate analysis
     fi,s=DIVAndrun(mask,pmn,xi,x,f,len,epsilon2;velocity=velocity,kwargs...)
-    emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method="cheap",velocity=velocity,kwargs...)
+    emap,meth=DIVAnd_errormap(mask,pmn,xi,x,f,len,epsilon2,s;method=:cheap,velocity=velocity,kwargs...)
     @debug "error method in multivar $meth"
     # keep points where error is small enough
     limite=0.5
@@ -206,7 +206,7 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
         for k=1:size(eof)[1]
                 if abs(eof[k])<0.1/size(eof)[1]
                       @warn "Sorry too weak  correlations layer $k"
-                      return fi,s,eof,eofamplitudes,emap
+                      return fi,s,eof,eofamplitudes,emap,emap
                 end
         end
 
@@ -285,14 +285,14 @@ function DIVAnd_multivarEOF(mask,pmn,xi,x,f,lenin,epsilon2in;eof=(),velocity=(),
       for k=2:nlay
         coo=ndims(mask)
         # just take the points from one layer and copy them into other layers
-		# add 0.0001 to make sure rounding is not a problem
+        # add 0.0001 to make sure rounding is not a problem
         xm[coo][(k-1)*nd+1:k*nd].= mod.(xm[coo][(k-2)*nd+1:(k-1)*nd] .+0.0001,nlay).+1
       end
       # Values of data are unimportant for the error field. So just repeated
       fm=repeat(f,nlay)
 
       # Error maps for the multivariate approach
-      emapm,methm=DIVAnd_errormap(mask,pmn,xi,tuple(xm...),fm,len,epsilon2m,s;method="cheap",velocity=velocity,kwargs...)
+      emapm,methm=DIVAnd_errormap(mask,pmn,xi,tuple(xm...),fm,len,epsilon2m,s;method=:cheap,velocity=velocity,kwargs...)
       @debug methm
     # Banzaii, finished
     return fi,s,eof,eofamplitudes,emap,emapm

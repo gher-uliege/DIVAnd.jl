@@ -22,7 +22,7 @@ end
 
 
 """
-    sv = statevector_init((mask1, mask2, ...))
+    sv = statevector((mask1, mask2, ...))
 
 Initialize structure for packing and unpacking
 multiple variables given their corresponding land-sea mask.
@@ -32,16 +32,12 @@ Input:
     Every mask can have a different shape.
 
 Output:
-  sv: structure to be used with statevector_pack and statevector_unpack.
+  sv: structure to be used with `pack` and `unpack`.
 
 Note:
-see also statevector_pack, statevector_unpack
-
-Author: Alexander Barth, 2009,2017 <a.barth@ulg.ac.be>
-License: GPL 2 or later
+see also `pack`, `unpack`
 """
 function statevector(masks::NTuple{nvar_,BitArray{N}}) where {nvar_} where {N}
-
     numels = [sum(mask) for mask in masks]
     ind = [0, cumsum(numels)...]
 

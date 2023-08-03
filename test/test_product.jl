@@ -103,8 +103,8 @@ varname = "Salinity"
 filename = tempname()
 
 metadata = OrderedDict(
-    # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-Chemistry, ...)
-    "project" => "SeaDataCloud",
+    # Name of the project (SeaDataCloud, SeaDataNet, EMODNET-chemistry, ...)
+    "project" => "EMODNET-chemistry",
 
     # URN code for the institution EDMO registry,
     # e.g. SDN:EDMO::1579

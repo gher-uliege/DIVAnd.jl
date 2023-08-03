@@ -5,7 +5,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://github.com/gher-uliege/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-uliege/DIVAnd.jl/actions)
-[![codecov.io](http://codecov.io/github/gher-uliege/DIVAnd.jl/coverage.svg?branch=master)](http://codecov.io/github/gher-uliege/DIVAnd.jl?branch=master)
+[![codecov.io](http://codecov.io/github/gher-uliege/DIVAnd.jl/coverage.svg?branch=JMB)](https://app.codecov.io/github/gher-uliege/DIVAnd.jl/tree/JMB)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/latest/)
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
@@ -23,6 +23,20 @@ Please cite this paper as follows if you use `DIVAnd` in a publication:
 Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, L.: DIVAnd-1.0: n-dimensional variational data analysis for ocean observations, Geosci. Model Dev., 7, 225-241, doi:[10.5194/gmd-7-225-2014](https://doi.org/10.5194/gmd-7-225-2014), 2014.
 
 (click [here](./data/DIVAnd.bib) for the BibTeX entry).
+
+# Summary of features
+
+* N-Dimensional analysis/interpolation
+* Scattered data
+* Noise allowed
+* Physical constraints can be added
+* Inequality constraints can be added
+* Topological constraints are handled naturally (barriers, holes)
+* Analysis error maps can be estimated
+* Periodicity in selected directions can be enforced
+* Multivariate data can be used (experimental)
+* The output grid can be curvilinear
+* Instead of interpolating scattered data you can also peform Kernel Density Estimations with the points.
 
 
 # Installing
@@ -130,7 +144,7 @@ More examples are available in the notebooks from the [Diva Workshop](https://gi
 
 `DIVAndrun` is the core analysis function in n dimensions. It does not know anything about the physical parameters or units you work with. Coordinates can also be very general. The only constraint is that the metrics `(pm,pn,po,...)` when multiplied by the corresponding length scales `len` lead to non-dimensional parameters. Furthermore the coordinates of the output grid `(xi,yi,zi,...)` need to have the same units as the observation coordinates `(x,y,z,...)`.
 
-`DIVAndfun` is a version with a minimal set of parameters (the coordinates and values of observations)  `(x,f)` and provides and interpolation function rather than an already gridded field. 
+`DIVAndfun` is a version with a minimal set of parameters (the coordinates and values of observations, i.e.  `(x,f)`, the remaining parameters being optional) and provides an interpolation *function* rather than an already gridded field. 
 
 `diva3D` is a higher-level function specifically designed for climatological analysis of data on Earth, using longitude/latitude/depth/time coordinates and correlations length in meters. It makes the necessary preparation of metrics, parameter optimizations etc you normally would program yourself before calling the analysis function `DIVAndrun`.
 
@@ -138,6 +152,8 @@ More examples are available in the notebooks from the [Diva Workshop](https://gi
 
 
 `DIVAndgo` is only needed for very large problems when a call to `DIVAndrun` leads to memory or CPU time problems. This function tries to decide which solver (direct or iterative) to use and how to make an automatic domain decomposition. Not all options from `DIVAndrun` are available.
+
+If you want to try out multivariate approaches, you can look at `DIVAnd_multivarEOF` and `DIVAnd_multivarJAC`
 
 ## Note about the background field
 
@@ -163,13 +179,13 @@ Tools to help you are included in  ([DIVAnd_cv.jl](https://github.com/gher-ulieg
 
 ## Note about the error fields
 
-`DIVAnd` allows the calculation of the analysis error variance, scaled by the background error variance. Though it can be calculated "exactly" using the diagonal of the error covariance matrix s.P, it is too costly and approximations are provided. Two version are recommended, `DIVAnd_cpme` for a quick estimate and `DIVAnd_aexerr` for a version closer the theoretical estimate (see [Beckers et al 2014](https://doi.org/10.1175/JTECH-D-13-00130.1) )
+`DIVAnd` allows the calculation of the analysis error variance, scaled by the background error variance. Though it can be calculated "exactly" using the diagonal of the error covariance matrix s.P, it is generally too costly and approximations are provided. All of them are accessible as options via `DIVAnd_errormap` or you can let `DIVAnd` decide which version to use (possibly by specifying if you just need a quick estimate or a version closer the theoretical estimate) (see [Beckers et al 2014](https://doi.org/10.1175/JTECH-D-13-00130.1) )
 
 ## Advanced usage
 
 ### Additional constraint
 
-An arbitrary number of additional constraints can be included to the cost function which should have the following form:
+An arbitrary number of additional quadratic constraints can be included to the cost function which should have the following form:
 
 *J*(**x**) = ∑<sub>*i*</sub> (**C**<sub>*i*</sub> **x**  - **z**<sub>*i*</sub>)ᵀ **Q**<sub>*i*</sub><sup>-1</sup> (**C**<sub>*i*</sub> **x** - **z**<sub>*i*</sub>)
 
@@ -180,6 +196,19 @@ For every constrain, a structure with the following fields is passed to `DIVAnd`
 * `R`: the matrix **Q**<sub>*i*</sub> (symmetric and positive defined)
 
 Internally the observations are also implemented as constraint defined in this way.
+
+### Additional inequality constraint
+
+An arbitrary number of additional inequality constraints can be included and which should have the following form:
+
+(**H**<sub>*i*</sub> **x**  > **yo**<sub>*i*</sub>)
+
+For every constraint, a structure with the following fields is passed to `DIVAnd`:
+
+* `yo`: a vector
+* `H`: a matrix
+
+
 
 ## Run notebooks on a server which has no graphical interface
 
@@ -211,6 +240,16 @@ Please include the following information when reporting an issue:
 
 Note that only [official julia builds](https://julialang.org/downloads/) are supported. 
 
+In all cases, if we provide a tentative solution, please provide a feedback in all cases (whether it solved your issue or not).
+
 # Fun
 
 An [educational web application](http://data-assimilation.net/Tools/divand_demo/html/) has been developed to reconstruct a field based on point "observations". The user must choose in an optimal way the location of 10 observations such that the analysed field obtained by `DIVAnd` based on these observations is as close as possible to the original field.
+
+# You do not want to use Julia
+
+You should really reconsider and try out Julia. It is easy to use and provides the native interface to `DIVAnd`.
+
+If you have a stable workflow using python, into which you want to integrate `DIVAnd`, you might try
+
+https://github.com/gher-uliege/DIVAnd.py
