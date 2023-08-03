@@ -1,13 +1,17 @@
-function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Number = 1.0)
 
+
+function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim)
+    return DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim,1)
+end
+
+function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Number)
  return  DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc*ones(ndims(mask)))
-
 end
 
 """
 
 """
-function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Vector{Float64} = ones(ndims(mask)))
+function DIVAnd_bc_stretch(mask, pmnin, xiin, Lin, moddim, alphabc::Vector{<:Number})
 
     # number of dimensions
     n = ndims(mask)
