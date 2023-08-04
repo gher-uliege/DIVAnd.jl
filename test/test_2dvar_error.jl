@@ -39,6 +39,7 @@ errormethods = [
 
 
 for errormethod in errormethods
+    local err
     #@show errormethod
     err = errormethod(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2)
 
