@@ -375,14 +375,14 @@ obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname_TS,long_name
 almostgood(qf) = !ismissing(qf) && ((qf == 49) || (qf == 50))
 
 nc = NCDataset(fname_TS)
-ox = nc["var3"][:];
-ox_qf = nc["var3_qc"][:];
+ox = nc["var3"][:,:];
+ox_qf = nc["var3_qc"][:,:];
 
-z = nc["var2"][:];
-z_qf = nc["var2_qc"][:];
+z = nc["var2"][:,:];
+z_qf = nc["var2_qc"][:,:];
 
-time = nc["var1_qc"].var[:];
-time_qf = nc["var1_qc"][:];
+time = nc["var1_qc"].var[:,:];
+time_qf = nc["var1_qc"][:,:];
 
 good = almostgood.(ox_qf) .& .!ismissing.(ox) .& almostgood.(z_qf) .& .!ismissing.(z) .& almostgood.(time_qf) .& .!ismissing.(time)
 

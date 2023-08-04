@@ -61,11 +61,11 @@ function loadvar(
         return T[]
     end
 
-    dataarray = ds[param][:]
+    dataarray = Array(ds[param])
     data = nomissing(dataarray, fillvalue)
 
     if qfname in ds
-        qf = ds[qfname].var[:]
+        qf = Array(ds[qfname].var)
 
         keep_data = falses(size(qf))
 
@@ -176,7 +176,7 @@ function load(
     )
 
     if ndims(lon) == 1
-        #@show fname,param,size(lon),size(data)
+        @debug "check size",fname,param,size(lon),size(data)
         @assert size(lon, 1) == size(data, 2)
         lon = repeat(reshape(lon, 1, size(lon, 1)), inner = (size(data, 1), 1))
     end
@@ -207,8 +207,8 @@ function load(
         time = repeat(reshape(time, 1, size(time, 1)), inner = (size(data, 1), 1))
     end
 
-    edmo = ds["SDN_EDMO_CODE"][:]
-    cdiid = ds["SDN_LOCAL_CDI_ID"][:]
+    edmo = Array(ds["SDN_EDMO_CODE"])
+    cdiid = Array(ds["SDN_LOCAL_CDI_ID"])
 
     @assert size(edmo, 1) == size(data, 2)
     @assert size(cdiid, 2) == size(data, 2)

@@ -334,7 +334,7 @@ function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_valu
             ncvar_LOCAL_CDI_ID = varbyattrib_first(ds, long_name = "LOCAL_CDI_ID")
 
             if ndims(ncvar_LOCAL_CDI_ID) == 2
-                LOCAL_CDI_ID = chararray2strings(ncvar_LOCAL_CDI_ID.var[:])
+                LOCAL_CDI_ID = chararray2strings(Array(ncvar_LOCAL_CDI_ID.var))
             else
                 @warn """The variable with the long_name attribute \'LOCAL_CDI_ID\' is expected to have two dimensions. For example the output of 'ncdump -h' of $fname should contain:
 [...]
@@ -348,13 +348,13 @@ We use the empty string for LOCAL_CDI_ID instead.
         end
 
         EDMO_CODE = if length(varbyattrib(ds; long_name = "EDMO_code")) > 0
-            varbyattrib_first(ds, long_name = "EDMO_code")[:]
+            Array(varbyattrib_first(ds, long_name = "EDMO_code"))
         else
-            varbyattrib_first(ds, long_name = "EDMO_CODE")[:]
+            Array(varbyattrib_first(ds, long_name = "EDMO_CODE"))
         end
 
-        obsproflon = varbyattrib_first(ds, standard_name = "longitude")[:]
-        obsproflat = varbyattrib_first(ds, standard_name = "latitude")[:]
+        obsproflon = Array(varbyattrib_first(ds, standard_name = "longitude"))
+        obsproflat = Array(varbyattrib_first(ds, standard_name = "latitude"))
 
         # time for time series
         ncvar_time = nothing
@@ -369,7 +369,7 @@ We use the empty string for LOCAL_CDI_ID instead.
             @assert ndims(ncvar_time) == 2
         else
             # profile
-            obsproftime = varbyattrib_first(ds, standard_name = "time")[:]
+            obsproftime = Array(varbyattrib_first(ds, standard_name = "time"))
             @assert ndims(obsproftime) == 1
         end
 

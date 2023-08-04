@@ -21,7 +21,7 @@ relerr = rand(T, sz)
 DIVAnd.save(filename, xyi, fi, varname; type_save = T, relerr = relerr)
 
 ds = Dataset(filename)
-fi2 = ds[varname][:]
+fi2 = ds[varname][:,:,:,:]
 close(ds)
 
 @test fi2[mask] == fi[mask]
