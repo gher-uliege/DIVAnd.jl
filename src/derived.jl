@@ -1,4 +1,14 @@
+"""
+    deepest(array)
 
+Compute the deepest value of the 3D field `array` for each horizontal cell.
+
+# Example
+
+```julia-repl
+oxy_deepest = deepest(oxy3D)
+```
+"""
 function deepest(array::Array{Union{Missing,T},3}) where T
 #function deepest(array::AbstractArray{Union{Missing,T},3}) where T
     sz = size(array)
@@ -18,6 +28,19 @@ function deepest(array::Array{Union{Missing,T},3}) where T
     return array2d
 end
 
+"""
+    ncdeepest(nc,varname,suffix,thresholds_value)
+
+Write a new netCDF variable to stored the deepest value of `varname`.
+
+# Example
+
+```julia-repl
+nc = NCDataset(datafile)
+ncdeepest(nc,varname,"",nothing)
+close(nc)
+```
+"""
 function ncdeepest(nc,varname,suffix,thresholds_value)
     T = Float32
     ncvar = nc[varname * suffix]
@@ -62,9 +85,9 @@ value of an analysis) using the NetCDF file `filename` with the variable
 
 See `DIVAnd.diva3d` for the optional parameter `error_thresholds`.
 
-Example:
+# Example
 
-```julia
+```julia-repl
 using DIVAnd
 filename = "Water_body_dissolved_oxygen_concentration_monthly.nc"
 new_filename = "Water_body_dissolved_oxygen_concentration_monthly2.nc"
