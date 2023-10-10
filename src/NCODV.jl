@@ -83,6 +83,8 @@ function loadprof(
 
     n_samples = size(ncvar,1)
     n_stations = size(ncvar, 2)
+
+    nchunk = min(nchunk,n_stations)
     #    n_stations = 100000
     #    n_stations = 10000
     data_chunk = Array{T,2}(undef, (n_samples, nchunk))
@@ -118,21 +120,21 @@ function loadprof(
         nc = i:min(i + nchunk - 1, n_stations)
         clen = length(nc)
 
-        NCDatasets.load!(ncvar, data_chunk, :, nc)
+        NCDatasets.load!(ncvar, view(data_chunk,:,1:clen), :, nc)
 
         if flag != nothing
-            NCDatasets.load!(flag, flag_chunk, :, nc)
+            NCDatasets.load!(flag, view(flag_chunk,:,1:clen), :, nc)
         end
 
-        NCDatasets.load!(ncz, z_chunk, :, nc)
+        NCDatasets.load!(ncz, view(z_chunk,:,1:clen), :, nc)
 
         if flag_z != nothing
-            NCDatasets.load!(flag_z, flag_z_chunk, :, nc)
+            NCDatasets.load!(flag_z, view(flag_z_chunk,:,1:clen), :, nc)
         end
 
         if nctime != nothing
-            NCDatasets.load!(nctime, time_chunk, :, nc)
-            NCDatasets.load!(flag_time, flag_time_chunk, :, nc)
+            NCDatasets.load!(nctime, view(time_chunk,:,1:clen), :, nc)
+            NCDatasets.load!(flag_time, view(flag_time_chunk,:,1:clen), :, nc)
         end
 
         for k = 1:clen
