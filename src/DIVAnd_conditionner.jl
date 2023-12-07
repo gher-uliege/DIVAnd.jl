@@ -118,30 +118,18 @@ end
 
 #### TO CLEAN UP AND OTPIMIZE
 
-### Make a function out of it and return the preconditionner FUNCTION and the initial guess fi0
-### using the same arguments as DIVAndrun  (even if some are not used, it would make the user easier)
+
 function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(mask)),maxsuper=-1,onlyB=false)
 
-#   Calculate Px using OI with superobs
-# Preparation: preparre B, superobs, 
 # For superobs: find closest cartesianindex (using I = localize_separable_grid   and make list.
 # Check that list has no duplicates (could arrive if a lot of points are clustered)
 # Create cholesky(HBH'+R)  and story it for further use
 # Initial guess from OI
 # Then create precontioning function fun!
 
-# Px:
-# x to grid
-# Bxa
-# at superobs position Bxa[positions]
-# Then Classical OI
-# finally Bxa- BH cholesky(HBH'+R) Bxa[position]
-# Back to state space
 
     
     corr=zeros(Float64,size(pmn[1]))
-    xin=zeros(Float64,size(pmn[1]))
-    xa=zeros(Float64,size(pmn[1]))
     Lpmnmean=DIVAnd_Lpmnmean(pmn,len)
     OIcorrregijk!(corr,Lpmnmean)
     
@@ -191,19 +179,6 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
     
     
     
-    
-     #   corr2=zeros(Float64,size(pmn[1]))
-    xin=zeros(Float64,size(pmn[1]))
-    xa=zeros(Float64,size(pmn[1]))
-  #  Lpmnmean=DIVAnd_Lpmnmean(pmn,len)
-  #  @show Int(1.2^ndims(pmn[1))*round(prod(size(pmn[1])./Lpmnmean)))
-    #OIcorrregijk!(corr2,Lpmnmean)
-    #corr2=exp.(-0.5.*((xi.-mean(xi))/len).^2).*exp.(-0.5.*((yi.-mean(yi))/len).^2).*exp.(-0.5.*((zi.-mean(zi))/len).^2) 
-#@show size(gg)
-#gauss=fftshift(corr2)
-#@show size(gauss)
-
-#@show PFFT
 
     
     
@@ -231,94 +206,65 @@ for i=1:ndims(gaussf)
 end
 
     PFFT=plan_rfft(gaussf)
-    
-    
-#    @show size(gauss)
+    FFTG=PFFT*gaussf
 
-FFTG=PFFT*gaussf
+    PiFFT=plan_irfft(FFTG,size(gaussf,1))
 
-#@show size(FFTG)
-PiFFT=plan_irfft(FFTG,size(gaussf,1))
-#@show PiFFT
-xval=zeros(size(gaussf))
+    xval=zeros(Float64,size(gaussf))
     
+    work=zeros(Float64,size(myloc,1))
+    
+    #gaussf=[]
+	# reuse corr and gaussf
+    xin=corr
+    ork=gaussf #zeros(Float64,size(gaussf))
+	# probably not needed but anyway
+    GC.gc()
 
 
-ork=zeros(Float64,size(gaussf))
-work=zeros(Float64,size(myloc,1))
     
-gaussf=[]
-    
-    
-      @show size(fOI)
-      # Replace by FFT by moving FFT plans earlier into the routint
-      #DIVAndOIregBH!(fOI,corr,myloc,xOI)
-        xa[myloc].=xOI
-        xval[CartesianIndices(xa)].=xa
-        #DIVAndOIregBH!(xa,corr,myloc,work)
+        xin[myloc].=xOI
+        xval[CartesianIndices(xin)].=xin
         ork .=PiFFT*((PFFT*xval).*FFTG)
-        fOI.=ork[CartesianIndices(xa)]
+        fOI.=ork[CartesianIndices(xin)]
     
 
       # Maybe increase value when grid is stretched ?
       mymax= Int(round(1.2*sqrt(prod(size(mask)))))
-
+	  # If only preconditionned by B, increase
+      if onlyB
+	  mymax=mymax*1.5
+	  end
      #
-function compPCFFT(iB,H,R)
-    
-    @show "code will be made ready"
-    
-    # play with moddim
-
-corr=[]
-
-GC.gc()
-#FFTV=  PFFT*val
-
-#valconv=  PiFFT*(FFTV.*FFTG)
-
-    
-    
-    
+  function compPCFFT(iB,H,R)
+  
     function fun!(x,fx)
         
-        # Need to avoid allocation
+        #  avoid allocation
         xin[:],=statevector_unpack(mysv, x)
         xval[CartesianIndices(xin)].=xin
-        #@show size(xin),size(PFFT*xin),size(FFTG)
         ork .= PiFFT*((PFFT*xval).*FFTG)
-        #@show size(ork)
-        #@show size(xa)
-        
-        # of course iB is not complete, so normal that with btrunc we do not get the inverse ...
-        # test with smaller matrices and no btrunc !!!
-      # @show norm(x),norm(Bx),norm(iB*x),norm(x-iB*Bx),norm(x'*Bx)
-      #  fac=norm(x)/norm(iB*Bx)
         fx[:].=statevector_pack(mysv, (ork[CartesianIndices(xin)],))
-       # @show norm(fx),x'*fx
-       
+              
         # if return just Bx
         if onlyB
      		return
-			
 		end
+		# ork is Bx 
         work[:].=BRD\ork[myloc]
-        # Replace by another FFT: xa=0; xa[myloc]= work
-        # copy code from above and subtract; so basically only BRD need to be calculated
-        #
-        xa[:].=0.0
-        xa[myloc].=work
-        
-        xval[CartesianIndices(xa)].=xa
-        #DIVAndOIregBH!(xa,corr,myloc,work)
+        xin[:].=0.0
+        xin[myloc].=work
+        xval[CartesianIndices(xin)].=xin
         ork .=PiFFT*((PFFT*xval).*FFTG)
         fx[:].= fx.-statevector_pack(mysv, (ork[CartesianIndices(xin)],))
-        #@show norm(fx),x'*fx
+        
     end
     return fun!
 
-    end
-    return fOI,compPCFFT,mymax
+  end
+    
+	
+  return fOI,compPCFFT,mymax
 end
 
 
