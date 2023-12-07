@@ -120,7 +120,7 @@ end
 
 ### Make a function out of it and return the preconditionner FUNCTION and the initial guess fi0
 ### using the same arguments as DIVAndrun  (even if some are not used, it would make the user easier)
-function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(mask)),maxsuper=-1)
+function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(mask)),maxsuper=-1,onlyB=false)
 
 #   Calculate Px using OI with superobs
 # Preparation: preparre B, superobs, 
@@ -298,7 +298,10 @@ GC.gc()
        # @show norm(fx),x'*fx
        
         # if return just Bx
-        # return
+        if onlyB
+     		return
+			
+		end
         work[:].=BRD\ork[myloc]
         # Replace by another FFT: xa=0; xa[myloc]= work
         # copy code from above and subtract; so basically only BRD need to be calculated
