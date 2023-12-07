@@ -153,6 +153,7 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
     if super<0
     super=2*Int(ceil(1.2^ndims(pmn[1])*prod(size(pmn[1])./Lpmnmean)))
     end
+	super=min(super,size(f,1))
     @show super
 # TODO, use proper weighting if epsilon2 is not constant
     newx,newval,sumw,varp,idx=DIVAnd_superobs(xy,f,super)
