@@ -168,8 +168,15 @@ function conjugategradient(
         # r = b-fun(x)
         # but this does require an new call to fun
         # r = r - alpha[k]*Ap
+		# RECOMMENDED TO OCCASIONALLY RECALCULATE
+		  if mod(k,100)==0
+		  @show "restart"
+		  fun!(x, Ap)
+          r = b - Ap
+		
+		  else
         r = BLAS.axpy!(-alpha[k], Ap, r)
-
+          end
         progress(k, x, r, tol2, fun!, b)
 
         #if mod(k,20)==1

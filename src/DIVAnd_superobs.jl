@@ -52,6 +52,12 @@ function DIVAnd_superobs(x, val, nmax; weights = [], intensive = true)
     coordmin -= range * eps(eltype(coord))
     coordmax += range * eps(eltype(coord))
 
+## If only one point, return it
+    if ndata<2
+	return x, val, [1], [0], [0]
+	end
+
+
     # Calculate cell size for averaging
     ilenmax = NPD ./ range
 
