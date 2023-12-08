@@ -217,12 +217,12 @@ end
     #gaussf=[]
 	# reuse corr and gaussf
     xin=corr
-    ork=gaussf #zeros(Float64,size(gaussf))
+    ork=zeros(Float64,size(gaussf))
 	# probably not needed but anyway
     GC.gc()
 
 
-    
+        xin[:].=0
         xin[myloc].=xOI
         xval[CartesianIndices(xin)].=xin
         ork .=PiFFT*((PFFT*xval).*FFTG)
