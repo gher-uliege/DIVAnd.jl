@@ -127,6 +127,8 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
 # Create cholesky(HBH'+R)  and story it for further use
 # Initial guess from OI
 # Then create precontioning function fun!
+# WARNING: for superobs all points should be in the bounding box of the grid, otherwise the selection will not be fine enough
+#
 
 
     
@@ -134,15 +136,16 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
     Lpmnmean=DIVAnd_Lpmnmean(pmn,len)
     OIcorrregijk!(corr,Lpmnmean)
     
-# ideally 1.2 superobs in each influence bubble domain. Maybe adapt in higher dimensions (sphere vs cube)
+# ideally 1.5 superobs in each influence bubble domain. Maybe adapt in higher dimensions (sphere vs cube)
 # roughly factor 2 in 3D
 # and look at spread of data points?
-# so (max(x)-min(x))/mean(lenx)
+# so (max(x)-min(x))/mean(lenx), but always try to take at least 1000 (if present) or better square root of number of grid points since cost is squared and 
+# finally proportional to grid points. 
     super=maxsuper
     if super<0
-    super=2*Int(ceil(1.2^ndims(pmn[1])*prod(size(pmn[1])./Lpmnmean)))
+    super=2*Int(ceil(1.5^ndims(pmn[1])*prod(size(pmn[1])./Lpmnmean)))
     end
-	super=min(super,size(f,1))
+	super=min(max(super,Int(ceil(sqrt(prod(size(pmn[1]))))),size(f,1))
     @show super
 # TODO, use proper weighting if epsilon2 is not constant
     newx,newval,sumw,varp,idx=DIVAnd_superobs(xy,f,super)
@@ -236,7 +239,7 @@ end
       mymax= Int(round(1.2*sqrt(prod(size(mask)))))
 	  # If only preconditionned by B, increase
       if onlyB
-	  mymax=mymax*1.5
+	  mymax=Int(ceil(mymax*1.5))
 	  end
      #
   function compPCFFT(iB,H,R;testinverse=false)

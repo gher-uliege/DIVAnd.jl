@@ -211,6 +211,9 @@ function conjugategradient(
 
         zr_old = zr_new
     end
+    if !success
+	  @show "pcg  error", sqrt(r ⋅ r)/sqrt(b ⋅ b)
+	end
 
     GC.enable(true)
 
