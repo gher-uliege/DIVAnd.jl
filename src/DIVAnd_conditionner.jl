@@ -98,6 +98,7 @@ end
 # Diagonal preconditionning
 function compPCDIAG(iB,H,R)
     hdiag=zeros(Float64,size(iB,1))
+	# TODO: optimize the R\ operations here ?
     for i=1:size(iB,1)
         hdiag[i]=1.0/(iB[i,i]+H[:,i]'*(R\H[:,i]))
     end
@@ -217,27 +218,57 @@ end
     #gaussf=[]
 	# reuse corr and gaussf
     xin=corr
-    ork=zeros(Float64,size(gaussf))
+    ork=gaussf #zeros(Float64,size(gaussf))
 	# probably not needed but anyway
     GC.gc()
 
-
+        ork[:].=0
         xin[:].=0
+		
+		
         xin[myloc].=xOI
         xval[CartesianIndices(xin)].=xin
         ork .=PiFFT*((PFFT*xval).*FFTG)
         fOI.=ork[CartesianIndices(xin)]
     
 
-      # Maybe increase value when grid is stretched ?
+      # Maybe increase value when grid is stretched ? YES TODO
       mymax= Int(round(1.2*sqrt(prod(size(mask)))))
 	  # If only preconditionned by B, increase
       if onlyB
 	  mymax=mymax*1.5
 	  end
      #
-  function compPCFFT(iB,H,R)
+  function compPCFFT(iB,H,R;testinverse=false)
   
+    if testinverse
+	# Just to test if one can calculte the inverse of PTilde
+	@show "Are you sure"
+	function funinv!(x,fx)
+        
+        #  avoid allocation
+        xin[:],=statevector_unpack(mysv, x)
+        xval[CartesianIndices(xin)].=xin
+        ork .= PiFFT*((PFFT*xval)./FFTG)
+        fx[:].=statevector_pack(mysv, (ork[CartesianIndices(xin)],))
+              
+        # if return just Bx
+        if onlyB
+     		return
+		end
+		# ork is Bx 
+		# One over epslilon2 TODO
+        work[:].= 1.0 ./ (epsilon2.*myeps)
+        xin[:].=0.0
+        xin[myloc].=work
+        fx[:].= fx .+  x.*statevector_pack(mysv, (xin,))
+        
+    end
+	
+	return funinv!
+	
+	else
+	
     function fun!(x,fx)
         
         #  avoid allocation
@@ -259,7 +290,11 @@ end
         fx[:].= fx.-statevector_pack(mysv, (ork[CartesianIndices(xin)],))
         
     end
+	
+	
     return fun!
+
+    end
 
   end
     
