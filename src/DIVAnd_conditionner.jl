@@ -130,7 +130,10 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
 # WARNING: for superobs all points should be in the bounding box of the grid, otherwise the selection will not be fine enough
 #
 
-
+    eps2=epsilon2
+	if isa(epsilon2,Number)
+	eps2=epsilon2.*ones(size(f))
+	end
     
     corr=zeros(Float64,size(pmn[1]))
     Lpmnmean=DIVAnd_Lpmnmean(pmn,len)
@@ -145,10 +148,10 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
     if super<0
     super=2*Int(ceil(1.5^ndims(pmn[1])*prod(size(pmn[1])./Lpmnmean)))
     end
-	super=min(max(super,Int(ceil(sqrt(prod(size(pmn[1]))))),size(f,1))
+	super=min(max(super,Int(ceil(sqrt(prod(size(pmn[1])))))),size(f,1))
     @show super
 # TODO, use proper weighting if epsilon2 is not constant
-    newx,newval,sumw,varp,idx=DIVAnd_superobs(xy,f,super)
+    newx,newval,sumw,varp,idx=DIVAnd_superobs(xy,f,super;weights=1 ./eps2)
 
     ILOC = localize_separable_grid(newx,mask,xyi)
       myval=[]
@@ -176,7 +179,7 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
         # myloc=CartesianIndices(mask)[[myloclinear...]]
       end
       #@show epsilon2,myeps,myloc
-      BRD=DIVAndOIBRdecomposition(corr,myloc,epsilon2.*myeps)
+      BRD=DIVAndOIBRdecomposition(corr,myloc,myeps)
       xOI= BRD\myval
       fOI=deepcopy(xyi[1])
     
@@ -261,7 +264,7 @@ end
 		end
 		# ork is Bx 
 		# One over epslilon2 TODO
-        work[:].= 1.0 ./ (epsilon2.*myeps)
+        work[:].= 1.0 ./ myeps
         xin[:].=0.0
         xin[myloc].=work
         fx[:].= fx .+  x.*statevector_pack(mysv, (xin,))

@@ -51,10 +51,14 @@ function DIVAnd_superobs(x, val, nmax; weights = [], intensive = true)
     range = coordmax - coordmin
     coordmin -= range * eps(eltype(coord))
     coordmax += range * eps(eltype(coord))
+	
+	if weights == []
+        weights = ones(Float64, ndata)
+    end
 
 ## If only one point, return it
     if ndata<2
-	return x, val, [1], [0], [0]
+	return x, val, weights, [0], [0]
 	end
 
 
@@ -69,9 +73,7 @@ function DIVAnd_superobs(x, val, nmax; weights = [], intensive = true)
 
     # now allocate the arrays
 
-    if weights == []
-        weights = ones(Float64, ndata)
-    end
+ 
 
     # Working arrays
     VP = zeros(Float64, sz)
