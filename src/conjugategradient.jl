@@ -128,11 +128,23 @@ function conjugategradient(
     fun!(x, Ap)
     r = b - Ap
 
+
+
+
     # quick exit
-    if r ⋅ r < tol2
+	r2=r ⋅ r
+    if r2 < tol2
         GC.enable(true)
         return x, true, 0
     end
+
+   ###JMB: it appears that if you use a good solution or very small values
+   ### the residue might be much larger than b because of the ill conditionningg
+   ###
+   ### In this case, rather decide to stop based on error reduction
+    #@show tol2,tol,r2
+    tol2=max(tol2,r2*tol^2)
+   ###
 
     # apply preconditioner
     pc!(r, z)
@@ -163,14 +175,14 @@ function conjugategradient(
         # get new estimate of x
         # x = x + alpha[k]*p
         x = BLAS.axpy!(alpha[k], p, x)
-
+        # @show abs(alpha[k])*maximum(abs.(extrema(p)))
         # recompute gradient at new x. Could be done by
         # r = b-fun(x)
         # but this does require an new call to fun
         # r = r - alpha[k]*Ap
 		# RECOMMENDED TO OCCASIONALLY RECALCULATE
 		  if mod(k,100)==0
-		  @show "restart"
+		 # @show "restart"
 		  fun!(x, Ap)
           r = b - Ap
 		
@@ -182,7 +194,7 @@ function conjugategradient(
         #if mod(k,20)==1
         #    @show k, r ⋅ r,tol2,size(r)
         #end
-
+      
         if ((r ⋅ r) < tol2) && (k >= minit)
             success = true
             #@show k
@@ -212,7 +224,7 @@ function conjugategradient(
         zr_old = zr_new
     end
     if !success
-	  @show "pcg  error", sqrt(r ⋅ r)/sqrt(b ⋅ b)
+	  @show "pcg diags", sqrt(r ⋅ r)/sqrt(b ⋅ b),norm(alpha[kfinal]*p)/norm(x),(r ⋅ r),tol2
 	end
 
     GC.enable(true)

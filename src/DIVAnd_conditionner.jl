@@ -170,7 +170,25 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
         @show "seems ok",size(myloc)
           else
         # To do: regroup points that are collocated.
-        @show "NEED TO ADD DEALING WITH SUPERPOSED SUPEROBS"
+        @show "AD HOC DEALING WITH SUPERPOSED SUPEROBS"
+		# Quick fix: force to lowest integer
+	  myval=[]
+      myloc=[]
+      myeps=[]
+      for ii=1:size(ILOC,2)
+      if sum(ILOC[:,ii].>0)==size(ILOC,1)
+         myloc=[myloc...,CartesianIndex(Int.(floor.(ILOC[:,ii]))...)]
+         myval=[myval...,newval[ii]]
+         myeps=[myeps...,1/sumw[ii]]
+         else
+        
+      end
+      end
+	  if size(unique(myloc))==size(myloc)
+        @show "seems now ok",size(myloc)
+		else
+		@show "you should not be here"
+		end
         # Sort superobs by Indices
         # myloclinear=LinearIndices(mask)[[myloc...]]
         # Then go through the list and drop points.
@@ -189,7 +207,7 @@ function DIVAndFFTpcg(mask,pmn,xyi,xy,f,len,epsilon2;moddim=zeros(Int32,ndims(ma
 
     
     
-@show (2 .* ones(Int32,ndims(corr)).- moddim) .* size(corr)
+#@show (2 .* ones(Int32,ndims(corr)).- moddim) .* size(corr)
 gaussf=zeros(Float64,((2 .* ones(Int32,ndims(corr)) .- moddim) .*size(corr)...))
 
 
@@ -205,10 +223,10 @@ function halfsize(x)
 end
 
 for i=1:ndims(gaussf)
-    @show i
+   # @show i
     idxt = ntuple(x->x == i ? (size(gaussf,i):-1:size(gaussf,i)-halfsize(size(gaussf,i))+2 ) : Colon(), ndims(gaussf))
     idxf = ntuple(x->x == i ? (2:halfsize(size(gaussf,i)) ) : Colon(), ndims(gaussf))
-    @show idxf,idxt,size(gaussf)
+   # @show idxf,idxt,size(gaussf)
     gaussf[idxt...]=gaussf[idxf...]
 end
 

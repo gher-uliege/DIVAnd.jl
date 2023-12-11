@@ -67,6 +67,8 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = []) where 
             # square root since tolance is squared before comparing b2 and r2
 
             jmtol = s.tol * sqrt(size(H)[2] / size(H)[1])
+            #### Back to full s.tol because now based on errror REDUCTION
+            jmtol = s.tol
 
             fpi, success, s.niter = conjugategradient(
                 fun!,
