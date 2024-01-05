@@ -39,6 +39,7 @@ function DIVAndrun(
     coeff_laplacian::Vector{Float64} = ones(ndims(mask)),
     coeff_derivative2::Vector{Float64} = zeros(ndims(mask)),
     mean_Labs = nothing,
+	ZDF=nothing,
 ) where {N,T}
 
 # Inequality constraints via loop around classical analysis (recursive call)
@@ -112,7 +113,8 @@ end
     QCMETHOD = QCMETHOD,
     coeff_laplacian = coeff_laplacian,
     coeff_derivative2 = coeff_derivative2,
-    mean_Labs = mean_Labs
+    mean_Labs = mean_Labs,
+	ZDF=ZDF
     )
 
     # Calculate inequality constraints. If satisfied put ineqok true otherwise
@@ -229,7 +231,7 @@ end
     fi0_pack = statevector_pack(s.sv, (fi0,))[:, 1]
 
     #@code_warntype DIVAnd_solve!(s,fi0_pack,f0)
-    fi = DIVAnd_solve!(s, fi0_pack, f0; btrunc = btrunc)::Array{T,N}
+    fi = DIVAnd_solve!(s, fi0_pack, f0; btrunc = btrunc,ZDF=ZDF)::Array{T,N}
 
     # @info "Done solving"
 

@@ -16,7 +16,7 @@ Input:
 Output:
   fi: analyzed field
 """
-function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = []) where {T,Ti,N,OT}
+function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = [],ZDF=nothing) where {T,Ti,N,OT}
     #    btrunc=[]
 
     H = s.H
@@ -79,6 +79,7 @@ function DIVAnd_solve!(s::DIVAnd_struct{T,Ti,N,OT}, fi0, f0; btrunc = []) where 
                 x0 = fi0,
                 pc! = s.preconditioner,
                 progress = s.progress,
+				ZDF=ZDF
             )
 
             if !success
