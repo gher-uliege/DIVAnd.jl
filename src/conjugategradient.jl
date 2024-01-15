@@ -191,6 +191,7 @@ function conjugategradient(
 					EDF[jdf,idf]=EDF[idf,jdf]
 				end
 			end
+			#@show EDF
 			EDF=cholesky(EDF)
 
 			function projectPx!(x)
@@ -209,6 +210,7 @@ function conjugategradient(
 					BDF[idf]= sum(fx[ZDF[idf]])
 				end
 				CDF.=EDF\BDF
+				@show CDF,var(CDF),BDF,EDF\BDF
 				# x-> x - ZDF E^1 ZDF'  Ax
 				for i=1:size(ZDF,1)
 					x.-=ZDF[i].*CDF[i]
@@ -345,10 +347,14 @@ function conjugategradient(
     GC.enable(true)
 	##### To add deflation, change x into P'x  and add ZAcZHb before returning
 	if deflation
+	
 		 fun!(x, Ap)
+		  @show mean(Ap),mean(x)
 		 projectPTx!(Ap,x)
+		  @show mean(Ap),mean(x),mean(b),extrema(b)
 		 Ap.=0.0
 		 projectPTx!(b,Ap)
+		 @show mean(Ap)
 		 x.=x.-Ap
 	end
     ####
