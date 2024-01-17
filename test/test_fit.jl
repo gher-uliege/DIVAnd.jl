@@ -133,7 +133,9 @@ mask, (pm, pn, po), (xi, yi, zi) =
 lenx = leny = lenz = 0.2
 Nens = 1
 Random.seed!(rng,12345)
-field = DIVAnd.random(mask, (pm, pn, po), (lenx, leny, lenz), Nens, rng = rng)
+# pivoting is not stable
+#field = DIVAnd.random(mask, (pm, pn, po), (lenx, leny, lenz), Nens, rng = rng)
+field = @. sin(xi/lenx) * cos(yi/leny) * cos(zi/lenz)
 
 
 z = [0.3, 0.5, 0.7]
@@ -158,14 +160,35 @@ x = (xi[s], yi[s], zi[s])
 v = field[s]
 epsilon2 = ones(length(x[3])) + x[3][:] .^ 2
 
-fitlenz,
-dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
+fitlenz, dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
     x,
     v,
     z;
     epsilon2 = epsilon2,
     rng = rng,
 );
+@test median(fitlenz) ≈ lenz rtol = 0.5
+
+# mix Float32 and Float64
+T = Float32
+fitlenz,dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
+    map(v -> T.(v),x),
+    v,
+    T.(z);
+    epsilon2 = T.(epsilon2),
+    rng = rng,
+);
+@test median(fitlenz) ≈ lenz rtol = 0.5
+
+# just Float32
+fitlenz,dbinfo = @test_logs (:info, r".*at*") match_mode = :any DIVAnd.fitvertlen(
+    map(v -> T.(v),x),
+    T.(v),
+    T.(z);
+    epsilon2 = T.(epsilon2),
+    rng = rng,
+);
+
 @test median(fitlenz) ≈ lenz rtol = 0.5
 
 

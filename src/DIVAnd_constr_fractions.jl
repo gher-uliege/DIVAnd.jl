@@ -38,8 +38,8 @@ function DIVAnd_constr_fractions(s, epsfractions)
 
     A = spzeros(nwithoutfractions, s.sv.n)
     l = size(A, 1)
-    #yo = ones(Float64,l)
-    yo = zeros(Float64, l)
+    #yo = ones(l)
+    yo = zeros(l)
     R = Diagonal(epsfractions .* ones(l))
 
 

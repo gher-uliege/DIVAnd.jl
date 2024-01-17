@@ -607,16 +607,23 @@ function random(
     )
 
     n = size(s.iB, 1)::Int
-    z = randn(rng,n, Nens)
+    z = randn(rng, n, Nens)
 
     F = cholesky(s.iB::SparseMatrixCSC{T,Int})
     F_UP = F.UP
 
-    # P pivoting matrix
+    # P pivoting matrix, L lower triangular matrix
     # s.iB == P'*L*L'*P
-    # F[:UP] ==  L'*P
+    # F.UP ==  L'*P
 
     ff = F_UP \ z
+
+    # covariance of ff
+    # ff * ff' = inv(F_UP) * z * z' * inv(F_UP)'
+    #          = inv(F_UP) * inv(F_UP)'
+    #          = inv(F_UP' * F_UP')
+    #          = inv(s.iB)
+
     field = DIVAnd.unpackens(s.sv, ff)[1]::Array{T,N + 1}
     return field
 end

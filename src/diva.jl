@@ -228,7 +228,7 @@ function diva3d(
     lonr, latr, depthr, TS = if length(xi) == 4
         xi
     else
-        (xi[1], xi[2], Float64[0.0], xi[3])
+        (xi[1], xi[2], [0.0], xi[3])
     end
 
     checkdepth(depthr)
@@ -241,7 +241,7 @@ function diva3d(
     lon, lat, depth, time = if length(xi) == 4
         x
     else
-        (x[1], x[2], Float64[0.0], x[3])
+        (x[1], x[2], [0.0], x[3])
     end
 
     # anamorphosis transform

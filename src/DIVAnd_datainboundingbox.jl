@@ -27,8 +27,8 @@ function DIVAnd_datainboundingbox(xi, x, f; Rmatrix = ())
 
     n = length(xi)
 
-    maxxi = zeros(Float64, n)
-    minxi = zeros(Float64, n)
+    maxxi = zeros(n)
+    minxi = zeros(n)
 
     sel = trues(size(x[1], 1))
 

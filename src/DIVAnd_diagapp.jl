@@ -102,12 +102,12 @@ function DIVAnd_diagapp(
     # Allocate arrays once
     eij = zeros(Int, size(pmn[1]))
     #@show size(eij)
-    diagerror = zeros(Float64, size(pmn[1])) .* NaN
-    tutuu = zeros(Float64, size(pmn[1]))
+    diagerror = zeros(size(pmn[1])) .* NaN
+    tutuu = zeros(size(pmn[1]))
     tutu = statevector_pack(sv, (eij,))
     #@show size(tutu)
-    z = zeros(Float64, size(P)[1])
-    zs = zeros(Float64, size(P)[1])
+    z = zeros(size(P)[1])
+    zs = zeros(size(P)[1])
 
     if Binv
         y = zeros(Float64, size(P)[1])

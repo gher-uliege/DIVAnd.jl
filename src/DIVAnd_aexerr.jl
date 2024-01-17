@@ -154,7 +154,7 @@ function DIVAnd_aexerr(mask, pmn, xi, x, f, len, epsilon2; rng=Random.GLOBAL_RNG
     #@show sum(restrictedlist[1:size(f)[1]]),sum(restrictedlist[size(f)[1]+1:end])
     # #############################################################
     Batdatapoints = DIVAnd_erroratdatapoints(s1; restrictedlist = restrictedlist)
-    epsilonforB = ones(Float64, size(ffake)[1]) .* epsilon2fake
+    epsilonforB = ones(size(ffake)[1]) .* epsilon2fake
     epsilonforB[restrictedlist] .= 1.0 / 100.0
     Batdatapoints[.!restrictedlist] .= 1.0
     Bmean = mean(Batdatapoints[restrictedlist])

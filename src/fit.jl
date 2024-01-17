@@ -311,11 +311,11 @@ function Base.iterate(iter::RandomCoupels, state = (0, copy(iter.rng)))
     return ((i, j), (count + 1, rng))
 end
 
-mutable struct VertRandomCoupels{TRNG <: AbstractRNG}
-    zlevel::Float64 # depth in meters
+mutable struct VertRandomCoupels{TRNG <: AbstractRNG,Tz,Tx,Ts}
+    zlevel::Tz # depth in meters
     zindex::Vector{Int}
-    x::NTuple{3,Vector{Float64}}
-    searchxy::Float64 # in meters
+    x::NTuple{3,Vector{Tx}}
+    searchxy::Ts # in meters
     maxntries::Int
     count::Int
     rng::TRNG
@@ -773,8 +773,8 @@ function fithorzlen(
     x,
     value::Vector{T},
     z;
-    tolrel::T = 1e-4,
-    smoothz::T = 100.0,
+    tolrel = T(1e-4),
+    smoothz = T(100.0),
     smoothk = 3,
     searchz = 50.0,
     progress = (iter, var, len, fitness) -> nothing,
@@ -876,16 +876,16 @@ function fitvertlen(
     x,
     value::Vector{T},
     z;
-    smoothz::T = 100.0,
-    smoothk::T = 3.0,
-    searchz = 10.0,
-    searchxy::T = 1_000.0, # meters
-    maxntries::Int = 10000,
+    smoothz = T(100.0),
+    smoothk = T(3.0),
+    searchz = T(10.0),
+    searchxy = T(1_000.0), # meters
+    maxntries = 10000,
     maxnsamp = 50,
     progress = (iter, var, len, fitness) -> nothing,
     distfun = (xi, xj) -> sqrt(sum(abs2, xi - xj)),
     limitfun = (z, len) -> len,
-    epsilon2 = ones(size(value)),
+    epsilon2 = ones(T,size(value)),
     min_rqual = 0.5,
     rng = Random.GLOBAL_RNG,
 ) where {T}
@@ -962,5 +962,4 @@ function fitvertlen(
     end
 
     return lenoptf, Dict(:var0 => var0opt, :len => lenopt, :fitinfos => fitinfos)
-
 end
