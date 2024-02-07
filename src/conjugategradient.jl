@@ -232,6 +232,10 @@ function conjugategradient(
     fun!(x, Ap)
     r = b - Ap
 	
+	
+	#TEST 
+	#@show (r ⋅ (r+b))/((r+b) ⋅ (r+b)),(b ⋅ (r+b))/((r+b) ⋅ (r+b)),r⋅r,b⋅b
+	
 	###########
 	if deflation
 		 projectPx!(r)
@@ -249,9 +253,9 @@ function conjugategradient(
    ###JMB: it appears that if you use a good solution or very small values
    ### the residue might be much larger than b because of the ill conditionningg
    ###
-   ### In this case, rather decide to stop based on error reduction
+   ### In this case, rather decide to stop 
     #@show tol2,tol,r2
-    tol2=max(tol2,r2*tol^2)
+    tol2=max(tol2,((r+b) ⋅ (r+b))*tol^2)
    ###
 
     # apply preconditioner
