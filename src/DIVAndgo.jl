@@ -378,7 +378,7 @@ function DIVAndgo(
 
     ongrid = findall(x -> !isnan(x), fidata)
 
-    # Add desroziers type of correction
+    # Add Desroziers type of correction
     scalefactore = DIVAnd_adaptedeps2(f, fidata, epsilon2, isnan.(fidata))
 
     return fi_filtered, erri_filtered, fidata, qcdata, scalefactore
