@@ -10,7 +10,7 @@
 * `factor` : multiplicative factor to apply to epsilon2
 
 
-Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
+Using Desroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
 estimate of the R matrix. If you cannot use `DIVAndrun` but use `DIVAndgo`, the latter provides automatically this pamater as result.
 
 
@@ -27,7 +27,7 @@ end
 """
     DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
 
-Using Deroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
+Using Desroziers adaptive approach provides a multiplicative factor for the current epsilon2 value so that factor*epsilon2 is a better
 estimate of the R matrix.
 
 `yo` the observations (minus the background),
@@ -35,7 +35,7 @@ estimate of the R matrix.
 `diagR`, the diagonal of the rel. obs. error covariance matrix and
 `ignoreobs` is true if an observation is out of the grid or should be ignored for other reasons.
 
-For unscaled R and assuming that the background is zero, Deroziers showed that:
+For unscaled R and assuming that the background is zero, Desroziers showed that:
 
 mean((yᵒ - Hxᵃ) ⋅ yᵒ) =  ϵ²
 mean(yᵒ ⋅ yᵒ) = σ² +  ϵ²
