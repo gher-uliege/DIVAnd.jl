@@ -317,7 +317,7 @@ As well as the variable with the following long_name:
 * EDMO\\_code or EDMO\\_CODE
 * Depth
 
-A guide how to export NetCDF files from ODV is available [here](https://github.com/gher-ulg/Diva-Workshops/blob/master/tricks/ODV_netCDF_export.md)
+A guide how to export NetCDF files from ODV is available [here](https://github.com/gher-uliege/EMODnet-Chemistry-GriddedMaps/blob/main/doc/ODV_netCDF_export.md)
 
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
