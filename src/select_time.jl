@@ -15,11 +15,11 @@ for example `[1980:1989,1990:1999,2000:2009,2010:2019]`.
 `monthlists` is a vector of two-element vector (containing start and end months), for
 example `[1:3,4:6,7:9,10:12]`.
 
-The upper bound of a `yearlist` and `monthlist` element is considered inclusive.
-The range of years of 2010:2019 consideres all years upto and including the year 2009.
+The upper bound of a `yearlist` or `monthlist` element is considered inclusive.
+The range of years of 2010:2019 considers all years up to and including the year 2019.
 
-If a month range spans beyond December, then all Months must be specified, e.g.
-example `[2:4,5:6,7:9,[10,11,12,1]]` or `[2:4,5:6,7:9,[10:12;1]]`.
+If a month range spans beyond December, then all months must be specified, e.g.
+`[2:4,5:6,7:9,[10,11,12,1]]` or `[2:4,5:6,7:9,[10:12;1]]`.
 However using `[2:4,5:6,7:9,10:1]` (bug!) will result in
 an empty month range.
 
