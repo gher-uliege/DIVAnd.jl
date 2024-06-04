@@ -295,29 +295,28 @@ end
 """
     obsvalue,obslon,obslat,obsdepth,obstime,obsids = NCODV.load(T,fname,long_name;
          qv_flags = ["good_value","probably_good_value"],
-         nchunk = 10
-)
+         nchunk = 10)
 
-Load all profiles in the file `fname` corresponding to netCDF variable with the
+Load all profiles from the file `fname` corresponding to netCDF variable with the
 `long_name` attribute equal to the parameter `long_name`. `qv_flags` is a list of strings
 with the quality flags to be kept. The filtering of the quality flags is applied
 to the data variables, time and depth coordinates. `obsids` is a vector of
 strings with the EDMO code and local CDI id concatenated by a hyphen.
 
 `nchunk` is the number of profiles read at a time. Large values of `nchunk` can increase
-performance but requirer also more memory.
+performance but require also more memory.
 
-The variable with the following standard_name should exits:
+The variables with the following standard_name should exist:
 * longitude
 * latitude
 * time
 
-As well as the variable with the following long_name:
+As well as the variables with the following long_name:
 * LOCAL\\_CDI\\_ID
 * EDMO\\_code or EDMO\\_CODE
 * Depth
 
-A guide how to export NetCDF files from ODV is available [here](https://github.com/gher-uliege/EMODnet-Chemistry-GriddedMaps/blob/main/doc/ODV_netCDF_export.md)
+A guide explaining how to export NetCDF files from ODV is available [here](https://github.com/gher-uliege/EMODnet-Chemistry-GriddedMaps/blob/main/doc/ODV_netCDF_export.md)
 
 """
 function load(T, fname, long_name; qv_flags = ["good_value", "probably_good_value"],
