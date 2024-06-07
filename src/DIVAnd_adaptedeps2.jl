@@ -75,7 +75,10 @@ function DIVAnd_adaptedeps2(yo, residual, diagR, ignoreobs)
         @info("number of ignored observations: $(sum(ignoreobs)) "
               * "(typically havigng a NaN value or outside of the domain) ")
         @info("mean of diagR: $(mean(diagR))")
-        @info("minimum of diagR: $(minimum(diagR))")
+
+        if length(diagR) > 0
+            @info("minimum of diagR: $(minimum(diagR))")
+        end
     end
 
     return factor
