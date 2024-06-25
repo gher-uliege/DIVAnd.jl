@@ -112,7 +112,7 @@ function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=
     end
 
     # Now make the DIVAndrun call
-    backg=sum(f)/size(f)[1]
+    backg=sum(f[.!isnan.(f)])/sum(.!isnan.(f))
     fi,s=DIVAndrun(mask,pmn,xi,x,f.-backg,len,epsilon2; kwargs...)
 
     # Now initialize interpolations function and return that
