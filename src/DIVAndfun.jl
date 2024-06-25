@@ -36,7 +36,7 @@ function DIVAndfun(x,f;mask=nothing,pmn=nothing,xi=nothing,len=nothing,epsilon2=
 
 
 
-    maxsize=[1000,100,30,20]
+    maxsize=[10000,500,30,20]
     maxs=10
     if length(x)>4
         @warn "Are you sure ?"
