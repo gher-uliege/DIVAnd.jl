@@ -311,7 +311,7 @@ function Base.iterate(iter::RandomCoupels, state = (0, copy(iter.rng)))
     return ((i, j), (count + 1, rng))
 end
 
-mutable struct VertRandomCoupels{TRNG <: AbstractRNG,Tz,Tx,Ts}
+mutable struct VertRandomCouples{TRNG <: AbstractRNG,Tz,Tx,Ts}
     zlevel::Tz # depth in meters
     zindex::Vector{Int}
     x::NTuple{3,Vector{Tx}}
@@ -321,9 +321,9 @@ mutable struct VertRandomCoupels{TRNG <: AbstractRNG,Tz,Tx,Ts}
     rng::TRNG
 end
 
-Random.seed!(iter::VertRandomCoupels,iseed) = Random.seed!(iter.rng,iseed)
+Random.seed!(iter::VertRandomCouples,iseed) = Random.seed!(iter.rng,iseed)
 
-function _next(iter::VertRandomCoupels, state)
+function _next(iter::VertRandomCouples, state)
     count, rng = state
 
     # pick two random points
@@ -371,7 +371,7 @@ function _next(iter::VertRandomCoupels, state)
     return ((j, jindex), (count + 1, rng))
 end
 
-Base.iterate(iter::VertRandomCoupels, state = (0, copy(iter.rng))) =
+Base.iterate(iter::VertRandomCouples, state = (0, copy(iter.rng))) =
     (state[1] == iter.count ? nothing : _next(iter, state))
 
 
@@ -920,7 +920,7 @@ function fitvertlen(
             lenopt[k] = NaN
             fitinfos[k] = Dict{Symbol,Any}()
         else
-            iter = VertRandomCoupels(
+            iter = VertRandomCouples(
                 z[k], zindex, x,
                 searchxy, maxntries, count, rng)
             #state = start(iter)
