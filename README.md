@@ -5,7 +5,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Build Status](https://github.com/gher-uliege/DIVAnd.jl/workflows/CI/badge.svg)](https://github.com/gher-uliege/DIVAnd.jl/actions)
-[![codecov.io](http://codecov.io/github/gher-uliege/DIVAnd.jl/coverage.svg?branch=JMB)](https://app.codecov.io/github/gher-uliege/DIVAnd.jl/tree/JMB)
+[![codecov](https://codecov.io/gh/gher-uliege/DIVAnd.jl/graph/badge.svg?token=iIDy1RvGXU)](https://codecov.io/gh/gher-uliege/DIVAnd.jl)
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://gher-uliege.github.io/DIVAnd.jl/latest/)
 [![DOI](https://zenodo.org/badge/79277337.svg)](https://zenodo.org/badge/latestdoi/79277337)
