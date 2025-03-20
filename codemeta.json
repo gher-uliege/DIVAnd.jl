@@ -1,0 +1,57 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "type": "SoftwareSourceCode",
+    "applicationCategory": "Oceanography",
+    "author": [
+        {
+            "id": "https://orcid.org/0000-0003-2952-5997",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "University of Liège"
+            },
+            "email": "A.barth@uliege.be",
+            "familyName": "Barth",
+            "givenName": "Alexander"
+        },
+        {
+            "id": "https://orcid.org/0000-0002-7045-2470",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "University of Liège"
+            },
+            "email": "JM.Beckers@uliege.be",
+            "familyName": "Beckers",
+            "givenName": "Jean-Marie"
+        }
+    ],
+    "codeRepository": "https://github.com/gher-uliege/DIVAnd.jl",
+    "dateCreated": "2016-11-28",
+    "dateModified": "2024-09-19",
+    "datePublished": "2018-07-03",
+    "description": "DIVAnd (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version.",
+    "downloadUrl": "https://github.com/gher-uliege/DIVAnd.jl/archive/refs/tags/v2.7.12.zip",
+    "identifier": "10.5281/zenodo.1303229",
+    "keywords": [
+        "Oceanography",
+        "interpolation",
+        "gridding"
+    ],
+    "license": "https://spdx.org/licenses/GPL-2.0",
+    "name": "DIVAnd",
+    "operatingSystem": [
+        "Linux",
+        "Windows",
+        "MacOS"
+    ],
+    "programmingLanguage": "Julia",
+    "version": "2.7.12",
+    "contIntegration": "https://github.com/gher-uliege/DIVAnd.jl/actions/workflows/CI.yml",
+    "codemeta:continuousIntegration": {
+        "id": "https://github.com/gher-uliege/DIVAnd.jl/actions/workflows/CI.yml"
+    },
+    "developmentStatus": "active",
+    "issueTracker": "https://github.com/gher-uliege/DIVAnd.jl/issues",
+    "referencePublication": "https://doi.org/10.5194/gmd-7-225-2014"
+}
