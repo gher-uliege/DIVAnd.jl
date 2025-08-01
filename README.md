@@ -54,7 +54,7 @@ Pkg.add("DIVAnd")
 
 It is not recommended to download the source of `DIVAnd.jl` directly (using the green *Clone or Download* button above) because this by-passes Julia's package manager and you would need to install the dependencies of `DIVAnd.jl` manually.
 
-## Cloud environement
+## Cloud environment
 
 DIVAnd is also available in the BlueCloud virtual research environement implemented by D4Science:
 https://blue-cloud.d4science.org/group/coastalcurrentsfromobservations
