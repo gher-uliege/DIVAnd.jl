@@ -1,0 +1,53 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: DIVAnd.jl
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Alexander
+    family-names: Barth
+    orcid: 'https://orcid.org/0000-0003-2952-5997'
+    email: A.Barth@uliege.be
+    affiliation: 'GHER, University of Liège'
+  - given-names: Jean-Marie
+    family-names: Beckers
+    email: JM.Beckers@uliege.be
+    affiliation: 'GHER, University of Liège'
+    orcid: 'https://orcid.org/0000-0002-7045-2470'
+  - given-names: Charles
+    family-names: Troupin
+    email: ctroupin@uliege.be
+    affiliation: 'GHER, University of Liège'
+    orcid: 'https://orcid.org/0000-0002-0265-1021'
+  - given-names: Menashè
+    family-names: Eliezer
+  - given-names: Benoit
+    family-names: Pasquier
+    affiliation: University of New South Wales
+    orcid: 'https://orcid.org/0000-0002-3838-5976'
+  - given-names: 'Katrin  '
+    family-names: Leinweber
+    affiliation: Technische Informationsbibliothek (TIB)
+    orcid: 'https://orcid.org/0000-0001-5135-5758'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.1303229
+    description: Zenodo
+  - type: swh
+    value: 'swh:1:dir:d1dc29fdd3ca9b817a26a387dad5fc6f06060d37'
+  - type: doi
+    value: 10.5194/gmd-7-225-2014
+    description: 'Publication '
+repository-code: 'https://github.com/gher-uliege/DIVAnd.jl'
+keywords:
+  - Oceanography
+  - Data interpolation
+  - Data analysis
+license: GPL-2.0
+commit: a2412dbf3100dbe338965f672f57e74cb882d381
+version: v2.7.13
+date-released: '2025-08-05'
