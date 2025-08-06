@@ -1,0 +1,133 @@
+{
+  "title": "DIVAnd.jl",
+  "description": "Data interpolation in n dimensions.",
+  "creators": [
+    {
+      "name": "Barth, Alexander",
+      "affiliation": "GHER, University of Liège",
+      "orcid": "https://orcid.org/0000-0003-2952-5997"
+    },
+    {
+      "name": "Beckers, Jean-Marie",
+      "affiliation": "GHER, University of Liège",
+      "orcid": "https://orcid.org/0000-0002-7045-2470"
+    },
+    {
+      "name": "Troupin, Charles",
+      "affiliation": "GHER, University of Liège",
+      "orcid": "https://orcid.org/0000-0002-0265-1021"
+    }
+  ],
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "GPL-2.0",
+  "contributors": [
+    {
+      "name": "Eliezer, Menashè",
+      "orcid": "https://orcid.org/0000-0002-3481-5684"
+    },
+    {
+      "name": "Pasquier, Benoît",
+      "affiliation": "University of New South Wales",
+      "orcid": "https://orcid.org/0000-0002-3838-5976"
+    },
+    {
+      "name": "Leinweber, Katrien",
+      "affiliation": "Technische Informationsbibliothek (TIB)",
+      "orcid": "https://orcid.org/0000-0002-3838-5976"
+    }
+  ],
+  "funding": [
+      {
+        "award": {
+          "acronym": "SeaDataCloud",
+          "id": "00k4n6c32::730960",
+          "identifiers": [
+            {
+              "identifier": "https://cordis.europa.eu/projects/730960",
+              "scheme": "url"
+            }
+          ],
+          "number": "730960",
+          "program": "H2020-EU.1.4.",
+          "title": {
+            "en": "SeaDataCloud - Further developing the pan-European infrastructure for marine and ocean data management"
+          }
+        },
+        "funder": {
+          "id": "00k4n6c32",
+          "name": "European Commission"
+        }
+      },
+      {
+        "award": {
+          "acronym": "Blue-Cloud 2026",
+          "id": "00k4n6c32::101094227",
+          "identifiers": [
+            {
+              "identifier": "https://cordis.europa.eu/projects/101094227",
+              "scheme": "url"
+            }
+          ],
+          "number": "101094227",
+          "program": "HORIZON.1.3",
+          "title": {
+            "en": "A federated European FAIR and Open Research Ecosystem for oceans, seas, coastal and inland waters"
+          }
+        },
+        "funder": {
+          "id": "00k4n6c32",
+          "name": "European Commission"
+        }
+      },
+      {
+        "award": {
+          "acronym": "Blue Cloud",
+          "id": "00k4n6c32::862409",
+          "identifiers": [
+            {
+              "identifier": "https://cordis.europa.eu/projects/862409",
+              "scheme": "url"
+            }
+          ],
+          "number": "862409",
+          "program": "H2020-EU.3.2.",
+          "title": {
+            "en": "Blue-Cloud: Piloting innovative services for Marine Research & the Blue Economy"
+          }
+        },
+        "funder": {
+          "id": "00k4n6c32",
+          "name": "European Commission"
+        }
+      },
+      {
+        "award": {
+          "acronym": "FAIR-EASE",
+          "id": "00k4n6c32::101058785",
+          "identifiers": [
+            {
+              "identifier": "https://cordis.europa.eu/projects/101058785",
+              "scheme": "url"
+            }
+          ],
+          "number": "101058785",
+          "program": "HORIZON.1.3",
+          "title": {
+            "en": "FAIR EArth Sciences & Environment services"
+          }
+        },
+        "funder": {
+          "id": "00k4n6c32",
+          "name": "European Commission"
+        }
+      }
+    ],
+  "language": "eng",
+  "keywords": [
+    "Spatial interpolation",
+    "Oceanography",
+    "Data analysis",
+    "Julia"
+  ]
+}
