@@ -1,43 +1,284 @@
 {
-  "title": "DIVAnd.jl",
-  "description": "Data interpolation in n dimensions.",
-  "creators": [
-    {
-      "name": "Barth, Alexander",
-      "affiliation": "GHER, University of Liège",
-      "orcid": "https://orcid.org/0000-0003-2952-5997"
+  "access": {
+    "embargo": {
+      "active": false,
+      "reason": null
     },
-    {
-      "name": "Beckers, Jean-Marie",
-      "affiliation": "GHER, University of Liège",
-      "orcid": "https://orcid.org/0000-0002-7045-2470"
+    "files": "public",
+    "record": "public",
+    "status": "open"
+  },
+  "created": "2023-12-19T21:27:28.370316+00:00",
+  "custom_fields": {
+    "code:codeRepository": "https://github.com/gher-uliege/DIVAnd.jl",
+    "code:developmentStatus": {
+      "id": "active",
+      "title": {
+        "en": "Active"
+      }
     },
-    {
-      "name": "Troupin, Charles",
-      "affiliation": "GHER, University of Liège",
-      "orcid": "https://orcid.org/0000-0002-0265-1021"
+    "code:programmingLanguage": [
+      {
+        "id": "julia",
+        "title": {
+          "en": "Julia"
+        }
+      }
+    ],
+    "journal:journal": {
+      "pages": "225\u2013241",
+      "title": "Geoscientific Model Development",
+      "volume": "7"
     }
-  ],
-  "upload_type": "software",
-  "access_right": "open",
-  "license": "GPL-2.0",
-  "contributors": [
-    {
-      "name": "Eliezer, Menashè",
-      "orcid": "https://orcid.org/0000-0002-3481-5684"
+  },
+  "deletion_status": {
+    "is_deleted": false,
+    "status": "P"
+  },
+  "files": {
+    "count": 1,
+    "enabled": true,
+    "entries": {
+      "gher-uliege/DIVAnd.jl-v2.7.11.zip": {
+        "access": {
+          "hidden": false
+        },
+        "checksum": "md5:795a5d2e886306411550e1afe97f699d",
+        "ext": "zip",
+        "id": "7659108e-b739-4dc0-8e10-ecf5b6a2fa96",
+        "key": "gher-uliege/DIVAnd.jl-v2.7.11.zip",
+        "links": {
+          "content": "https://zenodo.org/api/records/10407966/files/gher-uliege/DIVAnd.jl-v2.7.11.zip/content",
+          "self": "https://zenodo.org/api/records/10407966/files/gher-uliege/DIVAnd.jl-v2.7.11.zip"
+        },
+        "metadata": null,
+        "mimetype": "application/zip",
+        "size": 2869435,
+        "storage_class": "L"
+      }
     },
-    {
-      "name": "Pasquier, Benoît",
-      "affiliation": "University of New South Wales",
-      "orcid": "https://orcid.org/0000-0002-3838-5976"
-    },
-    {
-      "name": "Leinweber, Katrien",
-      "affiliation": "Technische Informationsbibliothek (TIB)",
-      "orcid": "https://orcid.org/0000-0002-3838-5976"
-    }
-  ],
-  "funding": [
+    "order": [],
+    "total_bytes": 2869435
+  },
+  "id": "10407966",
+  "is_draft": false,
+  "is_published": true,
+  "links": {
+    "access": "https://zenodo.org/api/records/10407966/access",
+    "access_grants": "https://zenodo.org/api/records/10407966/access/grants",
+    "access_links": "https://zenodo.org/api/records/10407966/access/links",
+    "access_request": "https://zenodo.org/api/records/10407966/access/request",
+    "access_users": "https://zenodo.org/api/records/10407966/access/users",
+    "archive": "https://zenodo.org/api/records/10407966/files-archive",
+    "archive_media": "https://zenodo.org/api/records/10407966/media-files-archive",
+    "communities": "https://zenodo.org/api/records/10407966/communities",
+    "communities-suggestions": "https://zenodo.org/api/records/10407966/communities-suggestions",
+    "doi": "https://doi.org/10.5281/zenodo.10407966",
+    "draft": "https://zenodo.org/api/records/10407966/draft",
+    "files": "https://zenodo.org/api/records/10407966/files",
+    "latest": "https://zenodo.org/api/records/10407966/versions/latest",
+    "latest_html": "https://zenodo.org/records/10407966/latest",
+    "media_files": "https://zenodo.org/api/records/10407966/media-files",
+    "parent": "https://zenodo.org/api/records/1303229",
+    "parent_doi": "https://doi.org/10.5281/zenodo.1303229",
+    "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.1303229",
+    "parent_html": "https://zenodo.org/records/1303229",
+    "preview_html": "https://zenodo.org/records/10407966?preview=1",
+    "requests": "https://zenodo.org/api/records/10407966/requests",
+    "reserve_doi": "https://zenodo.org/api/records/10407966/draft/pids/doi",
+    "self": "https://zenodo.org/api/records/10407966",
+    "self_doi": "https://doi.org/10.5281/zenodo.10407966",
+    "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.10407966",
+    "self_html": "https://zenodo.org/records/10407966",
+    "self_iiif_manifest": "https://zenodo.org/api/iiif/record:10407966/manifest",
+    "self_iiif_sequence": "https://zenodo.org/api/iiif/record:10407966/sequence/default",
+    "versions": "https://zenodo.org/api/records/10407966/versions"
+  },
+  "media_files": {
+    "count": 0,
+    "enabled": false,
+    "entries": {},
+    "order": [],
+    "total_bytes": 0
+  },
+  "metadata": {
+    "creators": [
+      {
+        "affiliations": [
+          {
+            "id": "edmo:1579",
+            "identifiers": [
+              {
+                "identifier": "edmo:1579",
+                "scheme": "edmo"
+              }
+            ],
+            "name": "University of Li\u00e8ge, GeoHydrodynamics and Environment Research"
+          }
+        ],
+        "person_or_org": {
+          "family_name": "Barth",
+          "given_name": "Alexander",
+          "identifiers": [
+            {
+              "identifier": "0000-0003-2952-5997",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Barth, Alexander",
+          "type": "personal"
+        },
+        "role": {
+          "id": "projectleader",
+          "title": {
+            "de": "ProjektleiterIn",
+            "en": "Project leader"
+          }
+        }
+      },
+      {
+        "affiliations": [
+          {
+            "id": "edmo:1579",
+            "identifiers": [
+              {
+                "identifier": "edmo:1579",
+                "scheme": "edmo"
+              }
+            ],
+            "name": "University of Li\u00e8ge, GeoHydrodynamics and Environment Research"
+          }
+        ],
+        "person_or_org": {
+          "family_name": "Beckers",
+          "given_name": "Jean-Marie",
+          "identifiers": [
+            {
+              "identifier": "0000-0002-7045-2470",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Beckers, Jean-Marie",
+          "type": "personal"
+        },
+        "role": {
+          "id": "supervisor",
+          "title": {
+            "de": "SupervisorIn",
+            "en": "Supervisor"
+          }
+        }
+      },
+      {
+        "affiliations": [
+          {
+            "id": "edmo:1579",
+            "identifiers": [
+              {
+                "identifier": "edmo:1579",
+                "scheme": "edmo"
+              }
+            ],
+            "name": "University of Li\u00e8ge, GeoHydrodynamics and Environment Research"
+          }
+        ],
+        "person_or_org": {
+          "family_name": "Troupin",
+          "given_name": "Charles",
+          "identifiers": [
+            {
+              "identifier": "0000-0002-0265-1021",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Troupin, Charles",
+          "type": "personal"
+        },
+        "role": {
+          "id": "projectmember",
+          "title": {
+            "de": "Projektmitglied",
+            "en": "Project member"
+          }
+        }
+      },
+      {
+        "person_or_org": {
+          "family_name": "Eliezer",
+          "given_name": "Menash\u00e8",
+          "name": "Eliezer, Menash\u00e8",
+          "type": "personal"
+        },
+        "role": {
+          "id": "researcher",
+          "title": {
+            "de": "WissenschaftlerIn",
+            "en": "Researcher"
+          }
+        }
+      },
+      {
+        "affiliations": [
+          {
+            "id": "edmo:4294",
+            "identifiers": [
+              {
+                "identifier": "edmo:4294",
+                "scheme": "edmo"
+              }
+            ],
+            "name": "University of New South Wales"
+          }
+        ],
+        "person_or_org": {
+          "family_name": "Pasquier",
+          "given_name": "Benoit",
+          "identifiers": [
+            {
+              "identifier": "0000-0002-3838-5976",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Pasquier, Benoit",
+          "type": "personal"
+        },
+        "role": {
+          "id": "other",
+          "title": {
+            "de": "Andere",
+            "en": "Other"
+          }
+        }
+      },
+      {
+        "affiliations": [
+          {
+            "name": "@gitlabhq"
+          }
+        ],
+        "person_or_org": {
+          "family_name": "Leinweber",
+          "given_name": "Katrin",
+          "identifiers": [
+            {
+              "identifier": "0000-0001-5135-5758",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Leinweber, Katrin",
+          "type": "personal"
+        },
+        "role": {
+          "id": "other",
+          "title": {
+            "de": "Andere",
+            "en": "Other"
+          }
+        }
+      }
+    ],
+    "description": "<h2>DIVAnd v2.7.11</h2>\n<p><a href=\"https://github.com/gher-uliege/DIVAnd.jl/compare/v2.7.10...v2.7.11\">Diff since v2.7.10</a></p>\n<p><strong>Merged pull requests:</strong></p>\n<ul>\n<li>CompatHelper: add new compat entry for Statistics at version 1, (keep existing compat) (#139) (@github-actions[bot])</li>\n<li>CompatHelper: bump compat for Interpolations to 0.15, (keep existing compat) (#140) (@github-actions[bot])</li>\n<li>CompatHelper: bump compat for NCDatasets to 0.14, (keep existing compat) (#141) (@github-actions[bot])</li>\n</ul>\n<p><strong>Closed issues:</strong></p>\n<ul>\n<li>Diva2d? (#133)</li>\n<li>pcg demanding more memory than direct solver ? (#138)</li>\n</ul>",
+    "funding": [
       {
         "award": {
           "acronym": "SeaDataCloud",
@@ -123,11 +364,252 @@
         }
       }
     ],
-  "language": "eng",
-  "keywords": [
-    "Spatial interpolation",
-    "Oceanography",
-    "Data analysis",
-    "Julia"
-  ]
+    "languages": [
+      {
+        "id": "eng",
+        "title": {
+          "en": "English"
+        }
+      }
+    ],
+    "publication_date": "2023-12-19",
+    "publisher": "Zenodo",
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/gher-uliege/DIVAnd.jl/tree/v2.7.11",
+        "relation_type": {
+          "id": "issupplementto",
+          "title": {
+            "de": "Erg\u00e4nzt",
+            "en": "Is supplement to"
+          }
+        },
+        "resource_type": {
+          "id": "software",
+          "title": {
+            "de": "Software",
+            "en": "Software"
+          }
+        },
+        "scheme": "url"
+      }
+    ],
+    "resource_type": {
+      "id": "software",
+      "title": {
+        "de": "Software",
+        "en": "Software"
+      }
+    },
+    "rights": [
+      {
+        "description": {
+          "en": "The Creative Commons Attribution license allows re-distribution and re-use of a licensed work on the condition that the creator is appropriately credited."
+        },
+        "icon": "cc-by-icon",
+        "id": "cc-by-4.0",
+        "props": {
+          "scheme": "spdx",
+          "url": "https://creativecommons.org/licenses/by/4.0/legalcode"
+        },
+        "title": {
+          "en": "Creative Commons Attribution 4.0 International"
+        }
+      }
+    ],
+    "subjects": [
+      {
+        "id": "gemet:concept/5789",
+        "identifiers": [
+          {
+            "identifier": "http://www.eionet.europa.eu/gemet/concept/5789",
+            "scheme": "url"
+          }
+        ],
+        "props": {
+          "groups": [
+            "http://www.eionet.europa.eu/gemet/group/4125"
+          ],
+          "parents": "gemet:concept/9232,gemet:concept/4124,gemet:concept/7495",
+          "themes": [
+            "http://www.eionet.europa.eu/gemet/theme/40"
+          ]
+        },
+        "scheme": "GEMET",
+        "subject": "Ocean"
+      },
+      {
+        "id": "gemet:concept/14925",
+        "identifiers": [
+          {
+            "identifier": "http://www.eionet.europa.eu/gemet/concept/14925",
+            "scheme": "url"
+          }
+        ],
+        "props": {
+          "groups": [
+            "http://www.eionet.europa.eu/gemet/group/7136"
+          ],
+          "parents": "gemet:concept/5346,gemet:concept/5354,gemet:concept/14924",
+          "themes": [
+            "http://www.eionet.europa.eu/gemet/theme/30"
+          ]
+        },
+        "scheme": "GEMET",
+        "subject": "Interpolation"
+      },
+      {
+        "id": "gemet:concept/5791",
+        "identifiers": [
+          {
+            "identifier": "http://www.eionet.europa.eu/gemet/concept/5791",
+            "scheme": "url"
+          }
+        ],
+        "props": {
+          "groups": [
+            "http://www.eionet.europa.eu/gemet/group/4125"
+          ],
+          "parents": "gemet:concept/4124,gemet:concept/4116",
+          "themes": [
+            "http://www.eionet.europa.eu/gemet/theme/40",
+            "http://www.eionet.europa.eu/gemet/theme/8"
+          ]
+        },
+        "scheme": "GEMET",
+        "subject": "Ocean circulation"
+      }
+    ],
+    "title": "gher-uliege/DIVAnd.jl: v2.7.11",
+    "version": "v2.7.11"
+  },
+  "parent": {
+    "access": {
+      "grants": [],
+      "links": [],
+      "owned_by": {
+        "user": "20600"
+      },
+      "settings": {
+        "accept_conditions_text": null,
+        "allow_guest_requests": false,
+        "allow_user_requests": false,
+        "secret_link_expiration": 0
+      }
+    },
+    "communities": {
+      "entries": [
+        {
+          "access": {
+            "member_policy": "open",
+            "members_visibility": "restricted",
+            "record_submission_policy": "open",
+            "review_policy": "closed",
+            "visibility": "public"
+          },
+          "children": {
+            "allow": true
+          },
+          "created": "2022-11-23T15:53:29.436323+00:00",
+          "custom_fields": {},
+          "deletion_status": {
+            "is_deleted": false,
+            "status": "P"
+          },
+          "id": "f0a8b890-f97a-4eb2-9eac-8b8a712d3a6c",
+          "links": {},
+          "metadata": {
+            "curation_policy": "<h2>Curation policy</h2>\n<p>The EU Open Research Repository serves as a repository for research outputs (data, software, posters, presentations, publications, etc) which have been funded under an EU research funding programme such as Horizon Europe, Euratom or earlier Framework Programmes.</p>\n<p>The community is managed by CERN on behalf of the European Commission.&nbsp;</p>\n<p><a href=\"https://about.zenodo.org/policies/\">Zenodo&rsquo;s general policies</a> and <a href=\"https://about.zenodo.org/terms/\">Terms of Use</a> apply to all content.</p>\n<h3>Scope</h3>\n<p>The EU Open Research Repository accepts all digital research objects which is a research output stemming from one of EU&rsquo;s research and innovation funding programmes. The funding programmes currently include:</p>\n<ul>\n<li>\n<p>Horizon Europe (including ERC, MSCA), earlier Framework Programmes (eg Horizon 2020) as well as Euratom.</p>\n</li>\n</ul>\n<p>In line with the principle as open as possible, as closed as necessary both public and restricted content is accepted. See note on how <a href=\"https://about.zenodo.org/infrastructure/\">Zenodo handles restricted content</a>.</p>\n<h3>Content submission</h3>\n<p>EU programme beneficiaries are eligible to submit content to the community. The community supports three types of content submissions:</p>\n<ul>\n<li>\n<p>Submission via an EU Project Community (through user interface or programmatic APIs).</p>\n</li>\n<li>\n<p>Submission directly to the EU Open Research Repository.</p>\n</li>\n<li>\n<p>Automated harvesting from existing Zenodo content.</p>\n</li>\n</ul>\n<h4>Project community (preferred)</h4>\n<p>A representative of an EU project may request an EU Project Community and invite other project participants as members of the community. The project community is linked to one or more European Commission grants. All records in the project community are automatically integrated into the EU Open Research Repository immediately upon acceptance into the project community.&nbsp;</p>\n<h4>Direct submission</h4>\n<p>Any user may submit a record directly to the EU Open Research Repository. The submission will be moderated by Zenodo staff for compliance with the minimal required metadata requirements and its correctness.</p>\n<h4>Automated harvesting</h4>\n<p>Records found among Zenodo&rsquo;s existing content will on a regular basis automatically be integrated if they are found to comply with the requirements. The submissions through this method are integrated into the EU Open Research Repository with delay in a fully automated way.</p>\n<h3>Descriptive information</h3>\n<h4>Minimal metadata requirements</h4>\n<p>Records in the EU Open Research Repository are required to comply with the following minimal metadata requirements:</p>\n<ul>\n<li>\n<p>Visibility: Both public and restricted (with or without embargo and/or access request)</p>\n</li>\n<li>\n<p>Resource types: All resource types.</p>\n</li>\n<li>\n<p>Licenses: Public and embargoed records MUST specify a license. The chosen license SHOULD be compliant with the Horizon Europe open science requirements (see <a href=\"/communities/eu/pages/open-science\">Open Science in Horizon Europe</a>)</p>\n</li>\n<li>\n<p>Funding information: Records MUST specify at least one grant from the European Commission.</p>\n</li>\n<li>Journal articles: Records MUST specify at the publishing venue (e.g. the journal the article was published in).</li>\n<li>\n<p>Creators: Creators SHOULD be identified with a persistent identifier (e.g. ORCID, GND, &hellip;), and affiliations SHOULD be identified with a persistent identifier (e.g. ROR, ISNI, &hellip;)</p>\n</li>\n<li>\n<p>Subjects: Records SHOULD specify one or more fields of science from the <a href=\"https://op.europa.eu/en/web/eu-vocabularies/euroscivoc\">European Science Vocabulary</a>.</p>\n</li>\n</ul>\n<p>These metadata requirements comes from the related open science requirements in Horizon Europe which are detailed in each project's grant agreement.</p>\n<h3>Review &amp; moderation</h3>\n<p>All submissions undergo automated curation checks for compliance with the policy. Submissions through project communities are in addition reviewed by the project community. Submission directly to the EU Open Research Repository is in addiotn reviewed by Zenodo staff.</p>\n<p>Community curators may at any point edit metadata of the records in the community without notice through human or automated processing. The curators may at their sole discretion remove records from the community that are deemed not to comply with the content and curation policy or which are deemed of insufficient quality.</p>\n<h3>Updates</h3>\n<p>The content and curation policy is subject to change by the community owner at any time and without notice, other than through updating this page.</p>",
+            "description": "Open repository for EU-funded research outputs from Horizon Europe, Euratom, and earlier Framework Programmes.",
+            "funding": [
+              {
+                "funder": {
+                  "id": "00k4n6c32"
+                }
+              }
+            ],
+            "organizations": [
+              {
+                "id": "00k4n6c32"
+              }
+            ],
+            "page": "<h2>About</h2>\n<p>The EU Open Research Repository is a Zenodo-community dedicated to fostering open science and enhancing the visibility and accessibility of research outputs funded by the European Union. The community is managed by CERN on behalf of the European Commission.</p>\n<h3>Mission</h3>\n<p>The mission of the repository is to support the implementation of the EU's open science policy, providing a trusted and comprehensive space for researchers to share their research outputs such as data, software, reports, presentations, posters and more. The EU Open Research Repository simplifies the process of complying with open science requirements, ensuring that research outputs from Horizon Europe, Euratom, and earlier Framework Programmes are freely accessible, thereby accelerating scientific discovery and innovation.</p>\n<h3>EU Open Research Repository vs Open Research Europe (ORE)</h3>\n<p>The EU Open Research Repository serves as a complementary platform to the <a href=\"https://open-research-europe.ec.europa.eu/\">Open Research Europe</a> (ORE) publishing platform. Open Research Europe focuses on providing a publishing venue for peer-reviewed articles, ensuring that research meets rigorous academic standards. The EU Open Research Repository provides a space for all the other research outputs including data sets, software, posters, and presentations that are out of scope for ORE. This holistic approach enables researchers to not only publish their findings but also share the underlying data and materials that support their work, fostering transparency and reproducibility in the scientific process.&nbsp;</p>\n<h3>Funding</h3>\n<p>The EU Open Research Repository is funded by the European Union under grant agreement no. <a href=\"https://cordis.europa.eu/project/id/101122956\">101122956</a> (HORIZON-ZEN). For more information about the project see&nbsp;<a href=\"https://about.zenodo.org/projects/horizon-zen/\">https://about.zenodo.org/projects/horizon-zen/.</a></p>",
+            "title": "EU Open Research Repository",
+            "type": {
+              "id": "organization"
+            },
+            "website": "https://research-and-innovation.ec.europa.eu"
+          },
+          "revision_id": 23,
+          "slug": "eu",
+          "theme": {
+            "brand": "horizon",
+            "enabled": true,
+            "style": {
+              "font": {
+                "family": "Arial, sans-serif",
+                "size": "16px",
+                "weight": 600
+              },
+              "mainHeaderBackgroundColor": "#FFFFFF",
+              "primaryColor": "#004494",
+              "primaryTextColor": "#FFFFFF",
+              "secondaryColor": "#FFD617",
+              "secondaryTextColor": "#000000",
+              "tertiaryColor": "#e3eefd",
+              "tertiaryTextColor": "#1c5694"
+            }
+          },
+          "updated": "2025-03-30T18:32:53.868593+00:00"
+        }
+      ],
+      "ids": [
+        "f0a8b890-f97a-4eb2-9eac-8b8a712d3a6c"
+      ]
+    },
+    "id": "1303229",
+    "pids": {
+      "doi": {
+        "client": "datacite",
+        "identifier": "10.5281/zenodo.1303229",
+        "provider": "datacite"
+      }
+    }
+  },
+  "pids": {
+    "doi": {
+      "client": "datacite",
+      "identifier": "10.5281/zenodo.10407966",
+      "provider": "datacite"
+    },
+    "oai": {
+      "identifier": "oai:zenodo.org:10407966",
+      "provider": "oai"
+    }
+  },
+  "revision_id": 10,
+  "stats": {
+    "all_versions": {
+      "data_volume": 631689666.0,
+      "downloads": 243,
+      "unique_downloads": 204,
+      "unique_views": 1454,
+      "views": 1513
+    },
+    "this_version": {
+      "data_volume": 65997005.0,
+      "downloads": 23,
+      "unique_downloads": 23,
+      "unique_views": 210,
+      "views": 218
+    }
+  },
+  "status": "published",
+  "swh": {},
+  "updated": "2025-08-13T09:19:53.083936+00:00",
+  "versions": {
+    "index": 32,
+    "is_latest": true,
+    "is_latest_draft": true
+  }
 }
