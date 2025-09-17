@@ -126,7 +126,7 @@ Test if the rectangle defined by x0,x1 is included in rectangle y0,y1
  x0
 
 """
-@inline function include(x0, x1, y0, y1)
+@inline function is_included(x0, x1, y0, y1)
     return inside(x0, x1, y0) && inside(x0, x1, y1)
 end
 
@@ -386,7 +386,7 @@ function within_buffer!(qt::QT{T,TA,N}, min, max, attribs, nattribs = 0) where {
     if isleaf(qt)
         @debug "leaf $(qt.min) - $(qt.max)"
         # check if node is entirely inside search area min-max
-        if include(min, max, qt.min, qt.max)
+        if is_included(min, max, qt.min, qt.max)
             # add all
             if nattribs + length(qt) > length(attribs)
                 # buffer too small

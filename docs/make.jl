@@ -4,9 +4,10 @@ using DIVAnd
 CI = get(ENV, "CI", nothing) == "true"
 
 makedocs(
-    format = Documenter.HTML(),
+    format = Documenter.HTML(; size_threshold=1_000_000),
     modules = [DIVAnd],
     sitename = "DIVAnd",
+    warnonly = true,
     pages = [
         "index.md"]
 )
@@ -17,6 +18,6 @@ makedocs(
 
 if CI
     deploydocs(
-        repo = "github.com/gher-ulg/DIVAnd.jl.git",
+        repo = "github.com/gher-uliege/DIVAnd.jl.git",
     )
 end
