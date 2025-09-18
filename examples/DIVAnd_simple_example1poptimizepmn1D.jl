@@ -171,7 +171,7 @@ for iround=1:2
         Colorbar(fig[1, 2], limits = (0.5,1.5))
 
         figname = joinpath(figdir,  replace(figbasename,r".jl$" => "_alpha.png"));
-        save(figname, fig)
+        
         @info "Saved figure as " * figname
 
     end
