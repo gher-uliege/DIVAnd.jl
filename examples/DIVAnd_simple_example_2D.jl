@@ -7,19 +7,19 @@ using PyPlot
 include("./prep_dirs.jl")
 
 # function to interpolate
-fun(x,y) = sin.(6x) * cos.(6y)
+fun(x, y) = sin.(6x) * cos.(6y)
 
 # observations
 
 x = rand(75);
 y = rand(75);
-f = fun.(x,y)
+f = fun.(x, y)
 
 # final grid
-xi,yi = ndgrid(range(0,stop=1,length=100),range(0,stop=1,length=110));
+xi, yi = ndgrid(range(0, stop = 1, length = 100), range(0, stop = 1, length = 110));
 
 # reference field
-fref = fun.(xi,yi)
+fref = fun.(xi, yi)
 
 # all points are valid points
 mask = trues(size(xi));
@@ -28,32 +28,32 @@ mask = trues(size(xi));
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2, 1] - xi[1, 1]);
+pn = ones(size(xi)) / (yi[1, 2] - yi[1, 1]);
 
 # correlation length
 len = 0.1;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
+epsilon2 = 1.0;
 
 # fi is the interpolated field
-@time fi,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,len,epsilon2;alphabc=2);
+@time fi, s = DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, len, epsilon2; alphabc = 2);
 
 # plotting of results
-subplot(1,2,1);
-pcolor(xi,yi,fref);
+subplot(1, 2, 1);
+pcolor(xi, yi, fref);
 colorbar()
-clim(-1,1)
-plot(x,y,"k.");
+clim(-1, 1)
+plot(x, y, "k.");
 
-subplot(1,2,2);
-pcolor(xi,yi,fi);
+subplot(1, 2, 2);
+pcolor(xi, yi, fi);
 colorbar()
-clim(-1,1)
+clim(-1, 1)
 title("Interpolated field");
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_results.png")))
+figname = joinpath(figdir, basename(replace(@__FILE__, r".jl$" => "_results.png")))
 savefig(figname)
 @info "Created figure " * figname
 
