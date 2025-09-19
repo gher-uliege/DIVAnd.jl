@@ -42,7 +42,7 @@ const layersep = "*"
 Escape characters except slash.
 """
 function escape(x)
-    return join(HTTP.escapeuri.(split(x,"/")),"/")
+    return join(HTTP.escapeuri.(split(x, "/")), "/")
 end
 
 """encode parameters as key-value separated by : and +"""
@@ -53,7 +53,7 @@ encodeWMSStyle(params) = join([k * ':' * string(v) for (k, v) in params], "+")
     ncglobalattrib,ncvarattrib = SDNMetadata(metadata,fi)
 
 Based on the information in the dictionary `metadata` and the analysed 4D field
-`fi` produce a list of NetCDF global and variable attributes for `DIVAnd_save2`.
+`fi`, produce a list of NetCDF global and variable attributes for `DIVAnd_save2`.
 To list all registered projects call `keys(DIVAnd.PROJECTS)`. For example:
 
 ```julia-repl
@@ -346,7 +346,7 @@ function get_originators_from_obsid(db, obsids; ignore_errors = false)
         author_edmo = parse(Int64, author_edmo_str)
 
         # strip trailing /v0 or /v1
-        local_cdi = replace(local_cdi,r"/v\d+$" => "")
+        local_cdi = replace(local_cdi, r"/v\d+$" => "")
 
         key = (author_edmo, local_cdi)
 
@@ -358,8 +358,7 @@ function get_originators_from_obsid(db, obsids; ignore_errors = false)
                 Dict{String,Any}(
                     "edmo" => author_edmo,
                     "local_cdi" => local_cdi,
-                    "status" =>
-                        "CDI identifier is not present in CDI list ($(OriginatorEDMO_URL)). You might need to reload it.",
+                    "status" => "CDI identifier is not present in CDI list ($(OriginatorEDMO_URL)). You might need to reload it.",
                 ),
             )
             continue
@@ -443,20 +442,20 @@ function WMStimeparam(nctime, n)
     time = nctime[:]
     #time = [DateTime(2000,1,1),DateTime(2000,1,2)]; n = 1
 
-    dtime = Dates.value(time[2] - time[1]) / (24*60*60*1000)
-    seasonnames = ["winter","spring","summer","autumn"]
+    dtime = Dates.value(time[2] - time[1]) / (24 * 60 * 60 * 1000)
+    seasonnames = ["winter", "spring", "summer", "autumn"]
     month = Dates.month(nctime[n])
     year = Dates.year(nctime[n])
-    season = (month-1) ÷ 3 + 1
+    season = (month - 1) ÷ 3 + 1
 
     # heuristics
     if 27 <= dtime <= 32
-        hr_t = @sprintf("%02d",month)
-    elseif (27*3 <= dtime <= 32*3) && (length(time) <= 4)
+        hr_t = @sprintf("%02d", month)
+    elseif (27 * 3 <= dtime <= 32 * 3) && (length(time) <= 4)
         hr_t = seasonnames[n]
-    elseif (27*3 <= dtime <= 32*3)
+    elseif (27 * 3 <= dtime <= 32 * 3)
         hr_t = seasonnames[season] * " " * string(year)
-    elseif 27*12 <= dtime <= 32*12
+    elseif 27 * 12 <= dtime <= 32 * 12
         hr_t = string(year)
     else
         hr_t = string(time[n])
@@ -494,10 +493,9 @@ function previewURL(
         "decorated" => "true",
         "format" => "image/png",
         "layers" => url_path * "/" * filepath * layersep * varname_masked,
-        "styles" => encodeWMSStyle(Dict(
-            "vmin" => default_field_min,
-            "vmax" => default_field_max,
-        )),
+        "styles" => encodeWMSStyle(
+            Dict("vmin" => default_field_min, "vmax" => default_field_max),
+        ),
         #"elevation" => "-0.0",
         #"time" => "03",
         "transparent" => "true",
@@ -680,7 +678,7 @@ function gettemplatevars(
     end
 
     # round resolution
-    horizontal_resolution = round(horizontal_resolution,sigdigits=sigdigits)
+    horizontal_resolution = round(horizontal_resolution, sigdigits = sigdigits)
 
     # "degree (or km)",
     horizontal_resolution_units = "degree"
@@ -713,7 +711,7 @@ function gettemplatevars(
     end
 
     # strip starting https://doi.org/ if necessary
-    doi = replace(doi,r"^https://doi.org/" => "")
+    doi = replace(doi, r"^https://doi.org/" => "")
 
     temp_resolution_unit = "none"
     temp_resolution = "none"
@@ -768,9 +766,9 @@ function gettemplatevars(
 
     P35_keywords = if haskey(ds.attrib, "parameter_keyword_urn")
         labelandURL.(split(ds.attrib["parameter_keyword_urn"], ", "))
-    elseif haskey(ds.attrib,"parameter_keyword")
+    elseif haskey(ds.attrib, "parameter_keyword")
         URLsfromlabels("P35", split(ds.attrib["parameter_keyword"], '|'))
-    elseif haskey(ds.attrib,"parameter_keywords")
+    elseif haskey(ds.attrib, "parameter_keywords")
         URLsfromlabels("P35", split(ds.attrib["parameter_keywords"], '|'))
     else
         error("attribute parameter_keyword_urn or parameter_keyword(s) are not found")
@@ -784,7 +782,8 @@ function gettemplatevars(
         error("attribute area_keywords_urn or area_keywords are not found")
     end
 
-    P36_urn = Vocab.urn.(Vocab.find(Vocab.Concept(P35_keywords[1]["URL"]), "broader", "P36"))
+    P36_urn =
+        Vocab.urn.(Vocab.find(Vocab.Concept(P35_keywords[1]["URL"]), "broader", "P36"))
     P36_keywords = labelandURL.(P36_urn)
 
     @debug "P36_keywords: $(getindex.(P36_keywords,"label"))"
@@ -861,10 +860,10 @@ function gettemplatevars(
         Dataset(filepath_, "r") do ds
             for (name, var) in ds
                 if (("lon" in dimnames(var)) && ("lat" in dimnames(var))) ||
-                    (name == "obsid")
+                   (name == "obsid")
 
                     if name in WMSexclude
-                        println("skipping ",name," for WMS layers")
+                        println("skipping ", name, " for WMS layers")
                     else
                         if name == "obsid"
                             description = "Observations"
@@ -882,7 +881,10 @@ function gettemplatevars(
                             end
                         end
 
-                        push!(templateVars["netcdf_variables"], (name, description, filepath_))
+                        push!(
+                            templateVars["netcdf_variables"],
+                            (name, description, filepath_),
+                        )
                     end
                 end
             end
@@ -915,8 +917,8 @@ function gettemplatevars(
 
     bbox = join(
         [
-            string(templateVars[c])
-            for c in ["longitude_min", "latitude_min", "longitude_max", "latitude_max"]
+            string(templateVars[c]) for
+            c in ["longitude_min", "latitude_min", "longitude_max", "latitude_max"]
         ],
         ',',
     )
@@ -925,12 +927,15 @@ function gettemplatevars(
         url_path = domain
     end
 
-    preview_url =
-        previewURL(filepaths[previewindex], varname, project, domain;
-                   basemap = basemap,
-                   url_path = url_path,
-                   default_error_level = default_error_level,
-                   )
+    preview_url = previewURL(
+        filepaths[previewindex],
+        varname,
+        project,
+        domain;
+        basemap = basemap,
+        url_path = url_path,
+        default_error_level = default_error_level,
+    )
 
     # Specify any input variables to the template as a dictionary.
     merge!(
@@ -967,7 +972,13 @@ function gettemplatevars(
         push!(
             templateVars["OPENDAP_URLs"],
             Dict(
-                "URL" => baseurl_opendap * "/" * escape(url_path) * "/" * escape(filepaths[i]) * ".html",
+                "URL" =>
+                    baseurl_opendap *
+                    "/" *
+                    escape(url_path) *
+                    "/" *
+                    escape(filepaths[i]) *
+                    ".html",
                 "description" => description,
             ),
         )
@@ -1206,7 +1217,7 @@ end
         ignore_errors = false)
 
 Produces the originators/contact XML fragment `xmlfilename` from the NetCDF files
-in `filepaths`. See `divadoxml` for an explication of the optinal arguments.
+in `filepaths`. See `divadoxml` for an explanation of the optional arguments.
 
 ## Example
 
@@ -1259,7 +1270,7 @@ end
     SDNObsMetadata(id)
 
 Return a link to the SeaDataNet metadata page of the observation with the
-identifier `id` (a combination of the EDMO code and local CDI ID).
+identifier `id` (a combination of the EDMO code and the local CDI ID).
 This works only in IJulia.
 """
 function SDNObsMetadata(id)

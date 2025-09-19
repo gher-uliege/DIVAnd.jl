@@ -5,136 +5,136 @@
 # with observations from an analytical function.
 
 using DIVAnd
-using PyPlot
+using Makie, CairoMakie
 using LinearAlgebra
 using Random
 using Statistics
 
 include("./prep_dirs.jl")
+figbasename = basename(@__FILE__)
 
 Random.seed!(1234)
 
 # observations
-nobs=100
-x = 0.01 .+ 0.98*rand(nobs);
-y = 0.01 .+ 0.98*rand(nobs);
-x = -0.1 .+ 1.2*rand(nobs);
-y = -0.1 .+ 1.2*rand(nobs);
-f = sin.(x*6) .* cos.(y*6);
+nobs = 100
+x = 0.01 .+ 0.98 * rand(nobs);
+y = 0.01 .+ 0.98 * rand(nobs);
+x = -0.1 .+ 1.2 * rand(nobs);
+y = -0.1 .+ 1.2 * rand(nobs);
+f = sin.(x * 6) .* cos.(y * 6);
 #f=-1+2*x
 # x=[0.5,0.75]
 # y=[0.5,0.75]
 # f=[1,1]
 
 # final grid
-xi,yi = ndgrid(range(0,stop=1,length=950),range(0,stop=1,length=830));
+xi, yi = ndgrid(range(0, stop = 1, length = 950), range(0, stop = 1, length = 830));
 
 # reference field
-fref = sin.(xi*6) .* cos.(yi*6);
+fref = sin.(xi * 6) .* cos.(yi * 6);
 
 # all points are valid points
 mask = trues(size(xi));
 
-mask[300:600,400:600] .= false
+mask[300:600, 400:600] .= false
 
 # this problem has a simple cartesian metric
 # pm is the inverse of the resolution along the 1st dimension
 # pn is the inverse of the resolution along the 2nd dimension
 
-pm = ones(size(xi)) / (xi[2,1]-xi[1,1]);
-pn = ones(size(xi)) / (yi[1,2]-yi[1,1]);
+pm = ones(size(xi)) / (xi[2, 1] - xi[1, 1]);
+pn = ones(size(xi)) / (yi[1, 2] - yi[1, 1]);
 
 # correlation length
 len = 0.03;
 
 # obs. error variance normalized by the background error variance
-epsilon2 = 1.;
-vscale=0.001
-vscale=0
+epsilon2 = 1.0;
+vscale = 0.001
+vscale = 0
 
 # fi is the interpolated field
-@time fiexOLD,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
+@time fiexOLD, s =
+    DIVAndrun(mask, (pm, pn), (xi, yi), (x, y), f, (len, 0.5 * len), epsilon2; alphabc = 0);
 
-residue=DIVAnd_residualobs(s,fiexOLD)
+residue = DIVAnd_residualobs(s, fiexOLD)
 
-@time fiOLD,errOLD,residueGO = DIVAndgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=0);
+@time fiOLD, errOLD, residueGO =
+    DIVAndgo(mask, (pm, pn), (xi, yi), (x, y), f, (len, 0.5 * len), epsilon2; alphabc = 0);
 
+@show size(residue), size(residueGO)
+@show norm(residue - residueGO)
 
-@show size(residue),size(residueGO)
-@show norm(residue-residueGO)
+fig = Figure(size = (900, 300))
+ax1 = Axis(fig[1, 1], title = "Old version")
+heatmap!(ax1, xi[:, 1], yi[1, :], fiOLD)
+Colorbar(fig[1, 2], limits = (-1, 1))
 
-figure("P1")
+ax2 = Axis(fig[1, 3], title = "Reference")
+heatmap!(ax2, xi[:, 1], yi[1, :], fiexOLD)
+Colorbar(fig[1, 4], limits = (-1, 1))
 
-subplot(1,3,1)
-title("Old version")
-pcolor(xi,yi,fiOLD)
-clim(-1,1)
-subplot(1,3,2)
-title("Reference")
-pcolor(xi,yi,fiexOLD)
-clim(-1,1)
-subplot(1,3,3)
-rms=sqrt(var(fiexOLD-fiOLD))
-title("rms $rms")
-pcolor(xi,yi,fiexOLD-fiOLD)
-clim(-0.05,0.05)
-plot(x,y,"k.");
-colorbar()
+rms = sqrt(var(fiexOLD - fiOLD))
+ax3 = Axis(fig[1, 5], title = "rms $rms")
+heatmap!(ax3, xi[:, 1], yi[1, :], fiexOLD - fiOLD)
+Colorbar(fig[1, 6], limits = (-0.05, 0.05))
+scatter!(ax3, x, y, color = :black)
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_1.png")));
-savefig(figname)
+figname = joinpath(figdir, replace(figbasename, r".jl$" => "_1.png"));
+save(figname, fig)
 @info "Saved figure as " * figname
 
-@time fiex,s = DIVAndrun(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+@time fiex, s = DIVAndrun(
+    mask,
+    (pm, pn),
+    (xi, yi),
+    (x, y),
+    f,
+    (len, 0.5 * len),
+    epsilon2;
+    alphabc = 1.0,
+);
 
-residue=DIVAnd_residualobs(s,fiex)
+residue = DIVAnd_residualobs(s, fiex)
 
-@time fi,erri,residueGO = DIVAndgo(mask,(pm,pn),(xi,yi),(x,y),f,(len,0.5*len),epsilon2;alphabc=1.);
+@time fi, erri, residueGO =
+    DIVAndgo(mask, (pm, pn), (xi, yi), (x, y), f, (len, 0.5 * len), epsilon2; alphabc = 1.0);
 
-@show size(residue),size(residueGO)
+@show size(residue), size(residueGO)
 
-@show norm(residue-residueGO)
+@show norm(residue - residueGO)
 
-figure("Pp")
+fig = Figure(size = (900, 300))
+ax1 = Axis(fig[1, 1], title = "NEW version")
+heatmap!(ax1, xi[:, 1], yi[1, :], fi, colorrange = (-1, 1))
 
-subplot(1,3,1)
-title("NEW version")
-pcolor(xi,yi,fi)
-clim(-1,1)
-subplot(1,3,2)
-title("Reference")
-pcolor(xi,yi,fiex)
-clim(-1,1)
-subplot(1,3,3)
-rms=sqrt(var(fiex-fi))
-title("rms $rms")
-pcolor(xi,yi,fiex-fi)
-clim(-0.05,0.05)
-plot(x,y,"k.");
-colorbar()
+ax2 = Axis(fig[1, 2], title = "Reference")
+heatmap!(ax2, xi[:, 1], yi[1, :], fiex, colorrange = (-1, 1))
 
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_2.png")));
-savefig(figname)
+rms = sqrt(var(fiex - fi))
+ax3 = Axis(fig[1, 3], title = "rms $rms")
+heatmap!(ax3, xi[:, 1], yi[1, :], fiex - fi, colorrange = (-0.05, 0.05))
+scatter!(ax3, x, y, color = :black);
+Colorbar(fig[1, 4])
+
+figname = joinpath(figdir, replace(figbasename, r".jl$" => "_2.png"));
+save(figname, fig)
 @info "Saved figure as " * figname
 
-figure("Pppp")
+fig = Figure(size = (800, 400))
+ax1 = Axis(fig[1, 1], title = "cpme NEW version")
+heatmap!(ax1, xi[:, 1], yi[1, :], erri, colorrange = (0, 1))
 
-subplot(1,2,1)
-title("cpme NEW version")
-pcolor(xi,yi,erri)
-clim(0,1)
-subplot(1,2,2)
-title("cpme OLD version")
-pcolor(xi,yi,errOLD)
-clim(0,1)
-colorbar()
-
-figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_3.png")));
-savefig(figname)
+ax2 = Axis(fig[1, 2], title = "cpme OLD version")
+heatmap!(ax2, xi[:, 1], yi[1, :], errOLD, colorrange = (0, 1))
+Colorbar(fig[1, 3])
+figname = joinpath(figdir, replace(figbasename, r".jl$" => "_3.png"));
+save(figname, fig)
 @info "Saved figure as " * figname
 
-figure()
-scatter(residue,residueGO)
+fig = Figure()
+ax = Axis(fig[1, 1])
+scatter!(ax, residue, residueGO)
 
 # Copyright (C) 2014, 2018 Alexander Barth         <a.barth@ulg.ac.be>
 #                          Jean-Marie Beckers   <JM.Beckers@ulg.ac.be>

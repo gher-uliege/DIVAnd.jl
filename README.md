@@ -41,6 +41,25 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 * The output grid can be curvilinear
 * Instead of interpolating scattered data you can also peform Kernel Density Estimations with the points.
 
+## DIVAnd vs DIVA
+
+`DIVAnd` is **not** a new release of [`DIVA`](https://github.com/gher-uliege/DIVA), it is another software tool with different 
+- algorithms,      
+- functionalities and     
+- progamming language language.
+
+For a single 2D analysis (surface salinity in the Black Sea) on Intel Xeon CPU E5-2650.     
+DIVA was compiled with the Intel Fortran Compiler.
+
+|     | DIVA - Fortran | DIVAnd - Julia |
+|----|----------------|----------------|
+| mesh             | triangular | structured | 
+| deg. of freedom  |    236296 |  236317 |
+| correlation length | 0.19    | 0.19 |
+| CPU time | 43.8 s | 8.7 s |
+
+However, a triangular mesh is greatly more flexible than a structured mesh and has $C_1$ continuity.       
+The main advantage of `DIVAnd` is that it can work on more than just 2 dimensions (but the requirements of RAM memory increase also).
 
 # Installing
 
@@ -56,13 +75,15 @@ It is not recommended to download the source of `DIVAnd.jl` directly (using the 
 
 ## Cloud environment
 
-DIVAnd is also available in the BlueCloud virtual research environement implemented by D4Science:
+DIVAnd is also available in the BlueCloud virtual research environment implemented by D4Science:
 
 https://blue-cloud.d4science.org/group/coastalcurrentsfromobservations
 
 Note that BlueCloud supports several authentication mechanisms, it is quite likely that you have already credentials that can be used to register and sign-in.
 
 From the drop-down menue `Analytics`, choose `JupyterLab on D4Science` then select the DIVAnd environement.
+
+`DIVAnd` can also be be accessed from [Galaxy](https://earth-system.usegalaxy.eu/), deployed in the frame of [FAIR-EASE](https://fairease.eu/) project.
 
 # Updating DIVAnd
 
@@ -219,7 +240,6 @@ For every constraint, a structure with the following fields is passed to `DIVAnd
 
 * `yo`: a vector
 * `H`: a matrix
-
 
 
 ## Run notebooks on a server which has no graphical interface

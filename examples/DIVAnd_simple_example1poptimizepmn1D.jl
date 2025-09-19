@@ -3,19 +3,20 @@
 
 
 # To test a single point
-#Analysis in very large domain,
-#diagnose value at distance 3*l
+# Analysis in very large domain,
+ #diagnose value at distance 3*l
 
-# Then the same but domain size just sligtly larger than 6*l with data in the center
+# Then the same but domain size just sligthly larger than 6*l with data in the center
 
 # Then the same but with data at the border
 
 using DIVAnd
-using PyPlot
+using Makie, CairoMakie
 using LinearAlgebra
 using Statistics
 
 include("./prep_dirs.jl")
+figbasename = basename(@__FILE__)
 
 varb1=0
 lpmsize=37
@@ -28,15 +29,11 @@ lpm=collect(range(4,stop=40,length=lpmsize))
 lpmc=zeros(lpmsize)
 dsoverl=collect(range(4,stop=20,length=dsoverlsize))
 
-
-
-
-
 for iround=1:2
 
     for ii=1:lpmsize
 
-        #@show lpm[ii]
+        @show lpm[ii]
         for jj=1:dsoverlsize
 
             len=1.0/dsoverl[jj]
@@ -150,50 +147,43 @@ for iround=1:2
         @show alpha[5,13]
 
         varb1=deepcopy(varb)
-        figure("varb")
-        title("Variance of diag(B) with new optimal BC as a function of l*pm and L/l")
-        pcolor(lpmc,dsoverl,varb1')
-        colorbar()
-        clim(0,0.0025)
 
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varb.png")));
-        savefig(figname)
+        fig = Figure()
+        ax = Axis(fig[1, 1], title = "Variance of diag(B) with new optimal BC\n as a function of l*pm and L/l")
+        heatmap!(ax, lpmc, dsoverl, varb1, colorrange = (0,0.0025))
+        Colorbar(fig[1, 2], limits = (0,0.0025))
+        figname = joinpath(figdir, replace(figbasename, r".jl$" => "_varb.png"));
+        save(figname, fig)
         @info "Saved figure as " * figname
 
-        figure("varr")
-        title("Variance of diag(B) with old BC as a function of l*pm and L/l")
-        pcolor(lpmc,dsoverl,varr')
-        colorbar()
-        clim(0,0.1)
+        fig = Figure()
+        ax = Axis(fig[1, 1], title = "Variance of diag(B) with old BC\n as a function of l*pm and L/l")
+        heatmap!(ax, lpmc,dsoverl,varr)
+        Colorbar(fig[1, 2], limits = (0,0.1))
 
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varr.png")));
-        savefig(figname)
+        figname = joinpath(figdir, replace(figbasename, r".jl$" => "_varr.png"));
+        save(figname, fig)
         @info "Saved figure as " * figname
 
-        figure("alpha")
-        title("Optimal value of alpha as a function of l*pm and L/l")
-        pcolor(lpmc,dsoverl,alpha')
-        colorbar()
-        clim(0.5,1.5)
+        fig = Figure()
+        ax = Axis(fig[1, 1], title = "Optimal value of alpha\n as a function of l*pm and L/l")
+        heatmap!(ax, lpmc,dsoverl,alpha)
+        Colorbar(fig[1, 2], limits = (0.5,1.5))
 
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_alpha.png")));
-        savefig(figname)
+        figname = joinpath(figdir,  replace(figbasename,r".jl$" => "_alpha.png"));
+        
         @info "Saved figure as " * figname
-
-        figure("bidon")
-
 
     end
 
     if iround==2
 
-        figure("varbc")
-        title("Variance of diag(B) with new BC as a function of l*pm and L/l fixed alpha=1")
-        pcolor(lpmc,dsoverl,varb')
-        colorbar()
-        clim(0,0.0025)
-        figname = joinpath(figdir,basename(replace(@__FILE__,r".jl$" => "_varbc.png")));
-        savefig(figname)
+        fig = Figure()
+        ax = Axis(fig[1, 1], title = "Variance of diag(B) with new BC\n as a function of l*pm and L/l fixed alpha=1")
+        heatmap!(ax, lpmc,dsoverl,varb)
+        Colorbar(fig[1, 2], limits = (0,0.0025))
+        figname = joinpath(figdir, replace(figbasename,r".jl$" => "_varbc.png"));
+        save(figname, fig)
         @info "Saved figure as " * figname
 
     end
