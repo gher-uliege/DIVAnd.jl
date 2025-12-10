@@ -15,9 +15,9 @@
 </a>
 
 
-`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense it is a generalization of the original two-dimensional DIVA version (still available here https://github.com/gher-uliege/DIVA but not further developed anymore).
+`DIVAnd` (Data-Interpolating Variational Analysis in n dimensions) performs an n-dimensional variational analysis/gridding of arbitrarily located observations. Observations will be interpolated/analyzed on a curvilinear grid in 1, 2, 3 or more dimensions. In this sense, it is a generalization of the original two-dimensional [`DIVA`](https://github.com/gher-uliege/DIVA) version (still available but not further developed anymore).
 
-The method bears some similarities and equivalences with Optimal Interpolation or Krigging in that it allows to create a smooth and continous field from a collection of observations, observations which can be affected by errors. The analysis method is however different in practise, allowing to take into account topological features, physical constraints etc in a natural way. The method was initially developped with ocean data in mind, but it can be applied to any field where localized observations have to be used to produce gridded fields which are "smooth".
+The method bears some similarities and equivalences with Optimal Interpolation or Krigging as it allows one to create a smooth and continous field from a collection of observations, observations which can be affected by errors. The analysis method is however different in practice, allowing one to take into account topological features, physical constraints etc in a natural way. The method was initially developed with ocean data in mind, but it can be applied to any field where localized observations have to be used to produce gridded fields which are "smooth".
 
 See also https://gher-uliege.github.io/DIVAnd-presentation/#1
 
@@ -27,7 +27,7 @@ Barth, A., Beckers, J.-M., Troupin, C., Alvera-Azcárate, A., and Vandenbulcke, 
 
 (click [here](./data/DIVAnd.bib) for the BibTeX entry).
 
-# Summary of features
+## Summary of features
 
 * N-Dimensional analysis/interpolation
 * Scattered data
