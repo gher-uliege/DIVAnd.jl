@@ -1,5 +1,5 @@
 module Quadtrees
-
+using OhMyThreads
 using Dates
 import Base.length
 
@@ -641,7 +641,7 @@ function checkduplicates(
     #    index_buffer = zeros(Int, Nobs1)
     index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
 
-    @fastmath @inbounds Threads.@threads for i = 1:Nobs2
+    @fastmath @inbounds tmap(1:Nobs2) do i
         index_buffer = @view index_buffer_all[:, Threads.threadid()]
 
         xmin = ntuple(j -> X2[j, i] - delta[j], Val(n))
