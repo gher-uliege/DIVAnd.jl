@@ -641,7 +641,7 @@ function checkduplicates(
     #    index_buffer = zeros(Int, Nobs1)
     index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
 
-    @fastmath @inbounds tmap(1:Nobs2) do i
+    @fastmath @inbounds @tasks for i in 1:Nobs2
         index_buffer = @view index_buffer_all[:, Threads.threadid()]
 
         xmin = ntuple(j -> X2[j, i] - delta[j], Val(n))
