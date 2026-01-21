@@ -638,11 +638,10 @@ function checkduplicates(
 
     duplicates = Vector{Vector{Int}}(undef, Nobs2)
 
-    #    index_buffer = zeros(Int, Nobs1)
-    index_buffer_all = zeros(Int, Nobs1, Threads.nthreads())
-
     @fastmath @inbounds Threads.@threads for i = 1:Nobs2
-        index_buffer = @view index_buffer_all[:, Threads.threadid()]
+        index_buffer = get!(task_local_storage(), :index_buffer) do
+            zeros(Int, Nobs1)
+        end::Vector{Int}
 
         xmin = ntuple(j -> X2[j, i] - delta[j], Val(n))
         xmax = ntuple(j -> X2[j, i] + delta[j], Val(n))
