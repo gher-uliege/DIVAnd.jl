@@ -154,7 +154,7 @@ end
 
 
 function loadobs(T, filenames::AbstractVector{<:AbstractString}, varname; chunksize = 1_000_000)
-    d = DIVAnd.loadobs.(Float64,filenames,varname; chunksize = chunksize)
+    d = DIVAnd.loadobs.(T,filenames,varname; chunksize = chunksize)
     obsvalue = reduce(vcat,getindex.(d,1))
     obslon = reduce(vcat,getindex.(d,2))
     obslat = reduce(vcat,getindex.(d,3))
